@@ -26,7 +26,7 @@ function Copyright() {
     <Typography variant='body2' color='textSecondary' align='center'>
       {'Copyright © '}
       <Link color='inherit' href='https://material-ui.com/'>
-        Your Website
+        MMS Frontend
       </Link>{' '}
       {new Date().getFullYear()}
       {'.'}
@@ -115,7 +115,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
-const Navigation: React.FC = ({children}) => {
+const Navigation: React.FC = ({ children }) => {
   const history = useHistory()
   const classes = useStyles()
   const [open, setOpen] = React.useState(true)
@@ -155,7 +155,7 @@ const Navigation: React.FC = ({children}) => {
           >
             Dashboard
           </Typography>
-          <IconButton color = "inherit" onClick = {() => history.push('/login')}>
+          <IconButton color='inherit' onClick={() => history.push('/login')}>
             <ExitToAppIcon />
           </IconButton>
           <IconButton color='inherit'>

@@ -73,7 +73,7 @@ export default function Login() {
             <LockOutlinedIcon />
           </Avatar>
           <Typography component='h1' variant='h5'>
-            Sign in
+            Fazer Login
           </Typography>
           <form className={classes.form} noValidate>
             <TextField
@@ -82,7 +82,7 @@ export default function Login() {
               required
               fullWidth
               id='email'
-              label='Email Address'
+              label='Endereço de e-mail'
               name='email'
               autoComplete='email'
               autoFocus
@@ -93,14 +93,14 @@ export default function Login() {
               required
               fullWidth
               name='password'
-              label='Password'
+              label='Senha'
               type='password'
               id='password'
               autoComplete='current-password'
             />
             <FormControlLabel
               control={<Checkbox value='remember' color='primary' />}
-              label='Remember me'
+              label='Lembrar de mim'
             />
             <Button
               type='submit'
@@ -108,19 +108,19 @@ export default function Login() {
               variant='contained'
               color='primary'
               className={classes.submit}
-              onClick = {() => history.push('/empresa')}
+              onClick={() => history.push('/empresa')}
             >
-              Sign In
+              Entrar
             </Button>
             <Grid container>
               <Grid item xs>
                 <Link href='#' variant='body2'>
-                  Forgot password?
+                  Esqueceu a sua senha?
                 </Link>
               </Grid>
               <Grid item>
                 <Link href='#' variant='body2'>
-                  {'N?ao tem uma conta ainda?'}
+                  {'Não tem uma conta ainda?'}
                 </Link>
               </Grid>
             </Grid>

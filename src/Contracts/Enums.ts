@@ -5,3 +5,10 @@ export enum fuelType {
   FLEX = 'Flex',
 }
 
+export enum orderStatus {
+  PENDING = 'Aberto',
+  EXECUTING = 'Executando',
+  EXECUTED = 'Executada',
+  CANCELED = 'Cancelada',
+  DELETED = 'Apagada',
+}

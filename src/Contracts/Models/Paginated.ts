@@ -1,4 +1,4 @@
-type Metadata<T = any> = {
+export default interface Paginated<T> {
   meta: {
     total: number
     per_page: number
@@ -8,9 +8,7 @@ type Metadata<T = any> = {
     first_page_url: string
     last_page_url: string
     next_page_url: string
-    previuos_page_url: string
+    previous_page_url: string
   }
-  data: T
+  data: T[]
 }
-
-export default Metadata

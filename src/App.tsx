@@ -4,15 +4,17 @@ import { SnackbarProvider } from 'notistack'
 import UserDataProvider from './context/UserData'
 import { ThemeProvider } from '@material-ui/core/styles'
 import GlobalAppTheme from './Styles/GlobalAppTheme'
-
+import AlertContextProvider from './hooks/useAlert'
 const App: React.FC = () => {
   return (
     <SnackbarProvider maxSnack={3}>
-      <UserDataProvider>
-        <ThemeProvider theme={GlobalAppTheme}>
-          <Routes />
-        </ThemeProvider>
-      </UserDataProvider>
+      <AlertContextProvider>
+        <UserDataProvider>
+          <ThemeProvider theme={GlobalAppTheme}>
+            <Routes />
+          </ThemeProvider>
+        </UserDataProvider>
+      </AlertContextProvider>
     </SnackbarProvider>
   )
 }

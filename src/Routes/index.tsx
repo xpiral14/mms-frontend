@@ -1,7 +1,6 @@
 import React from 'react'
 import { BrowserRouter, Switch, Route as ReactDomRoute } from 'react-router-dom'
 import Clients from '../Pages/Clients'
-import ClientAdd from '../Pages/Clients/ClientAdd'
 import Company from '../Pages/Company'
 import Estatistics from '../Pages/Estatistics'
 import Login from '../Pages/Login'
@@ -20,7 +19,6 @@ const Routes = () => {
         <ReactDomRoute path='/login' component={Login} />
         <Route path='/empresa' component={Company} />
         <Route path='/clientes' component={Clients} />
-        <Route path='/clientes/adicionar' component={ClientAdd} />
         <Route path='/ordens-servico' component={Orders} />
         <Route path='/pecas' component={Pieces} />
         <Route path='/veiculos' component={Vehicles} exact />

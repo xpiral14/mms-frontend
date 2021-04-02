@@ -48,7 +48,9 @@ const Clients: React.FC = () => {
   const classes = useStyles()
   const { enqueueSnackbar } = useSnackbar()
   //eslint-disable-next-line
-  const [costumers, setCostumers] = useState<any | GridRowData[]>()
+  const [costumers, setCostumers] = useState<any | GridRowData[]>() // fix type / fix new metadata
+  //eslint-disable-next-line
+  const [modalState, setModalState] = useState<boolean>(false)
 
   useEffect(() => {
     setTimeout(() => {
@@ -82,7 +84,10 @@ const Clients: React.FC = () => {
     <>
       <Grid container xs={6} alignItems='center'>
         <div>
-          <IconButton aria-label='backOnePage' onClick={handleArrowBackButton}>
+          <IconButton
+            aria-label='backOnePage'
+            onClick={handleArrowBackButton}
+          >
             <ArrowBackIcon />
           </IconButton>
         </div>
@@ -99,9 +104,9 @@ const Clients: React.FC = () => {
 
       <Grid container xs={6} justify='flex-end' alignContent='center'>
         <ButtonGroup color='primary' variant='contained' size='small' aria-label='small button group'>
-          <Button onClick={() => { console.log('a') }}>
+          <Button onClick={() => { setModalState(true) }}>
             <AddIcon />
-                Adicionar Cliente
+                Modal
           </Button>
           <Button onClick={() => { getAllCostumers(1, 50) }} color="secondary">
             <UpdateIcon />

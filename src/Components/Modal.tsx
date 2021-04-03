@@ -13,7 +13,7 @@ type ModalCenterProps = {
   fadeProps?: FadeProps
 }
 
-const Modal : React.FC<ModalCenterProps> = (props) => {
+const Modal: React.FC<ModalCenterProps> = (props) => {
   const useStyle = makeStyles((theme) => ({
     modal: {
       display: 'flex',
@@ -23,6 +23,7 @@ const Modal : React.FC<ModalCenterProps> = (props) => {
     paper: {
       backgroundColor: theme.palette.background.paper,
       boxShadow: theme.shadows[2],
+      borderRadius: '0.5rem',
     },
   }))
 
@@ -37,12 +38,10 @@ const Modal : React.FC<ModalCenterProps> = (props) => {
         timeout: 500,
       }}
       className={classes.modal}
-      {...props.modalProps as any}
+      {...(props.modalProps as any)}
     >
       <Fade in={props.modalProps?.open} {...props.fadeProps}>
-        <div className={classes.paper}>
-          {props.children as any}
-        </div>
+        <div className={classes.paper}>{props.children as any}</div>
       </Fade>
     </MaterialModal>
   )

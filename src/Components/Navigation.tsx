@@ -104,6 +104,7 @@ const useStyles = makeStyles((theme) => ({
   },
   container: {
     padding: theme.spacing(6),
+    height: 'calc(100vh - 64px)'
   },
   paper: {
     padding: theme.spacing(2),

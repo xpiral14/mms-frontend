@@ -12,4 +12,8 @@ export default class OrderService {
   static async getOne(orderId:number){
     return api.get<Order>(`${this.DEFAULT_PATH}/${orderId}`)
   }
+
+  static async addPieces(orderId: number, pieceId: number, payload: {quantity: number}){
+    return api.post(`${this.DEFAULT_PATH}/${orderId}/piece/${pieceId}`, payload)
+  }
 }

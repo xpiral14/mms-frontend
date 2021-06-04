@@ -9,7 +9,7 @@ import {
 import React from 'react'
 
 type ModalCenterProps = {
-  modalProps?: ModalProps
+  modalProps?: Omit<ModalProps, 'children'>
   fadeProps?: FadeProps
 }
 

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-this-alias */
 /* eslint-disable prefer-rest-params */
 import {
@@ -5,6 +6,8 @@ import {
   Grid,
   IconButton,
   makeStyles,
+  Menu,
+  MenuItem,
   Paper,
   Table,
   TableBody,
@@ -27,6 +30,7 @@ import { useAlert } from '../../hooks/useAlert'
 import OrderPieceService from '../../services/OrderPieceService'
 import OrderService from '../../services/OrderService'
 import ModalEditOrderPiece from './ModalEditOrderPiece'
+import ModalCreateOrder from './ModalCreateOrder'
 
 const useStyles = makeStyles((theme: Theme) => ({
   container: {
@@ -77,7 +81,6 @@ const OrderDetailsPlaceholder = () => (
 const OrderListPlaceholder = () => (
   <div>
     <PlaceholderLoading width='100%' height='20px' margin='30px 0 0 0 0' />
-
     <PlaceholderLoading width='100%' height='66px' />
     <PlaceholderLoading width='100%' height='66px' margin='5px 0 0 0 ' />
     <PlaceholderLoading width='100%' height='66px' margin='5px 0 0 0' />
@@ -94,6 +97,12 @@ const Orders = () => {
   const [editProductData, setEditProductData] = useState<OrderPiece | null>(
     null
   )
+  const [orderDetailsMenuEl, setOrderDetailsMenuEl] = useState<HTMLElement | null>(null)
+  const [orderMenuEl, setOrderMenuEl] = useState<HTMLElement | null>(null)
+
+
+  const [addPiecesData , setAddPiecesData ] = useState<any>(null)
+  const [openCreateOrder, setOpenCreateOrder] = useState(false)
   const { openAlert } = useAlert()
   const { enqueueSnackbar } = useSnackbar()
   const loadOrderDetails = async () => {
@@ -114,7 +123,10 @@ const Orders = () => {
       const response = await OrderService.getAll()
       setOrders(response.data.data)
     } catch (error) {
-      enqueueSnackbar('Não foi possível obter a listagem de ordens de serviço', {variant: 'error'})
+      enqueueSnackbar(
+        'Não foi possível obter a listagem de ordens de serviço',
+        { variant: 'error' }
+      )
     }
   }
 
@@ -163,19 +175,67 @@ const Orders = () => {
   const orderSelectedFormatted = useMemo(
     () => ({
       ...orderSelected,
-      total: orderSelected?.orderPiece?.reduce(
-        (p, c) => p + c.quantity * c.piece.price,
-        0
-      ) || 0
+      total:
+        orderSelected?.orderPiece?.reduce(
+          (p, c) => p + c.quantity * c.piece.price,
+          0
+        ) || 0,
     }),
     [orderSelected]
   )
+
+  const handleOrderDetailsMenuClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setOrderDetailsMenuEl(event.currentTarget)
+  }
+
+  const handleOrderMenuClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setOrderMenuEl(event.currentTarget)
+  }
+
+  const handleOrderDetailsMenuClose = () => {
+    setOrderDetailsMenuEl(null)
+  }
+  const handleOrdeMenuClose = () => {
+    setOrderMenuEl(null)
+  }
+
+  const handleAddPiecesClick = () => {
+    setAddPiecesData({
+      orderId: activeOrderId,
+    })
+  }
+  
+  const handleCreateOrderClick = () => {
+    setOpenCreateOrder(true)
+  }
+
+  const handleCloseCreateOrder = () => {
+    setOpenCreateOrder(false)
+  }
   return (
     <Grid container spacing={2} style={{ height: '100%' }}>
       <Grid item xs={12} style={{ height: '100%' }}>
-        <Paper>
+        <Paper style={{display: 'flex', justifyContent: 'space-between'}}>
           <h2>Ordem de serviço</h2>
+          <div>
+
+            <Button aria-aria-controls="order-menu" onClick={handleOrderMenuClick} variant="text">
+            ...
+            </Button>
+
+            <Menu
+              id='order-menu'
+              anchorEl={orderMenuEl}
+              keepMounted
+              open={Boolean(orderMenuEl)}
+              onClose={handleOrdeMenuClose}
+            >
+              <MenuItem onClick={handleCreateOrderClick}>Criar Ordem de serviço</MenuItem>
+            </Menu>
+          </div>
         </Paper>
+
+
       </Grid>
       <Grid item xs={4}>
         {loadingGetAll ? (
@@ -232,7 +292,18 @@ const Orders = () => {
               <Grid item xs={12}>
                 <div className='d-flex justify-content-between align-items-center px-3 py-2'>
                   <h4>Informação da ordem de serviço</h4>
-                  <Button variant='text'>...</Button>
+                  <Button aria-controls='order-details-menu' onClick={handleOrderDetailsMenuClick} variant='text'>
+                    ...
+                  </Button>
+                  <Menu
+                    id='order-details-menu'
+                    anchorEl={orderDetailsMenuEl}
+                    keepMounted
+                    open={Boolean(orderDetailsMenuEl)}
+                    onClose={handleOrderDetailsMenuClose}
+                  >
+                    <MenuItem>Adicionar produto</MenuItem>
+                  </Menu>
                 </div>
               </Grid>
               <Grid item xs={12}>
@@ -245,7 +316,9 @@ const Orders = () => {
                     >
                       <div className='d-flex flex-column'>
                         <b>Vendedor</b>
-                        <span>{orderSelectedFormatted?.userThatRegistered?.name}</span>
+                        <span>
+                          {orderSelectedFormatted?.userThatRegistered?.name}
+                        </span>
                       </div>
 
                       <div className='d-flex flex-column'>
@@ -353,6 +426,7 @@ const Orders = () => {
         loadOrderDetails={loadOrderDetailsWithLoading as any}
         loadAllOrders={loadAllOrdersWithLoading as any}
       />
+      <ModalCreateOrder open={openCreateOrder} onClose={handleCloseCreateOrder}/>
     </Grid>
   )
 }

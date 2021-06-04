@@ -7,12 +7,16 @@ import {
   ModalEditOrderPieceFooter,
   ModalEditOrderPieceHeader,
 } from './style'
-import { Button, TextField } from '@material-ui/core'
+import { Button, Select, TextField } from '@material-ui/core'
 import AlertDialog from '../../Components/Alert'
 import OrderPieceService from '../../services/OrderPieceService'
 import { useSnackbar } from 'notistack'
+import useAsync from '../../hooks/useAsync'
+import PieceService from '../../services/PieceService'
+import Piece from '../../Contracts/Models/Piece'
 
 interface ModalEditOrderPieceProps {
+  type?: 'edit' | 'create'
   onClose: () => void
   data: OrderPiece | null
   loadOrderDetails: () => Promise<void>
@@ -23,13 +27,16 @@ const ModalEditOrderPiece: React.FC<ModalEditOrderPieceProps> = ({
   onClose,
   loadOrderDetails,
   loadAllOrders,
+  type,
 }) => {
   const [openConfirm, setOpenConfirm] = useState(false)
   const [payload, setPayload] = useState<any>(null)
+  const [pieces, setPieces] = useState<Piece[]>([])
   const handleButtonSave = () => {
     setOpenConfirm(true)
   }
   const { enqueueSnackbar } = useSnackbar()
+
   const handleButtonConfirm = async () => {
     try {
       const response = await OrderPieceService.updatePiece(
@@ -58,6 +65,14 @@ const ModalEditOrderPiece: React.FC<ModalEditOrderPieceProps> = ({
       })
     }
   }
+
+  useAsync(async () => {
+    if(data && type === 'create'){
+      const paginatedPieces = await PieceService.getAll()
+      setPieces(paginatedPieces.data.data)
+    }
+  }, [data, type])
+
   return (
     <Modal
       modalProps={
@@ -75,6 +90,15 @@ const ModalEditOrderPiece: React.FC<ModalEditOrderPieceProps> = ({
           </div>
         </ModalEditOrderPieceHeader>
         <ModalEditOrderPieceBody className='mt-2 p-2'>
+          {type === 'create' && (
+            <Select>
+              {pieces.map((piece) => (
+                <option key={piece.id} value={piece.id}>
+                  {piece.name}
+                </option>
+              ))}
+            </Select>
+          )}
           <TextField
             inputProps={{ min: 0 }}
             style={{ width: '100%' }}

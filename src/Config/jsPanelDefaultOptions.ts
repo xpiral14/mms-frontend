@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 export default {
-  id: 'abc',
   theme: 'primary',
   headerTitle: 'Default Title',
   position: 'center-top 0 20%',

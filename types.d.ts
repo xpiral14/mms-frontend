@@ -26,10 +26,10 @@ declare module 'jspanel4/es6module/jspanel' {
   }
 
   type Size = {
-    width: string | number | (() => {})
-    height: string | number | (() => {})
+    width?: string | number | (() => {})
+    height?: string | number | (() => {})
   }
-  type CreateOptions = {
+  type PanelOptions = {
     position?: string
     contentSize?: string
     contentAjax?: any
@@ -86,7 +86,7 @@ declare module 'jspanel4/es6module/jspanel' {
      * with the standard jsPanel configuration object and might be useful when
      * you have a number of panels sharing the same options.
      */
-    config?: CreateOptions
+    config?: PanelOptions
 
     /**
      * Sets the parent element of the panel.
@@ -230,7 +230,8 @@ declare module 'jspanel4/es6module/jspanel' {
      * *To alter a control's status of an existing panel use the panel method
      * [`setControlStatus()`](https://jspanel.de/#methods/setControlStatus)*
      *
-     * *More details on [`headerControls`](https://jspanel.de/#options/headerControls)*
+     * *More details on
+     * [`headerControls`](https://jspanel.de/#options/headerControls)*
      *
      */
     headerControls?: string | object
@@ -508,17 +509,444 @@ declare module 'jspanel4/es6module/jspanel' {
     template?: HTMLElement
   }
 
-  type FunctionWithPanelInMethod = <R = void>(panel: Panel) => R
+  type FunctionWithPanelInMethod = <R = void>(panel: Panel) => R | any
 
-  export type Panel = {}
+  export type Panel = {
+    /**
+     * By default every panel gets an ID attribute value composed of the string
+     * jsPanel- followed by a number (starting with 1) which is increased by 1
+     * with each new panel and only reset on page reload.
+     *
+     * However, you can assign a specific ID value with this option.
+     */
+    id: string | (() => string)
+
+    /**
+     * This method adds a control to an already existing panel within its controlbar.
+     *
+     * *More details on [https://jspanel.de/#methods/addControl](https://jspanel.de/#methods/addControl)*
+     * @param config
+     */
+    addControl(config?: object): Panel
+
+    /**
+     * This method adds either a header toolbar or a footer toolbar to an already existing panel.
+     *
+     * @param location
+     * @param toolbar
+     * @param callback
+     *
+     * @returns The panel's ID attribute value when the panel was removed successfully, otherwise false.
+     */
+    addToolbar(
+      locatio?: 'header' | 'footer',
+      toolbar?: string | Node | Array | Function,
+      callback: FunctionWithPanelInMethod
+    ): Panel
+
+    /**
+     *
+     * @param callback
+     *
+     * @param callback Callback function to execute after the close method was
+     * called.
+     *  #### Arguments:
+     *    - **id** the panel's ID attribute value when the panel was closed
+     * successfully. In this case the keyword this inside the function refers to
+     * the ID.
+     *    - **panel** the panel only when the panel was not closed successfully.
+     * In this case the keyword this inside the function refers to the panel.
+     */
+    close(callback?: (id: string, panel?: Panel) => string): string | false
+
+    /**
+     * Closes childpanels. That means the panels which are part of the content
+     * of the panel the method is called on.
+
+     * @param callback Callback function to execute after the closeChildpanels
+    method was called.
+     */
+    closeChildpanels(callback?: FunctionWithPanelInMethod): Panel
+
+    /**
+     * Removes all content from the content section of the panel the method was
+     * called on.
+     * @param callback Callback function to execute after the front method was
+     * called.
+     */
+    contentRemove(callback?: FunctionWithPanelInMethod): Panel
+
+    /**
+     * Disables or enables the dragit interaction of an existing panel.
+     * @param action
+     */
+    dragit(action: 'enable' | 'disable'): Panel
+
+    /**
+     * Moves the panel to the foreground by assigning the highest z-index for
+     * all the panels that are in the document.
+     * @param callback Callback function to execute after the front method was
+     * called.
+     */
+    front(callback?: FunctionWithPanelInMethod)
+
+    /**
+     * A NodeList with all childpanels of the panel the method was called on.
+     * @param callback Callback function to execute once for each panel in the NodeList.
+     */
+    getChildpanels(
+      callback?: (panel?: Panel, index?: number, list?: NodeList) => void
+    )
+
+    resize(
+      size: Size,
+      updateCache?: boolean,
+      callback?: FunctionWithPanelInMethod
+    ): Panel
+  }
 
   type JsPanel = {
-    modal: any
-    create: (option: CreateOptions) => Panel
+    modal: JsPanel
     autopositionSpacing?: number
     colorFilled?: number
     colorFilledDark?: number
     colorFilledLight?: number
+
+    /**
+     * An array with all built-in color names supported by option theme
+     */
+    colorNames?: object
+
+    /**
+     * An object with all default options applied to a panel
+     */
+    defaults?: PanelOptions
+
+    /**
+     * a number indicating whether jsPanel's error reporting is on or off
+     */
+    errorReporting?: 0 | 1
+
+    /**
+     * In some situations it might be useful to set a specific callback function
+     * for all panels you create. Instead of adding this callback to each panel
+     * separately you can add it to `jsPanel.globalCallbacks` and it will be
+     * called whenever a new panel is created.
+     *
+     * Each function you add to `jsPanel.globalCallbacks` receives the panel as
+     * argument and the keyword `this` inside the function also refers to the
+     * panel.
+     */
+    globalCallbacks?: FunctionWithPanelInMethod
+
+    /**
+     * an object with the default SVG icons used for the panel's controls
+     * (close button, maximize button, etc.)
+     */
+    icons?: object
+
+    /**
+     * This property returns an array of one or more strings with the names of
+     * event types depending on which event APIs are supported by the browser.
+     * Internally the handlers for the panel controls listen to the event(s)
+     * according to this array.
+     */
+    pointerdown?: string[]
+
+    /**
+     * This property returns an array of one or more strings with the names of
+     * event types depending on which event APIs are supported by the browser.
+     * Internally the handlers for the panel controls listen to the event(s)
+     * according to this array.
+     */
+    pointermove?: string[]
+
+    /**
+     * This property returns an array of one or more strings with the names of
+     * event types depending on which event APIs are supported by the browser.
+     * Internally the handlers for the panel controls listen to the event(s)
+     * according to this array.
+     */
+    pointerup?: string[]
+
+    /**
+     * Returns a string with the jsPanel version like
+     */
+    version?: string
+
+    /**
+     * Returns a string with the exact date/time the main jsPanel javascript
+     * file was created like 2021-04-10 09:23
+     */
+    date?: string
+
+    /**
+     * A number with the lowest possible z-index value for the panels in the
+     * document
+     */
+    ziBase?: number
+
+    /**
+     * This method appends a script to the head of a document and executes it
+     * unless a `<script>` element with exactly the same src attribute value
+     * as passed to the method is found within the document.
+     *
+     * @param src URL with the path pointing to the script to load
+     * @param type String with the Internet media type like
+     * `application/javascript` of the script to load
+     * @param callback optional callback function triggered by the onload event
+     * of the added script
+     */
+
+    addScript(src: string, type: string, callback: () => void): void
+
+    /**
+     * This method provides a basic AJAX functionality.
+     * It does all the work behind option contentAjax but can be used for
+     * general purpose AJAX requests as well.
+     * @param xhrConfig
+     */
+    ajax(xhrConfig: XhrConfig): void
+
+    /**
+     * **This is the one method you don't get around since it is the one
+     * generating a panel.**
+     *
+     * Generate a new Panel
+     */
+    create(option: PanelOptions): Panel
+
+    /**
+     * This method removes all content from node.
+     */
+    emptyNode(node: any): void
+
+    /**
+     * With this method you can extend panels with your own custom properties
+     * and/or methods.
+     *
+     * @param object a plain object with a key:value pair for each property
+     * /method you want to add to the panels
+     */
+    extend(object: { [x: string]: () => void })
+
+    /**
+     * This method loads a resource via a Fetch request.
+     *
+     * It does all the work behind option contentFetch but can be used for
+     * general purpose Fetch requests as well.
+     */
+    fetch(fetchConfig: FetchConfig)
+
+    /**
+     * This method searches the document for panels and returns an array with
+     * the panels matching condition.
+     *
+     * @param condition The function receives the current panel to test as
+     * argument and the keyword this inside the function also refers to the
+     * current panel to test.
+     *
+     * If omitted condition defaults to
+     * ```
+     *    function() {return this.classList.contains('jsPanel-standard');}
+     * ```
+     *
+     * @returns Array with all panels matching condition sorted by z-index
+     * highest first.
+     */
+    getPanels(condition?: () => boolean): Panel[]
+
+    /**
+     * This method positions element according to position and does all the work
+     *  behind [`option` position](https://jspanel.de/#options/position).
+     *
+     * It can be used to position other elements as well, although it's not very
+     * comfortable.
+     *
+     * @param element Must have a property options of type object that in turn
+     * has a key container set with a value as within a jsPanel configuration
+     * object.
+     *
+     * @param element must have a property getScaleFactor of type function
+     * returning an object like {x: 1, y: 1} with the scale factors of the
+     * element to position.
+     *
+     * @param position The same kind of positioning object as used with
+     * [`option` position](https://jspanel.de/#options/position).
+     */
+    position(element: any, position: Position)
+
+    /**
+     * This method removes one or more CSS classnames from element.
+     *
+     * @param element The element to remove the classname/s from.
+     * @param classnames Either a single classname or a space separated list of
+     * classnames to remove.
+     */
+    remClass(element: any, classnames: string): Element
+
+    /**
+     * This method adds one or more CSS classnames to element.
+     *
+     * @param element The element to add the classname/s to.
+     * @param classnames Either a single classname or a space separated list of classnames to add.
+     */
+    remClass(element: any, classnames: string): Element
+
+    /**
+     * This method adds one or more CSS classnames to element.
+     *
+     * @param element The element to toggle classname/s of.
+     * @param classnames Either a single classname or a space separated list of
+     * classnames to toggle.
+     */
+    remClass(element: any, classnames: string): Element
+
+    /**
+     * This method sets one or more CSS styles of element defined in stylesobject.
+     *
+     * @param element The element to style.
+     * @param stylesobject A plain object with css property:value pairs of the
+     * styles to set.
+     *
+     * CSS property names can be lowerCamelCase or strings with hyphens (eg:
+     * backgroundColor or 'background-color').
+     */
+    setStyles(element, stylesobject)
+
+    /**
+     *
+     * @param color May have one of the following values:
+     *
+     * - A color name according to CSS Color Module Level 3/4 like gray,
+     * crimson, forestgreen and so on ...
+     * - RGB color value like rgb(120,200,17);
+     * - RGBA values can be used but the alpha channel is ignored
+     * - HEX color value like `#d5e863` or `#ddd;` (# is optional)
+     * - HSL color value like `hsl(90,100%,25%)`
+     * - HSLA values can be used but the alpha channel is ignored
+     *
+     * @returns Array with the following values:
+     * - `[0]` HSL value of color
+     * - `[1]` HSL value of color lightened by the amount stored in
+     * `jsPanel.colorFilledLight`.
+     * This color is used as background color of a panel's content section when
+     * the theme modifier 'filledlight' is used.
+     * - `[2]` HSL value of color darkened by the amount stored in
+     * `jsPanel.colorFilled`. This color is used as background color of a
+     * panel's content section when the theme modifier 'filled' is used.
+     * - `[3]` HEX color value '#000000' or '#ffffff' used as font color if
+     * background color is `index[0]`. Which value is used depends on the
+     * perceived brightness of the corresponding background color
+     * - `[4]` HEX color value '#000000' or '#ffffff' used as font color if
+     * background color is `index[1]`. Which value is used depends on the
+     * perceived brightness of the corresponding background color
+     * - `[5]` HEX color value '#000000' or '#ffffff' used as font color if
+     * background color is `index[2]`.Which value is used depends on the
+     * perceived brightness of the corresponding background color
+     * - `[6]` HSL value of color lightened by the amount stored in
+     * `jsPanel.colorFilledDark`. This color is used as background color of a
+     * panel's content section when the theme modifier 'filleddark' is used.
+     * - `[7]` HEX color value '#000000' or '#ffffff' used as font color if
+     * background color is `index[6]`
+     */
+    calcColors(color: string): string[]
+
+    /**
+     * Internally this method is used to provide various color formats based on
+     * color.
+     * @param color May have one of the following values:
+     *  A color name according to CSS Color Module Level 3/4 like gray, crimson, forestgreen and so on ...
+     * - RGB color value like rgb(120,200,17)
+     * - RGBA values can be used but the alpha channel is ignored
+     * - HEX color value like `#d5e863` or `#ddd;` (# is optional)
+     * - HSL color value like `hsl(90,100%,25%)`
+     * - HSLA values can be used but the alpha channel is ignored
+     *
+     * @returns Object with color represented in various HEX, RGB, HSL and CSS
+     * usable formats
+     */
+    color(color: string): Colors
+
+    /**
+     * Calculates a color value darkened by amount based on color.
+     *
+     * @param color may have one of the following values:
+     * - A color name according to CSS Color Module Level 3/4 like gray,
+     * crimson, forestgreen and so on ...
+     * - RGB color value like `rgb(120,200,17)`
+     * - RGBA values can be used but the alpha channel is ignored
+     * - HEX color value like `#d5e863` or `#ddd;` (# is optional)
+     * - HSL color value like `hsl(90,100%,25%)`
+     * - HSLA values can be used but the alpha channel is ignored
+     *
+     * @param amount Number in the range 0 to 1.
+     * A value of 0.6 for example darkens color by 60%
+     * A value of 1 will always return black, a value of 0 returns the same
+     * color
+     *
+     * @returns String with an HSL color value
+     *
+     */
+    darken(color: string, amount: number): string
+
+    /**
+     * Calculates a color value lightened by amount based on color.
+     *
+     * @param color may have one of the following values:
+     * - A color name according to CSS Color Module Level 3/4 like gray,
+     * crimson, forestgreen and so on ...
+     * - RGB color value like `rgb(120,200,17)`
+     * - RGBA values can be used but the alpha channel is ignored
+     * - HEX color value like `#d5e863` or `#ddd;` (# is optional)
+     * - HSL color value like `hsl(90,100%,25%)`
+     * - HSLA values can be used but the alpha channel is ignored
+     *
+     * @param amount Number in the range 0 to 1.
+     * A value of 0.6 for example darkens color by 60%
+     * A value of 1 will always return black, a value of 0 returns the same
+     * color
+     *
+     * @returns String with an HSL color value
+     */
+    lighten(color: string, amount: number): string
+
+    /**
+     * Calculates perceived brightness based on color.
+     * By default a panel's font color for header and content sections are
+     * either black or white. This method is internally used to determine which
+     * font color the used background color requires.
+     *
+     * jsPanel uses a white font color for background colors with a perceived
+     * brightness of <= 0.55, otherwise black.
+     *
+     * @param color may have one of the following values:
+     * - A color name according to CSS Color Module Level 3/4 like gray,
+     * crimson, forestgreen and so on ...
+     * - RGB color value like `rgb(120,200,17)`
+     * - RGBA values can be used but the alpha channel is ignored
+     * - HEX color value like `#d5e863` or `#ddd;` (# is optional)
+     * - HSL color value like `hsl(90,100%,25%)`
+     * - HSLA values can be used but the alpha channel is ignored
+     */
+    perceivedBrightness(color)
+
+    /**
+     * This utility method returns a DocumentFragment based on string.
+     * 
+     * Return values from `jsPanel.ajax()` and `jsPanel.fetch()` as well as a
+     * response from options contentAjax and contentFetch you need to process
+     * in a done callback are just strings. Depending on how you add these
+     * strings to your page they might not be rendered as
+     * `HTML.jsPanel.strToHtml()` converts a string to a DocumentFragment that
+     * will be rendered as HTML and can even be searched with `querySelector()`
+     * and similar methods.
+     * 
+     * @param string A string value with tags and text to convert to a
+     * DocumentFragment
+
+     */
+    strToHtml(string: string): DocumentFragment
   }
 
   type Rtl = {
@@ -526,5 +954,32 @@ declare module 'jspanel4/es6module/jspanel' {
     lang?: string
   }
 
+  type XhrConfig = object
+
+  type FetchConfig = object
+
+  type Position = object
+
+  type Colors = {
+    hex: string
+    rgb: {
+      css: string
+      r: number
+      g: number
+      b: number
+    }
+    hsl: {
+      css: string
+      h: number
+      s: string
+      l: string
+    }
+  }
   export const jsPanel: JsPanel
+}
+
+
+declare module '*.json' {
+  const value: any
+  export default value
 }

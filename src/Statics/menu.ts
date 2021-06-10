@@ -1,28 +1,41 @@
 export default {
-  Cadastro: { // 0 <Popuver />
+  Cadastro: {
+    // 0 <Popuver />
     name: 'Cadastro',
+    isMain: true,
+    icon: 'drive-time',
     items: {
-      Funcionários: { // 1 <MenuItem />
-        name: 'Funcionários',
-        screen: 'RegisterEmployee',
-      },
-      Peças: {
-        name: 'Peças',
-        screen: ''
-      },
       Carros: {
-        icon: 'drive-time',
         name: 'Carros',
+        screen: 'HelloWorld',
+        icon: 'drive-time',
+      },
+      Pecas: {
+        icon: 'cog',
+        name: 'Peças',
+        screen: 'HelloWorld2',
+      },
+      Funcionarios: {
+        icon: 'person',
+        name: 'Funcionarios',
         screen: 'RegisterPeace',
       },
     },
   },
-  Relatórios: {
+  Relatorios: {
     name: 'Relatórios',
+    isMain: true,
     items: {
-      Peças: {
-        name: 'Peças',
+      'Relatório de peças': {
+        name: 'Relatório de peças',
         screen: 'PeaceReport',
+        items: {
+          'Peças 1': {
+            icon: 'drive-time',
+            name: 'Peças 1',
+            screen: 'RegisterPeace',
+          },
+        },
       },
     },
   },

@@ -3,7 +3,7 @@ import React from 'react'
 function HelloWorld() {
   return (
     <div>
-        Hello world    
+        Hello world   2 
     </div>
   )
 }

@@ -55,7 +55,7 @@ export default function PanelProvider({ children }: any) {
     [x: string]: { panel: Panel; component: any }
   }>({})
 
-  const addPanel = (action: string, componentPath: string, modal  = false) => {
+  const addPanel = (action: string, componentPath: string, modal = false) => {
     const Component = lazy(() => import(`../Screens/${componentPath}`))
     if (panels[action]) {
       return panels[action].panel.front()
@@ -65,8 +65,8 @@ export default function PanelProvider({ children }: any) {
       ...jsPanelDefaultOptions,
       id: action.replace(/ /g, '-').toLowerCase(),
       headerTitle: action,
-      onclosed: () => {      
-        setPanels(prev => {
+      onclosed: () => {
+        setPanels((prev) => {
           const appPanels = { ...prev }
           if (appPanels[action]) {
             delete appPanels[action]
@@ -78,7 +78,10 @@ export default function PanelProvider({ children }: any) {
     const panel = modal
       ? jsPanel.modal.create(options)
       : jsPanel.create(options)
-    setPanels((prev) => ({ ...prev, [action]: { panel, component: Component } }))
+    setPanels((prev) => ({
+      ...prev,
+      [action]: { panel, component: Component },
+    }))
   }
 
   const renderJsPanelsInsidePortal = () => {

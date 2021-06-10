@@ -1,95 +1,84 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 
 import {
-  Alignment,
   Button,
-  Classes,
+  IconName,
   Menu,
   MenuItem,
   Navbar,
-  NavbarDivider,
   NavbarGroup,
-  NavbarHeading,
   Popover,
   Position,
 } from '@blueprintjs/core'
 import React, { useMemo } from 'react'
+import { usePanel } from '../../Hooks/usePanel'
 
-type MenuType =
-  | string
-  | number
-  | boolean
-  | null
-  | MenuType[]
-  | { [key: string]: MenuType }
+type MenuType = { [key: string]: MenuItemType }
 type NavBarProps = {
   menuItems: MenuType
 }
 
 type MenuItemType = {
   name: string
+  screen: string
+  icon?: IconName
+  isMain?: boolean
   component?: string
-  items?: MenuItemType[]
+  items?: MenuType
 }
-function buildMenuItems(object: any, level = 0) {
-  const objectArray: any = Object.values(object)
-  const array: any = []
 
-  objectArray.forEach((objValue: any) => {
-    const menuObject: any = {}
-    menuObject.name = objValue.name
-
-    if (objValue.items) {
-      level += 1
-      menuObject.items = buildMenuItems(objValue.items).map(({ name }: any) => (
-        <MenuItem key={name} text={name} />
-      ))
-      array.push(menuObject)
-      return
-    }
-    level -= level === 0 ? 0 : -1
-    menuObject.name = objValue.name
-    menuObject.screen = objValue.screen
-    array.push(menuObject)
-  })
-
-  return array
-}
-let level = 0
-function buildMenu(object: any) {
-  const objectArray: any = Object.values(object)
-  const array: any = []
-  objectArray.forEach((objValue: any) => {
-    if (objValue.items) {
-      const items = buildMenu(objValue.items)
-
-      const menuItems = items.map((item: any) => (
-        <MenuItem icon={item?.icon} key={item.name} text={item.name} />
-      ))
-
-      const Component = () =>
-        level === 0 ? (
-          <Menu>{menuItems}</Menu>
-        ) : (
-          // <Button icon={objValue?.icon} text={objValue.name} />
-          ((<MenuItem text={objValue.name}>{menuItems}</MenuItem>) as any)
-        )
-
-      array.push(<Component />)
-      return
-    }
-    level -= level === 0 ? 0 : -1
-    array.push(<Button className={Classes.MINIMAL} text={objValue.name} />)
-  })
-
-  return array
-}
 const NavBar: React.FC<NavBarProps> = ({ menuItems }) => {
-  const BuildedMenuItems = useMemo(() => buildMenu(menuItems), [menuItems])
-  console.log(buildMenuItems(menuItems))
+  const { addPanel } = usePanel()
+  const buildMenu = (m: MenuType) => {
+    const menuItemsArray = Object.values(m)
+    const menuArray: any[] = []
+    menuItemsArray.forEach((menu) => {
+      let Component
+      if (menu?.items) {
+        const menuItems = buildMenu(menu.items!)
+        const MenuItems = () => <>{menuItems}</>
+        if (menu.isMain) {
+          Component = () => (
+            <Popover
+              hasBackdrop={false}
+              position={Position.BOTTOM}
+              content={
+                <Menu>
+                  <MenuItems />
+                </Menu>
+              }
+            >
+              <Button icon={menu.icon} text={menu.name} />
+            </Popover>
+          )
+          return menuArray.push(<Component key={menu.name} />)
+        }
+        return menuArray.push(
+          <MenuItem key={menu.icon} icon={menu?.icon} text={menu.name}>
+            <MenuItems />
+          </MenuItem>
+        )
+      }
+      menuArray.push(
+        <MenuItem
+          key={menu.name}
+          text={menu?.name}
+          icon={menu?.icon}
+          onClick={() => addPanel(menu.name, menu.screen, false)}
+        />
+      )
+    })
+    return menuArray
+  }
+  const BuildedMenu = useMemo(
+    () => () => <>{buildMenu(menuItems)}</>,
+    [menuItems]
+  )
+
   return (
     <Navbar>
-      <NavbarGroup>{BuildedMenuItems}</NavbarGroup>
+      <NavbarGroup>
+        <BuildedMenu />
+      </NavbarGroup>
     </Navbar>
   )
 }

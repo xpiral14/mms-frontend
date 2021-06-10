@@ -6,6 +6,7 @@ import {
   Suspense,
   useCallback,
   useContext,
+  useMemo,
   useState,
 } from 'react'
 import { jsPanel, Panel, PanelOptions } from 'jspanel4/es6module/jspanel'
@@ -32,7 +33,7 @@ export type PanelContext = {
   >
   addPanel: (
     panelName: string,
-    component: any,
+    componentPath: string,
     isModal?: boolean | undefined,
     options?: PanelOptions | undefined
   ) => void
@@ -55,34 +56,41 @@ export default function PanelProvider({ children }: any) {
     [x: string]: { panel: Panel; component: any }
   }>({})
 
-  const addPanel = (action: string, componentPath: string, modal = false) => {
-    const Component = lazy(() => import(`../Screens/${componentPath}`))
-    if (panels[action]) {
-      return panels[action].panel.front()
-    }
+  const addPanel =
+    (
+      action: string,
+      componentPath: string,
+      modal = false
+    ) => {
+      console.log('panels', panels)
+      const Component = lazy(() => import(`../Screens/${componentPath}`))
 
-    const options = {
-      ...jsPanelDefaultOptions,
-      id: action.replace(/ /g, '-').toLowerCase(),
-      headerTitle: action,
-      onclosed: () => {
-        setPanels((prev) => {
-          const appPanels = { ...prev }
-          if (appPanels[action]) {
-            delete appPanels[action]
-          }
-          return appPanels
-        })
-      },
-    } as any
-    const panel = modal
-      ? jsPanel.modal.create(options)
-      : jsPanel.create(options)
-    setPanels((prev) => ({
-      ...prev,
-      [action]: { panel, component: Component },
-    }))
-  }
+      if (panels[action]) {
+        return panels[action].panel.front()
+      }
+
+      const options = {
+        ...jsPanelDefaultOptions,
+        id: action.replace(/ /g, '-').toLowerCase(),
+        headerTitle: action,
+        onclosed: () => {
+          setPanels((prev) => {
+            const appPanels = { ...prev }
+            if (appPanels[action]) {
+              delete appPanels[action]
+            }
+            return appPanels
+          })
+        },
+      } as any
+      const panel = modal
+        ? jsPanel.modal.create(options)
+        : jsPanel.create(options)
+      setPanels((prev) => ({
+        ...prev,
+        [action]: { panel, component: Component },
+      }))
+    }
 
   const renderJsPanelsInsidePortal = () => {
     return Object.keys(panels).map((panelId) => {

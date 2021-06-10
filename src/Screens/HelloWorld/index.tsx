@@ -1,10 +1,15 @@
+import { Button, Card, Elevation } from '@blueprintjs/core'
 import React from 'react'
 
 function HelloWorld() {
   return (
-    <div>
-        Hello world    
-    </div>
+    <Card interactive={true} elevation={Elevation.TWO}>
+      <h5>
+        <a href='#'>Card heading</a>
+      </h5>
+      <p>Card content</p>
+      <Button>Submit</Button>
+    </Card>
   )
 }
 

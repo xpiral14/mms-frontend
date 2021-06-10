@@ -1,4 +1,3 @@
-
 import {
   Button,
   IconName,
@@ -27,7 +26,7 @@ type MenuItemType = {
 }
 
 const NavBar: React.FC<NavBarProps> = ({ menuItems }) => {
-  const { addPanel } = usePanel()
+  const { addPanel, panels } = usePanel()
   const buildMenu = (m: MenuType) => {
     const menuItemsArray = Object.values(m)
     const menuArray: any[] = []
@@ -63,7 +62,9 @@ const NavBar: React.FC<NavBarProps> = ({ menuItems }) => {
           key={menu.name}
           text={menu?.name}
           icon={menu?.icon}
-          onClick={() => addPanel(menu.name, menu.screen, false)}
+          onClick={() => {
+            addPanel(menu.name, menu.screen)
+          }}
         />
       )
     })
@@ -71,7 +72,7 @@ const NavBar: React.FC<NavBarProps> = ({ menuItems }) => {
   }
   const BuildedMenu = useMemo(
     () => () => <>{buildMenu(menuItems)}</>,
-    [menuItems]
+    [menuItems, panels]
   )
 
   return (

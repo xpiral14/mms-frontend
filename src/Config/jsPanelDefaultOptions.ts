@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 export default {
   ziBase: 4,
-  theme: 'primary',
+  theme: '#137cbd',
   headerTitle: 'Default Title',
   position: 'center-top 0 20%',
   contentSize: {
@@ -24,4 +24,6 @@ export default {
   },
   onclosed: () => {},
   closeOnEscape: true,
+  borderRadius: '3px',
+  iconfont: 'material-icons',
 }

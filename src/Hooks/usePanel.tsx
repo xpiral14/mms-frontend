@@ -1,22 +1,9 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import {
-  createContext,
-  createElement,
-  lazy,
-  Suspense,
-  useCallback,
-  useContext,
-  useMemo,
-  useState,
-} from 'react'
+import { createContext, lazy, Suspense, useContext, useState } from 'react'
 import { jsPanel, Panel, PanelOptions } from 'jspanel4/es6module/jspanel'
-import Portal from '../Components/Portal'
 import CreatePortal from '../Components/createPortal'
 import jsPanelDefaultOptions from '../Config/jsPanelDefaultOptions'
-
-const panelDefaultOptions = {
-  ...jsPanel.defaults,
-}
+import { useAlert } from './useAlert'
 
 type PanelObject = {
   panel: Panel
@@ -50,47 +37,47 @@ export const usePanel = () => {
 
   return context
 }
-
+jsPanel.ziBase = 4
 export default function PanelProvider({ children }: any) {
   const [panels, setPanels] = useState<{
     [x: string]: { panel: Panel; component: any }
   }>({})
-
-  const addPanel =
-    (
-      action: string,
-      componentPath: string,
-      modal = false
-    ) => {
-      console.log('panels', panels)
-      const Component = lazy(() => import(`../Screens/${componentPath}`))
-
-      if (panels[action]) {
-        return panels[action].panel.front()
-      }
-
-      const options = {
-        ...jsPanelDefaultOptions,
-        id: action.replace(/ /g, '-').toLowerCase(),
-        headerTitle: action,
-        onclosed: () => {
-          setPanels((prev) => {
-            const appPanels = { ...prev }
-            if (appPanels[action]) {
-              delete appPanels[action]
-            }
-            return appPanels
-          })
-        },
-      } as any
-      const panel = modal
-        ? jsPanel.modal.create(options)
-        : jsPanel.create(options)
-      setPanels((prev) => ({
-        ...prev,
-        [action]: { panel, component: Component },
-      }))
+  const { openAlert } = useAlert()
+  const addPanel = (action: string, componentPath: string, modal = false) => {
+    let Component: any
+    try {
+      Component = lazy(() => import(`../Screens/${componentPath}`))
+    } catch (error) {
+      return openAlert({ text: 'Tela inválida' })
     }
+
+    if (panels[action]) {
+      return panels[action].panel.front()
+    }
+
+    const options = {
+      ...jsPanelDefaultOptions,
+      ziBase: 4,
+      id: action.replace(/ /g, '-').toLowerCase(),
+      headerTitle: action,
+      onclosed: () => {
+        setPanels((prev) => {
+          const appPanels = { ...prev }
+          if (appPanels[action]) {
+            delete appPanels[action]
+          }
+          return appPanels
+        })
+      },
+    } as any
+    const panel = modal
+      ? jsPanel.modal.create(options)
+      : jsPanel.create(options)
+    setPanels((prev) => ({
+      ...prev,
+      [action]: { panel, component: Component },
+    }))
+  }
 
   const renderJsPanelsInsidePortal = () => {
     return Object.keys(panels).map((panelId) => {

@@ -8,6 +8,7 @@ import {
   Popover,
   Position,
 } from '@blueprintjs/core'
+import { PanelOptions } from 'jspanel4/es6module/jspanel'
 import React, { useMemo } from 'react'
 import { useAlert } from '../../Hooks/useAlert'
 import { useAuth } from '../../Hooks/useAuth'
@@ -20,7 +21,7 @@ type NavBarProps = {
 
 type MenuItemType = {
   name: string
-  screen: string
+  screen: PanelOptions,
   icon?: IconName
   isMain?: boolean
   component?: string
@@ -65,7 +66,7 @@ const NavBar: React.FC<NavBarProps> = ({ menuItems }) => {
           text={menu?.name}
           icon={menu?.icon}
           onClick={() => {
-            addPanel(menu.name, menu.screen)
+            addPanel(menu.screen as any)
           }}
         />
       )

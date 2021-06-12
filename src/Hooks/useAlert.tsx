@@ -71,7 +71,7 @@ const AlertContextProvider: React.FC<any> = ({ children }) => {
     >
       {children}
       <div>
-        {alerts.length &&
+        {Boolean(alerts.length) &&
           alerts.map((alertProps) => (
             <Alert
               style={{

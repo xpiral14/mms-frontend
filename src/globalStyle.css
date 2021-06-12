@@ -5,3 +5,7 @@
   padding: 0;
   outline: none;
 }
+
+.jspanel-title{
+  font-family: Roboto, "Open-sans", Lato;
+}

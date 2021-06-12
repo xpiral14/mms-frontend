@@ -12,7 +12,7 @@ import { PanelOptions } from 'jspanel4/es6module/jspanel'
 import React, { useMemo } from 'react'
 import { useAlert } from '../../Hooks/useAlert'
 import { useAuth } from '../../Hooks/useAuth'
-import { usePanel } from '../../Hooks/usePanel'
+import { useScreen } from '../../Hooks/useScreen'
 
 type MenuType = { [key: string]: MenuItemType }
 type NavBarProps = {
@@ -29,7 +29,7 @@ type MenuItemType = {
 }
 
 const NavBar: React.FC<NavBarProps> = ({ menuItems }) => {
-  const { addPanel, panels } = usePanel()
+  const { openScreen, screens: screens } = useScreen()
   const buildMenu = (m: MenuType) => {
     const menuItemsArray = Object.values(m)
     const menuArray: any[] = []
@@ -66,7 +66,7 @@ const NavBar: React.FC<NavBarProps> = ({ menuItems }) => {
           text={menu?.name}
           icon={menu?.icon}
           onClick={() => {
-            addPanel(menu.screen as any)
+            openScreen(menu.screen as any)
           }}
         />
       )
@@ -75,7 +75,7 @@ const NavBar: React.FC<NavBarProps> = ({ menuItems }) => {
   }
   const BuildedMenu = useMemo(
     () => () => <>{buildMenu(menuItems)}</>,
-    [menuItems, panels]
+    [menuItems, screens]
   )
   const { logout } = useAuth()
   const { openAlert } = useAlert()

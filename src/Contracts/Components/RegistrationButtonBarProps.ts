@@ -6,7 +6,12 @@ export interface RegistrationButtonBarProps {
   exitButton?: boolean
   status: ScreenStatus
   setStatus: React.Dispatch<React.SetStateAction<ScreenStatus>>
+  buttonNewProps?: ButtonProps
+  buttonSaveProps?: ButtonProps
+  buttonEditProps?: ButtonProps
+  buttonCancelProps?: ButtonProps
   buttonDeleteProps?: ButtonProps
+  buttonExitProps?: ButtonProps
   handleNewButtonOnClick?: () => void
   handleSaveButtonOnClick?: () => void
   handleEditButtonOnClick?: () => void

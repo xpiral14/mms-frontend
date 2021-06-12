@@ -9,6 +9,7 @@ import '@blueprintjs/icons/lib/css/blueprint-icons.css'
 import AlertContextProvider from './Hooks/useAlert'
 import Routes from './Routes'
 import AuthProvider from './Hooks/useAuth'
+import ToastContextProvider from './Hooks/useToast'
 const App = () => {
   return (
     <div>
@@ -18,11 +19,13 @@ const App = () => {
 }
 
 export default () => (
-  <AlertContextProvider>
-    <PanelProvider>
-      <AuthProvider>
-        <App />
-      </AuthProvider>
-    </PanelProvider>
-  </AlertContextProvider>
+  <ToastContextProvider>
+    <AlertContextProvider>
+      <PanelProvider>
+        <AuthProvider>
+          <App />
+        </AuthProvider>
+      </PanelProvider>
+    </AlertContextProvider>
+  </ToastContextProvider>
 )

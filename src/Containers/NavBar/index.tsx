@@ -9,6 +9,8 @@ import {
   Position,
 } from '@blueprintjs/core'
 import React, { useMemo } from 'react'
+import { useAlert } from '../../Hooks/useAlert'
+import { useAuth } from '../../Hooks/useAuth'
 import { usePanel } from '../../Hooks/usePanel'
 
 type MenuType = { [key: string]: MenuItemType }
@@ -74,11 +76,24 @@ const NavBar: React.FC<NavBarProps> = ({ menuItems }) => {
     () => () => <>{buildMenu(menuItems)}</>,
     [menuItems, panels]
   )
+  const { logout } = useAuth()
+  const { openAlert } = useAlert()
 
   return (
-    <Navbar>
+    <Navbar style={{ display: 'flex', justifyContent: 'space-between' }}>
       <NavbarGroup>
         <BuildedMenu />
+      </NavbarGroup>
+      <NavbarGroup>
+        <Button
+          text='Logout'
+          onClick={() => {
+            openAlert({
+              text: 'Você quer mesmo sair do sistema?',
+              onConfirm: logout,
+            })
+          }}
+        />
       </NavbarGroup>
     </Navbar>
   )

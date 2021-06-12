@@ -4,21 +4,27 @@ import 'jspanel4/es6module/extensions/modal/jspanel.modal'
 import 'jspanel4/dist/jspanel.min.css'
 import 'normalize.css/normalize.css'
 import PanelProvider from './Hooks/usePanel'
-import NavBar from './Containers/NavBar'
 import '@blueprintjs/core/lib/css/blueprint.css'
 import '@blueprintjs/icons/lib/css/blueprint-icons.css'
-import menuItems from './Statics/menu'
 import AlertContextProvider from './Hooks/useAlert'
 import './globalStyle.css'
 
+import Routes from './Routes'
+import AuthProvider from './Hooks/useAuth'
 const App = () => {
-  return <NavBar menuItems={menuItems as any} />
+  return (
+    <div>
+      <Routes />
+    </div>
+  )
 }
 
 export default () => (
   <AlertContextProvider>
     <PanelProvider>
-      <App />
+      <AuthProvider>
+        <App />
+      </AuthProvider>
     </PanelProvider>
   </AlertContextProvider>
 )

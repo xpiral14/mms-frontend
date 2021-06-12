@@ -8,12 +8,15 @@ import NavBar from './Containers/NavBar'
 import '@blueprintjs/core/lib/css/blueprint.css'
 import '@blueprintjs/icons/lib/css/blueprint-icons.css'
 import menuItems from './Statics/menu'
+import AlertContextProvider from './Hooks/useAlert'
 const App = () => {
   return <NavBar menuItems={menuItems as any} />
 }
 
 export default () => (
-  <PanelProvider>
-    <App />
-  </PanelProvider>
+  <AlertContextProvider>
+    <PanelProvider>
+      <App />
+    </PanelProvider>
+  </AlertContextProvider>
 )

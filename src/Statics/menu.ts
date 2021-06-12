@@ -7,7 +7,7 @@ export default {
     items: {
       Carros: {
         name: 'Carros',
-        screen: 'HelloWorld',
+        screen: 'Register/Users',
         icon: 'drive-time',
       },
       Pecas: {

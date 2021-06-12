@@ -1,11 +1,12 @@
 import React from 'react'
+import RegistrationButtonBar from '../../Components/RegistrationButtonBar'
 
-const index= () => {
+const PartsScreen: React.FC = (): JSX.Element => {
   return (
-    <div>
-      
-    </div>
+    <>
+      <RegistrationButtonBar />
+    </>
   )
 }
 
-export default index
+export default PartsScreen

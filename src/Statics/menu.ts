@@ -6,14 +6,14 @@ export default {
     icon: 'drive-time',
     items: {
       Carros: {
+        icon: 'drive-time',
         name: 'Carros',
         screen: 'Register/Users',
-        icon: 'drive-time',
       },
       Pecas: {
         icon: 'cog',
         name: 'Peças',
-        screen: 'HelloWorld2',
+        screen: 'Parts',
       },
       Funcionarios: {
         icon: 'person',

@@ -1,15 +1,9 @@
 import api from '../Config/api'
-import User from '../Contracts/Models/User'
+import Auth from '../Contracts/Models/Auth'
 
-type LoginResponse = {
-  type: string
-  token: string
-  expires_at: string,
-  user: User
-}
 export default class AuthService {
   public static async login(email: string, password: string) {
-    const response = await api.post<LoginResponse>('/login', {
+    const response = await api.post<Auth>('/login', {
       email,
       password,
     })
@@ -17,7 +11,7 @@ export default class AuthService {
     return response.data
   }
 
-  public static async logout(){
+  public static async logout() {
     await api.post('/logout')
   }
 }

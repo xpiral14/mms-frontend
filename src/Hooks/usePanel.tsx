@@ -81,27 +81,27 @@ export default function PanelProvider({ children }: any) {
 
   const renderJsPanelsInsidePortal = () => {
     return Object.keys(panels).map((panelId) => {
-      const jsPanel = panels[panelId].panel
+      const panel = panels[panelId].panel
       const Comp = panels[panelId].component
-      const node = document.getElementById(`${jsPanel.id}-node`)
+      const node = document.getElementById(`${panel.id}-node`)
       let counter = 0
       if (!Comp) return null
       return (
-        <CreatePortal rootNode={node} key={jsPanel.id as string}>
+        <CreatePortal rootNode={node} key={panel.id as string}>
           {Array.isArray(Comp) ? (
             Comp.map((C) => (
               <Suspense
-                key={`${jsPanel.id}-${counter++}`}
+                key={`${panel.id}-${counter++}`}
                 fallback={<div className='alert alert-info'>Loading...</div>}
               >
-                <C jsPanel={jsPanel} />
+                <C jsPanel={panel} />
               </Suspense>
             ))
           ) : (
             <Suspense
               fallback={<div className='alert alert-info'>Loading...</div>}
             >
-              <Comp jsPanel={jsPanel} />
+              <Comp panel={panel} />
             </Suspense>
           )}
         </CreatePortal>

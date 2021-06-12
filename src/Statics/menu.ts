@@ -7,18 +7,28 @@ export default {
     items: {
       Carros: {
         name: 'Carros',
-        screen: 'Register/Users',
+        screen: {
+          path: 'Register/Users',
+          id: 'regirster-users',
+          headerTitle: 'Carros',
+        },
         icon: 'drive-time',
       },
       Pecas: {
         icon: 'cog',
         name: 'Peças',
-        screen: 'HelloWorld2',
+        screen: {
+          id: 'HelloWorld2',
+          path: 'Register/Users',
+          headerTitle: 'Peças',
+        },
       },
       Funcionarios: {
         icon: 'person',
         name: 'Funcionarios',
-        screen: 'RegisterPeace',
+        screen: {
+        },
+        screenSize: '400px 300px',
       },
     },
   },

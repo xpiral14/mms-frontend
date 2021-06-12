@@ -1,6 +1,5 @@
 export default {
   Cadastro: {
-    // 0 <Popuver />
     name: 'Cadastro',
     isMain: true,
     icon: 'drive-time',

@@ -1,6 +1,5 @@
 export default {
   Cadastro: {
-    // 0 <Popuver />
     name: 'Cadastro',
     isMain: true,
     icon: 'drive-time',
@@ -19,6 +18,11 @@ export default {
         icon: 'person',
         name: 'Funcionarios',
         screen: 'RegisterPeace',
+      },
+      Clientes: {
+        icon: 'cog',
+        name: 'Clientes',
+        screen: 'Register/Costumer',
       },
     },
   },

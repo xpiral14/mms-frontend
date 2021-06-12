@@ -5,24 +5,36 @@ import CreatePortal from '../Components/createPortal'
 import jsPanelDefaultOptions from '../Config/jsPanelDefaultOptions'
 import { useAlert } from './useAlert'
 
+
+interface ContextPanelOptions extends PanelOptions {
+  id: string
+  path: string
+}
+
 type PanelObject = {
-  panel: Panel
+  panel: ContextPanelOptions
   component: any
 }
+
+
 export type PanelContext = {
   panels: {
-    [x: string]: PanelObject
+    [x: string]: {
+      panel: Panel
+      component: any
+    }
   }
   setPanels: React.Dispatch<
     React.SetStateAction<{
-      [x: string]: PanelObject
+      [x: string]: {
+        panel: Panel
+        component: any
+      }
     }>
   >
   addPanel: (
-    panelName: string,
-    componentPath: string,
-    isModal?: boolean | undefined,
-    options?: PanelOptions | undefined
+    panelOptions: ContextPanelOptions,
+    isModal?: boolean | undefined
   ) => void
 }
 
@@ -38,33 +50,39 @@ export const usePanel = () => {
   return context
 }
 jsPanel.ziBase = 4
+
 export default function PanelProvider({ children }: any) {
   const [panels, setPanels] = useState<{
     [x: string]: { panel: Panel; component: any }
   }>({})
   const { openAlert } = useAlert()
-  const addPanel = (action: string, componentPath: string, modal = false) => {
+
+  const addPanel = (
+    panelOptions: ContextPanelOptions,
+    modal = false
+  ) => {
     let Component: any
     try {
-      Component = lazy(() => import(`../Screens/${componentPath}`))
+      Component = lazy(() => import(`../Screens/${panelOptions.path}`))
     } catch (error) {
       return openAlert({ text: 'Tela inválida' })
     }
 
-    if (panels[action]) {
-      return panels[action].panel.front()
+    if (panels[panelOptions.id]) {
+      return panels[panelOptions.id].panel.front()
     }
 
     const options = {
       ...jsPanelDefaultOptions,
+      ...panelOptions,
       ziBase: 4,
-      id: action.replace(/ /g, '-').toLowerCase(),
-      headerTitle: action,
+      id: panelOptions.id.replace(/ /g, '-').toLowerCase(),
+      headerTitle: panelOptions.headerTitle,
       onclosed: () => {
         setPanels((prev) => {
           const appPanels = { ...prev }
-          if (appPanels[action]) {
-            delete appPanels[action]
+          if (appPanels[panelOptions.id]) {
+            delete appPanels[panelOptions.id]
           }
           return appPanels
         })
@@ -73,9 +91,10 @@ export default function PanelProvider({ children }: any) {
     const panel = modal
       ? jsPanel.modal.create(options)
       : jsPanel.create(options)
+
     setPanels((prev) => ({
       ...prev,
-      [action]: { panel, component: Component },
+      [panelOptions.id]: { panel, component: Component },
     }))
   }
 

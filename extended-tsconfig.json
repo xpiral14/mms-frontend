@@ -13,7 +13,8 @@
       "@Screens/*": ["./src/Screens/*"],
       "@Services/*": ["./src/Services/*"],
       "@Statics/*": ["./src/Statics/*"],
-      "@Styles/*": ["./src/Styles/*"]
+      "@Styles/*": ["./src/Styles/*"],
+      "@Constants/*": ["./src/Constants/*"]
     }
   }
 }

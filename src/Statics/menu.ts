@@ -25,14 +25,19 @@ export default {
       Funcionarios: {
         icon: 'person',
         name: 'Funcionarios',
-        screen: {
-        },
+        screen: {},
         screenSize: '400px 300px',
       },
       Clientes: {
         icon: 'cog',
         name: 'Clientes',
-        screen: 'Register/Costumer',
+        screen: {
+          id: 'register-costumer',
+          contentSize: '700px 350px',
+          icon: 'person',
+          headerTitle: 'Clientes',
+          path: 'Register/Costumer',
+        },
       },
     },
   },

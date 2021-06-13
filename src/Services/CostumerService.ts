@@ -1,9 +1,18 @@
 import api from '../Config/api'
 import Costumer from '../Contracts/Models/Costumer'
+import Paginated from '../Contracts/Models/Paginated'
 
 export default class CostumerService {
-  static DEFAULT_PATH = '/company/costumer'
+  // static DEFAULT_PATH = 
   static async create(costumerData: Costumer) {
-    return api.post(this.DEFAULT_PATH, costumerData)
+    return api.post('/company/costumer', costumerData)
+  }
+  static async getAll(page = 10, limit = 20) {
+    return api.get<Paginated<Costumer>>('/company/costumer', {
+      params: {
+        page,
+        limit,
+      },
+    })
   }
 }

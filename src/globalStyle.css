@@ -4,6 +4,16 @@
   margin: 0;
   padding: 0;
   outline: none;
+  -moz-outline: none;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+[aria-disabled='true'] {
+  opacity: 0.3;
 }
 .jsPanel{
   margin-top: 50px!important;

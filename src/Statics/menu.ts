@@ -5,28 +5,27 @@ export default {
     icon: 'drive-time',
     items: {
       Carros: {
+        icon: 'drive-time',
         name: 'Carros',
         screen: {
           path: 'Register/Users',
           id: 'regirster-users',
           headerTitle: 'Carros',
         },
-        icon: 'drive-time',
       },
       Pecas: {
         icon: 'cog',
         name: 'Peças',
         screen: {
-          id: 'HelloWorld2',
-          path: 'Register/Users',
+          id: 'register-parts',
+          path: 'Register/Parts',
           headerTitle: 'Peças',
         },
       },
       Funcionarios: {
         icon: 'person',
         name: 'Funcionarios',
-        screen: {
-        },
+        screen: {},
         screenSize: '400px 300px',
       },
     },

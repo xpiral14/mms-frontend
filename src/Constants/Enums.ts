@@ -12,3 +12,9 @@ export enum orderStatus {
   CANCELED = 'Cancelada',
   DELETED = 'Apagada',
 }
+
+export enum ScreenStatus {
+  VISUALIZE = 'visualize',
+  NEW = 'new',
+  EDIT = 'edit',
+}

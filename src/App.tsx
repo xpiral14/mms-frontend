@@ -7,6 +7,8 @@ import ScreenProvider from './Hooks/useScreen'
 import '@blueprintjs/core/lib/css/blueprint.css'
 import '@blueprintjs/icons/lib/css/blueprint-icons.css'
 import AlertContextProvider from './Hooks/useAlert'
+import './globalStyle.css'
+
 import Routes from './Routes'
 import AuthProvider from './Hooks/useAuth'
 import ToastContextProvider from './Hooks/useToast'

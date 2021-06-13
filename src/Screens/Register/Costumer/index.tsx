@@ -6,9 +6,12 @@ import {
   InputGroup,
   Intent,
 } from '@blueprintjs/core'
+import { EditableCell } from '@blueprintjs/table'
 import React from 'react'
+import PaginatedTable from '../../../Components/PaginatedTable'
 import ScreenProps from '../../../Contracts/Components/ScreenProps'
 import { useAlert } from '../../../Hooks/useAlert'
+import CostumerService from '../../../Services/CostumerService'
 
 const CostumerRegister: React.FC<ScreenProps> = () => {
   const { openAlert } = useAlert()
@@ -64,6 +67,33 @@ const CostumerRegister: React.FC<ScreenProps> = () => {
           />
         </FormGroup>
       </div>
+
+      <PaginatedTable
+        columns={[
+          {
+            id: 1,
+            name: 'Nome',
+            cellRenderer: (cell) => <EditableCell value = {cell.name} />
+          },
+          {
+            id: 1,
+            name: 'Nome',
+            keyName: 'cpf',
+            className: 'w-100'
+          },
+          {
+            id: 1,
+            name: 'Telefone',
+            keyName: 'phone',
+          },
+          {
+            id: 1,
+            name: 'Email',
+            keyName: 'email',
+          },
+        ]}
+        request={CostumerService.getAll}
+      />
     </div>
   )
 }

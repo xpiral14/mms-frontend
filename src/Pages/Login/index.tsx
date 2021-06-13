@@ -5,20 +5,29 @@ import { useForm } from 'react-hook-form'
 import AuthService from '../../Services/AuthService'
 import { useAuth } from '../../Hooks/useAuth'
 import { useHistory } from 'react-router-dom'
+import { useToast } from '../../Hooks/useToast'
 const LoginPage = () => {
   const history = useHistory()
   const { handleSubmit, register } = useForm()
   const { setAuth } = useAuth()
+  const { showToast } = useToast()
   const onSubmit = async ({ email, password }: any) => {
     try {
       const auth = await AuthService.login(email, password)
       localStorage.setItem('@auth', JSON.stringify(auth))
-      if (auth.user) {
+      if (auth) {
         setAuth(auth)
         history.push('/')
       }
     } catch (error) {
-      console.log(error)
+      if (error.response) {
+        error?.response?.data?.errors?.map((error: any) => {
+          showToast({
+            message: error.message,
+            intent: Intent.DANGER,
+          })
+        })
+      }
     }
   }
   return (

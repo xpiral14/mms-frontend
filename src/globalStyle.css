@@ -9,3 +9,6 @@
 .jspanel-title{
   font-family: Roboto, "Open-sans", Lato;
 }
+.jsPanel{
+  margin-top: 50px!important;
+}

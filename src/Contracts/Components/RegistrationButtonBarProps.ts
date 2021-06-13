@@ -1,5 +1,5 @@
 import { ButtonProps } from '@blueprintjs/core'
-import { ScreenStatus } from '@Constants/Enums'
+import { ScreenStatus } from '../../Constants/Enums'
 import React from 'react'
 
 export interface RegistrationButtonBarProps {

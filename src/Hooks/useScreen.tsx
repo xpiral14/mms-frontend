@@ -1,9 +1,17 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { createContext, lazy, Suspense, useContext, useState } from 'react'
+import {
+  createContext,
+  lazy,
+  Suspense,
+  useContext,
+  useEffect,
+  useState,
+} from 'react'
 import { jsPanel, Panel, PanelOptions } from 'jspanel4/es6module/jspanel'
 import CreatePortal from '../Components/createPortal'
 import jsPanelDefaultOptions from '../Config/jsPanelDefaultOptions'
 import { useAlert } from './useAlert'
+import { useAuth } from './useAuth'
 
 interface ContextPanelOptions extends PanelOptions {
   id: string
@@ -57,6 +65,17 @@ export default function ScreenProvider({ children }: any) {
   const [screens, setPanels] = useState<{
     [x: string]: ScreenObject
   }>({})
+
+  const { auth } = useAuth()
+
+  useEffect(() => {
+    if (!auth) {
+      Object.values(screens).forEach((screen) => {
+        screen.screen.close()
+      })
+    }
+  }, [auth])
+  
   const { openAlert } = useAlert()
 
   const openScreen = (

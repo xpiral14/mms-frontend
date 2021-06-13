@@ -27,7 +27,6 @@ const Route: FC<RouteProps> = ({
     const storageAuth = localStorage.getItem('@auth')
     if (!auth && storageAuth) {
       const expiresAt = new Date(JSON.parse(storageAuth).expires_at)
-      
       if (isBefore(new Date(), expiresAt)) {
         setAuth(JSON.parse(storageAuth))
       }

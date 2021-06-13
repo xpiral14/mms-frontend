@@ -21,11 +21,11 @@ const App = () => {
 export default () => (
   <ToastContextProvider>
     <AlertContextProvider>
-      <ScreenProvider>
-        <AuthProvider>
+      <AuthProvider>
+        <ScreenProvider>
           <App />
-        </AuthProvider>
-      </ScreenProvider>
+        </ScreenProvider>
+      </AuthProvider>
     </AlertContextProvider>
   </ToastContextProvider>
 )

@@ -1235,6 +1235,15 @@
     classnames "^2.2"
     tslib "~1.13.0"
 
+"@blueprintjs/select@^3.16.4":
+  version "3.16.4"
+  resolved "https://registry.yarnpkg.com/@blueprintjs/select/-/select-3.16.4.tgz#d7a2a082a6b243889d0a491bf6b6c8da7bbc6e1d"
+  integrity sha512-5zBnaiy+1lrOYZPZIYhfYqN9heJJwNpnT214X0jDYaWAOPt/S+v8L50c7JflwV0JEaMgavc/FVVpKEb2ojw88Q==
+  dependencies:
+    "@blueprintjs/core" "^3.45.0"
+    classnames "^2.2"
+    tslib "~1.13.0"
+
 "@blueprintjs/table@^3.8.33":
   version "3.8.33"
   resolved "https://registry.yarnpkg.com/@blueprintjs/table/-/table-3.8.33.tgz#55799878ac269602614423d898010a1591dd5bc8"
@@ -1968,6 +1977,13 @@
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/@types/react-input-mask/-/react-input-mask-3.0.0.tgz#e5e3f7ab53eff3b2190f6729823c905c36a84954"
   integrity sha512-W8I2GRt1wkFgEJJ4dleSCw1ly2lL+pW71OPkJSz6G93V77io4ulSSnZyiyCv3uljmQDOr94NMbNr5V5hfkMaUg==
+  dependencies:
+    "@types/react" "*"
+
+"@types/react-paginate@^7.1.0":
+  version "7.1.0"
+  resolved "https://registry.yarnpkg.com/@types/react-paginate/-/react-paginate-7.1.0.tgz#e209fe9735f0a68633c82c419ba238133b3b31a1"
+  integrity sha512-P6yboMnZtML4KyglK2p7Wlg+sIkhNUneES+jjFqPeQkjuM93X5QjhdKIW2Ayc7csVvx1pdC9v5R+hQ9KjcYBEQ==
   dependencies:
     "@types/react" "*"
 
@@ -9515,6 +9531,13 @@ react-number-format@^4.4.3:
   integrity sha512-9PNKWfLZVR4EMK9R1LkfXRmWqezSIeMOl7YFsuCcniZZxLiNxEX7ovvxZLXN8XNm6TGP8dZ31GnV5V64oDnkuA==
   dependencies:
     prop-types "^15.7.2"
+
+react-paginate@^7.1.3:
+  version "7.1.3"
+  resolved "https://registry.yarnpkg.com/react-paginate/-/react-paginate-7.1.3.tgz#51a2ccb13febc7f96d28405bdf6e029510227206"
+  integrity sha512-cHTXXE90Z3DlKSJiIQFzAcWoIFs9mq6r1/+rQF099NPvdJpbR8f6E/ES32tlUw4qe1R6qWLOrPZYhvAy4UgHLA==
+  dependencies:
+    prop-types "^15.6.1"
 
 react-popper@^1.3.7:
   version "1.3.11"

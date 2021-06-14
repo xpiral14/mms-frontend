@@ -22,6 +22,9 @@ body {
 .jsPanel {
   margin-top: 50px !important;
 }
+.jsPanel-content, .bp3-input {
+  font-size: .7rem!important;
+}
 
 .screen-container {
   padding: 5px;

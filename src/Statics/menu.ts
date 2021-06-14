@@ -1,6 +1,5 @@
 export default {
   Cadastro: {
-    // 0 <Popuver />
     name: 'Cadastro',
     isMain: true,
     icon: 'drive-time',
@@ -8,17 +7,26 @@ export default {
       Carros: {
         icon: 'drive-time',
         name: 'Carros',
-        screen: 'Register/Users',
+        screen: {
+          path: 'Register/Users',
+          id: 'regirster-users',
+          headerTitle: 'Carros',
+        },
       },
       Pecas: {
         icon: 'cog',
         name: 'Peças',
-        screen: 'Parts',
+        screen: {
+          id: 'HelloWorld2',
+          path: 'Register/Users',
+          headerTitle: 'Peças',
+        },
       },
       Funcionarios: {
         icon: 'person',
         name: 'Funcionarios',
-        screen: 'RegisterPeace',
+        screen: {},
+        screenSize: '400px 300px',
       },
     },
   },

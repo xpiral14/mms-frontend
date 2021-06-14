@@ -1,23 +1,49 @@
-import { Button, Intent } from '@blueprintjs/core'
-import React from 'react'
-import { useAlert } from '../../../Hooks/useAlert'
+import { Button } from '@blueprintjs/core'
+import React, { useEffect } from 'react'
+import { SubScreenProps } from '../../../Contracts/Components/ScreenProps'
+import { useScreen } from '../../../Hooks/useScreen'
+import { useToast } from '../../../Hooks/useToast'
+import OrderService from '../../../Services/OrderService'
 
-const Users = () => {
-  const { openAlert } = useAlert()
+interface UserProps extends SubScreenProps {
+  text?: string
+}
+
+const Users: React.FC<UserProps> = ({ parentScreen, screen, text }) => {
+  const { openSubScreen: openSubPanel } = useScreen()
+  const { showToast } = useToast()
+  const frontParent = () => parentScreen?.front()
+
+  useEffect(() => {
+    (async () => {
+      const response = await OrderService.getAll()
+      console.log(response)
+    })()
+  }, [])
   return (
     <div>
-      Tela de usuários
+      {text || 'Tela de usuários'}
       <Button
         text='Abrir alerta'
         onClick={() =>
-          openAlert({
-            canEscapeKeyCancel: true,
-            canOutsideClickCancel: true,
-            intent: Intent.DANGER,
-            text: 'alerta abrido',
-            confirmButtonText: 'Tem certeza po?',
-            cancelButtonText: 'Vai cancelar mesmo?',
-          })
+          parentScreen
+            ? frontParent()
+            : openSubPanel(
+              {
+                id: 'esse-e-um-sub-panel',
+                path: 'Register/Users',
+                headerTitle: 'Ola mundo',
+                callback: () => {
+                  showToast({
+                    message: 'Ola mundo abriu',
+                  })
+                },
+              },
+              screen.id,
+              {
+                text: 'teste teste',
+              }
+            )
         }
       />
     </div>

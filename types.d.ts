@@ -603,6 +603,11 @@ declare module 'jspanel4/es6module/jspanel' {
       updateCache?: boolean,
       callback?: FunctionWithPanelInMethod
     ): Panel
+
+    /**
+     * The `<div class="jsPanel-content">` element containing the panel content.
+     */
+    content: any
   }
 
   type JsPanel = {

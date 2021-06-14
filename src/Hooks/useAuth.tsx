@@ -4,8 +4,10 @@ import {
   FC,
   SetStateAction,
   useContext,
+  useEffect,
   useState,
 } from 'react'
+import api from '../Config/api'
 import { AUTH_LOCAL_STORAGE_KEY } from '../Constants'
 import Auth from '../Contracts/Models/Auth'
 
@@ -26,11 +28,17 @@ export const useAuth = () => {
 
 const AuthProvider: FC = ({ children }) => {
   const [auth, setAuth] = useState<Auth | null>(null)
-
   const logout = () => {
     setAuth(null)
     localStorage.removeItem(AUTH_LOCAL_STORAGE_KEY)
   }
+
+  useEffect(() => {
+    if (auth) {
+      api.defaults.headers.authorization = `${auth.type} ${auth.token}`
+    }
+  }, [auth])
+  
   return (
     <authContext.Provider value={{ auth: auth, setAuth: setAuth, logout }}>
       {children}

@@ -5,10 +5,12 @@ import {
   Cell,
   Column,
   ColumnLoadingOption,
+  ICellInterval,
+  IRegion,
   Table as BluePrintTable,
   TableLoadingOption,
 } from '@blueprintjs/table'
-import { Footer } from './style'
+import { Body, Container, Footer } from './style'
 import { Card, Classes, Icon } from '@blueprintjs/core'
 import { Select } from '@blueprintjs/select'
 import { useEffect, useState } from 'react'
@@ -19,9 +21,11 @@ const LimitSelect = Select.ofType<number>()
 const PaginatedTable: React.FC<PaginatedTableProps> = ({
   columns,
   request,
+  ...rest
 }) => {
   const [page, setPage] = useState(0)
   const [limit, setLimit] = useState(10)
+  const [selectedRegions, setselectedRegions] = useState<{cols: number[], rows: number[]}[]>([])
   const [response, setResponse] = useState<Paginated<any> | null>(null)
   const { showErrorToast } = useToast()
   const loadRequestData = async () => {
@@ -68,6 +72,12 @@ const PaginatedTable: React.FC<PaginatedTableProps> = ({
     pageCount: response?.meta.last_page || 0,
   } as ReactPaginateProps
 
+  useEffect(() => {
+    if(selectedRegions.length){
+      rest?.onRowSelect?.(response?.data[selectedRegions[0].rows[0]])
+    }
+
+  }, [selectedRegions])
   const renderColumns = () =>
     columns?.map((column) => (
       <Column
@@ -80,11 +90,26 @@ const PaginatedTable: React.FC<PaginatedTableProps> = ({
         }
       />
     ))
+
   return (
-    <div>
-      <BluePrintTable numRows={response?.data?.length || 0}>
-        {renderColumns()}
-      </BluePrintTable>
+    <Container>
+      <Body>
+        <BluePrintTable
+          selectedRegions={selectedRegions as IRegion[]}
+          onSelection={(s) => {
+            setselectedRegions([
+              {
+                cols: [0, (columns?.length || 1) - 1],
+                rows: s[0].rows as ICellInterval,
+              },
+            ])
+          }}
+          numRows={response?.data?.length}
+          {...rest}
+        >
+          {renderColumns()}
+        </BluePrintTable>
+      </Body>
       {Boolean(response?.meta) && (
         <Footer>
           <Card
@@ -112,7 +137,7 @@ const PaginatedTable: React.FC<PaginatedTableProps> = ({
           </Card>
         </Footer>
       )}
-    </div>
+    </Container>
   )
 }
 

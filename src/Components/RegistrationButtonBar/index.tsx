@@ -22,8 +22,7 @@ const BarContainer = styled.div`
 const RegistrationButtonBar: React.FC<RegistrationButtonBarProps> = (
   props
 ): JSX.Element => {
-  const { exitButton = true, status, setStatus } = props
-
+  const { exitButton = true, status, setStatus, screen } = props
   const handleNewButtonOnClick = () => {
     if (props?.handleNewButtonOnClick?.()) {
       props?.handleNewButtonOnClick()
@@ -34,14 +33,14 @@ const RegistrationButtonBar: React.FC<RegistrationButtonBarProps> = (
   }
 
   const handleSaveButtonOnClick = () => {
-    if (props?.handleSaveButtonOnClick?.()) {
+    if (props?.handleSaveButtonOnClick) {
       props?.handleSaveButtonOnClick()
       return
     }
   }
 
   const handleEditButtonOnClick = () => {
-    if (props?.handleEditButtonOnClick?.()) {
+    if (props?.handleEditButtonOnClick) {
       props?.handleEditButtonOnClick()
       return
     }
@@ -50,7 +49,7 @@ const RegistrationButtonBar: React.FC<RegistrationButtonBarProps> = (
   }
 
   const handleCancelButtonOnClick = () => {
-    if (props?.handleCancelButtonOnClick?.()) {
+    if (props?.handleCancelButtonOnClick) {
       props?.handleCancelButtonOnClick()
       return
     }
@@ -59,17 +58,19 @@ const RegistrationButtonBar: React.FC<RegistrationButtonBarProps> = (
   }
 
   const handleDeleteButtonOnClick = () => {
-    if (props?.handleDeleteButtonOnClick?.()) {
+    if (props?.handleDeleteButtonOnClick) {
       props?.handleDeleteButtonOnClick()
       return
     }
   }
 
   const handleExitButtonOnClick = () => {
-    if (props?.handleExitButtonOnClick?.()) {
+    if (props?.handleExitButtonOnClick) {
       props?.handleExitButtonOnClick()
       return
     }
+
+    screen?.close()
   }
 
   return (
@@ -121,7 +122,9 @@ const RegistrationButtonBar: React.FC<RegistrationButtonBarProps> = (
           icon='trash'
           intent={Intent.DANGER}
           onClick={handleDeleteButtonOnClick}
+          disabled ={status !== ScreenStatus.EDIT}
           {...(props?.buttonDeleteProps || {})}
+
         >
           Excluir
         </Button>

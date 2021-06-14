@@ -17,8 +17,8 @@ export default {
         icon: 'cog',
         name: 'Peças',
         screen: {
-          id: 'HelloWorld2',
-          path: 'Register/Users',
+          id: 'register-parts',
+          path: 'Register/Parts',
           headerTitle: 'Peças',
         },
       },

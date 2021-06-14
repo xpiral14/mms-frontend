@@ -19,18 +19,18 @@ const InputText = React.forwardRef<HTMLInputElement, InputProps>(
             disabled={props.disabled}
             ref={ref as any}
             mask={props.mask}
-            id={props.id}
             placeholder={props.placeholder}
             className={Classes.INPUT}
+            {...props}
           />
         ) : (
           <input
             defaultValue={props.defaultValue}
             disabled={props.disabled}
             ref={ref}
-            id={props.id}
             placeholder={props.placeholder}
             className={Classes.INPUT}
+            {...props}
           />
         )}
       </FormGroup>

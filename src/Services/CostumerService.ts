@@ -7,11 +7,12 @@ export default class CostumerService {
   static async create(costumerData: Costumer) {
     return api.post('/company/costumer', costumerData)
   }
-  static async getAll(page = 10, limit = 20) {
+  static async getAll(page = 10, limit = 20, query?: Costumer) {
     return api.get<Paginated<Costumer>>('/company/costumer', {
       params: {
         page,
         limit,
+        ...query
       },
     })
   }

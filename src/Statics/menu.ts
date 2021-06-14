@@ -28,6 +28,17 @@ export default {
         screen: {},
         screenSize: '400px 300px',
       },
+      Clientes: {
+        icon: 'cog',
+        name: 'Clientes',
+        screen: {
+          id: 'register-costumer',
+          contentSize: '700px 350px',
+          icon: 'person',
+          headerTitle: 'Clientes',
+          path: 'Register/Costumer',
+        },
+      },
     },
   },
   Relatorios: {

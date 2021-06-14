@@ -15,6 +15,50 @@ body {
 [aria-disabled='true'] {
   opacity: 0.3;
 }
-.jsPanel{
-  margin-top: 50px!important;
+
+.jspanel-title {
+  font-family: Roboto, 'Open-sans', Lato;
+}
+.jsPanel {
+  margin-top: 50px !important;
+}
+.jsPanel-content, .bp3-input {
+  font-size: .7rem!important;
+}
+
+.screen-container {
+  padding: 5px;
+}
+
+.flex {
+  display: flex;
+  gap: 5px;
+}
+
+mt-1 {
+  margin-top: 5px;
+}
+m-center {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+list-none {
+  list-style-type: none;
+}
+
+w-100 {
+  width: 100%;
+}
+
+w-75 {
+  width: 75%;
+}
+
+w-50 {
+  width: 50%;
+}
+
+w-25 {
+  width: 25%;
 }

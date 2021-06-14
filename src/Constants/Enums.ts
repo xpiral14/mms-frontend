@@ -18,3 +18,8 @@ export enum ScreenStatus {
   NEW = 'new',
   EDIT = 'edit',
 }
+
+export enum PersonType {
+  LEGAL  = 'JURIDICA',
+  PHYSICAL = 'FISICA' 
+}

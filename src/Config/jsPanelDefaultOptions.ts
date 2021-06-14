@@ -9,10 +9,10 @@ export default {
     const div = document.createElement('div')
     const newId = `${panel.id}-node`
     div.id = newId
+    div.classList.add('screen-container')
     panel.content.append(div)
   },
   onclosed: () => {},
-  closeOnEscape: true,
   borderRadius: '3px',
   iconfont: 'material-icons',
 }

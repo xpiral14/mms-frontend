@@ -1,14 +1,11 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { PaginatedTableProps } from '../../Contracts/Components/PaginatadeTable'
 import Paginate, { ReactPaginateProps } from 'react-paginate'
 import {
   Cell,
   Column,
-  ColumnLoadingOption,
   ICellInterval,
   IRegion,
   Table as BluePrintTable,
-  TableLoadingOption,
 } from '@blueprintjs/table'
 import { Body, Container, Footer } from './style'
 import { Card, Classes, Icon } from '@blueprintjs/core'

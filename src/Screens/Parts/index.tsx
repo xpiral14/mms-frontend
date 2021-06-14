@@ -1,4 +1,4 @@
-import { ScreenStatus } from '@Constants/Enums'
+import { ScreenStatus } from '../../Constants/Enums'
 import React, { useState } from 'react'
 import RegistrationButtonBar from '../../Components/RegistrationButtonBar'
 

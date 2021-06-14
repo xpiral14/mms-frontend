@@ -5,6 +5,7 @@ import {
   Column,
   ICellInterval,
   IRegion,
+  SelectionModes,
   Table as BluePrintTable,
 } from '@blueprintjs/table'
 import { Body, Container, Footer } from './style'
@@ -13,6 +14,7 @@ import { Select } from '@blueprintjs/select'
 import { useEffect, useState } from 'react'
 import Paginated from '../../Contracts/Models/Paginated'
 import { useToast } from '../../Hooks/useToast'
+import debounce from '../../Util/debounce'
 
 const LimitSelect = Select.ofType<number>()
 const PaginatedTable: React.FC<PaginatedTableProps> = ({
@@ -22,7 +24,9 @@ const PaginatedTable: React.FC<PaginatedTableProps> = ({
 }) => {
   const [page, setPage] = useState(0)
   const [limit, setLimit] = useState(10)
-  const [selectedRegions, setselectedRegions] = useState<{cols: number[], rows: number[]}[]>([])
+  const [selectedRegions, setselectedRegions] = useState<
+    { cols: number[]; rows: number[] }[]
+  >([])
   const [response, setResponse] = useState<Paginated<any> | null>(null)
   const { showErrorToast } = useToast()
   const loadRequestData = async () => {
@@ -35,13 +39,13 @@ const PaginatedTable: React.FC<PaginatedTableProps> = ({
       })
     }
   }
+  const debounceRequest = debounce(loadRequestData, 300)
 
   useEffect(() => {
     if (page !== null) {
-      loadRequestData()
+      debounceRequest()
     }
   }, [page])
-
   const defaultCellRenderer = (key?: string) => (rowIndex: number) =>
     (
       <Cell style={{ width: '100%' }}>
@@ -70,10 +74,9 @@ const PaginatedTable: React.FC<PaginatedTableProps> = ({
   } as ReactPaginateProps
 
   useEffect(() => {
-    if(selectedRegions.length){
+    if (selectedRegions.length) {
       rest?.onRowSelect?.(response?.data[selectedRegions[0].rows[0]])
     }
-
   }, [selectedRegions])
   const renderColumns = () =>
     columns?.map((column) => (
@@ -89,11 +92,14 @@ const PaginatedTable: React.FC<PaginatedTableProps> = ({
     ))
 
   return (
-    <Container>
+    <Container style={{ width: '100%' }} {...rest?.containerProps}>
       <Body>
         <BluePrintTable
+        
+          selectionModes={SelectionModes.ROWS_AND_CELLS}
           selectedRegions={selectedRegions as IRegion[]}
           onSelection={(s) => {
+            if (!s.length) return
             setselectedRegions([
               {
                 cols: [0, (columns?.length || 1) - 1],

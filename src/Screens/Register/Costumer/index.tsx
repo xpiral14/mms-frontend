@@ -74,9 +74,10 @@ const CostumerRegister: React.FC<ScreenProps> = ({ screen }) => {
             disabled={isStatusVizualize()}
           />
           <InputText
+            key={selectedCostumer?.phone}
             defaultValue={selectedCostumer?.phone}
             id='phone'
-            // mask='(99) 99999-9999'
+            mask='(99) 99999-9999'
             label='Telefone'
             placeholder='Digite o Telefone do cliente'
             disabled={isStatusVizualize()}

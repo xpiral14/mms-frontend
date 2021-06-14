@@ -1,7 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 import { Button, ButtonGroup, Intent, Icon } from '@blueprintjs/core'
-import { RegistrationButtonBarProps } from '@Contracts/Components/RegistrationButtonBarProps'
+import { RegistrationButtonBarProps } from '../../Contracts/Components/RegistrationButtonBarProps'
 import { ScreenStatus } from '../../Constants/Enums'
 
 const BarContainer = styled.div`

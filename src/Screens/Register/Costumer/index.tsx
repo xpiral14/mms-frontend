@@ -85,6 +85,13 @@ const CostumerRegister: React.FC<ScreenProps> = ({ screen }) => {
         </form>
 
         <PaginatedTable
+          containerProps={{
+            style: {
+              height: '200px',
+              maxHeight: '100px',
+              overflowY: 'scrool',
+            },
+          }}
           columns={[
             {
               id: 1,
@@ -107,7 +114,7 @@ const CostumerRegister: React.FC<ScreenProps> = ({ screen }) => {
               keyName: 'email',
             },
           ]}
-          request={CostumerService.getAll}
+          request={CostumerService.getAll as any}
           onRowSelect={(row) => {
             console.log(row)
             setSelectedCostumer(row)

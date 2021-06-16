@@ -15,6 +15,7 @@ import { useEffect, useState } from 'react'
 import Paginated from '../../Contracts/Models/Paginated'
 import { useToast } from '../../Hooks/useToast'
 import debounce from '../../Util/debounce'
+import { useGrid } from '../../Hooks/useGrid'
 
 const LimitSelect = Select.ofType<number>()
 const PaginatedTable: React.FC<PaginatedTableProps> = ({
@@ -22,6 +23,7 @@ const PaginatedTable: React.FC<PaginatedTableProps> = ({
   request,
   ...rest
 }) => {
+  const { reloadGrid, setReloadGrid } = useGrid()
   const [page, setPage] = useState(0)
   const [limit, setLimit] = useState(10)
   const [selectedRegions, setselectedRegions] = useState<
@@ -29,10 +31,12 @@ const PaginatedTable: React.FC<PaginatedTableProps> = ({
   >([])
   const [response, setResponse] = useState<Paginated<any> | null>(null)
   const { showErrorToast } = useToast()
+
   const loadRequestData = async () => {
     try {
       const response = await request(page + 1, limit)
       setResponse(response.data)
+      setReloadGrid(false)
     } catch (error) {
       showErrorToast({
         message: 'Erro ao obter dados',
@@ -42,10 +46,10 @@ const PaginatedTable: React.FC<PaginatedTableProps> = ({
   const debounceRequest = debounce(loadRequestData, 300)
 
   useEffect(() => {
-    if (page !== null) {
+    if (page !== null || reloadGrid) {
       debounceRequest()
     }
-  }, [page])
+  }, [page, reloadGrid])
   const defaultCellRenderer = (key?: string) => (rowIndex: number) =>
     (
       <Cell style={{ width: '100%' }}>
@@ -95,7 +99,6 @@ const PaginatedTable: React.FC<PaginatedTableProps> = ({
     <Container style={{ width: '100%' }} {...rest?.containerProps}>
       <Body>
         <BluePrintTable
-        
           selectionModes={SelectionModes.ROWS_AND_CELLS}
           selectedRegions={selectedRegions as IRegion[]}
           onSelection={(s) => {

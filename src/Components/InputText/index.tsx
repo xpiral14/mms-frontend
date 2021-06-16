@@ -4,7 +4,6 @@ import React from 'react'
 import { InputProps } from '../../Contracts/Components/InputProps'
 
 const InputText: React.FC<InputProps> = (props) => {
-  console.log('aqui')
   return (
     <FormGroup
       label={props.label}
@@ -15,13 +14,14 @@ const InputText: React.FC<InputProps> = (props) => {
     >
       {props.mask ? (
         <InputMask
-          value={props.value}
-          disabled={props.disabled}
           mask={props.mask}
-          placeholder={props.placeholder}
-          className={Classes.INPUT}
-          {...(props as any)}
-        />
+          value={props.value}
+          onChange={props.onChange}
+        >
+          {(inputProps: any) => (
+            <input {...inputProps} className={Classes.INPUT} />
+          )}
+        </InputMask>
       ) : (
         <input
           value={props.value}

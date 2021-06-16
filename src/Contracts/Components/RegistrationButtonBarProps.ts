@@ -1,12 +1,9 @@
 import { ButtonProps } from '@blueprintjs/core'
-import { ScreenStatus } from '../../Constants/Enums'
 import React from 'react'
 import { Screen } from './ScreenProps'
 
 export interface RegistrationButtonBarProps {
   exitButton?: boolean
-  status: ScreenStatus
-  setStatus: React.Dispatch<React.SetStateAction<ScreenStatus>>
   buttonNewProps?: ButtonProps
   buttonSaveProps?: ButtonProps
   buttonEditProps?: ButtonProps

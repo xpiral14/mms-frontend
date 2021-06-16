@@ -1,8 +1,9 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 import styled from 'styled-components'
 import { Button, ButtonGroup, Intent, Icon } from '@blueprintjs/core'
 import { RegistrationButtonBarProps } from '../../Contracts/Components/RegistrationButtonBarProps'
 import { ScreenStatus } from '../../Constants/Enums'
+import { useWindow } from '../../Hooks/useWindow'
 
 const BarContainer = styled.div`
   background-color: #ebf1f5;
@@ -22,14 +23,15 @@ const BarContainer = styled.div`
 const RegistrationButtonBar: React.FC<RegistrationButtonBarProps> = (
   props
 ): JSX.Element => {
-  const { exitButton = true, status, setStatus, screen } = props
+  const { screenStatus, setScreenStatus, payload, setPayload } = useWindow()
+  const { exitButton = true, screen } = props
   const handleNewButtonOnClick = () => {
     if (props?.handleNewButtonOnClick?.()) {
       props?.handleNewButtonOnClick()
       return
     }
-
-    setStatus(ScreenStatus.NEW)
+    setPayload?.({})
+    setScreenStatus(ScreenStatus.NEW)
   }
 
   const handleSaveButtonOnClick = () => {
@@ -44,8 +46,7 @@ const RegistrationButtonBar: React.FC<RegistrationButtonBarProps> = (
       props?.handleEditButtonOnClick()
       return
     }
-
-    setStatus(ScreenStatus.EDIT)
+    setScreenStatus(ScreenStatus.EDIT)
   }
 
   const handleCancelButtonOnClick = () => {
@@ -53,8 +54,8 @@ const RegistrationButtonBar: React.FC<RegistrationButtonBarProps> = (
       props?.handleCancelButtonOnClick()
       return
     }
-
-    setStatus(ScreenStatus.VISUALIZE)
+    setPayload?.({})
+    setScreenStatus(ScreenStatus.VISUALIZE)
   }
 
   const handleDeleteButtonOnClick = () => {
@@ -73,13 +74,20 @@ const RegistrationButtonBar: React.FC<RegistrationButtonBarProps> = (
     screen?.close()
   }
 
+  const hasPayload = useMemo(
+    () => Boolean(Object.keys(payload || {}).length),
+    [payload]
+  )
   return (
     <BarContainer>
       <ButtonGroup>
         <Button
           icon='add'
           intent={Intent.PRIMARY}
-          disabled={status === ScreenStatus.EDIT || status === ScreenStatus.NEW}
+          disabled={
+            screenStatus === ScreenStatus.EDIT ||
+            screenStatus === ScreenStatus.NEW
+          }
           onClick={handleNewButtonOnClick}
         >
           Novo
@@ -88,7 +96,7 @@ const RegistrationButtonBar: React.FC<RegistrationButtonBarProps> = (
         <Button
           icon='floppy-disk'
           intent={Intent.SUCCESS}
-          disabled={status === ScreenStatus.VISUALIZE}
+          disabled={screenStatus === ScreenStatus.VISUALIZE}
           onClick={handleSaveButtonOnClick}
         >
           Salvar
@@ -99,11 +107,11 @@ const RegistrationButtonBar: React.FC<RegistrationButtonBarProps> = (
             <Icon
               icon='disable'
               color='#ff0000'
-              aria-disabled={status === ScreenStatus.VISUALIZE}
+              aria-disabled={screenStatus === ScreenStatus.VISUALIZE}
             />
           }
           outlined
-          disabled={status === ScreenStatus.VISUALIZE}
+          disabled={screenStatus === ScreenStatus.VISUALIZE}
           onClick={handleCancelButtonOnClick}
         >
           Cancelar
@@ -112,7 +120,11 @@ const RegistrationButtonBar: React.FC<RegistrationButtonBarProps> = (
         <Button
           icon='edit'
           outlined
-          disabled={status === ScreenStatus.NEW || status === ScreenStatus.EDIT}
+          disabled={
+            screenStatus === ScreenStatus.NEW ||
+            screenStatus === ScreenStatus.EDIT ||
+            !hasPayload
+          }
           onClick={handleEditButtonOnClick}
         >
           Editar
@@ -122,9 +134,8 @@ const RegistrationButtonBar: React.FC<RegistrationButtonBarProps> = (
           icon='trash'
           intent={Intent.DANGER}
           onClick={handleDeleteButtonOnClick}
-          disabled ={status !== ScreenStatus.EDIT}
+          disabled={!hasPayload && screenStatus !== ScreenStatus.NEW}
           {...(props?.buttonDeleteProps || {})}
-
         >
           Excluir
         </Button>

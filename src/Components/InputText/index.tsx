@@ -3,39 +3,36 @@ import InputMask from 'react-input-mask'
 import React from 'react'
 import { InputProps } from '../../Contracts/Components/InputProps'
 
-const InputText = React.forwardRef<HTMLInputElement, InputProps>(
-  (props, ref) => {
-    return (
-      <FormGroup
-        label={props.label}
-        labelInfo={props.required && '*'}
-        disabled={props.disabled}
-        intent={props.itent}
-        labelFor={props.id}
-      >
-        {props.mask ? (
-          <InputMask
-            defaultValue={props.defaultValue}
-            disabled={props.disabled}
-            ref={ref as any}
-            mask={props.mask}
-            placeholder={props.placeholder}
-            className={Classes.INPUT}
-            {...props}
-          />
-        ) : (
-          <input
-            defaultValue={props.defaultValue}
-            disabled={props.disabled}
-            ref={ref}
-            placeholder={props.placeholder}
-            className={Classes.INPUT}
-            {...props}
-          />
-        )}
-      </FormGroup>
-    )
-  }
-)
+const InputText: React.FC<InputProps> = (props) => {
+  return (
+    <FormGroup
+      label={props.label}
+      labelInfo={props.required && '*'}
+      disabled={props.disabled}
+      intent={props.itent}
+      labelFor={props.id}
+    >
+      {props.mask ? (
+        <InputMask
+          mask={props.mask}
+          value={props.value}
+          onChange={props.onChange}
+        >
+          {(inputProps: any) => (
+            <input {...inputProps} className={Classes.INPUT} />
+          )}
+        </InputMask>
+      ) : (
+        <input
+          value={props.value}
+          disabled={props.disabled}
+          placeholder={props.placeholder}
+          className={Classes.INPUT}
+          {...(props as any)}
+        />
+      )}
+    </FormGroup>
+  )
+}
 
 export default InputText

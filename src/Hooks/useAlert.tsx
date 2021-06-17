@@ -3,7 +3,7 @@ import { Alert, AlertProps } from '@blueprintjs/core'
 
 export interface AlertContextProps {
   openAlert: (
-    alertProps: Omit<AlertProps, 'isOpen'> & { text: string }
+    alertProps: Omit<AlertProps, 'isOpen'> & { text: React.ReactNode }
   ) => string
   closeAlert: (alertId: string) => void
 }
@@ -15,12 +15,12 @@ export const useAlert = () => {
 
 const AlertContextProvider: React.FC<any> = ({ children }) => {
   const [alerts, setAlerts] = useState<
-    (Omit<AlertProps, 'isOpen'> & { id: string; text: string })[]
+    (Omit<AlertProps, 'isOpen'> & { id: string; text: React.ReactNode })[]
       >([])
   const [openedAlerts, setOpenedAlerts] = useState<{ [x: string]: boolean }>({})
 
   const openAlert = (
-    alertProps: Omit<AlertProps, 'isOpen'> & { text: string }
+    alertProps: Omit<AlertProps, 'isOpen'> & { text: React.ReactNode }
   ) => {
     const alertId = (Math.random() * 1243).toString()
 

@@ -4,14 +4,16 @@ export const Container = styled.main``
 
 export const Header = styled.section``
 export const Body = styled.section`
-  display: flex;
   flex-direction: column;
-
   justify-content: space-between;
   margin-top: 5px;
-  form {
-    flex-wrap: wrap;
+  &,
+  > div {
     display: flex;
     gap: 10px;
+  }
+
+  > div {
+    flex-wrap: wrap;
   }
 `

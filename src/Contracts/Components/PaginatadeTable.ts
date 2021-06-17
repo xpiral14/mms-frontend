@@ -10,11 +10,15 @@ interface ColumnProps extends BlueprintColumnProps {
   cellRenderer?: (cell: any) => any
 }
 export interface PaginatedTableProps extends TableProps {
-  columns?: (ColumnProps & { keyName?: string })[]
+  containerProps?: any
+  columns?: (ColumnProps & {
+    keyName?: string
+    formatText?: (column: string) => React.ReactNode
+  })[]
   request: (
     page: number,
     limit: number,
-    query?: { [x: string]: any }
+    query?: object
   ) => Promise<AxiosResponse<Paginated<any>>>
   onRowSelect?: (row: any) => void
 }

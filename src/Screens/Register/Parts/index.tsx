@@ -1,5 +1,4 @@
-import { ScreenStatus } from '../../../Constants/Enums'
-import React, { useState } from 'react'
+import React from 'react'
 import RegistrationButtonBar from '../../../Components/RegistrationButtonBar'
 import InputText from '../../../Components/InputText'
 import { Container, Header, Body, styles } from './style'
@@ -8,16 +7,10 @@ import PartsService from '../../../Services/PartsService'
 import ScreenProps from '../../../Contracts/Components/ScreenProps'
 
 const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
-  const [status, setStatus] = useState<ScreenStatus>(ScreenStatus.VISUALIZE)
-
   return (
     <Container>
       <Header>
-        <RegistrationButtonBar
-          status={status}
-          setStatus={setStatus}
-          screen={screen}
-        />
+        <RegistrationButtonBar screen={screen} />
       </Header>
 
       <Body>

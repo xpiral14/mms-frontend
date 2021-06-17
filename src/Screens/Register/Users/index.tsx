@@ -16,8 +16,7 @@ const Users: React.FC<UserProps> = ({ parentScreen, screen, text }) => {
 
   useEffect(() => {
     (async () => {
-      const response = await OrderService.getAll()
-      console.log(response)
+      await OrderService.getAll()
     })()
   }, [])
   return (

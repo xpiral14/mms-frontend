@@ -10,12 +10,10 @@ class CreatePortal extends React.Component<any, any> {
 
   componentDidMount() {
     this.props.rootNode.appendChild(this.el)
-    // console.log(`Portal mounted, rootNode: ${this.props.rootNode.id}`);
   }
 
   componentWillUnmount() {
     this.props.rootNode.removeChild(this.el)
-    // console.log(`Portal unmounted, rootNode: ${this.props.rootNode.id}`);
   }
 
   render() {

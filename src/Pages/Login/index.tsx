@@ -1,5 +1,5 @@
 import { Button, Card, Classes, FormGroup, Intent } from '@blueprintjs/core'
-import React from 'react'
+import React, { useState } from 'react'
 import { Container } from './style'
 import { useForm } from 'react-hook-form'
 import AuthService from '../../Services/AuthService'
@@ -8,11 +8,14 @@ import { useHistory } from 'react-router-dom'
 import { useToast } from '../../Hooks/useToast'
 const LoginPage = () => {
   const history = useHistory()
+  const [loading, setLoading] = useState(false)
   const { handleSubmit, register } = useForm()
   const { setAuth } = useAuth()
-  const { showToast } = useToast()
+  const { showToast, showErrorToast } = useToast()
+
   const onSubmit = async ({ email, password }: any) => {
     try {
+      setLoading(true)
       const auth = await AuthService.login(email, password)
       localStorage.setItem('@auth', JSON.stringify(auth))
       if (auth) {
@@ -27,15 +30,29 @@ const LoginPage = () => {
             intent: Intent.DANGER,
           })
         })
+      } else {
+        showErrorToast({
+          message:
+            'Houve um problema ao tentar se autenticar, recarregue e tente novamente. Caso o problema persista entra em contato com o suporte',
+        })
       }
+    } finally {
+      setLoading(false)
     }
   }
+
+
+
   return (
     <Container>
-      <Card>
+      <Card style = {{
+        width: '100%',
+        maxWidth: '400px'
+      }}>
         <form onSubmit={handleSubmit(onSubmit)}>
           <FormGroup label='Email' labelFor='login-input' labelInfo='*'>
             <input
+              style={{width: '100%'}}
               className={Classes.INPUT}
               type='email'
               placeholder='Digite seu email'
@@ -45,6 +62,7 @@ const LoginPage = () => {
           </FormGroup>
           <FormGroup label='Senha' labelFor='login-input' labelInfo='*'>
             <input
+              style={{width: '100%'}}
               className={Classes.INPUT}
               type='password'
               placeholder='Digite a sua senha'
@@ -53,7 +71,17 @@ const LoginPage = () => {
             />
           </FormGroup>
 
-          <Button intent={Intent.SUCCESS} text='Entrar' type='submit' />
+          <Button
+            style={
+              {
+                width: '100%'
+              }
+            }
+            loading={loading}
+            intent={Intent.SUCCESS}
+            text='Entrar'
+            type='submit'
+          />
         </form>
       </Card>
     </Container>

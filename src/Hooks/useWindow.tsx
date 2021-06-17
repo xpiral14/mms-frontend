@@ -6,13 +6,17 @@ type WindowContext<P = any> = {
   setPayload: React.Dispatch<React.SetStateAction<P>>
   screenStatus: ScreenStatus
   setScreenStatus: React.Dispatch<React.SetStateAction<ScreenStatus>>
+  tabs?: { [x: string]: string }
+  setTabs?: React.Dispatch<React.SetStateAction<{ [x: string]: string }>>
+  activeTab?: string
+  setActiveTab?: React.Dispatch<React.SetStateAction<string>>
 }
 
 const windowContext = createContext<WindowContext>(null as any)
 
-export function useWindow<C = any>() {
-  const context = useContext<WindowContext<C>>(
-    windowContext as Context<WindowContext<C>>
+export function useWindow<P = Partial<any>>() {
+  const context = useContext<WindowContext<Partial<P>>>(
+    windowContext as Context<WindowContext<Partial<P>>>
   )
 
   if (!context) {

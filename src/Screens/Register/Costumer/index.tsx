@@ -1,6 +1,5 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Intent } from '@blueprintjs/core'
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import InputText from '../../../Components/InputText'
 import PaginatedTable from '../../../Components/PaginatedTable'
 import RadioGroup from '../../../Components/RadioGroup'
@@ -8,10 +7,12 @@ import RegistrationButtonBar from '../../../Components/RegistrationButtonBar'
 import { PersonType, ScreenStatus } from '../../../Constants/Enums'
 import { RegistrationButtonBarProps } from '../../../Contracts/Components/RegistrationButtonBarProps'
 import ScreenProps from '../../../Contracts/Components/ScreenProps'
+import { Validation } from '../../../Contracts/hooks/useValidation'
 import Costumer from '../../../Contracts/Models/Costumer'
 import { useAlert } from '../../../Hooks/useAlert'
 import { useGrid } from '../../../Hooks/useGrid'
 import { useToast } from '../../../Hooks/useToast'
+import useValidation from '../../../Hooks/useValidation'
 import { useWindow } from '../../../Hooks/useWindow'
 import CostumerService from '../../../Services/CostumerService'
 import { Container, Header, Body } from './style'
@@ -20,10 +21,12 @@ const personTypesOptions = [
   {
     value: PersonType.PHYSICAL,
     label: 'Física',
+    id: PersonType.PHYSICAL,
   },
   {
     value: PersonType.LEGAL,
     label: 'Jurídica',
+    id: PersonType.LEGAL,
   },
 ]
 
@@ -31,8 +34,29 @@ const CostumerRegister: React.FC<ScreenProps> = ({ screen }) => {
   const { payload, setPayload, screenStatus, setScreenStatus } =
     useWindow<Costumer>()
 
+  const createValidation = (keyName: any) => () =>
+    Boolean((payload as any)[keyName])
+
+  const validations: Validation[] = [
+    {
+      check: createValidation('personType'),
+      errorMessage: 'O tipo de pessoa é obrigatório',
+      inputId: PersonType.PHYSICAL,
+    },
+    {
+      check: createValidation('name'),
+      errorMessage: 'O nome é obrigatório',
+      inputId: 'name',
+    },
+    {
+      check: createValidation('phone'),
+      errorMessage: 'O telefone é obrigatório',
+      inputId: 'phone',
+    },
+  ]
+  const { validate } = useValidation(validations)
   const { setReloadGrid } = useGrid()
-  const { showErrorToast, showSuccessToast } = useToast()
+  const { showSuccessToast } = useToast()
   const { openAlert } = useAlert()
 
   const isStatusVizualize = () => screenStatus === ScreenStatus.VISUALIZE
@@ -52,13 +76,15 @@ const CostumerRegister: React.FC<ScreenProps> = ({ screen }) => {
   }
 
   const createCostumer = async () => {
+    if (!validate()) {
+      return
+    }
     try {
       const createPayload = {
         ...payload,
         phone: payload.phone?.replace(/[^0-9]/g, ''),
       }
       const response = await CostumerService.create(createPayload)
-
       if (response.status) {
         showSuccessToast({
           message: 'Cliente criado com sucesso',
@@ -178,6 +204,7 @@ const CostumerRegister: React.FC<ScreenProps> = ({ screen }) => {
       <Body>
         <div>
           <RadioGroup
+            id='personTypes'
             selectedValue={payload.personType}
             label='Tipo de pessoa'
             inline

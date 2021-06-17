@@ -194,7 +194,6 @@ const CostumerRegister: React.FC<ScreenProps> = ({ screen }) => {
             }
           />
         </div>
-        {console.log(payload.personType)}
         <div>
           {Boolean(payload.personType) &&
             (payload.personType === PersonType.PHYSICAL ? (

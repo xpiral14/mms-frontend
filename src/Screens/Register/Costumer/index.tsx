@@ -29,13 +29,12 @@ const personTypesOptions = [
 
 const CostumerRegister: React.FC<ScreenProps> = ({ screen }) => {
   const { payload, setPayload, screenStatus, setScreenStatus } =
-    useWindow<Partial<Costumer>>()
+    useWindow<Costumer>()
+
   const { setReloadGrid } = useGrid()
   const { showErrorToast, showSuccessToast } = useToast()
   const { openAlert } = useAlert()
 
-  const isStatusCreate = () => screenStatus === ScreenStatus.NEW
-  const isStatusEdit = () => screenStatus === ScreenStatus.EDIT
   const isStatusVizualize = () => screenStatus === ScreenStatus.VISUALIZE
 
   const getErrorMessages = (errors?: any[], defaultMessage?: string) => {

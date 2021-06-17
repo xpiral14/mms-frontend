@@ -50,6 +50,7 @@ const AuthProvider: FC = ({ children }) => {
             })
             logout()
           }
+          throw error
         }
       )
     }

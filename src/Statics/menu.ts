@@ -4,15 +4,6 @@ export default {
     isMain: true,
     icon: 'drive-time',
     items: {
-      Carros: {
-        icon: 'drive-time',
-        name: 'Carros',
-        screen: {
-          path: 'Register/Users',
-          id: 'regirster-users',
-          headerTitle: 'Carros',
-        },
-      },
       Pecas: {
         icon: 'cog',
         name: 'Peças',
@@ -21,12 +12,6 @@ export default {
           path: 'Register/Parts',
           headerTitle: 'Peças',
         },
-      },
-      Funcionarios: {
-        icon: 'person',
-        name: 'Funcionarios',
-        screen: {},
-        screenSize: '400px 300px',
       },
       Clientes: {
         icon: 'cog',

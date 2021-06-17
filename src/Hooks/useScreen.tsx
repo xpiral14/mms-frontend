@@ -12,6 +12,8 @@ import CreatePortal from '../Components/createPortal'
 import jsPanelDefaultOptions from '../Config/jsPanelDefaultOptions'
 import { useAlert } from './useAlert'
 import { useAuth } from './useAuth'
+import GridProvider from './useGrid'
+import WindowContextProvider from './useWindow'
 
 interface ContextPanelOptions extends PanelOptions {
   id: string
@@ -75,7 +77,7 @@ export default function ScreenProvider({ children }: any) {
       })
     }
   }, [auth])
-  
+
   const { openAlert } = useAlert()
 
   const openScreen = (
@@ -138,42 +140,48 @@ export default function ScreenProvider({ children }: any) {
       if (!Comp) return null
       return (
         <CreatePortal rootNode={node} key={screen.id as string}>
-          {Array.isArray(Comp) ? (
-            Comp.map((C) => (
-              <Suspense
-                key={screen.id as string}
-                fallback={<div className='alert alert-info'>Loading...</div>}
-              >
-                <C
-                  screen={screen}
-                  {...{
-                    ...componentProps,
-                    ...(parentScreen
-                      ? {
-                        parentScreen,
-                      }
-                      : {}),
-                  }}
-                />
-              </Suspense>
-            ))
-          ) : (
-            <Suspense
-              fallback={<div className='alert alert-info'>Loading...</div>}
-            >
-              <Comp
-                screen={screen}
-                {...{
-                  ...componentProps,
-                  ...(parentScreen
-                    ? {
-                      parentScreen,
+          <WindowContextProvider>
+            <GridProvider>
+              {Array.isArray(Comp) ? (
+                Comp.map((C) => (
+                  <Suspense
+                    key={screen.id as string}
+                    fallback={
+                      <div className='alert alert-info'>Loading...</div>
                     }
-                    : {}),
-                }}
-              />
-            </Suspense>
-          )}
+                  >
+                    <C
+                      screen={screen}
+                      {...{
+                        ...componentProps,
+                        ...(parentScreen
+                          ? {
+                            parentScreen,
+                          }
+                          : {}),
+                      }}
+                    />
+                  </Suspense>
+                ))
+              ) : (
+                <Suspense
+                  fallback={<div className='alert alert-info'>Loading...</div>}
+                >
+                  <Comp
+                    screen={screen}
+                    {...{
+                      ...componentProps,
+                      ...(parentScreen
+                        ? {
+                          parentScreen,
+                        }
+                        : {}),
+                    }}
+                  />
+                </Suspense>
+              )}
+            </GridProvider>
+          </WindowContextProvider>
         </CreatePortal>
       )
     })

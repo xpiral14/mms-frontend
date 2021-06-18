@@ -19,7 +19,7 @@ const InputText: React.FC<InputProps> = (props) => {
           onChange={props.onChange}
         >
           {(inputProps: any) => (
-            <input {...inputProps} className={Classes.INPUT} />
+            <input {...inputProps} id={props.id} className={Classes.INPUT} />
           )}
         </InputMask>
       ) : (

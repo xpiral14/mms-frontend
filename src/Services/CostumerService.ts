@@ -3,7 +3,6 @@ import Costumer from '../Contracts/Models/Costumer'
 import Paginated from '../Contracts/Models/Paginated'
 
 export default class CostumerService {
-  // static DEFAULT_PATH =
   static async create(costumerData: Partial<Costumer>) {
     return api.post('/company/costumer', costumerData)
   }

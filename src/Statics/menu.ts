@@ -1,3 +1,5 @@
+import { MenuType } from '../Contracts/Containers/NavBar'
+import {} from '../Contracts/Hooks/useScreen'
 export default {
   Cadastro: {
     name: 'Cadastro',
@@ -24,23 +26,16 @@ export default {
           path: 'Register/Costumer',
         },
       },
-    },
-  },
-  Relatorios: {
-    name: 'Relatórios',
-    isMain: true,
-    items: {
-      'Relatório de peças': {
-        name: 'Relatório de peças',
-        screen: 'PeaceReport',
-        items: {
-          'Peças 1': {
-            icon: 'drive-time',
-            name: 'Peças 1',
-            screen: 'RegisterPeace',
-          },
+      OrdemServico: {
+        name: 'Ordem de serviços',
+        icon: 'add',
+        screen: {
+          id: 'register-worker-order',
+          contentSize: '900 500',
+          headerTitle: 'Registrar ordem de serviço',
+          path: 'Register/ServiceOrder',
         },
       },
     },
   },
-}
+} as MenuType

@@ -24,6 +24,7 @@ const RegistrationButtonBar: React.FC<RegistrationButtonBarProps> = (
   props
 ): JSX.Element => {
   const { screenStatus, setScreenStatus, payload, setPayload } = useWindow()
+
   const { exitButton = true, screen } = props
   const handleNewButtonOnClick = () => {
     if (props?.handleNewButtonOnClick?.()) {
@@ -37,6 +38,13 @@ const RegistrationButtonBar: React.FC<RegistrationButtonBarProps> = (
   const handleSaveButtonOnClick = () => {
     if (props?.handleSaveButtonOnClick) {
       props?.handleSaveButtonOnClick()
+      return
+    }
+  }
+
+  const handleButtonInfoOnClick = () => {
+    if (props?.handleButtonInfoOnClick) {
+      props?.handleButtonInfoOnClick()
       return
     }
   }
@@ -103,6 +111,15 @@ const RegistrationButtonBar: React.FC<RegistrationButtonBarProps> = (
         </Button>
 
         <Button
+          icon='info-sign'
+          intent={Intent.WARNING}
+          disabled={!Object.keys(payload) || screenStatus !== ScreenStatus.EDIT}
+          onClick={handleButtonInfoOnClick}
+        >
+          Detalhes
+        </Button>
+
+        <Button
           icon={
             <Icon
               icon='disable'
@@ -142,14 +159,20 @@ const RegistrationButtonBar: React.FC<RegistrationButtonBarProps> = (
       </ButtonGroup>
 
       {exitButton && (
-        <Button
-          color='#ff0000'
-          icon='log-in'
-          outlined
-          onClick={handleExitButtonOnClick}
-        >
-          Sair
-        </Button>
+        <ButtonGroup>
+          {props.handleReloadScreenOnClick && (
+            <Button
+              icon='log-in'
+              outlined
+              onClick={props.handleReloadScreenOnClick}
+            >
+              Recarregar dados da tela
+            </Button>
+          )}
+          <Button icon='log-in' outlined onClick={handleExitButtonOnClick}>
+            Sair
+          </Button>
+        </ButtonGroup>
       )}
     </BarContainer>
   )

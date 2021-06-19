@@ -2,7 +2,7 @@ import {
   CheckedValidation,
   Validation,
   ValidationOptions,
-} from '../Contracts/hooks/useValidation'
+} from '../Contracts/Hooks/useValidation'
 import { useAlert } from './useAlert'
 import { useWindow } from './useWindow'
 

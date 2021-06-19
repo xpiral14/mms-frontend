@@ -1,10 +1,12 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
 import { Intent } from '@blueprintjs/core'
-import React from 'react'
+import Select from '../../../Components/Select'
+import { Cell } from '@blueprintjs/table'
+import React, { useMemo, useState } from 'react'
 import InputText from '../../../Components/InputText'
 import PaginatedTable from '../../../Components/PaginatedTable'
-import RadioGroup from '../../../Components/RadioGroup'
 import RegistrationButtonBar from '../../../Components/RegistrationButtonBar'
-import { PersonType, ScreenStatus } from '../../../Constants/Enums'
+import { orderStatus, PersonType, ScreenStatus } from '../../../Constants/Enums'
 import { RegistrationButtonBarProps } from '../../../Contracts/Components/RegistrationButtonBarProps'
 import ScreenProps from '../../../Contracts/Components/ScreenProps'
 import { Validation } from '../../../Contracts/Hooks/useValidation'
@@ -15,22 +17,39 @@ import { useToast } from '../../../Hooks/useToast'
 import useValidation from '../../../Hooks/useValidation'
 import { useWindow } from '../../../Hooks/useWindow'
 import CostumerService from '../../../Services/CostumerService'
+import OrderService from '../../../Services/OrderService'
 import { Container, Header, Body } from './style'
+import { Option } from '../../../Contracts/Components/Select'
+import useAsync from '../../../Hooks/useAsync'
+import { useScreen } from '../../../Hooks/useScreen'
 
-const personTypesOptions = [
-  {
-    value: PersonType.PHYSICAL,
-    label: 'Física',
-    id: PersonType.PHYSICAL,
-  },
-  {
-    value: PersonType.LEGAL,
-    label: 'Jurídica',
-    id: PersonType.LEGAL,
-  },
-]
+const orderStatusOptions: Option[] = Object.keys(orderStatus).map((key) => ({
+  label: orderStatus[key as keyof typeof orderStatus],
+  value: key,
+}))
 
-const CostumerRegister: React.FC<ScreenProps> = ({ screen }) => {
+const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
+  const [costumers, setCostumer] = useState<Costumer[]>([])
+  const clienteOptions: Option[] = useMemo(
+    () =>
+      costumers.map((costumer) => ({
+        label: costumer.name,
+        value: costumer.id,
+      })),
+    [costumers]
+  )
+
+  const { showErrorToast } = useToast()
+  const [, loadCostumers] = useAsync(async () => {
+    try {
+      const response = await CostumerService.getAll(1, 100)
+      setCostumer(response.data.data as Costumer[])
+    } catch (error) {
+      showErrorToast({
+        message: 'Erro ao obter lista de clientes',
+      })
+    }
+  }, [])
   const { payload, setPayload, screenStatus, setScreenStatus } =
     useWindow<Costumer>()
 
@@ -58,7 +77,7 @@ const CostumerRegister: React.FC<ScreenProps> = ({ screen }) => {
   const { setReloadGrid } = useGrid()
   const { showSuccessToast } = useToast()
   const { openAlert } = useAlert()
-
+  const { openSubScreen } = useScreen()
   const isStatusVizualize = () => screenStatus === ScreenStatus.VISUALIZE
 
   const getErrorMessages = (errors?: any[], defaultMessage?: string) => {
@@ -180,12 +199,15 @@ const CostumerRegister: React.FC<ScreenProps> = ({ screen }) => {
       onConfirm,
     })
   }
-
+  const reloadAllScreenData = () => {
+    loadCostumers()
+  }
   const registratioButtonBarProps: RegistrationButtonBarProps = {
     screen,
     handleSaveButtonOnClick:
       screenStatus === ScreenStatus.NEW ? createCostumer : saveCostumer,
     handleDeleteButtonOnClick: deleteCostumer,
+    handleReloadScreenOnClick: reloadAllScreenData,
   }
 
   const createOnChange =
@@ -202,47 +224,25 @@ const CostumerRegister: React.FC<ScreenProps> = ({ screen }) => {
         <RegistrationButtonBar {...registratioButtonBarProps} />
       </Header>
       <Body>
+        <div></div>
         <div>
-          <RadioGroup
-            id='personTypes'
-            selectedValue={payload.personType}
-            label='Tipo de pessoa'
-            inline
-            disabled={isStatusVizualize()}
-            radios={personTypesOptions}
-            onChange={(evt) =>
-              setPayload((prev) => ({
-                ...prev,
-                cpf: '',
-                cnpj: '',
-                personType: evt.currentTarget.value as PersonType,
-              }))
+          <Select
+            allowCreate
+            onChange={(option) =>
+              setPayload((prev) => ({ ...prev, costumerId: option.value }))
             }
+            label='Cliente'
+            items={clienteOptions}
+            handleCreateButtonClick={() => {
+              openSubScreen(
+                {
+                  id: 'register-costumer',
+                  path: 'Register/Costumer',
+                },
+                screen.id
+              )
+            }}
           />
-        </div>
-        <div>
-          {Boolean(payload.personType) &&
-            (payload.personType === PersonType.PHYSICAL ? (
-              <InputText
-                value={payload?.cpf}
-                id='CPF'
-                mask='999.999.999-99'
-                label='CPF'
-                placeholder='Digite o email do cliente'
-                disabled={isStatusVizualize()}
-                onChange={createOnChange('cpf')}
-              />
-            ) : (
-              <InputText
-                value={payload.cnpj}
-                id='CNPJ'
-                mask='99.999.999/9999-99'
-                label='CNPJ'
-                placeholder='Digite o email do cliente'
-                disabled={isStatusVizualize()}
-                onChange={createOnChange('cnpj')}
-              />
-            ))}
           <InputText
             value={payload?.name || ''}
             id='name'
@@ -270,6 +270,14 @@ const CostumerRegister: React.FC<ScreenProps> = ({ screen }) => {
             disabled={isStatusVizualize()}
             onChange={createOnChange('phone')}
           />
+          <Select
+            onChange={(option) =>
+              setPayload((prev) => ({ ...prev, status: option.value }))
+            }
+            label='Status'
+            items={orderStatusOptions}
+            allowCreate
+          />
         </div>
         <PaginatedTable
           containerProps={{
@@ -283,26 +291,42 @@ const CostumerRegister: React.FC<ScreenProps> = ({ screen }) => {
           columns={[
             {
               id: 1,
-              name: 'Nome',
-              keyName: 'name',
+              name: 'Status',
+              keyName: 'status',
+              cellRenderer: (cell) => (
+                <Cell>
+                  {orderStatus[cell.status as keyof typeof orderStatus]}
+                </Cell>
+              ),
             },
             {
               id: 1,
-              name: 'CPF',
-              keyName: 'cpf',
+              name: 'Observação',
+              keyName: 'notice',
             },
             {
               id: 1,
-              name: 'Telefone',
-              keyName: 'phone',
+              name: 'Valor',
+              cellRenderer: (cell) => (
+                <Cell>
+                  {cell.orderPiece?.reduce(
+                    (acc: any, curr: any) => acc + curr.piece.price,
+                    0
+                  ) || 0}
+                </Cell>
+              ),
             },
             {
               id: 1,
-              name: 'Email',
-              keyName: 'email',
+              name: 'Criado em',
+              cellRenderer: (cell) => (
+                <Cell>
+                  {new Date(cell.created_at).toLocaleDateString('pt-BR')}
+                </Cell>
+              ),
             },
           ]}
-          request={CostumerService.getAll as any}
+          request={OrderService.getAll as any}
           onRowSelect={(row) => {
             setScreenStatus(ScreenStatus.VISUALIZE)
             setPayload(row)
@@ -313,4 +337,4 @@ const CostumerRegister: React.FC<ScreenProps> = ({ screen }) => {
   )
 }
 
-export default CostumerRegister
+export default OrderServiceCostumer

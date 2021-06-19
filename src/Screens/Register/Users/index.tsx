@@ -1,9 +1,8 @@
 import { Button } from '@blueprintjs/core'
-import React, { useEffect } from 'react'
+import React from 'react'
 import { SubScreenProps } from '../../../Contracts/Components/ScreenProps'
 import { useScreen } from '../../../Hooks/useScreen'
 import { useToast } from '../../../Hooks/useToast'
-import OrderService from '../../../Services/OrderService'
 
 interface UserProps extends SubScreenProps {
   text?: string
@@ -14,11 +13,6 @@ const Users: React.FC<UserProps> = ({ parentScreen, screen, text }) => {
   const { showToast } = useToast()
   const frontParent = () => parentScreen?.front()
 
-  useEffect(() => {
-    (async () => {
-      await OrderService.getAll()
-    })()
-  }, [])
   return (
     <div>
       {text || 'Tela de usuários'}

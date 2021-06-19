@@ -8,14 +8,10 @@ export default class OrderPieceService {
     pieceId: number,
     payload: { quantity: number }
   ) {
-    return api.post<null>(
-      `${this.DEFAULT_PATH}/${orderId}/piece/${pieceId}`,
-      payload
-    )
+    return api.post<null>(`/company/order/${orderId}/piece/${pieceId}`, payload)
   }
 
-  static async deleteOrderPiece(orderId: number, pieceId: number){
-
-    return api.delete<null>(`${this.DEFAULT_PATH}/${orderId}/piece/${pieceId}`)
+  static async deleteOrderPiece(orderId: number, pieceId: number) {
+    return api.delete<null>(`/company/order/${orderId}/piece/${pieceId}`)
   }
 }

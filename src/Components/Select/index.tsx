@@ -1,135 +1,125 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable no-constant-condition */
 import * as React from 'react'
 
-import { FormGroup, MenuItem } from '@blueprintjs/core'
-import { ItemPredicate, ItemRenderer, Suggest } from '@blueprintjs/select'
-import { Option, SelectProps } from '../../Contracts/Components/Select'
+import {
+  Button,
+  ButtonProps,
+  FormGroup,
+  Intent,
+  MenuItem,
+} from '@blueprintjs/core'
+import {
+  ItemPredicate,
+  ItemRenderer,
+  Select as CreateSelect,
+  SelectProps as BluePrintSelectProps,
+} from '@blueprintjs/select'
 
-export function maybeDeleteCreatedOptionFromArrays(
-  items: Option[],
-  createdItems: Option[],
-  option: Option
-): { createdItems: Option[]; items: Option[] } {
-  const wasItemCreatedByUser = arrayContainsOption(createdItems, option)
+import { Option } from '../../Contracts/Components/Suggest'
 
-  // Delete the item if the user manually created it.
-  return {
-    createdItems: wasItemCreatedByUser
-      ? deleteOptionFromArray(createdItems, option)
-      : createdItems,
-    items: wasItemCreatedByUser ? deleteOptionFromArray(items, option) : items,
-  }
+interface SelectProps extends Partial<BluePrintSelectProps<Option>> {
+  allowCreate?: boolean
+  onChange: (
+    item: Option,
+    event?: React.SyntheticEvent<HTMLElement, Event> | undefined
+  ) => void
+  handleCreateButtonClick?: (query: string) => void
+  id?: string
+  label?: string
+  required?: boolean
+  disabled?: boolean
+  itent?: Intent
+  buttonProps?: ButtonProps
+  defaultButtonText?: string
+  loading?: boolean
+  handleButtonReloadClick?: () => Promise<void> | void
 }
-
-const DefaultSelect = Suggest.ofType<Option>()
-
-export const renderOption: ItemRenderer<Option> = (
-  option,
-  { handleClick, modifiers, query }
-) => {
-  if (!modifiers.matchesPredicate) {
-    return null
-  }
-  const text = option.label
-  return (
-    <MenuItem
-      active={modifiers.active}
-      disabled={modifiers.disabled}
-      key={option.value}
-      onClick={handleClick}
-      text={highlightText(text, query)}
-    />
-  )
-}
-
-export const filterOption: ItemPredicate<Option> = (
-  query,
-  option,
-  _index,
-  exactMatch
-) => {
-  const normalizedTitle = option.label.toLowerCase()
-  const normalizedQuery = query.toLowerCase()
-
-  if (exactMatch) {
-    return normalizedTitle === normalizedQuery
-  } else {
-    return option.label.indexOf(normalizedQuery) >= 0
-  }
-}
-
-function highlightText(text: string, query: string) {
-  let lastIndex = 0
-  const words = query
-    .split(/\s+/)
-    .filter((word) => word.length > 0)
-    .map(escapeRegExpChars)
-  if (words.length === 0) {
-    return [text]
-  }
-  const regexp = new RegExp(words.join('|'), 'gi')
-  const tokens: React.ReactNode[] = []
-  while (true) {
-    const match = regexp.exec(text)
-    if (!match) {
-      break
-    }
-    const length = match[0].length
-    const before = text.slice(lastIndex, regexp.lastIndex - length)
-    if (before.length > 0) {
-      tokens.push(before)
-    }
-    lastIndex = regexp.lastIndex
-    tokens.push(<strong key={lastIndex}>{match[0]}</strong>)
-  }
-  const rest = text.slice(lastIndex)
-  if (rest.length > 0) {
-    tokens.push(rest)
-  }
-  return tokens
-}
-
-function escapeRegExpChars(text: string) {
-  return text.replace(/([.*+?^=!:${}()|[\]/\\])/g, '\\$1')
-}
-
-function createOption(label: string): Option {
-  return {
-    value: 100 + Math.floor(Math.random() * 100 + 1),
-    label,
-  }
-}
-
+const OptionSelect = CreateSelect.ofType<Option>()
 function areOptionsEqual(optionA: Option, optionB: Option) {
-  // Compare only the titles (ignoring case) just for simplicity.
   return optionA.label.toLowerCase() === optionB.label.toLowerCase()
 }
+export default function Select({ allowCreate = false, ...props }: SelectProps) {
+  const renderCreateOptionOption = (query: string, active: boolean) => (
+    <MenuItem
+      icon='add'
+      text={`Criar "${query}"`}
+      active={active}
+      onClick={() => props.handleCreateButtonClick?.(query)}
+      shouldDismissPopover={false}
+    />
+  )
+  function escapeRegExpChars(text: string) {
+    return text.replace(/([.*+?^=!:${}()|[\]/\\])/g, '\\$1')
+  }
+  const maybeCreateNewItemRenderer = allowCreate
+    ? renderCreateOptionOption
+    : undefined
 
-function arrayContainsOption(options: Option[], optionToFind: Option): boolean {
-  return options.some((option: Option) => option.label === optionToFind.label)
-}
+  function highlightText(text: string, query: string) {
+    let lastIndex = 0
+    const words = query
+      .split(/\s+/)
+      .filter((word) => word.length > 0)
+      .map(escapeRegExpChars)
+    if (words.length === 0) {
+      return [text]
+    }
+    const regexp = new RegExp(words.join('|'), 'gi')
+    const tokens: React.ReactNode[] = []
+    while (true) {
+      const match = regexp.exec(text)
+      if (!match) {
+        break
+      }
+      const length = match[0].length
+      const before = text.slice(lastIndex, regexp.lastIndex - length)
+      if (before.length > 0) {
+        tokens.push(before)
+      }
+      lastIndex = regexp.lastIndex
+      tokens.push(<strong key={lastIndex}>{match[0]}</strong>)
+    }
+    const rest = text.slice(lastIndex)
+    if (rest.length > 0) {
+      tokens.push(rest)
+    }
+    return tokens
+  }
 
-function deleteOptionFromArray(options: Option[], optionToDelete: Option) {
-  return options.filter((option) => option !== optionToDelete)
-}
+  const filterOption: ItemPredicate<Option> = (
+    query,
+    option,
+    _index,
+    exactMatch
+  ) => {
+    const normalizedTitle = option.label.toLowerCase()
+    const normalizedQuery = query.toLowerCase()
 
-export default function Select(props: SelectProps) {
-  const renderCreateOption = props.allowCreate
-    ? (query: string, active: boolean) => (
+    if (exactMatch) {
+      return normalizedTitle === normalizedQuery
+    } else {
+      return `${option.value}. ${normalizedTitle}`.indexOf(normalizedQuery) >= 0
+    }
+  }
+  const renderOption: ItemRenderer<Option> = (
+    option,
+    { handleClick, modifiers, query }
+  ) => {
+    if (!modifiers.matchesPredicate) {
+      return null
+    }
+    const text = option.label
+    return (
       <MenuItem
-        icon='add'
-        text={`Create "${query}"`}
-        active={active}
-        onClick={props.handleCreateButtonClick}
-        shouldDismissPopover={false}
+        active={modifiers.active}
+        disabled={modifiers.disabled}
+        key={option.value}
+        onClick={handleClick}
+        text={highlightText(text, query)}
       />
     )
-    : undefined
-  const { allowCreate, ...flags } = props
-
-  const maybeCreateNewItemFromQuery = allowCreate ? createOption : undefined
-  const maybeCreateNewItemRenderer = allowCreate ? renderCreateOption : null
-  const renderInputValue = (option: Option) => option.label
+  }
   return (
     <FormGroup
       label={props.label}
@@ -138,19 +128,48 @@ export default function Select(props: SelectProps) {
       intent={props.itent}
       labelFor={props.id}
     >
-      <DefaultSelect
-        fill
-        itemPredicate={filterOption}
-        itemRenderer={renderOption}
-        createNewItemFromQuery={maybeCreateNewItemFromQuery}
-        createNewItemRenderer={maybeCreateNewItemRenderer as any}
-        inputValueRenderer={renderInputValue}
-        itemsEqual={areOptionsEqual}
-        noResults={<MenuItem disabled={true} text='Sem resultados' />}
-        onItemSelect={props.onChange}
-        items={props.items || []}
-        {...flags}
-      />
+      <div
+        style={{
+          display: 'flex',
+          gap: '5px',
+        }}
+      >
+        <OptionSelect
+          filterable
+          popoverProps={{
+            fill: true,
+          }}
+          itemPredicate={filterOption}
+          items={props.items || []}
+          itemRenderer={renderOption}
+          createNewItemFromQuery={(() => {}) as any}
+          createNewItemRenderer={maybeCreateNewItemRenderer}
+          itemsEqual={areOptionsEqual}
+          noResults={<MenuItem disabled={true} text='Sem resultados' />}
+          onItemSelect={props.onChange}
+          {...props}
+        >
+          <Button
+            loading={props.loading}
+            rightIcon='caret-down'
+            text={
+              (props.activeItem as Option)?.label ||
+              props.defaultButtonText ||
+              'Escolha um item'
+            }
+            disabled={props.disabled}
+            {...props?.buttonProps}
+          />
+        </OptionSelect>
+        {Boolean(props.handleButtonReloadClick) && (
+          <Button
+            disabled={props.disabled}
+            onClick={props.handleButtonReloadClick}
+            icon={!props.loading ? 'reset' : undefined}
+            loading={props.loading}
+          />
+        )}
+      </div>
     </FormGroup>
   )
 }

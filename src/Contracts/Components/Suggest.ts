@@ -1,6 +1,6 @@
 import { Intent } from '@blueprintjs/core'
 
-export interface SelectProps {
+export interface SuggestProps {
   allowCreate?: boolean
   closeOnSelect?: boolean
   createdItems?: Option[]

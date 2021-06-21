@@ -3,7 +3,6 @@ import { Intent } from '@blueprintjs/core'
 import Select from '../../../Components/Select'
 import { Cell } from '@blueprintjs/table'
 import React, { useMemo, useState } from 'react'
-import InputText from '../../../Components/InputText'
 import PaginatedTable from '../../../Components/PaginatedTable'
 import RegistrationButtonBar from '../../../Components/RegistrationButtonBar'
 import { orderStatus, PersonType, ScreenStatus } from '../../../Constants/Enums'
@@ -19,7 +18,7 @@ import { useWindow } from '../../../Hooks/useWindow'
 import CostumerService from '../../../Services/CostumerService'
 import OrderService from '../../../Services/OrderService'
 import { Container, Header, Body } from './style'
-import { Option } from '../../../Contracts/Components/Select'
+import { Option } from '../../../Contracts/Components/Suggest'
 import useAsync from '../../../Hooks/useAsync'
 import { useScreen } from '../../../Hooks/useScreen'
 
@@ -28,19 +27,30 @@ const orderStatusOptions: Option[] = Object.keys(orderStatus).map((key) => ({
   value: key,
 }))
 
+const orderStatusKeyValue: any = {}
+
+orderStatusOptions.forEach((os) => (orderStatusKeyValue[os.value] = os.label))
 const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
   const [costumers, setCostumer] = useState<Costumer[]>([])
-  const clienteOptions: Option[] = useMemo(
-    () =>
-      costumers.map((costumer) => ({
+  const costumerOptions = useMemo(() => {
+    const normalized = {
+      options: [] as Option[],
+      keyValue: {} as { [x: number]: Option },
+    }
+    costumers.forEach((costumer) => {
+      const option = {
         label: costumer.name,
         value: costumer.id,
-      })),
-    [costumers]
-  )
+      }
+      normalized.options.push(option)
+
+      normalized.keyValue[option.value] = option
+    })
+    return normalized
+  }, [costumers])
 
   const { showErrorToast } = useToast()
-  const [, loadCostumers] = useAsync(async () => {
+  const [loadingCostumers, loadCostumers] = useAsync(async () => {
     try {
       const response = await CostumerService.getAll(1, 100)
       setCostumer(response.data.data as Costumer[])
@@ -51,7 +61,7 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
     }
   }, [])
   const { payload, setPayload, screenStatus, setScreenStatus } =
-    useWindow<Costumer>()
+    useWindow<any>()
 
   const createValidation = (keyName: any) => () =>
     Boolean((payload as any)[keyName])
@@ -210,13 +220,13 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
     handleReloadScreenOnClick: reloadAllScreenData,
   }
 
-  const createOnChange =
-    (attributeName: string) => (evt: React.FormEvent<HTMLInputElement>) => {
-      setPayload((prev: any) => ({
-        ...prev,
-        [attributeName]: evt.currentTarget.value,
-      }))
-    }
+  // const createOnChange =
+  //   (attributeName: string) => (evt: React.FormEvent<HTMLInputElement>) => {
+  //     setPayload((prev: any) => ({
+  //       ...prev,
+  //       [attributeName]: evt.currentTarget.value,
+  //     }))
+  //   }
 
   return (
     <Container>
@@ -224,58 +234,58 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
         <RegistrationButtonBar {...registratioButtonBarProps} />
       </Header>
       <Body>
-        <div></div>
         <div>
           <Select
+            handleButtonReloadClick={loadCostumers}
+            loading={loadingCostumers}
+            itent={Intent.DANGER}
+            required
             allowCreate
+            activeItem={costumerOptions.keyValue[payload.costumerId]}
             onChange={(option) =>
               setPayload((prev) => ({ ...prev, costumerId: option.value }))
             }
+            defaultButtonText='Escolha um profissional'
             label='Cliente'
-            items={clienteOptions}
-            handleCreateButtonClick={() => {
+            items={costumerOptions.options}
+            handleCreateButtonClick={(query) => {
               openSubScreen(
                 {
                   id: 'register-costumer',
+                  contentSize: '700px 350px',
+                  headerTitle: 'Clientes',
                   path: 'Register/Costumer',
                 },
-                screen.id
+                screen.id,
+                {
+                  defaultCostumer: {
+                    name: query,
+                    personType: PersonType.PHYSICAL,
+                  },
+                  defaultScreenStatus: ScreenStatus.NEW,
+                }
               )
             }}
-          />
-          <InputText
-            value={payload?.name || ''}
-            id='name'
-            label='Nome do cliente'
-            placeholder='Digite o nome do cliente'
-            disabled={isStatusVizualize()}
-            onChange={createOnChange('name')}
-            required
-          />
-
-          <InputText
-            value={payload?.email || ''}
-            id='Email'
-            label='Email do cliente'
-            placeholder='Digite o email do cliente'
-            disabled={isStatusVizualize()}
-            onChange={createOnChange('email')}
-          />
-          <InputText
-            value={payload?.phone || ''}
-            id='phone'
-            mask='(99) 99999-9999'
-            label='Telefone'
-            placeholder='Digite o Telefone do cliente'
-            disabled={isStatusVizualize()}
-            onChange={createOnChange('phone')}
+            buttonProps={
+              {
+                style: {
+                  width: '250px',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                },
+              } as any
+            }
+            disabled={screenStatus === ScreenStatus.VISUALIZE}
           />
           <Select
+            
             onChange={(option) =>
               setPayload((prev) => ({ ...prev, status: option.value }))
             }
             label='Status'
+            activeItem={payload.statusId}
             items={orderStatusOptions}
+            disabled={isStatusVizualize()}
             allowCreate
           />
         </div>

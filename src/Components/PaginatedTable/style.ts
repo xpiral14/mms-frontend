@@ -23,4 +23,17 @@ export const Footer = styled.section`
     list-style-type: none !important;
     margin: 0;
   }
+  .bp3-form-group {
+    margin: 0;
+  }
+`
+
+export const PaginateContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
+  gap: 5px;
+
+  > ul {
+    padding: 0 !important;
+  }
 `

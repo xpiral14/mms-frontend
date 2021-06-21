@@ -1,6 +1,5 @@
 import {
   Button,
-  IconName,
   Menu,
   MenuItem,
   Navbar,
@@ -8,25 +7,12 @@ import {
   Popover,
   Position,
 } from '@blueprintjs/core'
-import { PanelOptions } from 'jspanel4/es6module/jspanel'
 import React, { useMemo } from 'react'
+import { MenuType, NavBarProps } from '../../Contracts/Containers/NavBar'
 import { useAlert } from '../../Hooks/useAlert'
 import { useAuth } from '../../Hooks/useAuth'
 import { useScreen } from '../../Hooks/useScreen'
 
-type MenuType = { [key: string]: MenuItemType }
-type NavBarProps = {
-  menuItems: MenuType
-}
-
-type MenuItemType = {
-  name: string
-  screen: PanelOptions,
-  icon?: IconName
-  isMain?: boolean
-  component?: string
-  items?: MenuType
-}
 
 const NavBar: React.FC<NavBarProps> = ({ menuItems }) => {
   const { openScreen, screens: screens } = useScreen()

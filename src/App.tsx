@@ -1,4 +1,3 @@
-/* eslint-disable react/display-name */
 import React from 'react'
 import 'jspanel4/es6module/extensions/modal/jspanel.modal'
 import 'jspanel4/dist/jspanel.min.css'

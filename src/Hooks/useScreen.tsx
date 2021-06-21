@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import {
   createContext,
   lazy,
@@ -7,48 +6,19 @@ import {
   useEffect,
   useState,
 } from 'react'
-import { jsPanel, Panel, PanelOptions } from 'jspanel4/es6module/jspanel'
+import { jsPanel, Panel } from 'jspanel4/es6module/jspanel'
 import CreatePortal from '../Components/createPortal'
 import jsPanelDefaultOptions from '../Config/jsPanelDefaultOptions'
 import { useAlert } from './useAlert'
 import { useAuth } from './useAuth'
 import GridProvider from './useGrid'
 import WindowContextProvider from './useWindow'
-
-interface ContextPanelOptions extends PanelOptions {
-  id: string
-  path: string
-  parentScreenId?: string
-  isSubsCreen?: boolean
-}
-
-type ScreenObject = {
-  screen: Panel
-  component: any
-  componentProps: any
-  parentScreen?: Panel
-}
-
-export type ScreenContext = {
-  screens: {
-    [x: string]: ScreenObject
-  }
-  setScreens: React.Dispatch<
-    React.SetStateAction<{
-      [x: string]: ScreenObject
-    }>
-  >
-  openScreen: (
-    panelOptions: ContextPanelOptions,
-    isModal?: boolean | undefined
-  ) => void
-
-  openSubScreen: (
-    screen: ContextPanelOptions,
-    parentScreenId: string,
-    props: any
-  ) => void
-}
+import {
+  ScreenContext,
+  ScreenObject,
+  ContextPanelOptions,
+} from '../Contracts/Hooks/useScreen'
+import { Intent } from '@blueprintjs/core'
 
 export const screenContext = createContext<ScreenContext>(null as any)
 
@@ -67,7 +37,19 @@ export default function ScreenProvider({ children }: any) {
   const [screens, setPanels] = useState<{
     [x: string]: ScreenObject
   }>({})
+  const [screenError, setScreenError] = useState(null as any)
 
+  useEffect(() => {
+    if (screenError && screens[screenError]) {
+      screens[screenError]?.screen?.close()
+      openAlert({
+        text: 'A tela não existe no sistema',
+        intent: Intent.DANGER,
+      })
+      setScreenError(null)
+    }
+  }, [screenError, screens])
+  
   const { auth } = useAuth()
 
   useEffect(() => {
@@ -85,13 +67,6 @@ export default function ScreenProvider({ children }: any) {
     props = {} as any,
     modal = false
   ) => {
-    let Component: any
-    try {
-      Component = lazy(() => import(`../Screens/${screenOptions.path}`))
-    } catch (error) {
-      return openAlert({ text: 'Tela inválida' })
-    }
-
     if (screens[screenOptions.id]) {
       return screens[screenOptions.id].screen.front()
     }
@@ -116,6 +91,15 @@ export default function ScreenProvider({ children }: any) {
       ? jsPanel.modal.create(options)
       : jsPanel.create(options)
 
+    const Component = lazy(() => {
+      return new Promise((resolve) => {
+        return import(`../Screens/${screenOptions.path}`)
+          .then(resolve)
+          .catch(() => {
+            setScreenError(screenOptions.id)
+          })
+      })
+    })
     setPanels((prev) => ({
       ...prev,
       [screenOptions.id]: {
@@ -190,7 +174,7 @@ export default function ScreenProvider({ children }: any) {
   const openSubPanel = (
     panelOptions: ContextPanelOptions,
     parentPanelId: string,
-    props: any
+    props?: any
   ) => {
     openScreen(
       {

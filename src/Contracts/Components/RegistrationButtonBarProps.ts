@@ -1,5 +1,4 @@
 import { ButtonProps } from '@blueprintjs/core'
-import React from 'react'
 import { Screen } from './ScreenProps'
 
 export interface RegistrationButtonBarProps {
@@ -16,5 +15,7 @@ export interface RegistrationButtonBarProps {
   handleCancelButtonOnClick?: () => void
   handleDeleteButtonOnClick?: () => void
   handleExitButtonOnClick?: () => void
+  handleReloadScreenOnClick?: () => void
+  handleButtonInfoOnClick?: () => void
   screen?: Screen
 }

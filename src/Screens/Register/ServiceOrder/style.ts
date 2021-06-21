@@ -17,3 +17,6 @@ export const Body = styled.section`
     flex-wrap: wrap;
   }
 `
+export const SelectDiv = styled.div`
+  width: 160px;
+`

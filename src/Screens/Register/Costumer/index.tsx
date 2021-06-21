@@ -1,14 +1,14 @@
 import { Intent } from '@blueprintjs/core'
-import React from 'react'
+import React, { useEffect } from 'react'
 import InputText from '../../../Components/InputText'
 import PaginatedTable from '../../../Components/PaginatedTable'
 import RadioGroup from '../../../Components/RadioGroup'
 import RegistrationButtonBar from '../../../Components/RegistrationButtonBar'
 import { PersonType, ScreenStatus } from '../../../Constants/Enums'
 import { RegistrationButtonBarProps } from '../../../Contracts/Components/RegistrationButtonBarProps'
-import ScreenProps from '../../../Contracts/Components/ScreenProps'
 import { Validation } from '../../../Contracts/Hooks/useValidation'
 import Costumer from '../../../Contracts/Models/Costumer'
+import { CostumerRegisterScreenProps } from '../../../Contracts/Screen/Register/Costumer'
 import { useAlert } from '../../../Hooks/useAlert'
 import { useGrid } from '../../../Hooks/useGrid'
 import { useToast } from '../../../Hooks/useToast'
@@ -30,9 +30,22 @@ const personTypesOptions = [
   },
 ]
 
-const CostumerRegister: React.FC<ScreenProps> = ({ screen }) => {
+const CostumerRegister: React.FC<CostumerRegisterScreenProps> = ({
+  screen,
+  defaultCostumer,
+  defaultScreenStatus,
+}) => {
   const { payload, setPayload, screenStatus, setScreenStatus } =
     useWindow<Costumer>()
+
+  useEffect(() => {
+    if (defaultCostumer) {
+      setPayload(defaultCostumer)
+    }
+    if (defaultScreenStatus) {
+      setScreenStatus(defaultScreenStatus)
+    }
+  }, [])
 
   const createValidation = (keyName: any) => () =>
     Boolean((payload as any)[keyName])
@@ -51,7 +64,7 @@ const CostumerRegister: React.FC<ScreenProps> = ({ screen }) => {
     {
       check: createValidation('phone'),
       errorMessage: 'O telefone é obrigatório',
-      inputId: 'phone',
+      inputId: 'costumer-register-phone',
     },
   ]
   const { validate } = useValidation(validations)
@@ -263,7 +276,8 @@ const CostumerRegister: React.FC<ScreenProps> = ({ screen }) => {
           />
           <InputText
             value={payload?.phone || ''}
-            id='phone'
+            id='costumer-register-phone'
+            required
             mask='(99) 99999-9999'
             label='Telefone'
             placeholder='Digite o Telefone do cliente'

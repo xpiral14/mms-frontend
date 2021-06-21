@@ -28,6 +28,7 @@ body {
 
 .screen-container {
   padding: 5px;
+  height: 100%;
 }
 
 .flex {

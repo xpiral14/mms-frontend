@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-empty-function */
 import { Intent } from '@blueprintjs/core'
 import Select from '../../../Components/Select'
 import { Cell } from '@blueprintjs/table'

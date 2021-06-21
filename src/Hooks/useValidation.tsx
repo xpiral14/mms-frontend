@@ -36,7 +36,6 @@ export default function useValidation(
     ))
 
     if (errorList.length) {
-      console.log(document.getElementById(checkedErrors[0].inputId || ''))
       openAlert({
         text: <ul>{errorList}</ul>,
         onClose: () => {

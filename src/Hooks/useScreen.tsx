@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import {
   createContext,
   lazy,
@@ -7,7 +6,7 @@ import {
   useEffect,
   useState,
 } from 'react'
-import { jsPanel, Panel, PanelOptions } from 'jspanel4/es6module/jspanel'
+import { jsPanel, Panel } from 'jspanel4/es6module/jspanel'
 import CreatePortal from '../Components/createPortal'
 import jsPanelDefaultOptions from '../Config/jsPanelDefaultOptions'
 import { useAlert } from './useAlert'
@@ -93,7 +92,7 @@ export default function ScreenProvider({ children }: any) {
       : jsPanel.create(options)
 
     const Component = lazy(() => {
-      return new Promise((resolve, reject) => {
+      return new Promise((resolve) => {
         return import(`../Screens/${screenOptions.path}`)
           .then(resolve)
           .catch(() => {

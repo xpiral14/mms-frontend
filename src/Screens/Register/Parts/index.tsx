@@ -47,7 +47,8 @@ const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
   const { showErrorToast, showSuccessToast } = useToast()
   const { openAlert } = useAlert()
 
-  const isStatusVizualize = () => !!(screenStatus === ScreenStatus.VISUALIZE)
+  const isStatusVizualize = () =>
+    Boolean(screenStatus === ScreenStatus.VISUALIZE)
 
   const getErrorMessages = (errors?: any[], defaultMessage?: string) => {
     const errorMessages = errors?.map((error) => ({
@@ -91,13 +92,13 @@ const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
         })
       }
     } catch (error) {
-      const ErrorMessages = getErrorMessages(
+      const errorMessages = getErrorMessages(
         error.response?.data?.errors,
         'Não foi possível cadastrar a peça'
       )
 
       openAlert({
-        text: ErrorMessages,
+        text: errorMessages,
         intent: Intent.DANGER,
       })
     }
@@ -112,9 +113,10 @@ const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
     delete updatePayload.id
 
     try {
-      const response = await PartsService.update(payload.id as number, {
-        ...(payload as Piece),
-      })
+      const response = await PartsService.update(
+        payload.id as number,
+        payload as Piece
+      )
 
       if (response.status) {
         showSuccessToast({

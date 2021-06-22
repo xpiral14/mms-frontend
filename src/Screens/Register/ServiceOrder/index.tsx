@@ -210,6 +210,7 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
   }
   const reloadAllScreenData = () => {
     loadCostumers()
+    setReloadGrid(true)
   }
   const registratioButtonBarProps: RegistrationButtonBarProps = {
     screen,
@@ -218,14 +219,6 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
     handleDeleteButtonOnClick: deleteCostumer,
     handleReloadScreenOnClick: reloadAllScreenData,
   }
-
-  // const createOnChange =
-  //   (attributeName: string) => (evt: React.FormEvent<HTMLInputElement>) => {
-  //     setPayload((prev: any) => ({
-  //       ...prev,
-  //       [attributeName]: evt.currentTarget.value,
-  //     }))
-  //   }
 
   return (
     <Container>
@@ -277,7 +270,6 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
             disabled={screenStatus === ScreenStatus.VISUALIZE}
           />
           <Select
-            
             onChange={(option) =>
               setPayload((prev) => ({ ...prev, status: option.value }))
             }

@@ -16,7 +16,6 @@ import Piece from '../../../Contracts/Models/Piece'
 import useValidation from '../../../Hooks/useValidation'
 import { Validation } from '../../../Contracts/Hooks/useValidation'
 import { RenderMode } from '@blueprintjs/table'
-/* eslint-disable @typescript-eslint/no-unused-vars */
 
 const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
   const { payload, setPayload, screenStatus, setScreenStatus } =
@@ -199,7 +198,14 @@ const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
       screenStatus === ScreenStatus.NEW
         ? handleButtonCreatePartOnClick
         : handleButtonUpdatePartOnClick,
-    handleDeleteButtonOnClick: handleButtonDeletePartOnClick,
+    handleDeleteButtonOnClick: () => {
+      openAlert({
+        text: 'Deletar o item selecionado?',
+        intent: Intent.DANGER,
+        onConfirm: handleButtonDeletePartOnClick,
+        cancelButtonText: 'Cancelar',
+      })
+    },
     handleCancelButtonOnClick: handleButtonCancelOnClick,
   }
 

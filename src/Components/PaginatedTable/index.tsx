@@ -79,7 +79,7 @@ const PaginatedTable: React.FC<PaginatedTableProps> = ({
       }
     }
     if (reloadGrid && limit) {
-      setTimeout(loadRequestData, 10000)
+      loadRequestData()
     }
   }, [reloadGrid, limit, page])
   const defaultCellRenderer = (key?: string) => (rowIndex: number) =>

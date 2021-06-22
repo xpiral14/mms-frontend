@@ -283,8 +283,6 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
         <PaginatedTable
           containerProps={{
             style: {
-              height: '300px',
-              maxHeight: '100px',
               overflowY: 'scrool',
               width: '100%',
             },

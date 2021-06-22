@@ -172,7 +172,7 @@ const PaginatedTable: React.FC<PaginatedTableProps> = ({
   )
   return (
     <Container style={{ width: '100%' }} {...rest?.containerProps}>
-      <Body>
+      <Body height={rest.height}>
         <BluePrintTable
           loadingOptions={reloadGrid ? loadingOptions : undefined}
           selectionModes={SelectionModes.ROWS_AND_CELLS}

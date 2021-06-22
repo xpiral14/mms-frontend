@@ -2,10 +2,11 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 
 class CreatePortal extends React.Component<any, any> {
-  private el: any
+  private el: HTMLDivElement
   constructor(props: any) {
     super(props)
     this.el = document.createElement('div')
+    this.el.classList.add('screen-content')
   }
 
   componentDidMount() {

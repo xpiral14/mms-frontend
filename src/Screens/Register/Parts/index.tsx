@@ -6,23 +6,49 @@ import PaginatedTable from '../../../Components/PaginatedTable'
 import PartsService from '../../../Services/PartsService'
 import ScreenProps from '../../../Contracts/Components/ScreenProps'
 import { RegistrationButtonBarProps } from '../../../Contracts/Components/RegistrationButtonBarProps'
-import useGrid from '../../../Hooks/useGrid'
-import useWindow from '../../../Hooks/useWindow'
+import { useGrid } from '../../../Hooks/useGrid'
+import { useWindow } from '../../../Hooks/useWindow'
 import { useAlert } from '../../../Hooks/useAlert'
 import { ScreenStatus } from '../../../Constants/Enums'
 import { Intent } from '@blueprintjs/core'
-import useToast from '../../../Hooks/useToast'
+import { useToast } from '../../../Hooks/useToast'
 import Piece from '../../../Contracts/Models/Piece'
+import useValidation from '../../../Hooks/useValidation'
+import { Validation } from '../../../Contracts/Hooks/useValidation'
+import { RenderMode } from '@blueprintjs/table'
+/* eslint-disable @typescript-eslint/no-unused-vars */
 
 const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
   const { payload, setPayload, screenStatus, setScreenStatus } =
     useWindow<Piece>()
 
+  const createValidation = (keyName: any) => () =>
+    Boolean((payload as any)[keyName])
+
+  const validations: Validation[] = [
+    {
+      check: createValidation('partReference'),
+      errorMessage: 'A referência é obrigatória',
+      inputId: 'partReference',
+    },
+    {
+      check: createValidation('partName'),
+      errorMessage: 'O nome é obrigatório',
+      inputId: 'partName',
+    },
+    {
+      check: createValidation('price'),
+      errorMessage: 'O preço é obrigatório',
+      inputId: 'partPrice',
+    },
+  ]
+  const { validate } = useValidation(validations)
+
   const { setReloadGrid } = useGrid()
   const { showErrorToast, showSuccessToast } = useToast()
   const { openAlert } = useAlert()
 
-  //const isStatusVizualize = () => screenStatus === ScreenStatus.VISUALIZE
+  const isStatusVizualize = () => !!(screenStatus === ScreenStatus.VISUALIZE)
 
   const getErrorMessages = (errors?: any[], defaultMessage?: string) => {
     const errorMessages = errors?.map((error) => ({
@@ -38,31 +64,37 @@ const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
     )
   }
 
-  const createPart = async () => {
+  const handleButtonCreatePartOnClick = async () => {
+    if (!validate) {
+      return
+    }
+
     try {
       const createPayload = {
         ...payload,
       }
 
-      const response = await PartsService.create(createPayload)
+      const response = await PartsService.create(createPayload as any)
 
       if (response.status) {
         showSuccessToast({
-          message: 'Cliente criado com sucesso',
+          message: 'Peça cadastrada com sucesso',
           intent: Intent.SUCCESS,
         })
+
         setReloadGrid(true)
       }
+
       if (!response) {
         openAlert({
-          text: 'Não foi possível criar o cliente',
+          text: 'Não foi possível cadastrar a peça',
           intent: Intent.DANGER,
         })
       }
     } catch (error) {
       const ErrorMessages = getErrorMessages(
         error.response?.data?.errors,
-        'Não foi possível criar o cliente'
+        'Não foi possível cadastrar a peça'
       )
 
       openAlert({
@@ -72,18 +104,110 @@ const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
     }
   }
 
+  const handleButtonUpdatePartOnClick = async () => {
+    if (!validate) {
+      return
+    }
+
+    const updatePayload = payload
+    delete updatePayload.id
+
+    try {
+      const response = await PartsService.update(payload.id as number, {
+        ...(payload as Piece),
+      })
+
+      if (response.status) {
+        showSuccessToast({
+          message: 'Peça atualizada com sucesso',
+          intent: Intent.SUCCESS,
+        })
+
+        setReloadGrid(true)
+      }
+
+      if (!response) {
+        openAlert({
+          text: 'Não foi possível atualizar a peça',
+          intent: Intent.DANGER,
+        })
+      }
+    } catch (error) {
+      const ErrorMessages = getErrorMessages(
+        error.response?.data?.errors,
+        'Não foi possível atualizar a peça'
+      )
+
+      openAlert({
+        text: ErrorMessages,
+        intent: Intent.DANGER,
+      })
+    }
+  }
+
+  const handleButtonDeletePartOnClick = async () => {
+    try {
+      const response = await PartsService.delete(payload.id as number)
+
+      if (response.status) {
+        showSuccessToast({
+          message: 'Item deletado com sucesso',
+          intent: Intent.SUCCESS,
+        })
+
+        setPayload({})
+
+        setReloadGrid(true)
+      }
+
+      if (!response) {
+        showErrorToast({
+          message: 'Não foi possível deletar o item selecionado',
+          intent: Intent.DANGER,
+        })
+      }
+    } catch (error) {
+      const ErrorMessages = getErrorMessages(
+        error.response?.data?.errors,
+        'Não foi possível deletar a peça'
+      )
+
+      openAlert({
+        text: ErrorMessages,
+        intent: Intent.DANGER,
+      })
+    }
+  }
+
+  const handleButtonNewOnClick = () => {
+    setPayload({})
+    setScreenStatus(ScreenStatus.NEW)
+
+    const referenceInput = document.getElementById('partReference')
+    referenceInput?.focus()
+  }
+
+  const handleButtonCancelOnClick = () => {
+    setPayload({})
+    setScreenStatus(ScreenStatus.VISUALIZE)
+  }
+
   const registrationButtonBarProps: RegistrationButtonBarProps = {
     screen,
+    handleNewButtonOnClick: handleButtonNewOnClick,
     handleSaveButtonOnClick:
-      screenStatus === ScreenStatus.NEW ? createPart : savePart,
-    handleDeleteButtonOnClick: deletePart,
+      screenStatus === ScreenStatus.NEW
+        ? handleButtonCreatePartOnClick
+        : handleButtonUpdatePartOnClick,
+    handleDeleteButtonOnClick: handleButtonDeletePartOnClick,
+    handleCancelButtonOnClick: handleButtonCancelOnClick,
   }
 
   const createOnChange =
-    (attributeName: string) => (evt: React.FormEvent<HTMLInputElement>) => {
+    (attributeName: string) => (evt: React.ChangeEvent<HTMLInputElement>) => {
       setPayload((prev: any) => ({
         ...prev,
-        [attributeName]: evt.currentTarget.value,
+        [attributeName]: evt.target.value,
       }))
     }
 
@@ -103,6 +227,7 @@ const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
                   label='Id:'
                   disabled={true}
                   itent='none'
+                  value={payload.id}
                   style={{ width: '100%' }}
                 />
               </div>
@@ -111,9 +236,11 @@ const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
                 <InputText
                   id='partReference'
                   label='Referência:'
-                  disabled={true}
+                  disabled={isStatusVizualize()}
                   itent='primary'
                   style={{ width: '100%' }}
+                  value={payload.reference}
+                  onChange={createOnChange('reference')}
                 />
               </div>
 
@@ -121,9 +248,12 @@ const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
                 <InputText
                   id='partName'
                   label='Nome:'
-                  disabled={false}
+                  disabled={isStatusVizualize()}
                   itent='primary'
                   style={{ width: '100%' }}
+                  value={payload.name}
+                  placeholder='Vela de ignição'
+                  onChange={createOnChange('name')}
                 />
               </div>
             </div>
@@ -133,9 +263,11 @@ const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
                 <InputText
                   id='partDescription'
                   label='Descrição:'
-                  disabled={false}
+                  disabled={isStatusVizualize()}
                   itent='primary'
                   style={{ width: '100%' }}
+                  value={payload.description}
+                  onChange={createOnChange('description')}
                 />
               </div>
 
@@ -143,10 +275,12 @@ const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
                 <InputText
                   id='partPrice'
                   label='Preço:'
-                  disabled={false}
+                  disabled={isStatusVizualize()}
                   placeholder='R$'
                   itent='primary'
                   style={{ width: '100%' }}
+                  value={payload.price}
+                  onChange={createOnChange('price')}
                 />
               </div>
             </div>
@@ -155,6 +289,9 @@ const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
 
         <div className='tableRow'>
           <PaginatedTable
+            onRowSelect={(row: { [key: string]: any }) => setPayload(row)}
+            enableGhostCells
+            renderMode={RenderMode.BATCH_ON_UPDATE}
             request={PartsService.getAll}
             containerProps={{
               style: {

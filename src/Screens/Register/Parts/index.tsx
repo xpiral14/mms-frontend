@@ -233,9 +233,10 @@ const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
                 <InputText
                   id='partId'
                   label='Id:'
-                  disabled={true}
                   itent='none'
                   value={payload.id}
+                  readOnly
+                  disabled={!payload}
                   style={{ width: '100%' }}
                 />
               </div>
@@ -244,7 +245,7 @@ const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
                 <InputText
                   id='partReference'
                   label='Referência:'
-                  disabled={isStatusVizualize()}
+                  readOnly={isStatusVizualize()}
                   itent='primary'
                   style={{ width: '100%' }}
                   value={payload.reference}
@@ -256,7 +257,7 @@ const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
                 <InputText
                   id='partName'
                   label='Nome:'
-                  disabled={isStatusVizualize()}
+                  readOnly={isStatusVizualize()}
                   itent='primary'
                   style={{ width: '100%' }}
                   value={payload.name}
@@ -271,7 +272,7 @@ const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
                 <InputText
                   id='partDescription'
                   label='Descrição:'
-                  disabled={isStatusVizualize()}
+                  readOnly={isStatusVizualize()}
                   itent='primary'
                   style={{ width: '100%' }}
                   value={payload.description}
@@ -283,7 +284,7 @@ const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
                 <InputText
                   id='partPrice'
                   label='Preço:'
-                  disabled={isStatusVizualize()}
+                  readOnly={isStatusVizualize()}
                   placeholder='R$'
                   itent='primary'
                   style={{ width: '100%' }}

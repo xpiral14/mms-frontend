@@ -42,13 +42,6 @@ const RegistrationButtonBar: React.FC<RegistrationButtonBarProps> = (
     }
   }
 
-  const handleButtonInfoOnClick = () => {
-    if (props?.handleButtonInfoOnClick) {
-      props?.handleButtonInfoOnClick()
-      return
-    }
-  }
-
   const handleEditButtonOnClick = () => {
     if (props?.handleEditButtonOnClick) {
       props?.handleEditButtonOnClick()
@@ -111,15 +104,6 @@ const RegistrationButtonBar: React.FC<RegistrationButtonBarProps> = (
         </Button>
 
         <Button
-          icon='info-sign'
-          intent={Intent.WARNING}
-          disabled={!Object.keys(payload) || screenStatus !== ScreenStatus.EDIT}
-          onClick={handleButtonInfoOnClick}
-        >
-          Detalhes
-        </Button>
-
-        <Button
           icon={
             <Icon
               icon='disable'
@@ -146,6 +130,17 @@ const RegistrationButtonBar: React.FC<RegistrationButtonBarProps> = (
         >
           Editar
         </Button>
+
+        {Boolean(props.handleButtonInfoOnClick) && (
+          <Button
+            icon='info-sign'
+            intent={Intent.WARNING}
+            disabled={!hasPayload || screenStatus !== ScreenStatus.EDIT}
+            onClick={props.handleButtonInfoOnClick}
+          >
+            Detalhes
+          </Button>
+        )}
 
         <Button
           icon='trash'

@@ -11,7 +11,7 @@ import {
 import { Body, Container, Footer } from './style'
 import { Card, Classes, Icon } from '@blueprintjs/core'
 import { Select } from '@blueprintjs/select'
-import { useEffect, useState } from 'react'
+import { memo, useEffect, useState } from 'react'
 import Paginated from '../../Contracts/Models/Paginated'
 import { useToast } from '../../Hooks/useToast'
 import debounce from '../../Util/debounce'
@@ -147,4 +147,4 @@ const PaginatedTable: React.FC<PaginatedTableProps> = ({
   )
 }
 
-export default PaginatedTable
+export default memo(PaginatedTable)

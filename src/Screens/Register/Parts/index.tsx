@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useCallback, useMemo } from 'react'
 import RegistrationButtonBar from '../../../Components/RegistrationButtonBar'
 import InputText from '../../../Components/InputText'
 import { Container, Header, Body } from './style'
@@ -180,17 +180,46 @@ const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
     }
   }
 
+  const columns = useMemo(
+    () => [
+      {
+        id: 1,
+        name: 'Referencia',
+        keyName: 'reference',
+      },
+      {
+        id: 2,
+        name: 'Nome',
+        keyName: 'name',
+      },
+      {
+        id: 3,
+        name: 'Descrição',
+        keyName: 'description',
+      },
+      {
+        id: 4,
+        name: 'Preço',
+        keyName: 'price',
+      },
+    ],
+    []
+  )
+
+  const containerProps = useMemo(
+    () => ({
+      style: {
+        height: '100%',
+      },
+    }),
+    []
+  )
   const handleButtonNewOnClick = () => {
     setPayload({})
     setScreenStatus(ScreenStatus.NEW)
 
     const referenceInput = document.getElementById('partReference')
     referenceInput?.focus()
-  }
-
-  const handleButtonCancelOnClick = () => {
-    setPayload({})
-    setScreenStatus(ScreenStatus.VISUALIZE)
   }
 
   const registrationButtonBarProps: RegistrationButtonBarProps = {
@@ -208,17 +237,19 @@ const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
         cancelButtonText: 'Cancelar',
       })
     },
-    handleCancelButtonOnClick: handleButtonCancelOnClick,
   }
 
   const createOnChange =
     (attributeName: string) => (evt: React.ChangeEvent<HTMLInputElement>) => {
       setPayload((prev: any) => ({
         ...prev,
-        [attributeName]: evt.target.value,
+        [attributeName]: evt.target.value || undefined,
       }))
     }
-
+  const onRowSelect = useCallback(
+    (row: { [key: string]: any }) => setPayload(row),
+    []
+  )
   return (
     <Container>
       <Header>
@@ -233,8 +264,7 @@ const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
                 <InputText
                   id='partId'
                   label='Id:'
-                  itent='none'
-                  value={payload.id}
+                  value={payload?.id}
                   readOnly
                   disabled={!payload}
                   style={{ width: '100%' }}
@@ -248,7 +278,7 @@ const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
                   readOnly={isStatusVizualize()}
                   itent='primary'
                   style={{ width: '100%' }}
-                  value={payload.reference}
+                  value={payload?.reference}
                   onChange={createOnChange('reference')}
                 />
               </div>
@@ -275,7 +305,7 @@ const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
                   readOnly={isStatusVizualize()}
                   itent='primary'
                   style={{ width: '100%' }}
-                  value={payload.description}
+                  value={payload?.description}
                   onChange={createOnChange('description')}
                 />
               </div>
@@ -288,7 +318,7 @@ const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
                   placeholder='R$'
                   itent='primary'
                   style={{ width: '100%' }}
-                  value={payload.price}
+                  value={payload?.price}
                   onChange={createOnChange('price')}
                 />
               </div>
@@ -298,37 +328,12 @@ const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
 
         <div className='tableRow'>
           <PaginatedTable
-            onRowSelect={(row: { [key: string]: any }) => setPayload(row)}
+            onRowSelect={onRowSelect}
             enableGhostCells
             renderMode={RenderMode.BATCH_ON_UPDATE}
             request={PartsService.getAll}
-            containerProps={{
-              style: {
-                height: '100%',
-              },
-            }}
-            columns={[
-              {
-                id: 1,
-                name: 'Referencia',
-                keyName: 'reference',
-              },
-              {
-                id: 2,
-                name: 'Nome',
-                keyName: 'name',
-              },
-              {
-                id: 3,
-                name: 'Descrição',
-                keyName: 'description',
-              },
-              {
-                id: 4,
-                name: 'Preço',
-                keyName: 'price',
-              },
-            ]}
+            containerProps={containerProps}
+            columns={columns}
           />
         </div>
       </Body>

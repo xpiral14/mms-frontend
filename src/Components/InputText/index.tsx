@@ -2,6 +2,7 @@ import { Classes, FormGroup } from '@blueprintjs/core'
 import InputMask from 'react-input-mask'
 import React from 'react'
 import { InputProps } from '../../Contracts/Components/InputProps'
+import joinClasses from '../../Util/joinClasses'
 
 const InputText: React.FC<InputProps> = (props) => {
   return (
@@ -27,7 +28,12 @@ const InputText: React.FC<InputProps> = (props) => {
           value={props.value}
           disabled={props.disabled}
           placeholder={props.placeholder}
-          className={Classes.INPUT}
+          className={joinClasses(
+            Classes.INPUT,
+            props.itent
+              ? (Classes as any)[('INTENT_' + props.itent.toUpperCase()) as any]
+              : ''
+          )}
           {...(props as any)}
         />
       )}

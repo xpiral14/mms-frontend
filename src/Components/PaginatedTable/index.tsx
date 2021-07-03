@@ -9,9 +9,11 @@ import {
   Table as BluePrintTable,
   TableLoadingOption,
 } from '@blueprintjs/table'
+
 import { Body, Container, Footer, PaginateContainer } from './style'
 import { Card, Classes, Icon, Button } from '@blueprintjs/core'
 import { useEffect, useMemo, useState } from 'react'
+import Paginated from '../../Contracts/Models/Paginated'
 import { useToast } from '../../Hooks/useToast'
 import { useGrid } from '../../Hooks/useGrid'
 import Select from '../Select'
@@ -216,4 +218,4 @@ const PaginatedTable: React.FC<PaginatedTableProps> = ({
   )
 }
 
-export default PaginatedTable
+export default memo(PaginatedTable)

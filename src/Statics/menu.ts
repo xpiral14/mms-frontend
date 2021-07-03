@@ -13,6 +13,7 @@ export default {
           id: 'register-parts',
           path: 'Register/Parts',
           headerTitle: 'Peças',
+          contentSize: '750px 500px'
         },
       },
       Clientes: {

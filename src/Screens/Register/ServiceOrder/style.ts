@@ -1,14 +1,16 @@
 import styled from 'styled-components'
 
-export const Container = styled.main``
+export const Container = styled.main`
+  height: 100%;
+`
 
 export const Header = styled.section``
 export const Body = styled.section`
+  height: calc(100% - 50px);
   flex-direction: column;
-  justify-content: space-between;
   margin-top: 5px;
   &,
-  > div {
+  > div:first-child {
     display: flex;
     gap: 10px;
   }

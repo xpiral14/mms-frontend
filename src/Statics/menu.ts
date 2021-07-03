@@ -21,7 +21,7 @@ export default {
         name: 'Clientes',
         screen: {
           id: 'register-costumer',
-          contentSize: '700px 350px',
+          contentSize: '900 500',
           icon: 'person',
           headerTitle: 'Clientes',
           path: 'Register/Costumer',

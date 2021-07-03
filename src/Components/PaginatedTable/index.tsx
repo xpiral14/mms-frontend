@@ -7,79 +7,128 @@ import {
   IRegion,
   SelectionModes,
   Table as BluePrintTable,
+  TableLoadingOption,
 } from '@blueprintjs/table'
-import { Body, Container, Footer } from './style'
-import { Card, Classes, Icon } from '@blueprintjs/core'
-import { Select } from '@blueprintjs/select'
-import { memo, useEffect, useState } from 'react'
+
+import { Body, Container, Footer, PaginateContainer } from './style'
+import { Card, Classes, Icon, Button } from '@blueprintjs/core'
+import { useEffect, useMemo, useState } from 'react'
 import Paginated from '../../Contracts/Models/Paginated'
 import { useToast } from '../../Hooks/useToast'
-import debounce from '../../Util/debounce'
 import { useGrid } from '../../Hooks/useGrid'
+import Select from '../Select'
+import { Option } from '../../Contracts/Components/Suggest'
+import { CSSProperties } from 'styled-components'
 
-const LimitSelect = Select.ofType<number>()
+const pageOptions: Option[] = [
+  {
+    label: '5',
+    value: 5,
+  },
+  {
+    label: '10',
+    value: 10,
+  },
+  {
+    label: '20',
+    value: 20,
+  },
+  {
+    label: '50',
+    value: 50,
+  },
+  {
+    label: '100',
+    value: 100,
+  },
+]
+
+const loadingOptions = [
+  TableLoadingOption.CELLS,
+  TableLoadingOption.ROW_HEADERS,
+]
 const PaginatedTable: React.FC<PaginatedTableProps> = ({
   columns,
   request,
   ...rest
 }) => {
-  const { reloadGrid, setReloadGrid } = useGrid()
-  const [page, setPage] = useState(0)
-  const [limit, setLimit] = useState(10)
+  const {
+    reloadGrid,
+    setReloadGrid,
+    page,
+    setPage,
+    limit,
+    setLimit,
+    setGridResponse,
+    gridResponse,
+  } = useGrid()
   const [selectedRegions, setselectedRegions] = useState<
     { cols: number[]; rows: number[] }[]
   >([])
-  const [response, setResponse] = useState<Paginated<any> | null>(null)
   const { showErrorToast } = useToast()
 
-  const loadRequestData = async () => {
-    try {
-      const response = await request(page + 1, limit)
-      setResponse(response.data)
-      setReloadGrid(false)
-    } catch (error) {
-      showErrorToast({
-        message: 'Erro ao obter dados',
-      })
-    }
-  }
-  const debounceRequest = debounce(loadRequestData, 300)
-
   useEffect(() => {
-    if (page !== null || reloadGrid) {
-      debounceRequest()
+    const loadRequestData = async () => {
+      try {
+        const response = await request(page + 1, limit)
+        setGridResponse(response.data)
+      } catch (error) {
+        showErrorToast({
+          message: 'Erro ao obter dados',
+        })
+      } finally {
+        setReloadGrid(false)
+      }
     }
-  }, [page, reloadGrid])
+    if (reloadGrid && limit) {
+      loadRequestData()
+    }
+  }, [reloadGrid, limit, page])
   const defaultCellRenderer = (key?: string) => (rowIndex: number) =>
     (
       <Cell style={{ width: '100%' }}>
-        {key ? response?.data?.[rowIndex]?.[key] || 'Sem valor' : 'Sem valor'}
+        {key
+          ? gridResponse?.data?.[rowIndex]?.[key] || 'Sem valor'
+          : 'Sem valor'}
       </Cell>
     )
 
   const cellRender = (callback: any) => (rowIndex: number) =>
-    callback(response?.data?.[rowIndex])
+    callback(gridResponse?.data?.[rowIndex])
 
-  const paginateOptions = {
-    marginPagesDisplayed: 1,
-    containerClassName: 'flex',
-    nextLinkClassName: Classes.BUTTON,
-    previousLinkClassName: Classes.BUTTON,
-    activeLinkClassName: Classes.INTENT_PRIMARY,
+  const paginateOptions = useMemo(
+    () =>
+      ({
+        marginPagesDisplayed: 1,
+        containerClassName: 'flex',
+        nextLinkClassName: `${Classes.BUTTON} ${
+          reloadGrid ? Classes.DISABLED : ''
+        }`,
+        previousLinkClassName: `${Classes.BUTTON} ${
+          reloadGrid ? Classes.DISABLED : ''
+        }`,
+        activeLinkClassName: `${
+          reloadGrid ? Classes.DISABLED : Classes.INTENT_PRIMARY
+        }`,
 
-    previousLabel: <Icon icon='arrow-left' />,
-    nextLabel: <Icon icon='arrow-right' />,
-    pageLinkClassName: Classes.BUTTON,
-    initialPage: page,
-    onPageChange: ({ selected }) => {
-      setPage(selected)
-    },
-    pageCount: response?.meta.last_page || 0,
-  } as ReactPaginateProps
+        previousLabel: <Icon icon='arrow-left' />,
+        nextLabel: <Icon icon='arrow-right' />,
+        pageLinkClassName: `${Classes.BUTTON} ${
+          reloadGrid ? `${Classes.BUTTON} ${Classes.DISABLED}` : ''
+        }`,
+        initialPage: page,
+        onPageChange: ({ selected }) => {
+          setPage(selected)
+          setReloadGrid(true)
+        },
+        pageCount: gridResponse?.meta.last_page || 0,
+      } as ReactPaginateProps),
+    [gridResponse, reloadGrid]
+  )
 
   useEffect(() => {
     if (selectedRegions.length) {
-      rest?.onRowSelect?.(response?.data[selectedRegions[0].rows[0]])
+      rest?.onRowSelect?.(gridResponse?.data[selectedRegions[0].rows[0]])
     }
   }, [selectedRegions])
   const renderColumns = () =>
@@ -94,52 +143,74 @@ const PaginatedTable: React.FC<PaginatedTableProps> = ({
         }
       />
     ))
+  const handleSelectRow = (s: any) => {
+    if (!s.length) return
+    setselectedRegions([
+      {
+        cols: [0, (columns?.length || 1) - 1],
+        rows: s[0].rows as ICellInterval,
+      },
+    ])
+  }
 
+  const cardStyle: CSSProperties = {
+    display: 'flex',
+    justifyContent: 'space-between',
+    width: '100%',
+    alignItems: 'center',
+    padding: '5px',
+  }
+
+  const handleButtonReloadGridClick = () => setReloadGrid(true)
+
+  const handlePageSelectChange = (option: Option) => {
+    setReloadGrid(true)
+    setLimit(option.value as number)
+  }
+
+  const selectedPage = useMemo(
+    () => ({ label: String(limit), value: limit }),
+    [limit]
+  )
   return (
     <Container style={{ width: '100%' }} {...rest?.containerProps}>
-      <Body>
+      <Body height={rest.height}>
         <BluePrintTable
+          loadingOptions={reloadGrid ? loadingOptions : undefined}
           selectionModes={SelectionModes.ROWS_AND_CELLS}
           selectedRegions={selectedRegions as IRegion[]}
-          onSelection={(s) => {
-            if (!s.length) return
-            setselectedRegions([
-              {
-                cols: [0, (columns?.length || 1) - 1],
-                rows: s[0].rows as ICellInterval,
-              },
-            ])
-          }}
-          numRows={response?.data?.length}
+          onSelection={handleSelectRow}
+          numRows={gridResponse?.data?.length}
           {...rest}
         >
           {renderColumns()}
         </BluePrintTable>
       </Body>
-      {Boolean(response?.meta) && (
+      {Boolean(gridResponse?.meta) && (
         <Footer>
-          <Card
-            style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              width: '100%',
-              alignItems: 'center',
-              padding: '5px',
-            }}
-          >
+          <Card style={cardStyle}>
             <div>
-              Mostrando {response?.data.length} de {response?.meta.total}
-              <LimitSelect
-                itemRenderer={(item, itemProps) => (
-                  <div {...(itemProps as any)}>{item}</div>
-                )}
-                items={[1, 2, 3, 4]}
-                onItemSelect={setLimit}
+              Mostrando {gridResponse?.data.length} de
+              {gridResponse?.meta.total}
+            </div>
+
+            <PaginateContainer>
+              <Button
+                icon='reset'
+                loading={reloadGrid}
+                onClick={handleButtonReloadGridClick}
               />
-            </div>
-            <div>
-              <Paginate {...paginateOptions} />
-            </div>
+              <div>
+                <Select
+                  activeItem={selectedPage}
+                  items={pageOptions}
+                  onChange={handlePageSelectChange}
+                />
+              </div>
+              <div>
+                <Paginate {...paginateOptions} />
+              </div>
+            </PaginateContainer>
           </Card>
         </Footer>
       )}

@@ -13,7 +13,7 @@ export default {
           id: 'register-parts',
           path: 'Register/Parts',
           headerTitle: 'Peças',
-          contentSize: '750px 500px'
+          contentSize: '750px 500px',
         },
       },
       Clientes: {
@@ -35,6 +35,16 @@ export default {
           contentSize: '900 500',
           headerTitle: 'Registrar ordem de serviço',
           path: 'Register/ServiceOrder',
+        },
+      },
+      Servico: {
+        name: 'Serviços',
+        icon: 'add',
+        screen: {
+          id: 'register-order',
+          contentSize: '900 500',
+          headerTitle: 'Cadastrar serviços',
+          path: 'Register/Service',
         },
       },
     },

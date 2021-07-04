@@ -6,8 +6,16 @@ export default {
     isMain: true,
     icon: 'drive-time',
     items: {
+      Servicos: {
+        name: 'Serviços',
+        screen: {
+          id: 'register-services',
+          path: 'Register/Services',
+          headerTitle: 'Criação de serviços',
+          contentSize: '750px 500px'
+        },
+      },
       Pecas: {
-        icon: 'cog',
         name: 'Peças',
         screen: {
           id: 'register-parts',
@@ -17,7 +25,6 @@ export default {
         },
       },
       Clientes: {
-        icon: 'cog',
         name: 'Clientes',
         screen: {
           id: 'register-costumer',

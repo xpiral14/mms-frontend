@@ -3,7 +3,7 @@ import RegistrationButtonBar from '../../../Components/RegistrationButtonBar'
 import InputText from '../../../Components/InputText'
 import { Container, Header, Body } from './style'
 import PaginatedTable from '../../../Components/PaginatedTable'
-import PartsService from '../../../Services/PartsService'
+import ServicesService from '../../../Services/ServicesService'
 import ScreenProps from '../../../Contracts/Components/ScreenProps'
 import { RegistrationButtonBarProps } from '../../../Contracts/Components/RegistrationButtonBarProps'
 import { useGrid } from '../../../Hooks/useGrid'
@@ -12,14 +12,14 @@ import { useAlert } from '../../../Hooks/useAlert'
 import { ScreenStatus } from '../../../Constants/Enums'
 import { Intent } from '@blueprintjs/core'
 import { useToast } from '../../../Hooks/useToast'
-import Piece from '../../../Contracts/Models/Piece'
 import useValidation from '../../../Hooks/useValidation'
 import { Validation } from '../../../Contracts/Hooks/useValidation'
 import { RenderMode } from '@blueprintjs/table'
+import Service from '../../../Contracts/Models/Service'
 
 const ServiceScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
   const { payload, setPayload, screenStatus, setScreenStatus } =
-    useWindow<Piece>()
+    useWindow<Service>()
 
   const createValidation = (keyName: any) => () =>
     Boolean((payload as any)[keyName])
@@ -28,17 +28,17 @@ const ServiceScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
     {
       check: createValidation('partReference'),
       errorMessage: 'A referência é obrigatória',
-      inputId: 'partReference',
+      inputId: 'serviceReference',
     },
     {
       check: createValidation('partName'),
       errorMessage: 'O nome é obrigatório',
-      inputId: 'partName',
+      inputId: 'serviceName',
     },
     {
       check: createValidation('price'),
       errorMessage: 'O preço é obrigatório',
-      inputId: 'partPrice',
+      inputId: 'servicePrice',
     },
   ]
   const { validate } = useValidation(validations)
@@ -64,7 +64,7 @@ const ServiceScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
     )
   }
 
-  const handleButtonCreatePartOnClick = async () => {
+  const handleButtonCreateServiceOnClick = async () => {
     if (!validate) {
       return
     }
@@ -74,11 +74,11 @@ const ServiceScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
         ...payload,
       }
 
-      const response = await PartsService.create(createPayload as any)
+      const response = await ServicesService.create(createPayload as any)
 
       if (response.status) {
         showSuccessToast({
-          message: 'Peça cadastrada com sucesso',
+          message: 'Serviço cadastrado com sucesso',
           intent: Intent.SUCCESS,
         })
 
@@ -87,14 +87,14 @@ const ServiceScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
 
       if (!response) {
         openAlert({
-          text: 'Não foi possível cadastrar a peça',
+          text: 'Não foi possível cadastrar o serviço',
           intent: Intent.DANGER,
         })
       }
     } catch (error) {
       const errorMessages = getErrorMessages(
         error.response?.data?.errors,
-        'Não foi possível cadastrar a peça'
+        'Não foi possível cadastrar o serviço'
       )
 
       openAlert({
@@ -104,7 +104,7 @@ const ServiceScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
     }
   }
 
-  const handleButtonUpdatePartOnClick = async () => {
+  const handleButtonUpdateServiceOnClick = async () => {
     if (!validate) {
       return
     }
@@ -113,14 +113,14 @@ const ServiceScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
     delete updatePayload.id
 
     try {
-      const response = await PartsService.update(
+      const response = await ServicesService.update(
         payload.id as number,
-        payload as Piece
+        payload as Service
       )
 
       if (response.status) {
         showSuccessToast({
-          message: 'Peça atualizada com sucesso',
+          message: 'Serviço atualizado com sucesso',
           intent: Intent.SUCCESS,
         })
 
@@ -129,14 +129,14 @@ const ServiceScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
 
       if (!response) {
         openAlert({
-          text: 'Não foi possível atualizar a peça',
+          text: 'Não foi possível atualizar o serviço',
           intent: Intent.DANGER,
         })
       }
     } catch (error) {
       const ErrorMessages = getErrorMessages(
         error.response?.data?.errors,
-        'Não foi possível atualizar a peça'
+        'Não foi possível atualizar o serviço'
       )
 
       openAlert({
@@ -146,9 +146,9 @@ const ServiceScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
     }
   }
 
-  const handleButtonDeletePartOnClick = async () => {
+  const handleButtonDeleteServiceOnClick = async () => {
     try {
-      const response = await PartsService.delete(payload.id as number)
+      const response = await ServicesService.delete(payload.id as number)
 
       if (response.status) {
         showSuccessToast({
@@ -170,7 +170,7 @@ const ServiceScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
     } catch (error) {
       const ErrorMessages = getErrorMessages(
         error.response?.data?.errors,
-        'Não foi possível deletar a peça'
+        'Não foi possível deletar o serviço'
       )
 
       openAlert({
@@ -214,11 +214,12 @@ const ServiceScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
     }),
     []
   )
+
   const handleButtonNewOnClick = () => {
     setPayload({})
     setScreenStatus(ScreenStatus.NEW)
 
-    const referenceInput = document.getElementById('partReference')
+    const referenceInput = document.getElementById('serviceReference')
     referenceInput?.focus()
   }
 
@@ -227,13 +228,13 @@ const ServiceScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
     handleNewButtonOnClick: handleButtonNewOnClick,
     handleSaveButtonOnClick:
       screenStatus === ScreenStatus.NEW
-        ? handleButtonCreatePartOnClick
-        : handleButtonUpdatePartOnClick,
+        ? handleButtonCreateServiceOnClick
+        : handleButtonUpdateServiceOnClick,
     handleDeleteButtonOnClick: () => {
       openAlert({
         text: 'Deletar o item selecionado?',
         intent: Intent.DANGER,
-        onConfirm: handleButtonDeletePartOnClick,
+        onConfirm: handleButtonDeleteServiceOnClick,
         cancelButtonText: 'Cancelar',
       })
     },
@@ -246,10 +247,12 @@ const ServiceScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
         [attributeName]: evt.target.value || undefined,
       }))
     }
+
   const onRowSelect = useCallback(
     (row: { [key: string]: any }) => setPayload(row),
     []
   )
+
   return (
     <Container>
       <Header>
@@ -262,7 +265,7 @@ const ServiceScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
             <div className='flexRow'>
               <div style={{ width: '10%' }}>
                 <InputText
-                  id='partId'
+                  id='serviceId'
                   label='Id:'
                   value={payload?.id}
                   readOnly
@@ -273,7 +276,7 @@ const ServiceScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
 
               <div>
                 <InputText
-                  id='partReference'
+                  id='serviceReference'
                   label='Referência:'
                   readOnly={isStatusVizualize()}
                   itent='primary'
@@ -285,7 +288,7 @@ const ServiceScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
 
               <div style={{ width: '90%' }}>
                 <InputText
-                  id='partName'
+                  id='serviceName'
                   label='Nome:'
                   readOnly={isStatusVizualize()}
                   itent='primary'
@@ -300,7 +303,7 @@ const ServiceScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
             <div className='flexRow'>
               <div style={{ width: '80%' }}>
                 <InputText
-                  id='partDescription'
+                  id='serviceDescription'
                   label='Descrição:'
                   readOnly={isStatusVizualize()}
                   itent='primary'
@@ -312,7 +315,7 @@ const ServiceScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
 
               <div style={{ width: '20%' }}>
                 <InputText
-                  id='partPrice'
+                  id='servicePrice'
                   label='Preço:'
                   readOnly={isStatusVizualize()}
                   placeholder='R$'
@@ -331,7 +334,7 @@ const ServiceScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
             onRowSelect={onRowSelect}
             enableGhostCells
             renderMode={RenderMode.BATCH_ON_UPDATE}
-            request={PartsService.getAll}
+            request={ServicesService.getAll}
             containerProps={containerProps}
             columns={columns}
           />

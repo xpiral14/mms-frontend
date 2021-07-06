@@ -43,7 +43,7 @@ export default {
         screen: {
           id: 'register-order',
           contentSize: '900 500',
-          headerTitle: 'Cadastrar serviços',
+          headerTitle: 'Serviços',
           path: 'Register/Service',
         },
       },

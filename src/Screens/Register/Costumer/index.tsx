@@ -15,7 +15,7 @@ import { useToast } from '../../../Hooks/useToast'
 import useValidation from '../../../Hooks/useValidation'
 import { useWindow } from '../../../Hooks/useWindow'
 import CostumerService from '../../../Services/CostumerService'
-import { Container, Header, Body } from './style'
+import { Container, Header, Body, FormContainer, TableContainer } from './style'
 
 const personTypesOptions = [
   {
@@ -215,113 +215,116 @@ const CostumerRegister: React.FC<CostumerRegisterScreenProps> = ({
         <RegistrationButtonBar {...registratioButtonBarProps} />
       </Header>
       <Body>
-        <div>
-          <RadioGroup
-            id='personTypes'
-            selectedValue={payload.personType}
-            label='Tipo de pessoa'
-            inline
-            disabled={isStatusVizualize()}
-            radios={personTypesOptions}
-            onChange={(evt) =>
-              setPayload((prev) => ({
-                ...prev,
-                cpf: '',
-                cnpj: '',
-                personType: evt.currentTarget.value as PersonType,
-              }))
-            }
-          />
-        </div>
-        <div>
-          {Boolean(payload.personType) &&
-            (payload.personType === PersonType.PHYSICAL ? (
-              <InputText
-                value={payload?.cpf}
-                id='CPF'
-                mask='999.999.999-99'
-                label='CPF'
-                placeholder='Digite o email do cliente'
-                disabled={isStatusVizualize()}
-                onChange={createOnChange('cpf')}
-              />
-            ) : (
-              <InputText
-                value={payload.cnpj}
-                id='CNPJ'
-                mask='99.999.999/9999-99'
-                label='CNPJ'
-                placeholder='Digite o email do cliente'
-                disabled={isStatusVizualize()}
-                onChange={createOnChange('cnpj')}
-              />
-            ))}
-          <InputText
-            value={payload?.name || ''}
-            id='name'
-            label='Nome do cliente'
-            placeholder='Digite o nome do cliente'
-            disabled={isStatusVizualize()}
-            onChange={createOnChange('name')}
-            required
-          />
+        <FormContainer>
+          <div>
+            <RadioGroup
+              id='personTypes'
+              selectedValue={payload.personType}
+              label='Tipo de pessoa'
+              inline
+              disabled={isStatusVizualize()}
+              radios={personTypesOptions}
+              onChange={(evt) =>
+                setPayload((prev) => ({
+                  ...prev,
+                  cpf: '',
+                  cnpj: '',
+                  personType: evt.currentTarget.value as PersonType,
+                }))
+              }
+            />
+          </div>
+          <div>
+            {Boolean(payload.personType) &&
+              (payload.personType === PersonType.PHYSICAL ? (
+                <InputText
+                  value={payload?.cpf}
+                  id='CPF'
+                  mask='999.999.999-99'
+                  label='CPF'
+                  placeholder='Digite o email do cliente'
+                  disabled={isStatusVizualize()}
+                  onChange={createOnChange('cpf')}
+                />
+              ) : (
+                <InputText
+                  value={payload.cnpj}
+                  id='CNPJ'
+                  mask='99.999.999/9999-99'
+                  label='CNPJ'
+                  placeholder='Digite o email do cliente'
+                  disabled={isStatusVizualize()}
+                  onChange={createOnChange('cnpj')}
+                />
+              ))}
+            <InputText
+              value={payload?.name || ''}
+              id='name'
+              label='Nome do cliente'
+              placeholder='Digite o nome do cliente'
+              disabled={isStatusVizualize()}
+              onChange={createOnChange('name')}
+              required
+            />
 
-          <InputText
-            value={payload?.email || ''}
-            id='Email'
-            label='Email do cliente'
-            placeholder='Digite o email do cliente'
-            disabled={isStatusVizualize()}
-            onChange={createOnChange('email')}
+            <InputText
+              value={payload?.email || ''}
+              id='Email'
+              label='Email do cliente'
+              placeholder='Digite o email do cliente'
+              disabled={isStatusVizualize()}
+              onChange={createOnChange('email')}
+            />
+            <InputText
+              value={payload?.phone || ''}
+              id='costumer-register-phone'
+              required
+              mask='(99) 99999-9999'
+              label='Telefone'
+              placeholder='Digite o Telefone do cliente'
+              disabled={isStatusVizualize()}
+              onChange={createOnChange('phone')}
+            />
+          </div>
+        </FormContainer>
+
+        <TableContainer>
+          <PaginatedTable
+            containerProps={{
+              style: {
+                overflowY: 'scrool',
+                width: '100%',
+              },
+            }}
+            columns={[
+              {
+                id: 1,
+                name: 'Nome',
+                keyName: 'name',
+              },
+              {
+                id: 1,
+                name: 'CPF',
+                keyName: 'cpf',
+              },
+              {
+                id: 1,
+                name: 'Telefone',
+                keyName: 'phone',
+              },
+              {
+                id: 1,
+                name: 'Email',
+                keyName: 'email',
+              },
+            ]}
+            request={CostumerService.getAll as any}
+            onRowSelect={(row) => {
+              setScreenStatus(ScreenStatus.VISUALIZE)
+              setPayload(row)
+            }}
           />
-          <InputText
-            value={payload?.phone || ''}
-            id='costumer-register-phone'
-            required
-            mask='(99) 99999-9999'
-            label='Telefone'
-            placeholder='Digite o Telefone do cliente'
-            disabled={isStatusVizualize()}
-            onChange={createOnChange('phone')}
-          />
-        </div>
-        <PaginatedTable
-          containerProps={{
-            style: {
-              height: '300px',
-              maxHeight: '100px',
-              overflowY: 'scrool',
-              width: '100%',
-            },
-          }}
-          columns={[
-            {
-              id: 1,
-              name: 'Nome',
-              keyName: 'name',
-            },
-            {
-              id: 1,
-              name: 'CPF',
-              keyName: 'cpf',
-            },
-            {
-              id: 1,
-              name: 'Telefone',
-              keyName: 'phone',
-            },
-            {
-              id: 1,
-              name: 'Email',
-              keyName: 'email',
-            },
-          ]}
-          request={CostumerService.getAll as any}
-          onRowSelect={(row) => {
-            setScreenStatus(ScreenStatus.VISUALIZE)
-            setPayload(row)
-          }}
-        />
+        </TableContainer>
       </Body>
     </Container>
   )

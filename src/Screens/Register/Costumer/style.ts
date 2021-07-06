@@ -1,19 +1,26 @@
 import styled from 'styled-components'
 
-export const Container = styled.main``
+export const Container = styled.main`
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+`
 
 export const Header = styled.section``
 export const Body = styled.section`
+  flex: 1;
+  display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  margin-top: 5px;
-  &,
+  height: 100%;
+`
+export const FormContainer = styled.div`
   > div {
     display: flex;
     gap: 10px;
-  }
-
-  > div {
     flex-wrap: wrap;
   }
+`
+export const TableContainer = styled.div`
+  max-height: 335px;
+  overflow-y: scroll;
 `

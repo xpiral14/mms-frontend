@@ -1,26 +1,41 @@
-import styled from 'styled-components'
+import styled, { css } from 'styled-components'
 
 export const Container = styled.div`
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+
   [class='bp3-table-quadrant bp3-table-quadrant-main'] {
-    max-height: ${(p) => p.style?.maxHeight};
-    height: ${(p) => p.style?.height};
     overflow-y: ${(p) => p.style?.overflowY};
     width: ${(p) => p.style?.width};
   }
 `
 
-export const Body = styled.section`
-  width: 100%;
+export const Body = styled.div<{ height?: string }>`
+  flex: 1;
+  height: ${(p) =>
+    css`
+      ${p.height}
+    ` || 'inherit'};
 `
 
-export const Footer = styled.section`
+export const Footer = styled.div`
   margin-top: 5px;
-  display: flex;
-  justify-content: space-between;
-  flex-direction: row-reverse;
-  width: 100%;
   ul {
     list-style-type: none !important;
     margin: 0;
+  }
+  .bp3-form-group {
+    margin: 0;
+  }
+`
+
+export const PaginateContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
+  gap: 5px;
+
+  > ul {
+    padding: 0 !important;
   }
 `

@@ -15,6 +15,7 @@ export interface PaginatedTableProps extends TableProps {
     keyName?: string
     formatText?: (column: string) => React.ReactNode
   })[]
+  height?: string
   request: (
     page: number,
     limit: number,

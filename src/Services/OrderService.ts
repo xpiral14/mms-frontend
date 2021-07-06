@@ -2,11 +2,10 @@ import api from '../Config/api'
 import Order from '../Contracts/Models/Order'
 import Paginated from '../Contracts/Models/Paginated'
 
+const DEFAULT_PATH = '/order'
 export default class OrderService {
-  static DEFAULT_PATH = '/company/order'
-
   static async getAll(page: number, limit: number, query: object) {
-    return api.get<Paginated<Order>>('/company/order', {
+    return api.get<Paginated<Order>>(DEFAULT_PATH, {
       params: {
         page,
         limit,
@@ -16,6 +15,6 @@ export default class OrderService {
   }
 
   static async getOne(orderId: number) {
-    return api.get<Order>(`${this.DEFAULT_PATH}/${orderId}`)
+    return api.get<Order>(`${DEFAULT_PATH}/${orderId}`)
   }
 }

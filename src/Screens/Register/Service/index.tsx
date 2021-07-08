@@ -26,12 +26,12 @@ const ServiceScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
 
   const validations: Validation[] = [
     {
-      check: createValidation('serviceReference'),
+      check: createValidation('reference'),
       errorMessage: 'A referência é obrigatória',
       inputId: 'serviceReference',
     },
     {
-      check: createValidation('serviceName'),
+      check: createValidation('name'),
       errorMessage: 'O nome é obrigatório',
       inputId: 'serviceName',
     },

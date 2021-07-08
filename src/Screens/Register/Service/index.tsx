@@ -26,23 +26,18 @@ const ServiceScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
 
   const validations: Validation[] = [
     {
-      check: createValidation('partReference'),
+      check: createValidation('serviceReference'),
       errorMessage: 'A referência é obrigatória',
       inputId: 'serviceReference',
     },
     {
-      check: createValidation('partName'),
+      check: createValidation('serviceName'),
       errorMessage: 'O nome é obrigatório',
       inputId: 'serviceName',
     },
-    {
-      check: createValidation('price'),
-      errorMessage: 'O preço é obrigatório',
-      inputId: 'servicePrice',
-    },
   ]
-  const { validate } = useValidation(validations)
 
+  const { validate } = useValidation(validations)
   const { setReloadGrid } = useGrid()
   const { showErrorToast, showSuccessToast } = useToast()
   const { openAlert } = useAlert()
@@ -65,7 +60,7 @@ const ServiceScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
   }
 
   const handleButtonCreateServiceOnClick = async () => {
-    if (!validate) {
+    if (!validate()) {
       return
     }
 
@@ -105,7 +100,7 @@ const ServiceScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
   }
 
   const handleButtonUpdateServiceOnClick = async () => {
-    if (!validate) {
+    if (!validate()) {
       return
     }
 
@@ -183,6 +178,11 @@ const ServiceScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
   const columns = useMemo(
     () => [
       {
+        id: 5,
+        name: 'Código',
+        keyName: 'id',
+      },
+      {
         id: 1,
         name: 'Referencia',
         keyName: 'reference',
@@ -196,11 +196,6 @@ const ServiceScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
         id: 3,
         name: 'Descrição',
         keyName: 'description',
-      },
-      {
-        id: 4,
-        name: 'Preço',
-        keyName: 'price',
       },
     ],
     []
@@ -268,8 +263,7 @@ const ServiceScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
                   id='serviceId'
                   label='Id:'
                   value={payload?.id}
-                  readOnly
-                  disabled={!payload}
+                  disabled
                   style={{ width: '100%' }}
                 />
               </div>
@@ -278,7 +272,8 @@ const ServiceScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
                 <InputText
                   id='serviceReference'
                   label='Referência:'
-                  readOnly={isStatusVizualize()}
+                  required
+                  disabled={isStatusVizualize()}
                   itent='primary'
                   style={{ width: '100%' }}
                   value={payload?.reference}
@@ -290,7 +285,8 @@ const ServiceScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
                 <InputText
                   id='serviceName'
                   label='Nome:'
-                  readOnly={isStatusVizualize()}
+                  required
+                  disabled={isStatusVizualize()}
                   itent='primary'
                   style={{ width: '100%' }}
                   value={payload.name}
@@ -301,28 +297,15 @@ const ServiceScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
             </div>
 
             <div className='flexRow'>
-              <div style={{ width: '80%' }}>
+              <div style={{ width: '100%' }}>
                 <InputText
                   id='serviceDescription'
                   label='Descrição:'
-                  readOnly={isStatusVizualize()}
+                  disabled={isStatusVizualize()}
                   itent='primary'
                   style={{ width: '100%' }}
                   value={payload?.description}
                   onChange={createOnChange('description')}
-                />
-              </div>
-
-              <div style={{ width: '20%' }}>
-                <InputText
-                  id='servicePrice'
-                  label='Preço:'
-                  readOnly={isStatusVizualize()}
-                  placeholder='R$'
-                  itent='primary'
-                  style={{ width: '100%' }}
-                  value={payload?.price}
-                  onChange={createOnChange('price')}
                 />
               </div>
             </div>

@@ -265,8 +265,7 @@ const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
                   id='partId'
                   label='Id:'
                   value={payload?.id}
-                  readOnly
-                  disabled={!payload}
+                  disabled
                   style={{ width: '100%' }}
                 />
               </div>
@@ -275,7 +274,7 @@ const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
                 <InputText
                   id='partReference'
                   label='Referência:'
-                  readOnly={isStatusVizualize()}
+                  disabled={isStatusVizualize()}
                   itent='primary'
                   style={{ width: '100%' }}
                   value={payload?.reference}
@@ -287,7 +286,7 @@ const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
                 <InputText
                   id='partName'
                   label='Nome:'
-                  readOnly={isStatusVizualize()}
+                  disabled={isStatusVizualize()}
                   itent='primary'
                   style={{ width: '100%' }}
                   value={payload.name}
@@ -302,7 +301,7 @@ const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
                 <InputText
                   id='partDescription'
                   label='Descrição:'
-                  readOnly={isStatusVizualize()}
+                  disabled={isStatusVizualize()}
                   itent='primary'
                   style={{ width: '100%' }}
                   value={payload?.description}
@@ -314,7 +313,7 @@ const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
                 <InputText
                   id='partPrice'
                   label='Preço:'
-                  readOnly={isStatusVizualize()}
+                  disabled={isStatusVizualize()}
                   placeholder='R$'
                   itent='primary'
                   style={{ width: '100%' }}

@@ -265,7 +265,7 @@ const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
                   id='partId'
                   label='Id:'
                   value={payload?.id || ''}
-                  disabled={screenStatus === ScreenStatus.NEW}
+                  disabled
                   style={{ width: '100%' }}
                 />
               </div>
@@ -275,6 +275,7 @@ const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
                   id='partReference'
                   label='Referência:'
                   disabled={isStatusVizualize()}
+                  itent='primary'
                   style={{ width: '100%' }}
                   value={payload?.reference || ''}
                   onChange={createOnChange('reference')}

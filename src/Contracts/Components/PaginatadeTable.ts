@@ -19,7 +19,7 @@ export interface PaginatedTableProps extends TableProps {
   request: (
     page: number,
     limit: number,
-    query?: object
+    parPage?: number
   ) => Promise<AxiosResponse<Paginated<any>>>
   onRowSelect?: (row: any) => void
 }

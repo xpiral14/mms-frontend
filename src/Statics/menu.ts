@@ -6,22 +6,13 @@ export default {
     isMain: true,
     icon: 'drive-time',
     items: {
-      Servicos: {
-        name: 'Serviços',
-        screen: {
-          id: 'register-services',
-          path: 'Register/Services',
-          headerTitle: 'Criação de serviços',
-          contentSize: '750px 500px'
-        },
-      },
       Pecas: {
         name: 'Peças',
         screen: {
           id: 'register-parts',
           path: 'Register/Parts',
           headerTitle: 'Peças',
-          contentSize: '750px 500px'
+          contentSize: '750px 500px',
         },
       },
       Clientes: {
@@ -42,6 +33,16 @@ export default {
           contentSize: '900 500',
           headerTitle: 'Registrar ordem de serviço',
           path: 'Register/ServiceOrder',
+        },
+      },
+      Servico: {
+        name: 'Serviços',
+        icon: 'add',
+        screen: {
+          id: 'register-order',
+          contentSize: '900 500',
+          headerTitle: 'Criação de Serviços',
+          path: 'Register/Service',
         },
       },
     },

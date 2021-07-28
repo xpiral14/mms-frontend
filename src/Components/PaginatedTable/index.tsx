@@ -12,12 +12,13 @@ import {
 
 import { Body, Container, Footer, PaginateContainer } from './style'
 import { Card, Classes, Icon, Button } from '@blueprintjs/core'
-import { memo, useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useToast } from '../../Hooks/useToast'
 import { useGrid } from '../../Hooks/useGrid'
 import Select from '../Select'
 import { Option } from '../../Contracts/Components/Suggest'
 import { CSSProperties } from 'styled-components'
+import React from 'react'
 
 const pageOptions: Option[] = [
   {
@@ -217,4 +218,4 @@ const PaginatedTable: React.FC<PaginatedTableProps> = ({
   )
 }
 
-export default memo(PaginatedTable)
+export default React.memo(PaginatedTable)

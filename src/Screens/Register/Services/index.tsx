@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react'
+import React, { useCallback, useEffect, useMemo } from 'react'
 import RegistrationButtonBar from '../../../Components/RegistrationButtonBar'
 import InputText from '../../../Components/InputText'
 import { Container, Header, Body } from './style'
@@ -21,6 +21,10 @@ import Service from '../../../Contracts/Models/Service'
 const ServicesScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
   const { payload, setPayload, screenStatus, setScreenStatus } =
     useWindow<Service>()
+
+  useEffect(() => {
+    console.log('payload', payload)
+  }, [payload])
 
   const createValidation = (keyName: any) => () =>
     Boolean((payload as any)[keyName])
@@ -264,9 +268,8 @@ const ServicesScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
                 <InputText
                   id='partId'
                   label='Id:'
-                  value={payload?.id}
-                  readOnly
-                  disabled={!payload}
+                  value={payload?.id || ''}
+                  disabled={screenStatus === ScreenStatus.NEW}
                   style={{ width: '100%' }}
                 />
               </div>
@@ -275,10 +278,9 @@ const ServicesScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
                 <InputText
                   id='partReference'
                   label='Referência:'
-                  readOnly={isStatusVizualize}
-                  itent='primary'
+                  disabled={isStatusVizualize}
                   style={{ width: '100%' }}
-                  value={payload?.reference}
+                  value={payload?.reference || ''}
                   onChange={createOnChange('reference')}
                 />
               </div>
@@ -287,10 +289,9 @@ const ServicesScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
                 <InputText
                   id='partName'
                   label='Nome:'
-                  readOnly={isStatusVizualize}
-                  itent='primary'
+                  disabled={isStatusVizualize}
                   style={{ width: '100%' }}
-                  value={payload.name}
+                  value={payload.name || ''}
                   placeholder='Vela de ignição'
                   onChange={createOnChange('name')}
                 />
@@ -302,11 +303,10 @@ const ServicesScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
                 <InputText
                   id='partDescription'
                   label='Descrição:'
-                  readOnly={isStatusVizualize}
-                  itent='primary'
-                  style={{ width: '100%' }}
-                  value={payload?.description}
-                  onChange={createOnChange('description')}
+                  disabled={isStatusVizualize}
+                  style={{ width: '100%'}}
+                  value={payload?.description || ''}
+                  onChange={(e) => setPayload(prev => ({...prev, description: e.target.value}))}
                 />
               </div>
             </div>

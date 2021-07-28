@@ -12,8 +12,7 @@ import {
 
 import { Body, Container, Footer, PaginateContainer } from './style'
 import { Card, Classes, Icon, Button } from '@blueprintjs/core'
-import { useEffect, useMemo, useState } from 'react'
-import Paginated from '../../Contracts/Models/Paginated'
+import { memo, useEffect, useMemo, useState } from 'react'
 import { useToast } from '../../Hooks/useToast'
 import { useGrid } from '../../Hooks/useGrid'
 import Select from '../Select'

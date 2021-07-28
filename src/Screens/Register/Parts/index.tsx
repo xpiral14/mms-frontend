@@ -264,9 +264,8 @@ const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
                 <InputText
                   id='partId'
                   label='Id:'
-                  value={payload?.id}
-                  readOnly
-                  disabled={!payload}
+                  value={payload?.id || ''}
+                  disabled={screenStatus === ScreenStatus.NEW}
                   style={{ width: '100%' }}
                 />
               </div>
@@ -275,10 +274,9 @@ const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
                 <InputText
                   id='partReference'
                   label='Referência:'
-                  readOnly={isStatusVizualize()}
-                  itent='primary'
+                  disabled={isStatusVizualize()}
                   style={{ width: '100%' }}
-                  value={payload?.reference}
+                  value={payload?.reference || ''}
                   onChange={createOnChange('reference')}
                 />
               </div>
@@ -287,10 +285,9 @@ const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
                 <InputText
                   id='partName'
                   label='Nome:'
-                  readOnly={isStatusVizualize()}
-                  itent='primary'
+                  disabled={isStatusVizualize()}
                   style={{ width: '100%' }}
-                  value={payload.name}
+                  value={payload.name || ''}
                   placeholder='Vela de ignição'
                   onChange={createOnChange('name')}
                 />
@@ -302,10 +299,9 @@ const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
                 <InputText
                   id='partDescription'
                   label='Descrição:'
-                  readOnly={isStatusVizualize()}
-                  itent='primary'
+                  disabled={isStatusVizualize()}
                   style={{ width: '100%' }}
-                  value={payload?.description}
+                  value={payload?.description || ''}
                   onChange={createOnChange('description')}
                 />
               </div>
@@ -314,11 +310,10 @@ const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
                 <InputText
                   id='partPrice'
                   label='Preço:'
-                  readOnly={isStatusVizualize()}
+                  disabled={isStatusVizualize()}
                   placeholder='R$'
-                  itent='primary'
                   style={{ width: '100%' }}
-                  value={payload?.price}
+                  value={payload?.price || ''}
                   onChange={createOnChange('price')}
                 />
               </div>

@@ -1,3 +1,5 @@
+import { PersonType } from '../../Constants/Enums'
+
 export default interface Costumer {
   id: number
   companyId: number
@@ -10,4 +12,5 @@ export default interface Costumer {
   cpf?: any
   created_at: string
   updated_at: string
+  personType?: PersonType
 }

@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react'
+import React, { useCallback, useEffect, useMemo } from 'react'
 import RegistrationButtonBar from '../../../Components/RegistrationButtonBar'
 import InputText from '../../../Components/InputText'
 import { Container, Header, Body } from './style'
@@ -20,6 +20,10 @@ import Service from '../../../Contracts/Models/Service'
 const ServiceScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
   const { payload, setPayload, screenStatus, setScreenStatus } =
     useWindow<Service>()
+
+  useEffect(() => {
+    console.log('payload', payload)
+  }, [payload])
 
   const createValidation = (keyName: any) => () =>
     Boolean((payload as any)[keyName])
@@ -262,7 +266,7 @@ const ServiceScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
                 <InputText
                   id='serviceId'
                   label='Id:'
-                  value={payload?.id}
+                  value={payload?.id || ''}
                   disabled
                   style={{ width: '100%' }}
                 />
@@ -274,9 +278,8 @@ const ServiceScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
                   label='Referência:'
                   required
                   disabled={isStatusVizualize()}
-                  itent='primary'
                   style={{ width: '100%' }}
-                  value={payload?.reference}
+                  value={payload?.reference || ''}
                   onChange={createOnChange('reference')}
                 />
               </div>
@@ -287,9 +290,8 @@ const ServiceScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
                   label='Nome:'
                   required
                   disabled={isStatusVizualize()}
-                  itent='primary'
                   style={{ width: '100%' }}
-                  value={payload.name}
+                  value={payload.name || ''}
                   placeholder='Vela de ignição'
                   onChange={createOnChange('name')}
                 />
@@ -302,9 +304,8 @@ const ServiceScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
                   id='serviceDescription'
                   label='Descrição:'
                   disabled={isStatusVizualize()}
-                  itent='primary'
                   style={{ width: '100%' }}
-                  value={payload?.description}
+                  value={payload?.description || ''}
                   onChange={createOnChange('description')}
                 />
               </div>

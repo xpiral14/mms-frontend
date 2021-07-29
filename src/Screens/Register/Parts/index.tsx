@@ -264,7 +264,7 @@ const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
                 <InputText
                   id='partId'
                   label='Id:'
-                  value={payload?.id}
+                  value={payload?.id || ''}
                   disabled
                   style={{ width: '100%' }}
                 />
@@ -277,7 +277,7 @@ const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
                   disabled={isStatusVizualize()}
                   itent='primary'
                   style={{ width: '100%' }}
-                  value={payload?.reference}
+                  value={payload?.reference || ''}
                   onChange={createOnChange('reference')}
                 />
               </div>
@@ -287,9 +287,8 @@ const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
                   id='partName'
                   label='Nome:'
                   disabled={isStatusVizualize()}
-                  itent='primary'
                   style={{ width: '100%' }}
-                  value={payload.name}
+                  value={payload.name || ''}
                   placeholder='Vela de ignição'
                   onChange={createOnChange('name')}
                 />
@@ -302,9 +301,8 @@ const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
                   id='partDescription'
                   label='Descrição:'
                   disabled={isStatusVizualize()}
-                  itent='primary'
                   style={{ width: '100%' }}
-                  value={payload?.description}
+                  value={payload?.description || ''}
                   onChange={createOnChange('description')}
                 />
               </div>
@@ -315,9 +313,8 @@ const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
                   label='Preço:'
                   disabled={isStatusVizualize()}
                   placeholder='R$'
-                  itent='primary'
                   style={{ width: '100%' }}
-                  value={payload?.price}
+                  value={payload?.price || ''}
                   onChange={createOnChange('price')}
                 />
               </div>

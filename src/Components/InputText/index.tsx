@@ -16,16 +16,24 @@ const InputText: React.FC<InputProps> = (props) => {
       {props.mask ? (
         <InputMask
           mask={props.mask}
-          value={props.value}
+          value={props.value || ''}
           onChange={props.onChange}
+          disabled={props.disabled}
+          placeholder={props.placeholder}
+          alwaysShowMask
         >
           {(inputProps: any) => (
-            <input {...inputProps} id={props.id} className={Classes.INPUT} />
+            <input
+              {...inputProps}
+              id={props.id}
+              className={Classes.INPUT}
+              disabled={props.disabled}
+            />
           )}
         </InputMask>
       ) : (
         <input
-          value={props.value}
+          value={props.value || ''}
           disabled={props.disabled}
           placeholder={props.placeholder}
           className={joinClasses(

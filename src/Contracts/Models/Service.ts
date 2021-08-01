@@ -4,7 +4,6 @@ export default  interface Service {
   reference: string;
   name: string;
   description: string;
-  price: number;
   created_at: string;
   updated_at: string;
 }

@@ -17,8 +17,10 @@ import {
 } from '@blueprintjs/select'
 
 import { Option } from '../../Contracts/Components/Suggest'
+import { useMemo } from 'react'
 
-interface SelectProps extends Partial<BluePrintSelectProps<Option>> {
+interface SelectProps
+  extends Partial<Omit<BluePrintSelectProps<Option>, 'activeItem'>> {
   allowCreate?: boolean
   onChange: (
     item: Option,
@@ -34,12 +36,22 @@ interface SelectProps extends Partial<BluePrintSelectProps<Option>> {
   defaultButtonText?: string
   loading?: boolean
   handleButtonReloadClick?: () => Promise<void> | void
+  activeItem?: number | string
 }
 const OptionSelect = CreateSelect.ofType<Option>()
 function areOptionsEqual(optionA: Option, optionB: Option) {
   return optionA.label.toLowerCase() === optionB.label.toLowerCase()
 }
-export default function Select({ allowCreate = false, ...props }: SelectProps) {
+export default function Select({
+  allowCreate = false,
+  activeItem,
+  ...props
+}: SelectProps) {
+  const activeOption = useMemo(() => {
+    if (activeItem === null || activeItem === undefined) return null
+
+    return props.items?.find((o) => o.value === activeItem)
+  }, [activeItem])
   const renderCreateOptionOption = (query: string, active: boolean) => (
     <MenuItem
       icon='add'
@@ -153,9 +165,7 @@ export default function Select({ allowCreate = false, ...props }: SelectProps) {
             loading={props.loading}
             rightIcon='caret-down'
             text={
-              (props.activeItem as Option)?.label ||
-              props.defaultButtonText ||
-              'Escolha um item'
+              activeOption?.label || props.defaultButtonText || 'Escolha um item'
             }
             disabled={props.disabled}
             {...props?.buttonProps}

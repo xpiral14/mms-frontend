@@ -6,15 +6,18 @@ import { AxiosResponse } from 'axios'
 import Paginated from '../Models/Paginated'
 // import { ReactPaginateProps } from 'react-paginate'
 
-interface ColumnProps extends BlueprintColumnProps {
+export interface ColumnProps extends BlueprintColumnProps {
   cellRenderer?: (cell: any) => any
+  keyName?: string
+  formatText?: (
+    text: string,
+    row?: Record<string, any>
+  ) => React.ReactNode
+  withoutValueText?: string
 }
 export interface PaginatedTableProps extends TableProps {
   containerProps?: any
-  columns?: (ColumnProps & {
-    keyName?: string
-    formatText?: (column: string) => React.ReactNode
-  })[]
+  columns?: (ColumnProps & {})[]
   height?: string
   request: (
     page: number,

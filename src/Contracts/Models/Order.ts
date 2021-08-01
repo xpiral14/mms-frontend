@@ -1,5 +1,6 @@
 import Costumer from './Costumer'
 import OrderPiece from './OrderPiece'
+import Service from './Service'
 import User from './User'
 import Vehicle from './Vehicle'
 
@@ -8,7 +9,7 @@ export default interface Order {
   employeeId: number
   vehicleId: number
   costumerId: number
-  registeredBy: number
+  registeredBy?: number
   canceledBy?: string
   executedBy?: string
   estimatedTime: number
@@ -19,5 +20,15 @@ export default interface Order {
   userThatRegistered?: User
   vehicle?: Vehicle
   orderPiece?: OrderPiece[]
-  costumer: Costumer
+  costumer?: Costumer
+  services: Service
 }
+
+
+export interface OrderPayload {
+  costumerId: number
+  servicesId: number[],
+  estimatedTime: number
+  notice?: string
+  vehicleId?: number
+} 

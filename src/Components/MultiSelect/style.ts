@@ -1,6 +1,9 @@
 import styled from 'styled-components'
 
 export const Container = styled.div<{ maxWidth?: string | number }>`
+  display: flex;
+  align-items: center;
+  gap: 5px;
   .bp3-multi-select {
     width: ${(p) => p.maxWidth || '100%'};
     height: 30px;

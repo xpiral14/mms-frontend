@@ -1,6 +1,12 @@
 import * as React from 'react'
 
-import { Button, FormGroup, Intent, MenuItem } from '@blueprintjs/core'
+import {
+  Button,
+  FormGroup,
+  FormGroupProps,
+  Intent,
+  MenuItem,
+} from '@blueprintjs/core'
 import {
   ItemPredicate,
   ItemRenderer,
@@ -36,6 +42,9 @@ interface MultiSelectProps
   disabled?: boolean
   intent?: Intent
   maxWidth?: string | number
+  formGroupProps?: FormGroupProps
+  handleButtonReloadClick?: () => void
+  loading?: boolean
 }
 
 function highlightText(text: string, query: string) {
@@ -126,12 +135,14 @@ export default function MultiSelect(props: MultiSelectProps) {
       return normalizedOption.indexOf(normalizedQuery) >= 0
     }
   }
+  const isDisabled = props.loading || props.disabled
   return (
     <FormGroup
       label={props.label}
       labelInfo={props.required && '*'}
-      disabled={props.disabled}
+      disabled={isDisabled}
       intent={props.intent}
+      {...props.formGroupProps}
     >
       <Container maxWidth={props.maxWidth}>
         <MultiSelectComponent
@@ -144,20 +155,29 @@ export default function MultiSelect(props: MultiSelectProps) {
           itemsEqual={areOptionsEqual}
           selectedItems={selectedOptions}
           items={props.items}
-          noResults={<MenuItem disabled={true} text='Sem resultados' />}
+          noResults={<MenuItem disabled text='Sem resultados' />}
           onItemSelect={props.onChange}
           tagRenderer={renderTag}
           tagInputProps={{
-            disabled: props.disabled,
+            ...props.tagInputProps,
+            disabled: isDisabled,
             separator: ' ',
             onRemove: props.onTagRemove as any,
             rightElement: clearButton,
             fill: true,
             tagProps: (v, i) => ({
-              intent: props.items[i].intent,
+              intent: props.items[i]?.intent || 'none',
             }),
           }}
         />
+        {Boolean(props.handleButtonReloadClick) && (
+          <Button
+            disabled={isDisabled}
+            onClick={props.handleButtonReloadClick}
+            icon={!props.loading ? 'reset' : undefined}
+            loading={props.loading}
+          />
+        )}
       </Container>
     </FormGroup>
   )

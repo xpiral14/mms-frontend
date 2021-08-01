@@ -75,10 +75,10 @@ const RegistrationButtonBar: React.FC<RegistrationButtonBarProps> = (
     screen?.close()
   }
 
-  const hasPayload = useMemo(
-    () => Boolean(Object.keys(payload || {}).length),
-    [payload]
-  )
+  const hasPayload = useMemo(() => {
+    return Boolean(Object.keys(payload || {}).length)
+  }, [payload])
+
   return (
     <BarContainer>
       <ButtonGroup>
@@ -146,7 +146,7 @@ const RegistrationButtonBar: React.FC<RegistrationButtonBarProps> = (
           icon='trash'
           intent={Intent.DANGER}
           onClick={handleDeleteButtonOnClick}
-          disabled={!hasPayload && screenStatus !== ScreenStatus.NEW}
+          disabled={!hasPayload && screenStatus !== ScreenStatus.EDIT}
           {...(props?.buttonDeleteProps || {})}
         >
           Excluir

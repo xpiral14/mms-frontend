@@ -1,5 +1,5 @@
 import api from '../Config/api'
-import Order from '../Contracts/Models/Order'
+import Order, { OrderPayload } from '../Contracts/Models/Order'
 import Paginated from '../Contracts/Models/Paginated'
 
 const DEFAULT_PATH = '/order'
@@ -12,6 +12,14 @@ export default class OrderService {
         ...query,
       },
     })
+  }
+
+  static async create(order: Partial<OrderPayload>) {
+    return api.post(DEFAULT_PATH, order)
+  }
+
+  static async delete(orderId: number) {
+    return api.delete(`${DEFAULT_PATH}/${orderId}`)
   }
 
   static async getOne(orderId: number) {

@@ -1,36 +1,58 @@
-import { Intent } from '@blueprintjs/core'
-import Select from '../../../Components/Select'
+/* eslint-disable @typescript-eslint/no-empty-function */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import { FormGroup, Intent, NumericInput, TextArea } from '@blueprintjs/core'
+import { TimePicker } from '@blueprintjs/datetime'
 import { Cell } from '@blueprintjs/table'
 import React, { useMemo, useState } from 'react'
+import { useEffect } from 'react'
+import InputText from '../../../Components/InputText'
+import MultiSelect, { MultiSelectOption } from '../../../Components/MultiSelect'
 import PaginatedTable from '../../../Components/PaginatedTable'
+import RadioGroup from '../../../Components/RadioGroup'
 import RegistrationButtonBar from '../../../Components/RegistrationButtonBar'
+import Select from '../../../Components/Select'
 import { orderStatus, PersonType, ScreenStatus } from '../../../Constants/Enums'
 import { RegistrationButtonBarProps } from '../../../Contracts/Components/RegistrationButtonBarProps'
 import ScreenProps from '../../../Contracts/Components/ScreenProps'
+import { Option } from '../../../Contracts/Components/Suggest'
 import { Validation } from '../../../Contracts/Hooks/useValidation'
 import Costumer from '../../../Contracts/Models/Costumer'
+import Order, { OrderPayload } from '../../../Contracts/Models/Order'
+import Service from '../../../Contracts/Models/Service'
 import { useAlert } from '../../../Hooks/useAlert'
+import useAsync from '../../../Hooks/useAsync'
 import { useGrid } from '../../../Hooks/useGrid'
+import { useScreen } from '../../../Hooks/useScreen'
 import { useToast } from '../../../Hooks/useToast'
 import useValidation from '../../../Hooks/useValidation'
 import { useWindow } from '../../../Hooks/useWindow'
 import CostumerService from '../../../Services/CostumerService'
 import OrderService from '../../../Services/OrderService'
-import { Container, Header, Body } from './style'
-import { Option } from '../../../Contracts/Components/Suggest'
-import useAsync from '../../../Hooks/useAsync'
-import { useScreen } from '../../../Hooks/useScreen'
-
-const orderStatusOptions: Option[] = Object.keys(orderStatus).map((key) => ({
-  label: orderStatus[key as keyof typeof orderStatus],
-  value: key,
-}))
+import ServiceService from '../../../Services/ServiceService'
+import getSecondsFromDay from '../../../Util/getSecondsFromDay'
+import getTimeInSecondsFromDate from '../../../Util/getTimeInSecondsFromDate'
+import { Body, Container, Header } from './style'
+import { addSeconds } from 'date-fns'
+const orderStatusOptions: MultiSelectOption[] = Object.keys(orderStatus).map(
+  (key) => ({
+    label: orderStatus[key as keyof typeof orderStatus],
+    value: key,
+    intent: Intent.SUCCESS,
+  })
+)
 
 const orderStatusKeyValue: any = {}
 
 orderStatusOptions.forEach((os) => (orderStatusKeyValue[os.value] = os.label))
 const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
   const [costumers, setCostumer] = useState<Costumer[]>([])
+  const [services, setServices] = useState<Service[]>([])
+
+  const serviceOptions = useMemo<Option[]>(
+    () => services.map((s) => ({ value: s.id, label: s.name })),
+    [services]
+  )
+
   const costumerOptions = useMemo(() => {
     const normalized = {
       options: [] as Option[],
@@ -48,7 +70,6 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
     return normalized
   }, [costumers])
 
-  const { showErrorToast } = useToast()
   const [loadingCostumers, loadCostumers] = useAsync(async () => {
     try {
       const response = await CostumerService.getAll(1, 100)
@@ -59,35 +80,65 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
       })
     }
   }, [])
-  const { payload, setPayload, screenStatus, setScreenStatus } =
-    useWindow<any>()
 
-  const createValidation = (keyName: any) => () =>
+  const [loadingServices, loadServices] = useAsync(async () => {
+    try {
+      const response = await ServiceService.getAll(1, 100)
+      setServices(response.data.data as Service[])
+    } catch (error) {
+      showErrorToast({
+        message: 'Erro ao obter lista de clientes',
+      })
+    }
+  }, [])
+
+  const { payload, setPayload, screenStatus, setScreenStatus } = useWindow<{
+    id?: number
+    servicesId: number[]
+    costumerId?: number
+    estimatedTimeType: 'HOURS' | 'DAYS'
+    estimatedTimeDay: number
+    estimatedTime: Date
+    notice: string
+  }>()
+
+  useEffect(() => {
+    setPayload({
+      estimatedTimeType: 'HOURS',
+      estimatedTime: new Date(2021, 7, 29, 1, 0, 0),
+    })
+  }, [])
+
+  const createValidation = (keyName: keyof typeof payload) => () =>
     Boolean((payload as any)[keyName])
 
   const validations: Validation[] = [
     {
-      check: createValidation('personType'),
-      errorMessage: 'O tipo de pessoa é obrigatório',
-      inputId: PersonType.PHYSICAL,
+      check: createValidation('costumerId'),
+      errorMessage: 'Escolha o cliente',
+      inputId: `${screen.id}-select-costumer`,
     },
     {
-      check: createValidation('name'),
-      errorMessage: 'O nome é obrigatório',
-      inputId: 'name',
+      check: createValidation('servicesId'),
+      errorMessage: 'Escolha ao menos um serviço',
+      inputId: `${screen.id}-select-services`,
     },
     {
-      check: createValidation('phone'),
-      errorMessage: 'O telefone é obrigatório',
-      inputId: 'phone',
+      check:
+        payload.estimatedTimeType === 'HOURS'
+          ? createValidation('estimatedTimeType')
+          : createValidation('estimatedTimeDay'),
+      errorMessage: 'Escolha um tempo estimado para a ordem',
+      inputId: `${screen.id}-select-services`,
     },
   ]
   const { validate } = useValidation(validations)
+
   const { setReloadGrid } = useGrid()
-  const { showSuccessToast } = useToast()
+  const { showSuccessToast, showErrorToast } = useToast()
   const { openAlert } = useAlert()
   const { openSubScreen } = useScreen()
-  const isStatusVizualize = () => screenStatus === ScreenStatus.VISUALIZE
+  // const isStatusVizualize = () => screenStatus === ScreenStatus.VISUALIZE
 
   const getErrorMessages = (errors?: any[], defaultMessage?: string) => {
     const errorMessages = errors?.map((error) => ({
@@ -103,123 +154,87 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
     )
   }
 
-  const createCostumer = async () => {
-    if (!validate()) {
-      return
-    }
-    try {
-      const createPayload = {
-        ...payload,
-        phone: payload.phone?.replace(/[^0-9]/g, ''),
-      }
-      const response = await CostumerService.create(createPayload)
-      if (response.status) {
-        showSuccessToast({
-          message: 'Cliente criado com sucesso',
-          intent: Intent.SUCCESS,
-        })
-        setReloadGrid(true)
-      }
-      if (!response) {
-        openAlert({
-          text: 'Não foi possível criar o cliente',
-          intent: Intent.DANGER,
-        })
-      }
-    } catch (error) {
-      const ErrorMessages = getErrorMessages(
-        error.response?.data?.errors,
-        'Não foi possível criar o cliente'
-      )
-
-      openAlert({
-        text: ErrorMessages,
-        intent: Intent.DANGER,
-      })
-    }
-  }
-
-  const saveCostumer = async () => {
-    try {
-      const response = await CostumerService.edit(payload)
-      if (response.status) {
-        showSuccessToast({
-          message: 'Cliente atualizado com sucesso',
-          intent: Intent.SUCCESS,
-        })
-        setPayload({})
-        setReloadGrid(true)
-        setScreenStatus(ScreenStatus.VISUALIZE)
-      }
-      if (!response) {
-        openAlert({
-          text: 'Não foi possível atualizar o cliente',
-          intent: Intent.DANGER,
-        })
-      }
-    } catch (error) {
-      const ErrorMessages = getErrorMessages(
-        error.response?.data?.errors,
-        'Não foi possível atualizar o cliente'
-      )
-
-      openAlert({
-        text: ErrorMessages,
-        intent: Intent.DANGER,
-      })
-    }
-  }
-
-  const deleteCostumer = () => {
-    const onConfirm = async () => {
-      try {
-        const response = await CostumerService.delete(payload?.id as number)
-        if (response.status) {
-          showSuccessToast({
-            message: 'Cliente criado com sucesso',
-            intent: Intent.SUCCESS,
-          })
-          setReloadGrid(true)
-          setScreenStatus(ScreenStatus.VISUALIZE)
-          setPayload({})
-        }
-        if (!response) {
-          openAlert({
-            text: 'Não foi possível criar o cliente',
-            intent: Intent.DANGER,
-          })
-        }
-      } catch (error) {
-        const ErrorMessages = getErrorMessages(
-          error.response?.data?.errors,
-          'Não foi possível criar o cliente'
-        )
-
-        openAlert({
-          text: ErrorMessages,
-          intent: Intent.DANGER,
-        })
-      }
-    }
-    openAlert({
-      text: 'Tem certeza que deseja deletar o cliente?',
-      intent: Intent.DANGER,
-      confirmButtonText: `Deletar cliente ${payload?.name || ''}`,
-      onConfirm,
-    })
-  }
   const reloadAllScreenData = () => {
     loadCostumers()
     setReloadGrid(true)
-  }
-  const registratioButtonBarProps: RegistrationButtonBarProps = {
-    screen,
-    handleSaveButtonOnClick:
-      screenStatus === ScreenStatus.NEW ? createCostumer : saveCostumer,
-    handleDeleteButtonOnClick: deleteCostumer,
-    handleReloadScreenOnClick: reloadAllScreenData,
+    loadServices()
   }
 
+  const registratioButtonBarProps: RegistrationButtonBarProps = {
+    screen,
+    handleSaveButtonOnClick: async () => {
+      if (!validate()) return
+      try {
+        const requestPayload: OrderPayload = {
+          costumerId: payload.costumerId!,
+          servicesId: payload.servicesId!,
+          estimatedTime:
+            payload.estimatedTimeType === 'DAYS'
+              ? getSecondsFromDay(payload.estimatedTimeDay!)
+              : getTimeInSecondsFromDate(payload.estimatedTime!),
+          notice: payload?.notice,
+        }
+        const response = await OrderService.create(requestPayload)
+        setReloadGrid(true)
+        const openServiceOrderPartsScreen = () => {
+          openSubScreen(
+            {
+              headerTitle: 'Cadastro de peça nos serviços escolhidos',
+              id: 'save-order-service-parts',
+              path: 'Register/ServiceOrder/subScreens/ServiceOrderParts',
+            },
+            screen.id,
+            {
+              orderId: response.data.id,
+              services: services.filter((s) =>
+                payload.servicesId?.includes(s.id)
+              ),
+            }
+          )
+        }
+
+        openAlert({
+          text: 'Você deseja adicionar os produtos do serviço?',
+          intent: Intent.SUCCESS,
+          icon: 'add',
+          onConfirm: openServiceOrderPartsScreen,
+          confirmButtonText: 'Sim',
+          canOutsideClickCancel: true,
+        })
+      } catch (error) {
+        showErrorToast({
+          message: 'Erro ao criar ordem serviço. Por favor, tente novamente.',
+        })
+      }
+
+      showSuccessToast({
+        message: 'Ordem de serviço criada com sucesso!',
+      })
+    },
+    handleDeleteButtonOnClick: async () => {
+      const onConfirm = async () => {
+        try {
+          await OrderService.delete(payload.id!)
+          showSuccessToast({
+            message: 'A ordem foi deletada com successo',
+          })
+
+          setReloadGrid(true)
+        } catch (error) {
+          showErrorToast({
+            message: 'Não foi possível deletar a ordem especificada',
+          })
+        }
+      }
+
+      openAlert({
+        text: 'Você tem certeza que deseja deletar a ordemd e serviço?',
+        onConfirm,
+        intent: Intent.DANGER,
+      })
+    },
+    handleReloadScreenOnClick: reloadAllScreenData,
+  }
   return (
     <Container>
       <Header>
@@ -228,14 +243,20 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
       <Body>
         <div>
           <Select
+            inputProps={{
+              id: `${screen.id}-select-costumer`,
+            }}
             handleButtonReloadClick={loadCostumers}
             loading={loadingCostumers}
             itent={Intent.DANGER}
             required
             allowCreate
-            activeItem={costumerOptions.keyValue[payload.costumerId]}
+            activeItem={payload?.costumerId}
             onChange={(option) =>
-              setPayload((prev) => ({ ...prev, costumerId: option.value }))
+              setPayload((prev) => ({
+                ...prev,
+                costumerId: option.value as number,
+              }))
             }
             defaultButtonText='Escolha um profissional'
             label='Cliente'
@@ -269,15 +290,97 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
             }
             disabled={screenStatus === ScreenStatus.VISUALIZE}
           />
-          <Select
-            onChange={(option) =>
-              setPayload((prev) => ({ ...prev, status: option.value }))
+          <MultiSelect
+            tagInputProps={{
+              inputProps: {
+                id: `${screen.id}-select-services`,
+              },
+            }}
+            onChange={(o) => {
+              if (payload?.servicesId?.includes(o.value as number)) {
+                setPayload((prev) => ({
+                  ...prev,
+                  servicesId: prev?.servicesId?.filter((s) => s !== o.value),
+                }))
+              } else {
+                setPayload((prev) => ({
+                  ...prev,
+                  servicesId: [...(prev?.servicesId || []), o.value as number],
+                }))
+              }
+            }}
+            maxWidth={'100%'}
+            selectedItems={payload?.servicesId}
+            items={serviceOptions}
+            onClear={() => setPayload((prev) => ({ ...prev, servicesId: [] }))}
+            onTagRemove={(_, indexOption) => {
+              setPayload((prev) => ({
+                ...prev,
+                servicesId: prev.servicesId?.filter(
+                  (_: any, indexStatus: number) => indexStatus !== indexOption
+                ),
+              }))
+            }}
+            label='Selecione os serviços'
+            disabled={
+              loadingServices || screenStatus === ScreenStatus.VISUALIZE
             }
-            label='Status'
-            activeItem={payload.statusId}
-            items={orderStatusOptions}
-            disabled={isStatusVizualize()}
-            allowCreate
+            formGroupProps={{ style: { flex: 1 } }}
+            loading={loadingServices}
+            handleButtonReloadClick={loadServices}
+          />
+        </div>
+        <div style={{ display: 'flex', gap: '10px' }}>
+          <div style={{ display: 'flex', alignItems: 'flex-end' }}>
+            <RadioGroup
+              disabled={screenStatus === ScreenStatus.VISUALIZE}
+              label='Duração mínima'
+              selectedValue={payload.estimatedTimeType}
+              radios={[
+                { id: 'HOURS', value: 'HOURS', label: 'Horas' },
+                { id: 'DAYS', value: 'DAYS', label: 'Dias' },
+              ]}
+              onChange={(e) => {
+                setPayload((prev) => ({
+                  ...prev,
+                  estimatedTimeType: e.currentTarget.value as any,
+                  estimatedTime: new Date(2021, 7, 29, 1, 0, 0),
+                  estimatedTimeDay: 1,
+                }))
+              }}
+            />
+            {payload?.estimatedTimeType === 'DAYS' ? (
+              <NumericInput
+                disabled={screenStatus === ScreenStatus.VISUALIZE}
+                allowNumericCharactersOnly
+                value={payload?.estimatedTimeDay}
+                onValueChange={(value) => {
+                  setPayload((prev) => ({
+                    ...prev,
+                    estimatedTimeDay: value > 365 ? 365 : value,
+                  }))
+                }}
+                max={365}
+              />
+            ) : (
+              <TimePicker
+                disabled={screenStatus === ScreenStatus.VISUALIZE}
+                value={payload.estimatedTime}
+                onChange={(time) =>
+                  setPayload((prev) => ({ ...prev, estimatedTime: time }))
+                }
+              />
+            )}
+          </div>
+          <TextArea
+            value={payload?.notice || ''}
+            onChange={(e) =>
+              setPayload((prev) => ({ ...prev, notice: e.currentTarget.value }))
+            }
+            placeholder='Digite a observação'
+            disabled={screenStatus === ScreenStatus.VISUALIZE}
+            growVertically={false}
+            style={{ flex: 1 }}
           />
         </div>
         <PaginatedTable
@@ -292,11 +395,9 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
               id: 1,
               name: 'Status',
               keyName: 'status',
-              cellRenderer: (cell) => (
-                <Cell>
-                  {orderStatus[cell.status as keyof typeof orderStatus]}
-                </Cell>
-              ),
+
+              formatText: (text) =>
+                orderStatus[text as keyof typeof orderStatus],
             },
             {
               id: 1,
@@ -306,14 +407,14 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
             {
               id: 1,
               name: 'Valor',
-              cellRenderer: (cell) => (
-                <Cell>
-                  {cell.orderPiece?.reduce(
+              formatText: (text, row) => {
+                return (
+                  row?.orderPiece?.reduce(
                     (acc: any, curr: any) => acc + curr.piece.price,
                     0
-                  ) || 0}
-                </Cell>
-              ),
+                  ) || 'R$ 0'
+                )
+              },
             },
             {
               id: 1,
@@ -328,7 +429,21 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
           request={OrderService.getAll as any}
           onRowSelect={(row) => {
             setScreenStatus(ScreenStatus.VISUALIZE)
-            setPayload(row)
+
+            const formattedRow = {
+              ...row,
+              estimatedTimeType:
+                row?.estimatedTime && row.estimatedTime < 86399
+                  ? 'HOURS'
+                  : 'DAYS',
+              estimatedTime: addSeconds(
+                new Date('2021-01-01T00:00:00'),
+                row.estimatedTime || 0
+              ),
+              estimatedTimeDay: row.estimatedTime / (3600 * 24),
+              servicesId: row?.services?.map((s: Service) => s.id),
+            }
+            setPayload(formattedRow)
           }}
         />
       </Body>

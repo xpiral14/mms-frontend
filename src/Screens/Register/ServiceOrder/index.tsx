@@ -109,8 +109,19 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
     })
   }, [])
 
-  const createValidation = (keyName: keyof typeof payload) => () =>
-    Boolean((payload as any)[keyName])
+  const createValidation = (keyName: keyof typeof payload) => () => {
+    const value = (payload as any)[keyName]
+
+    if (Array.isArray(value)) {
+      return Boolean(value.length)
+    }
+
+    if (typeof value === 'object') {
+      return Boolean(Object.keys(value).length)
+    }
+
+    return Boolean(value)
+  }
 
   const validations: Validation[] = [
     {
@@ -160,57 +171,71 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
     loadServices()
   }
 
-  const registratioButtonBarProps: RegistrationButtonBarProps = {
-    screen,
-    handleSaveButtonOnClick: async () => {
-      if (!validate()) return
-      try {
-        const requestPayload: OrderPayload = {
-          costumerId: payload.costumerId!,
-          servicesId: payload.servicesId!,
-          estimatedTime:
-            payload.estimatedTimeType === 'DAYS'
-              ? getSecondsFromDay(payload.estimatedTimeDay!)
-              : getTimeInSecondsFromDate(payload.estimatedTime!),
-          notice: payload?.notice,
-        }
-        const response = await OrderService.create(requestPayload)
-        setReloadGrid(true)
-        const openServiceOrderPartsScreen = () => {
-          openSubScreen(
-            {
-              headerTitle: 'Cadastro de peça nos serviços escolhidos',
-              id: 'save-order-service-parts',
-              path: 'Register/ServiceOrder/subScreens/ServiceOrderParts',
-            },
-            screen.id,
-            {
-              orderId: response.data.id,
-              services: services.filter((s) =>
-                payload.servicesId?.includes(s.id)
-              ),
-            }
-          )
-        }
-
-        openAlert({
-          text: 'Você deseja adicionar os produtos do serviço?',
-          intent: Intent.SUCCESS,
-          icon: 'add',
-          onConfirm: openServiceOrderPartsScreen,
-          confirmButtonText: 'Sim',
-          canOutsideClickCancel: true,
-        })
-      } catch (error) {
-        showErrorToast({
-          message: 'Erro ao criar ordem serviço. Por favor, tente novamente.',
-        })
+  const saveAction = async (stopLoad: () => void) => {
+    if (!validate()) {
+      stopLoad()
+      return
+    }
+    try {
+      const requestPayload: OrderPayload = {
+        costumerId: payload.costumerId!,
+        servicesId: payload.servicesId!,
+        estimatedTime:
+          payload.estimatedTimeType === 'DAYS'
+            ? getSecondsFromDay(payload.estimatedTimeDay!)
+            : getTimeInSecondsFromDate(payload.estimatedTime!),
+        notice: payload?.notice,
+      }
+      const response = await OrderService.create(requestPayload)
+      setReloadGrid(true)
+      const openServiceOrderPartsScreen = () => {
+        openSubScreen(
+          {
+            headerTitle: 'Cadastro de peça nos serviços escolhidos',
+            id: 'save-order-service-parts',
+            path: 'Register/ServiceOrder/subScreens/ServiceOrderParts',
+          },
+          screen.id,
+          {
+            orderId: response.data.id,
+            services: services.filter((s) =>
+              payload.servicesId?.includes(s.id)
+            ),
+          }
+        )
       }
 
-      showSuccessToast({
-        message: 'Ordem de serviço criada com sucesso!',
+      openAlert({
+        text: 'Você deseja adicionar os produtos do serviço?',
+        intent: Intent.SUCCESS,
+        icon: 'add',
+        onConfirm: openServiceOrderPartsScreen,
+        confirmButtonText: 'Sim',
+        canOutsideClickCancel: true,
       })
-    },
+      setPayload({
+        estimatedTimeType: 'DAYS',
+      })
+    } catch (error) {
+      showErrorToast({
+        message: 'Erro ao criar ordem serviço. Por favor, tente novamente.',
+      })
+    } finally {
+      stopLoad()
+    }
+
+    showSuccessToast({
+      message: 'Ordem de serviço criada com sucesso!',
+    })
+  }
+
+  const updateAction = (stopLoad: () => void) => {
+    stopLoad()
+  }
+  const registratioButtonBarProps: RegistrationButtonBarProps = {
+    screen,
+    handleSaveButtonOnClick:
+      screenStatus === ScreenStatus.NEW ? saveAction : updateAction,
     handleDeleteButtonOnClick: async () => {
       const onConfirm = async () => {
         try {

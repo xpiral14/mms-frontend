@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react'
+import React, { useMemo, useState } from 'react'
 import styled from 'styled-components'
 import { Button, ButtonGroup, Intent, Icon } from '@blueprintjs/core'
 import { RegistrationButtonBarProps } from '../../Contracts/Components/RegistrationButtonBarProps'
@@ -23,7 +23,16 @@ const BarContainer = styled.div`
 const RegistrationButtonBar: React.FC<RegistrationButtonBarProps> = (
   props
 ): JSX.Element => {
+  const [loadings, setLoadings] = useState<{ isSaveLoading?: boolean }>({})
+
   const { screenStatus, setScreenStatus, payload, setPayload } = useWindow()
+
+  const stopLoad = (key: keyof typeof loadings) => () => {
+    setLoadings((prev) => ({ ...prev, [key]: false }))
+  }
+  const startLoad = (key: keyof typeof loadings) => () => {
+    setLoadings((prev) => ({ ...prev, [key]: true }))
+  }
 
   const { exitButton = true, screen } = props
   const handleNewButtonOnClick = () => {
@@ -36,8 +45,9 @@ const RegistrationButtonBar: React.FC<RegistrationButtonBarProps> = (
   }
 
   const handleSaveButtonOnClick = () => {
+    startLoad('isSaveLoading')()
     if (props?.handleSaveButtonOnClick) {
-      props?.handleSaveButtonOnClick()
+      props?.handleSaveButtonOnClick(stopLoad('isSaveLoading'))
       return
     }
   }
@@ -97,6 +107,7 @@ const RegistrationButtonBar: React.FC<RegistrationButtonBarProps> = (
         <Button
           icon='floppy-disk'
           intent={Intent.SUCCESS}
+          loading={loadings.isSaveLoading}
           disabled={screenStatus === ScreenStatus.VISUALIZE}
           onClick={handleSaveButtonOnClick}
         >

@@ -45,6 +45,7 @@ interface MultiSelectProps
   formGroupProps?: FormGroupProps
   handleButtonReloadClick?: () => void
   loading?: boolean
+  id: string
 }
 
 function highlightText(text: string, query: string) {
@@ -139,6 +140,7 @@ export default function MultiSelect(props: MultiSelectProps) {
   return (
     <FormGroup
       label={props.label}
+      labelFor={props.id}
       labelInfo={props.required && '*'}
       disabled={isDisabled}
       intent={props.intent}
@@ -165,6 +167,9 @@ export default function MultiSelect(props: MultiSelectProps) {
             onRemove: props.onTagRemove as any,
             rightElement: clearButton,
             fill: true,
+            inputProps: {
+              id: props.id,
+            },
             tagProps: (v, i) => ({
               intent: props.items[i]?.intent || 'none',
             }),

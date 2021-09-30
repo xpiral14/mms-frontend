@@ -1,3 +1,5 @@
+import Piece from './Piece'
+
 export default  interface Service {
   id: number;
   companyId: number;
@@ -6,6 +8,7 @@ export default  interface Service {
   description: string;
   created_at: string;
   updated_at: string;
+  pieces?: Piece[]
 }
 
 

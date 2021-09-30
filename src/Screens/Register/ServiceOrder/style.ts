@@ -17,6 +17,7 @@ export const Body = styled.section`
 
   > div {
     flex-wrap: wrap;
+    align-items: center;
   }
 `
 export const SelectDiv = styled.div`

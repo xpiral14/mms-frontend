@@ -181,6 +181,7 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
         headerTitle: 'Cadastro de peça nos serviços escolhidos',
         id: 'save-order-service-parts',
         path: 'Register/ServiceOrder/subScreens/ServiceOrderParts',
+        contentSize: '400 330'
       },
       screen.id,
       props

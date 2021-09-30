@@ -8,7 +8,11 @@ import React, { FC } from 'react'
 interface ButtonProps extends BluePrintButtonProps {}
 
 const Button: FC<ButtonProps> = (props) => {
-  return <BluePrintButton {...props} />
+  return (
+    <div style={{maxHeight: 30}}>
+      <BluePrintButton {...props} />
+    </div>
+  )
 }
 
 export default Button

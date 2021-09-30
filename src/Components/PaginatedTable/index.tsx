@@ -1,4 +1,7 @@
-import { PaginatedTableProps } from '../../Contracts/Components/PaginatadeTable'
+import {
+  ColumnProps,
+  PaginatedTableProps,
+} from '../../Contracts/Components/PaginatadeTable'
 import Paginate, { ReactPaginateProps } from 'react-paginate'
 import {
   Cell,
@@ -84,14 +87,28 @@ const PaginatedTable: React.FC<PaginatedTableProps> = ({
       loadRequestData()
     }
   }, [reloadGrid, limit, page])
-  const defaultCellRenderer = (key?: string) => (rowIndex: number) =>
-    (
-      <Cell style={{ width: '100%' }}>
-        {key
-          ? gridResponse?.data?.[rowIndex]?.[key] || 'Sem valor'
-          : 'Sem valor'}
-      </Cell>
-    )
+
+  const getWithoutValueDefaultText = (column: ColumnProps) => {
+    return column.withoutValueText || '-'
+  }
+
+  const getColumnText = (text: string, column: ColumnProps, row?: object) => {
+    if (column.keyName && !text) {
+      return getWithoutValueDefaultText(column)
+    }
+    return column?.formatText?.(text, row) || text
+  }
+  const defaultCellRenderer =
+    (column: ColumnProps, key: string) => (rowIndex: number) =>
+      (
+        <Cell style={{ width: '100%' }}>
+          {getColumnText(
+            gridResponse?.data?.[rowIndex]?.[key],
+            column,
+            gridResponse?.data?.[rowIndex]
+          )}
+        </Cell>
+      )
 
   const cellRender = (callback: any) => (rowIndex: number) =>
     callback(gridResponse?.data?.[rowIndex])
@@ -131,6 +148,7 @@ const PaginatedTable: React.FC<PaginatedTableProps> = ({
       rest?.onRowSelect?.(gridResponse?.data[selectedRegions[0].rows[0]])
     }
   }, [selectedRegions])
+
   const renderColumns = () =>
     columns?.map((column) => (
       <Column
@@ -139,7 +157,7 @@ const PaginatedTable: React.FC<PaginatedTableProps> = ({
         cellRenderer={
           column.cellRenderer
             ? cellRender(column.cellRenderer)
-            : defaultCellRenderer(column.keyName)
+            : defaultCellRenderer(column, column.keyName || '')
         }
       />
     ))
@@ -168,10 +186,6 @@ const PaginatedTable: React.FC<PaginatedTableProps> = ({
     setLimit(option.value as number)
   }
 
-  const selectedPage = useMemo(
-    () => ({ label: String(limit), value: limit }),
-    [limit]
-  )
   return (
     <Container style={{ width: '100%' }} {...rest?.containerProps}>
       <Body height={rest.height}>
@@ -202,7 +216,7 @@ const PaginatedTable: React.FC<PaginatedTableProps> = ({
               />
               <div>
                 <Select
-                  activeItem={selectedPage}
+                  activeItem={limit}
                   items={pageOptions}
                   onChange={handlePageSelectChange}
                 />

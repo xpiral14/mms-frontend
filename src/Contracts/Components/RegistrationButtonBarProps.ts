@@ -10,7 +10,7 @@ export interface RegistrationButtonBarProps {
   buttonDeleteProps?: ButtonProps
   buttonExitProps?: ButtonProps
   handleNewButtonOnClick?: () => void
-  handleSaveButtonOnClick?: () => void
+  handleSaveButtonOnClick?: (stopLoad: () => void) => void
   handleEditButtonOnClick?: () => void
   handleCancelButtonOnClick?: () => void
   handleDeleteButtonOnClick?: () => void

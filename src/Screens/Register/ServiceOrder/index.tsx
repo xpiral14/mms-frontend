@@ -33,6 +33,7 @@ import getSecondsFromDay from '../../../Util/getSecondsFromDay'
 import getTimeInSecondsFromDate from '../../../Util/getTimeInSecondsFromDate'
 import { Body, Container, Header } from './style'
 import { addSeconds } from 'date-fns'
+import Button from '../../../Components/Button'
 const orderStatusOptions: MultiSelectOption[] = Object.keys(orderStatus).map(
   (key) => ({
     label: orderStatus[key as keyof typeof orderStatus],
@@ -171,6 +172,20 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
     loadServices()
   }
 
+  const openOrderServicePiecesScreen = (props: {
+    orderId: number
+    services: Service[]
+  }) => {
+    openSubScreen(
+      {
+        headerTitle: 'Cadastro de peça nos serviços escolhidos',
+        id: 'save-order-service-parts',
+        path: 'Register/ServiceOrder/subScreens/ServiceOrderParts',
+      },
+      screen.id,
+      props
+    )
+  }
   const saveAction = async (stopLoad: () => void) => {
     if (!validate()) {
       stopLoad()
@@ -189,20 +204,10 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
       const response = await OrderService.create(requestPayload)
       setReloadGrid(true)
       const openServiceOrderPartsScreen = () => {
-        openSubScreen(
-          {
-            headerTitle: 'Cadastro de peça nos serviços escolhidos',
-            id: 'save-order-service-parts',
-            path: 'Register/ServiceOrder/subScreens/ServiceOrderParts',
-          },
-          screen.id,
-          {
-            orderId: response.data.id,
-            services: services.filter((s) =>
-              payload.servicesId?.includes(s.id)
-            ),
-          }
-        )
+        openOrderServicePiecesScreen({
+          orderId: response.data.id,
+          services: services.filter((s) => payload.servicesId?.includes(s.id)),
+        })
       }
 
       openAlert({
@@ -260,6 +265,13 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
     },
     handleReloadScreenOnClick: reloadAllScreenData,
   }
+
+  const handleServiceDetailsClick = () => {
+    openOrderServicePiecesScreen({
+      orderId: payload?.id as number,
+      services: services.filter((s) => payload.servicesId?.includes(s.id)),
+    })
+  }
   return (
     <Container>
       <Header>
@@ -316,11 +328,7 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
             disabled={screenStatus === ScreenStatus.VISUALIZE}
           />
           <MultiSelect
-            tagInputProps={{
-              inputProps: {
-                id: `${screen.id}-select-services`,
-              },
-            }}
+            id={`${screen.id}_select_sevices`}
             onChange={(o) => {
               if (payload?.servicesId?.includes(o.value as number)) {
                 setPayload((prev) => ({
@@ -354,6 +362,11 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
             loading={loadingServices}
             handleButtonReloadClick={loadServices}
           />
+          {payload?.id && (
+            <Button onClick={handleServiceDetailsClick}>
+              Detalhes de serviços
+            </Button>
+          )}
         </div>
         <div style={{ display: 'flex', gap: '10px' }}>
           <div style={{ display: 'flex', alignItems: 'flex-end' }}>

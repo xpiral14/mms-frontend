@@ -1,7 +1,10 @@
 import styled from 'styled-components'
 
 export const Container = styled.div`
-  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
 `
 export const Header = styled.div`
   display: flex;
@@ -18,6 +21,7 @@ export const Body = styled.div`
 `
 
 export const Row = styled.div`
+  flex: 1;
   display: flex;
   flex-direction: column;
   width: 100%;
@@ -35,12 +39,7 @@ export const Row = styled.div`
 
 export const Footer = styled.div`
   position: relative;
-  > div {
-    position: fixed;
-    box-shadow: 0 -10px 10px #0005;
-    bottom: 0;
-    position: fixed;
-    width: 100%;
-    background-color: white;
-  }
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 `

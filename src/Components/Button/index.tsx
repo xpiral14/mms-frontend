@@ -5,7 +5,9 @@ import {
 } from '@blueprintjs/core'
 import React, { FC } from 'react'
 
-interface ButtonProps extends BluePrintButtonProps {}
+interface ButtonProps extends BluePrintButtonProps {
+  title?: string
+}
 
 const Button: FC<ButtonProps> = (props) => {
   return (

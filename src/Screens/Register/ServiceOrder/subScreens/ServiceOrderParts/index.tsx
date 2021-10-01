@@ -12,34 +12,35 @@ import Service from '../../../../../Contracts/Models/Service'
 import useAsync from '../../../../../Hooks/useAsync'
 import { useScreen } from '../../../../../Hooks/useScreen'
 import { useWindow } from '../../../../../Hooks/useWindow'
-import { Row as Body, Container, Footer, Header } from './style'
+import { Row as Body, Container, Footer, Header, PartQuantityContainer } from './style'
 import PartsService from '../../../../../Services/PartsService'
 import Button from '../../../../../Components/Button'
 import { Intent } from '@blueprintjs/core'
 import NumericInput from '../../../../../Components/NumericInput'
 import TextArea from '../../../../../Components/TextArea'
+import OrderService from '../../../../../Services/OrderService'
 interface ServiceOrderPartsScreenProps extends ScreenProps {
   services: Service[]
   parts: Piece[]
+  orderId: number
 }
 
 const FIRST_ARRAY_INDEX = 0
 
 interface PayloadData {
-  pieces?: number[]
+  parts?: number[]
   note?: string
-  totalWorkedHours?: number
+  estimatedTime?: number
   hasSaved?: boolean
 }
 const ServiceOrderParts = ({
   services,
   screen,
+  orderId,
 }: ServiceOrderPartsScreenProps) => {
   const [activeServiceIndex, setActiveService] = useState<number>(0)
   const [payload, setPayload] = useState<{
-    data?: {
-      [x: string]: PayloadData
-    }
+    [x: string]: PayloadData
   }>()
   const [parts, setParts] = useState<Piece[]>([])
 
@@ -87,13 +88,10 @@ const ServiceOrderParts = ({
   ) => {
     setPayload((prev) => ({
       ...prev,
-      data: {
-        ...prev?.data,
-        [serviceId]: {
-          ...prev?.data?.[serviceId],
-          [propertyName]: value,
-          hasSaved: propertyName === 'hasSaved' ? value : false,
-        },
+      [serviceId]: {
+        ...prev?.[serviceId],
+        [propertyName]: value,
+        hasSaved: propertyName === 'hasSaved' ? value : false,
       },
     }))
   }
@@ -101,16 +99,12 @@ const ServiceOrderParts = ({
   const handleOnRemoveSelectedPieces = (_: any, partIndex: number) => {
     setPayload((prev) => ({
       ...prev,
-      data: {
-        ...prev?.data,
-        [activeService.id]: {
-          ...prev?.data?.[activeService.id],
-          pieces:
-            prev?.data?.[activeService.id].pieces?.filter(
-              (_, i) => i !== partIndex
-            ) || [],
-          hasSaved: false
-        },
+      [activeService.id]: {
+        ...prev?.[activeService.id],
+        parts:
+          prev?.[activeService.id].parts?.filter((_, i) => i !== partIndex) ||
+          [],
+        hasSaved: false,
       },
     }))
   }
@@ -118,35 +112,30 @@ const ServiceOrderParts = ({
   const handleOnSelectPieces = (o: MultiSelectOption) => {
     setPayload((prev) => {
       const copyPrev = { ...prev }
-      if (
-        copyPrev.data?.[activeService.id]?.pieces?.includes(o.value as number)
-      ) {
+      if (copyPrev?.[activeService.id]?.parts?.includes(o.value as number)) {
         return {
           ...copyPrev,
-          data: {
-            ...copyPrev.data,
-            [activeService.id]: {
-              pieces:
-                copyPrev.data?.[
-                  services?.[activeServiceIndex].id
-                ]?.pieces?.filter((partId) => partId !== o.value) || [],
-              hasSaved: false,
-            },
+          ...copyPrev,
+          [activeService.id]: {
+            ...copyPrev?.[activeService.id],
+            parts:
+              copyPrev?.[services?.[activeServiceIndex].id]?.parts?.filter(
+                (partId) => partId !== o.value
+              ) || [],
+            hasSaved: false,
           },
         }
       }
 
       return {
-        data: {
-          ...prev?.data,
-          [activeService.id]: {
-            ...services?.[activeServiceIndex],
-            pieces: [
-              ...(prev?.data?.[activeService.id]?.pieces || []),
-              o.value as number,
-            ],
-            hasSaved: false,
-          },
+        ...prev,
+        [activeService.id]: {
+          ...prev?.[activeService.id],
+          parts: [
+            ...(prev?.[activeService.id]?.parts || []),
+            o.value as number,
+          ],
+          hasSaved: false,
         },
       }
     })
@@ -157,17 +146,26 @@ const ServiceOrderParts = ({
   }
 
   const handleEstimatedTimeChange = (v: number) => {
-    handleSetPayload(activeService.id, 'totalWorkedHours', v)
+    handleSetPayload(activeService.id, 'estimatedTime', v)
   }
 
   const handleButtonSave = () => {
-    console.log(payload?.data?.[activeService.id])
+    const requestPayload = {
+      orderServices: [] as any,
+    }
 
-    handleSetPayload(
-      activeService.id,
-      'hasSaved',
-      true
-    )
+    Object.keys(payload!).forEach((key) => {
+      requestPayload.orderServices.push({
+        serviceId: +key,
+        ...payload?.[key],
+      })
+    })
+
+    handleSetPayload(activeService.id, 'hasSaved', true)
+  }
+
+  const handleOnClearSelectedPieces = () => {
+    handleSetPayload(activeService.id, 'parts', [])
   }
   return (
     <Container>
@@ -192,21 +190,24 @@ const ServiceOrderParts = ({
                 label='Tempo estimado (Horas)'
                 selectAllOnIncrement
                 selectAllOnFocus
-                value={
-                  payload?.data?.[activeService.id]?.totalWorkedHours || ''
-                }
+                value={payload?.[activeService.id]?.estimatedTime || ''}
                 onValueChange={handleEstimatedTimeChange}
               />
             </div>
-            <div>
+            <div style={{
+              display: 'flex',
+              gap: 5,
+              alignItems: 'flex-end'
+            }}>
               <MultiSelect
                 id={`${screen.id}_select_pieces`}
                 label='Peças'
                 handleButtonReloadClick={loadParts}
                 loading={loadingParts}
+                onClear={handleOnClearSelectedPieces}
                 onRemove={handleOnRemoveSelectedPieces}
                 items={partsOption}
-                selectedItems={payload?.data?.[activeService.id]?.pieces}
+                selectedItems={payload?.[activeService.id]?.parts}
                 onChange={handleOnSelectPieces}
                 formGroupProps={{
                   style: {
@@ -214,12 +215,12 @@ const ServiceOrderParts = ({
                   },
                 }}
               />
+              {Boolean(payload?.[activeService.id].parts?.length) && <Button intent="primary" text="quantidades" title="Definir quantidade das peças" />}
             </div>
-
             <div>
               <TextArea
                 id={`${screen.id}_note`}
-                value={payload?.data?.[activeService.id]?.note || ''}
+                value={payload?.[activeService.id]?.note || ''}
                 label='Observação'
                 onChange={handleNoteChange}
               />
@@ -248,7 +249,7 @@ const ServiceOrderParts = ({
         >
           <Button
             text='Salvar'
-            disabled={payload?.data?.[activeService.id]?.hasSaved}
+            disabled={payload?.[activeService.id]?.hasSaved}
             onClick={handleButtonSave}
             intent={Intent.SUCCESS}
           />

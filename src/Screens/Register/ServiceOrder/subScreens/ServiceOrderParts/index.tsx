@@ -102,7 +102,7 @@ const ServiceOrderParts = ({
       [activeService.id]: {
         ...prev?.[activeService.id],
         parts:
-          prev?.[activeService.id].parts?.filter((_, i) => i !== partIndex) ||
+          prev?.[activeService.id]?.parts?.filter((_, i) => i !== partIndex) ||
           [],
         hasSaved: false,
       },
@@ -215,7 +215,7 @@ const ServiceOrderParts = ({
                   },
                 }}
               />
-              {Boolean(payload?.[activeService.id].parts?.length) && <Button intent="primary" text="quantidades" title="Definir quantidade das peças" />}
+              {Boolean(payload?.[activeService.id]?.parts?.length) && <Button intent="primary" text="quantidades" title="Definir quantidade das peças" />}
             </div>
             <div>
               <TextArea

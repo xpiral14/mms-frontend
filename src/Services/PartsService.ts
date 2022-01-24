@@ -2,10 +2,10 @@ import api from '../Config/api'
 import Piece from '../Contracts/Models/Piece'
 import Paginated from '../Contracts/Models/Paginated'
 
-const DEFAULT_PATH = '/piece'
+const DEFAULT_PATH = '/parts'
 class PartsService {
   static async getAll(page = 10, limit = 20) {
-    return api.get<Paginated<Piece>>(`${DEFAULT_PATH}`, {
+    return api.get<Paginated<Piece>>(`${DEFAULT_PATH}/paginated`, {
       params: {
         page,
         limit,
@@ -17,9 +17,12 @@ class PartsService {
     return api.post(DEFAULT_PATH, pieceData)
   }
 
-  static async update(pieceId: number, pieceData: Piece) {
+  static async update(pieceId: number, piece: Piece) {
     return api.put(`${DEFAULT_PATH}/${pieceId}`, {
-      pieceData,
+      name: piece.name,
+      description: piece.description,
+      price: piece.price,
+      unitId: piece.unitId
     })
   }
 

@@ -138,7 +138,7 @@ const PaginatedTable: React.FC<PaginatedTableProps> = ({
           setPage(selected)
           setReloadGrid(true)
         },
-        pageCount: gridResponse?.meta.last_page || 0,
+        pageCount: gridResponse?.meta.lastPage || 0,
       } as ReactPaginateProps),
     [gridResponse, reloadGrid]
   )

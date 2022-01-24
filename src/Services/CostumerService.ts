@@ -2,7 +2,7 @@ import api from '../Config/api'
 import Costumer from '../Contracts/Models/Costumer'
 import Paginated from '../Contracts/Models/Paginated'
 
-const DEFAULT_URL = '/costumer'
+const DEFAULT_URL = '/users'
 export default class CostumerService {
   static async create(costumerData: Partial<Costumer>) {
     return api.post(`${DEFAULT_URL}`, costumerData)
@@ -13,7 +13,8 @@ export default class CostumerService {
   }
 
   static async getAll(page = 10, limit = 20, query?: Partial<Costumer>) {
-    return api.get<Paginated<Partial<Costumer>>>(`${DEFAULT_URL}`, {
+    console.log(api.defaults.headers)
+    return api.get<Paginated<Partial<Costumer>>>(`${DEFAULT_URL}/paginated`, {
       params: {
         page,
         limit,

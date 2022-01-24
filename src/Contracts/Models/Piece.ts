@@ -1,6 +1,7 @@
 export default  interface Piece {
   id: number;
   companyId: number;
+  unitId: number;
   reference: string;
   name: string;
   price: number;

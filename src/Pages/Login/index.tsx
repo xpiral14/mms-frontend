@@ -22,13 +22,11 @@ const LoginPage = () => {
         setAuth(auth)
         history.push('/')
       }
-    } catch (error) {
+    } catch (error: any) {
       if (error.response) {
-        error?.response?.data?.errors?.map((error: any) => {
-          showToast({
-            message: error.message,
-            intent: Intent.DANGER,
-          })
+        showToast({
+          message: error?.response?.data?.data?.messages,
+          intent: Intent.DANGER,
         })
       } else {
         showErrorToast({
@@ -40,8 +38,6 @@ const LoginPage = () => {
       setLoading(false)
     }
   }
-
-
 
   return (
     <Container>

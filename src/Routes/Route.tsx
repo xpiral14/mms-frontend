@@ -8,7 +8,6 @@ import { useAuth } from '../Hooks/useAuth'
 import PrivateLayout from '../Pages/_Layouts/Private'
 import PublicLayout from '../Pages/_Layouts/Public'
 import LoadingPage from '../Pages/LoadingPage'
-import { isBefore } from 'date-fns'
 interface RouteProps extends ReactDomRouteProps {
   component: React.FC<any>
   isPrivate?: boolean
@@ -26,10 +25,7 @@ const Route: FC<RouteProps> = ({
     setLoading(true)
     const storageAuth = localStorage.getItem('@auth')
     if (!auth && storageAuth) {
-      const expiresAt = new Date(JSON.parse(storageAuth).expires_at)
-      if (isBefore(new Date(), expiresAt)) {
-        setAuth(JSON.parse(storageAuth))
-      }
+      setAuth(JSON.parse(storageAuth))
     }
     setLoading(true)
   }, [])

@@ -38,7 +38,7 @@ const AuthProvider: FC = ({ children }) => {
 
   useEffect(() => {
     if (auth) {
-      api.defaults.headers.authorization = `${auth.type} ${auth.token}`
+      api.defaults.headers.authorization = `Bearer ${auth.token}`
       api.interceptors.response.use(
         (response) => {
           return response

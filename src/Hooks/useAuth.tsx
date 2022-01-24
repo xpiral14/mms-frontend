@@ -44,7 +44,8 @@ const AuthProvider: FC = ({ children }) => {
           return response
         },
         (error) => {
-          if (error.message.includes('Request failed with status code 401')) {
+          console.log(error.response)
+          if (error?.response?.data?.messages.includes('Unauthenticated') && error.response.status === 500) {
             showErrorToast({
               message: 'A sua sessão encerrou. Por favor, loge-se novamente',
             })

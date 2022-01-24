@@ -88,13 +88,15 @@ const CostumerRegister: React.FC<CostumerRegisterScreenProps> = ({
     )
   }
 
-  const createCostumer = async () => {
+  const createCostumer = async (stopLoad: () => void) => {
     if (!validate()) {
+      stopLoad()
       return
     }
     try {
       const createPayload = {
         ...payload,
+        roleId: 1, // TODO change this after
         phone: payload.phone?.replace(/[^0-9]/g, ''),
       }
       const response = await CostumerService.create(createPayload)
@@ -111,7 +113,7 @@ const CostumerRegister: React.FC<CostumerRegisterScreenProps> = ({
           intent: Intent.DANGER,
         })
       }
-    } catch (error) {
+    } catch (error: any) {
       const ErrorMessages = getErrorMessages(
         error.response?.data?.errors,
         'Não foi possível criar o cliente'
@@ -121,11 +123,18 @@ const CostumerRegister: React.FC<CostumerRegisterScreenProps> = ({
         text: ErrorMessages,
         intent: Intent.DANGER,
       })
+    } finally{
+      stopLoad()
     }
   }
 
-  const saveCostumer = async () => {
+  const saveCostumer = async (stopLoad: () => void) => {
+    if(!validate()){
+      stopLoad()
+      return
+    }
     try {
+      payload.roleId = 1
       const response = await CostumerService.edit(payload)
       if (response.status) {
         showSuccessToast({
@@ -142,7 +151,7 @@ const CostumerRegister: React.FC<CostumerRegisterScreenProps> = ({
           intent: Intent.DANGER,
         })
       }
-    } catch (error) {
+    } catch (error: any) {
       const ErrorMessages = getErrorMessages(
         error.response?.data?.errors,
         'Não foi possível atualizar o cliente'
@@ -153,28 +162,19 @@ const CostumerRegister: React.FC<CostumerRegisterScreenProps> = ({
         intent: Intent.DANGER,
       })
     }
+    finally{
+      stopLoad() 
+    }
   }
 
   const deleteCostumer = () => {
     const onConfirm = async () => {
       try {
-        const response = await CostumerService.delete(payload?.id as number)
-        if (response.status) {
-          showSuccessToast({
-            message: 'Cliente criado com sucesso',
-            intent: Intent.SUCCESS,
-          })
-          setReloadGrid(true)
-          setScreenStatus(ScreenStatus.VISUALIZE)
-          setPayload({})
-        }
-        if (!response) {
-          openAlert({
-            text: 'Não foi possível criar o cliente',
-            intent: Intent.DANGER,
-          })
-        }
-      } catch (error) {
+        await CostumerService.delete(payload?.id as number)
+        setReloadGrid(true)
+        setScreenStatus(ScreenStatus.VISUALIZE)
+        setPayload({})
+      } catch (error: any) {
         const ErrorMessages = getErrorMessages(
           error.response?.data?.errors,
           'Não foi possível criar o cliente'

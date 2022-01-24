@@ -2,6 +2,7 @@ import { PersonType } from '../../Constants/Enums'
 
 export default interface Costumer {
   id: number
+  roleId: number
   companyId: number
   registeredBy: number
   updatedBy?: any

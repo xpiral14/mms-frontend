@@ -22,7 +22,8 @@ class PartsService {
       name: piece.name,
       description: piece.description,
       price: piece.price,
-      unitId: piece.unitId
+      unitId: piece.unitId,
+      reference: piece.reference
     })
   }
 

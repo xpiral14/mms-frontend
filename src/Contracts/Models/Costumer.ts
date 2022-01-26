@@ -9,8 +9,7 @@ export default interface Costumer {
   name: string
   email?: any
   phone: string
-  cnpj?: any
-  cpf?: any
+  identification: string
   created_at: string
   updated_at: string
   personType?: PersonType

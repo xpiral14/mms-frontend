@@ -20,6 +20,6 @@ export enum ScreenStatus {
 }
 
 export enum PersonType {
-  LEGAL  = 'JURIDICA',
-  PHYSICAL = 'FISICA' 
+  PHYSICAL = '1',
+  LEGAL  = '2',
 }

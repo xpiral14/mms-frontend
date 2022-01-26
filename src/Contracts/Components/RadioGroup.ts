@@ -4,7 +4,7 @@ export interface RadioGroupProps extends BlueprintRadioGroupProps {
   id?: string;
   radios: {
     label?: string
-    value?: string
+    value?: string | number
     id?: string
   }[]
 }

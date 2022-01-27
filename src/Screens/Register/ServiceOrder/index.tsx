@@ -100,7 +100,7 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
     estimatedTimeType: 'HOURS' | 'DAYS'
     estimatedTimeDay: number
     estimatedTime: Date
-    notice: string
+    description: string
   }>()
 
   useEffect(() => {
@@ -133,14 +133,6 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
     {
       check: createValidation('servicesId'),
       errorMessage: 'Escolha ao menos um serviço',
-      inputId: `${screen.id}-select-services`,
-    },
-    {
-      check:
-        payload.estimatedTimeType === 'HOURS'
-          ? createValidation('estimatedTimeType')
-          : createValidation('estimatedTimeDay'),
-      errorMessage: 'Escolha um tempo estimado para a ordem',
       inputId: `${screen.id}-select-services`,
     },
   ]
@@ -200,7 +192,7 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
           payload.estimatedTimeType === 'DAYS'
             ? getSecondsFromDay(payload.estimatedTimeDay!)
             : getTimeInSecondsFromDate(payload.estimatedTime!),
-        notice: payload?.notice,
+        notice: payload?.description,
       }
       const response = await OrderService.create(requestPayload)
       setReloadGrid(true)
@@ -281,9 +273,6 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
       <Body>
         <div>
           <Select
-            inputProps={{
-              id: `${screen.id}-select-costumer`,
-            }}
             handleButtonReloadClick={loadCostumers}
             loading={loadingCostumers}
             itent={Intent.DANGER}
@@ -319,6 +308,7 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
             }}
             buttonProps={
               {
+                id: `${screen.id}-select-costumer`,
                 style: {
                   width: '250px',
                   display: 'flex',
@@ -329,7 +319,7 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
             disabled={screenStatus === ScreenStatus.VISUALIZE}
           />
           <MultiSelect
-            id={`${screen.id}_select_sevices`}
+            id={`${screen.id}-select-services`}
             onChange={(o) => {
               if (payload?.servicesId?.includes(o.value as number)) {
                 setPayload((prev) => ({
@@ -371,50 +361,12 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
         </div>
         <div style={{ display: 'flex', gap: '10px' }}>
           <div style={{ display: 'flex', alignItems: 'flex-end' }}>
-            <RadioGroup
-              disabled={screenStatus === ScreenStatus.VISUALIZE}
-              label='Duração mínima'
-              selectedValue={payload.estimatedTimeType}
-              radios={[
-                { id: 'HOURS', value: 'HOURS', label: 'Horas' },
-                { id: 'DAYS', value: 'DAYS', label: 'Dias' },
-              ]}
-              onChange={(e) => {
-                setPayload((prev) => ({
-                  ...prev,
-                  estimatedTimeType: e.currentTarget.value as any,
-                  estimatedTime: new Date(2021, 7, 29, 1, 0, 0),
-                  estimatedTimeDay: 1,
-                }))
-              }}
-            />
-            {payload?.estimatedTimeType === 'DAYS' ? (
-              <NumericInput
-                disabled={screenStatus === ScreenStatus.VISUALIZE}
-                allowNumericCharactersOnly
-                value={payload?.estimatedTimeDay}
-                onValueChange={(value) => {
-                  setPayload((prev) => ({
-                    ...prev,
-                    estimatedTimeDay: value > 365 ? 365 : value,
-                  }))
-                }}
-                max={365}
-              />
-            ) : (
-              <TimePicker
-                disabled={screenStatus === ScreenStatus.VISUALIZE}
-                value={payload.estimatedTime}
-                onChange={(time) =>
-                  setPayload((prev) => ({ ...prev, estimatedTime: time }))
-                }
-              />
-            )}
+
           </div>
           <TextArea
-            value={payload?.notice || ''}
+            value={payload?.description || ''}
             onChange={(e) =>
-              setPayload((prev) => ({ ...prev, notice: e.currentTarget.value }))
+              setPayload((prev) => ({ ...prev, description: e.currentTarget.value }))
             }
             placeholder='Digite a observação'
             disabled={screenStatus === ScreenStatus.VISUALIZE}
@@ -460,7 +412,7 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
               name: 'Criado em',
               cellRenderer: (cell) => (
                 <Cell>
-                  {new Date(cell.created_at).toLocaleDateString('pt-BR')}
+                  {new Date(cell.createdAt).toLocaleDateString('pt-BR')}
                 </Cell>
               ),
             },

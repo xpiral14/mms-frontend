@@ -39,7 +39,7 @@ const ServiceScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
 
   const { validate } = useValidation(validations)
   const { setReloadGrid } = useGrid()
-  const { showErrorToast, showSuccessToast } = useToast()
+  const { showSuccessToast } = useToast()
   const { openAlert } = useAlert()
 
   const isStatusVizualize = () =>
@@ -59,8 +59,9 @@ const ServiceScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
     )
   }
 
-  const handleButtonCreateServiceOnClick = async () => {
+  const handleButtonCreateServiceOnClick = async (stopLoad: () => void) => {
     if (!validate()) {
+      stopLoad()
       return
     }
 
@@ -86,7 +87,9 @@ const ServiceScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
           intent: Intent.DANGER,
         })
       }
-    } catch (error) {
+      setScreenStatus(ScreenStatus.VISUALIZE)
+      setPayload({})
+    } catch (error: any) {
       const errorMessages = getErrorMessages(
         error.response?.data?.errors,
         'Não foi possível cadastrar o serviço'
@@ -97,15 +100,16 @@ const ServiceScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
         intent: Intent.DANGER,
       })
     }
+    finally{
+      stopLoad()
+    }
   }
 
-  const handleButtonUpdateServiceOnClick = async () => {
+  const handleButtonUpdateServiceOnClick = async (stopLoad: () => void) => {
     if (!validate()) {
+      stopLoad()
       return
     }
-
-    const updatePayload = payload
-    delete updatePayload.id
 
     try {
       const response = await ServicesService.update(
@@ -120,6 +124,8 @@ const ServiceScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
         })
 
         setReloadGrid(true)
+        setScreenStatus(ScreenStatus.VISUALIZE)
+        setPayload({})
       }
 
       if (!response) {
@@ -128,7 +134,7 @@ const ServiceScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
           intent: Intent.DANGER,
         })
       }
-    } catch (error) {
+    } catch (error: any) {
       const ErrorMessages = getErrorMessages(
         error.response?.data?.errors,
         'Não foi possível atualizar o serviço'
@@ -138,31 +144,28 @@ const ServiceScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
         text: ErrorMessages,
         intent: Intent.DANGER,
       })
+    } finally{
+      stopLoad()
     }
   }
 
   const handleButtonDeleteServiceOnClick = async () => {
     try {
-      const response = await ServicesService.delete(payload.id as number)
+      await ServicesService.delete(payload.id as number)
 
-      if (response.status) {
-        showSuccessToast({
-          message: 'Item deletado com sucesso',
-          intent: Intent.SUCCESS,
-        })
+      showSuccessToast({
+        message: 'Item deletado com sucesso',
+        intent: Intent.SUCCESS,
+      })
 
-        setPayload({})
+      setPayload({})
 
-        setReloadGrid(true)
-      }
+      setScreenStatus(ScreenStatus.VISUALIZE)
 
-      if (!response) {
-        showErrorToast({
-          message: 'Não foi possível deletar o item selecionado',
-          intent: Intent.DANGER,
-        })
-      }
-    } catch (error) {
+      setReloadGrid(true)
+
+
+    } catch (error: any) {
       const ErrorMessages = getErrorMessages(
         error.response?.data?.errors,
         'Não foi possível deletar o serviço'

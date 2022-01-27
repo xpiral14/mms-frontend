@@ -2,10 +2,10 @@ import api from '../Config/api'
 import Order, { OrderPayload } from '../Contracts/Models/Order'
 import Paginated from '../Contracts/Models/Paginated'
 
-const DEFAULT_PATH = '/order'
+const DEFAULT_PATH = '/orders'
 export default class OrderService {
   static async getAll(page: number, limit: number, query: object) {
-    return api.get<Paginated<Order>>(DEFAULT_PATH, {
+    return api.get<Paginated<Order>>(`${DEFAULT_PATH}/paginated`, {
       params: {
         page,
         limit,

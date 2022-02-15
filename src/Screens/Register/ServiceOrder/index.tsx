@@ -188,21 +188,18 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
       const requestPayload: OrderPayload = {
         costumerId: payload.costumerId!,
         servicesId: payload.servicesId!,
-        estimatedTime:
-          payload.estimatedTimeType === 'DAYS'
-            ? getSecondsFromDay(payload.estimatedTimeDay!)
-            : getTimeInSecondsFromDate(payload.estimatedTime!),
-        notice: payload?.description,
+        description: payload?.description,
       }
       const response = await OrderService.create(requestPayload)
       setReloadGrid(true)
       const openServiceOrderPartsScreen = () => {
         openOrderServicePiecesScreen({
-          orderId: response.data.id,
+          orderId: response.data.data.id,
           services: services.filter((s) => payload.servicesId?.includes(s.id)),
         })
       }
-
+      
+      OrderService.addServices(response.data.data.id, payload.servicesId! )
       openAlert({
         text: 'Você deseja adicionar os produtos do serviço?',
         intent: Intent.SUCCESS,
@@ -215,6 +212,7 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
         estimatedTimeType: 'DAYS',
       })
     } catch (error) {
+      console.log(error)
       showErrorToast({
         message: 'Erro ao criar ordem serviço. Por favor, tente novamente.',
       })
@@ -260,11 +258,15 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
   }
 
   const handleServiceDetailsClick = () => {
+
+    if(!payload.servicesId?.length) return
+    
     openOrderServicePiecesScreen({
       orderId: payload?.id as number,
       services: services.filter((s) => payload.servicesId?.includes(s.id)),
     })
   }
+
   return (
     <Container>
       <Header>
@@ -418,23 +420,22 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
             },
           ]}
           request={OrderService.getAll as any}
-          onRowSelect={(row) => {
+          onRowSelect={async (row) => {
             setScreenStatus(ScreenStatus.VISUALIZE)
+            try {
+              const {data} = await OrderService.getOne(row.id)
+              const formattedRow = {
+                ...row,
+                servicesId: data.data.services.map(s => s.id)
+              }  
+              setPayload(formattedRow)
 
-            const formattedRow = {
-              ...row,
-              estimatedTimeType:
-                row?.estimatedTime && row.estimatedTime < 86399
-                  ? 'HOURS'
-                  : 'DAYS',
-              estimatedTime: addSeconds(
-                new Date('2021-01-01T00:00:00'),
-                row.estimatedTime || 0
-              ),
-              estimatedTimeDay: row.estimatedTime / (3600 * 24),
-              servicesId: row?.services?.map((s: Service) => s.id),
+            } catch (error) {
+              showSuccessToast({
+                message: 'Não foi possível carregar a ordem de serviço'
+              })
             }
-            setPayload(formattedRow)
+            
           }}
         />
       </Body>

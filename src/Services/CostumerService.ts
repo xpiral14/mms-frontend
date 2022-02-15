@@ -13,7 +13,6 @@ export default class CostumerService {
   }
 
   static async getAll(page = 10, limit = 20, query?: Partial<Costumer>) {
-    console.log(api.defaults.headers)
     return api.get<Paginated<Partial<Costumer>>>(`${DEFAULT_URL}/paginated`, {
       params: {
         page,

@@ -18,22 +18,27 @@ import Button from '../../../../../Components/Button'
 import { Intent } from '@blueprintjs/core'
 import NumericInput from '../../../../../Components/NumericInput'
 import TextArea from '../../../../../Components/TextArea'
+import OrderService from '../../../../../Services/OrderService'
+import useValidation from '../../../../../Hooks/useValidation'
+import { Validation } from '../../../../../Contracts/Hooks/useValidation'
 interface ServiceOrderPartsScreenProps extends ScreenProps {
   services: Service[]
-  parts: Piece[]
+  parts: Piece[],
+  orderId: number
 }
 
 const FIRST_ARRAY_INDEX = 0
 
 interface PayloadData {
-  pieces?: number[]
-  note?: string
-  totalWorkedHours?: number
+  partIds?: number[]
+  description?: string
+  estimatedTime?: number,
   hasSaved?: boolean
 }
 const ServiceOrderParts = ({
   services,
   screen,
+  orderId
 }: ServiceOrderPartsScreenProps) => {
   const [activeServiceIndex, setActiveService] = useState<number>(0)
   const [payload, setPayload] = useState<{
@@ -103,10 +108,10 @@ const ServiceOrderParts = ({
       ...prev,
       data: {
         ...prev?.data,
-        [activeService.id]: {
-          ...prev?.data?.[activeService.id],
-          pieces:
-            prev?.data?.[activeService.id].pieces?.filter(
+        [activeService!.id]: {
+          ...prev?.data?.[activeService!.id],
+          partIds:
+            prev?.data?.[activeService!.id]?.partIds?.filter(
               (_, i) => i !== partIndex
             ) || [],
           hasSaved: false
@@ -119,17 +124,17 @@ const ServiceOrderParts = ({
     setPayload((prev) => {
       const copyPrev = { ...prev }
       if (
-        copyPrev.data?.[activeService.id]?.pieces?.includes(o.value as number)
+        copyPrev.data?.[activeService!.id]?.partIds?.includes(o.value as number)
       ) {
         return {
           ...copyPrev,
           data: {
             ...copyPrev.data,
-            [activeService.id]: {
-              pieces:
+            [activeService!.id]: {
+              partIds:
                 copyPrev.data?.[
-                  services?.[activeServiceIndex].id
-                ]?.pieces?.filter((partId) => partId !== o.value) || [],
+                  services?.[activeServiceIndex]!.id
+                ]?.partIds?.filter((partId) => partId !== o.value) || [],
               hasSaved: false,
             },
           },
@@ -139,10 +144,10 @@ const ServiceOrderParts = ({
       return {
         data: {
           ...prev?.data,
-          [activeService.id]: {
+          [activeService!.id]: {
             ...services?.[activeServiceIndex],
-            pieces: [
-              ...(prev?.data?.[activeService.id]?.pieces || []),
+            partIds: [
+              ...(prev?.data?.[activeService!.id]?.partIds || []),
               o.value as number,
             ],
             hasSaved: false,
@@ -151,20 +156,42 @@ const ServiceOrderParts = ({
       }
     })
   }
-
+  const validations : Validation[] = [
+    {
+      check:  () => Boolean(payload?.data?.[activeServiceIndex]?.estimatedTime),
+      errorMessage: 'O tempo estimado',
+      inputId: `${screen.id}-estimated-time`,
+    },
+    {
+      check: () => Boolean(payload?.data?.[activeServiceIndex]?.partIds?.length),
+      errorMessage: 'As peças do serviços são obrigatórias'
+    }
+  ]
+  const {validate} = useValidation(validations)
   const handleNoteChange = (ev: any) => {
-    handleSetPayload(activeService.id, 'note', ev.target.value)
+    handleSetPayload(activeService!.id, 'description', ev.target.value)
   }
 
   const handleEstimatedTimeChange = (v: number) => {
-    handleSetPayload(activeService.id, 'totalWorkedHours', v)
+    handleSetPayload(activeService!.id, 'estimatedTime', v)
   }
 
   const handleButtonSave = () => {
-    console.log(payload?.data?.[activeService.id])
 
+    if(!validate()){
+      return
+    }
+    OrderService.configServiceOrder(
+      orderId,
+      activeService!.id,
+      {
+        description: payload?.data?.[activeServiceIndex]?.description || '',
+        estimatedTime: payload?.data?.[activeServiceIndex]?.estimatedTime || 0,
+        partIds: payload?.data?.[activeServiceIndex]?.partIds || [],
+      }
+    )
     handleSetPayload(
-      activeService.id,
+      activeService!.id,
       'hasSaved',
       true
     )
@@ -173,7 +200,7 @@ const ServiceOrderParts = ({
     <Container>
       <Header>
         <div style={{ fontSize: 15 }}>
-          <b>{services?.[activeServiceIndex].name}</b>
+          <b>{services?.[activeServiceIndex]?.name}</b>
         </div>
       </Header>
       <Body>
@@ -193,7 +220,7 @@ const ServiceOrderParts = ({
                 selectAllOnIncrement
                 selectAllOnFocus
                 value={
-                  payload?.data?.[activeService.id]?.totalWorkedHours || ''
+                  payload?.data?.[activeService!.id]?.estimatedTime || ''
                 }
                 onValueChange={handleEstimatedTimeChange}
               />
@@ -206,7 +233,7 @@ const ServiceOrderParts = ({
                 loading={loadingParts}
                 onRemove={handleOnRemoveSelectedPieces}
                 items={partsOption}
-                selectedItems={payload?.data?.[activeService.id]?.pieces}
+                selectedItems={payload?.data?.[activeService!.id]?.partIds}
                 onChange={handleOnSelectPieces}
                 formGroupProps={{
                   style: {
@@ -219,7 +246,7 @@ const ServiceOrderParts = ({
             <div>
               <TextArea
                 id={`${screen.id}_note`}
-                value={payload?.data?.[activeService.id]?.note || ''}
+                value={payload?.data?.[activeService!.id]?.description || ''}
                 label='Observação'
                 onChange={handleNoteChange}
               />
@@ -248,7 +275,7 @@ const ServiceOrderParts = ({
         >
           <Button
             text='Salvar'
-            disabled={payload?.data?.[activeService.id]?.hasSaved}
+            disabled={payload?.data?.[activeService!.id]?.hasSaved}
             onClick={handleButtonSave}
             intent={Intent.SUCCESS}
           />

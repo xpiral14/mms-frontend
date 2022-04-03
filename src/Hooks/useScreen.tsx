@@ -16,9 +16,10 @@ import WindowContextProvider from './useWindow'
 import {
   ScreenContext,
   ScreenObject,
-  ContextPanelOptions,
+  ContextPanelOptions, ScreenIds
 } from '../Contracts/Hooks/useScreen'
 import { Intent } from '@blueprintjs/core'
+import {allScreens} from '../Statics/screens'
 
 export const screenContext = createContext<ScreenContext>(null as any)
 
@@ -33,12 +34,12 @@ export const useScreen = () => {
 }
 jsPanel.ziBase = 4
 
+
 export default function ScreenProvider({ children }: any) {
   const [screens, setPanels] = useState<{
     [x: string]: ScreenObject
   }>({})
   const [screenError, setScreenError] = useState(null as any)
-
   useEffect(() => {
     if (screenError && screens[screenError]) {
       screens[screenError]?.screen?.close()
@@ -172,14 +173,15 @@ export default function ScreenProvider({ children }: any) {
   }
 
   const openSubPanel = (
-    panelOptions: ContextPanelOptions,
-    parentPanelId: string,
+    panelOptions: Omit<ContextPanelOptions, 'path'>,
+    parentPanelId: ScreenIds,
     props?: any
   ) => {
+    const path = allScreens[panelOptions.id].path
     openScreen(
       {
         ...panelOptions,
-        id: `parent-${parentPanelId}-${panelOptions.id}`,
+        path,
         parentScreenId: parentPanelId,
       },
       props

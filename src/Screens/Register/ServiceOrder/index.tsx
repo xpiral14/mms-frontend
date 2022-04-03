@@ -1,45 +1,34 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import {
-  Collapse,
-  FormGroup,
-  Intent,
-  NumericInput,
-  TextArea,
-} from '@blueprintjs/core'
-import { TimePicker } from '@blueprintjs/datetime'
-import { Cell } from '@blueprintjs/table'
-import React, { useMemo, useState } from 'react'
-import { useEffect } from 'react'
-import InputText from '../../../Components/InputText'
-import MultiSelect, { MultiSelectOption } from '../../../Components/MultiSelect'
+import {Collapse, Intent, TextArea,} from '@blueprintjs/core'
+import {Cell} from '@blueprintjs/table'
+import React, {useEffect, useMemo, useState} from 'react'
+import MultiSelect, {MultiSelectOption} from '../../../Components/MultiSelect'
 import PaginatedTable from '../../../Components/PaginatedTable'
-import RadioGroup from '../../../Components/RadioGroup'
 import RegistrationButtonBar from '../../../Components/RegistrationButtonBar'
 import Select from '../../../Components/Select'
-import { orderStatus, PersonType, ScreenStatus } from '../../../Constants/Enums'
-import { RegistrationButtonBarProps } from '../../../Contracts/Components/RegistrationButtonBarProps'
+import {orderStatus, PersonType, ScreenStatus} from '../../../Constants/Enums'
+import {RegistrationButtonBarProps} from '../../../Contracts/Components/RegistrationButtonBarProps'
 import ScreenProps from '../../../Contracts/Components/ScreenProps'
-import { Option } from '../../../Contracts/Components/Suggest'
-import { Validation } from '../../../Contracts/Hooks/useValidation'
+import {Option} from '../../../Contracts/Components/Suggest'
+import {Validation} from '../../../Contracts/Hooks/useValidation'
 import Costumer from '../../../Contracts/Models/Costumer'
-import Order, { OrderPayload } from '../../../Contracts/Models/Order'
+import {OrderPayload} from '../../../Contracts/Models/Order'
 import Service from '../../../Contracts/Models/Service'
-import { useAlert } from '../../../Hooks/useAlert'
+import {useAlert} from '../../../Hooks/useAlert'
 import useAsync from '../../../Hooks/useAsync'
-import { useGrid } from '../../../Hooks/useGrid'
-import { useScreen } from '../../../Hooks/useScreen'
-import { useToast } from '../../../Hooks/useToast'
+import {useGrid} from '../../../Hooks/useGrid'
+import {useScreen} from '../../../Hooks/useScreen'
+import {useToast} from '../../../Hooks/useToast'
 import useValidation from '../../../Hooks/useValidation'
-import { useWindow } from '../../../Hooks/useWindow'
+import {useWindow} from '../../../Hooks/useWindow'
 import CostumerService from '../../../Services/CostumerService'
 import OrderService from '../../../Services/OrderService'
 import ServiceService from '../../../Services/ServiceService'
-import getSecondsFromDay from '../../../Util/getSecondsFromDay'
-import getTimeInSecondsFromDate from '../../../Util/getTimeInSecondsFromDate'
-import { Body, Container, Header } from './style'
-import { addSeconds } from 'date-fns'
+import {Body, Container, Header} from './style'
+import {addSeconds} from 'date-fns'
 import Button from '../../../Components/Button'
+
 const orderStatusOptions: MultiSelectOption[] = Object.keys(orderStatus).map(
   (key) => ({
     label: orderStatus[key as keyof typeof orderStatus],
@@ -101,18 +90,18 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
 
   const { payload, setPayload, screenStatus, setScreenStatus } = useWindow<{
     id?: number
-    servicesId: number[]
-    costumerId?: number
-    estimatedTimeType: 'HOURS' | 'DAYS'
-    estimatedTimeDay: number
-    estimatedTime: Date
+    services_id: number[]
+    costumer_id?: number
+    estimated_time_type: 'HOURS' | 'DAYS'
+    estimated_time_day: number
+    estimated_time: Date
     description: string
   }>()
 
   useEffect(() => {
     setPayload({
-      estimatedTimeType: 'HOURS',
-      estimatedTime: new Date(2021, 7, 29, 1, 0, 0),
+      estimated_time_type: 'HOURS',
+      estimated_time: new Date(2021, 7, 29, 1, 0, 0),
     })
   }, [])
 
@@ -132,12 +121,12 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
 
   const validations: Validation[] = [
     {
-      check: createValidation('costumerId'),
+      check: createValidation('costumer_id'),
       errorMessage: 'Escolha o cliente',
       inputId: `${screen.id}-select-costumer`,
     },
     {
-      check: createValidation('servicesId'),
+      check: createValidation('services_id'),
       errorMessage: 'Escolha ao menos um serviço',
       inputId: `${screen.id}-select-services`,
     },
@@ -148,21 +137,6 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
   const { showSuccessToast, showErrorToast } = useToast()
   const { openAlert } = useAlert()
   const { openSubScreen } = useScreen()
-  // const isStatusVizualize = () => screenStatus === ScreenStatus.VISUALIZE
-
-  const getErrorMessages = (errors?: any[], defaultMessage?: string) => {
-    const errorMessages = errors?.map((error) => ({
-      message: error.message,
-    })) || [{ message: defaultMessage }]
-
-    return (
-      <ul>
-        {errorMessages?.map(({ message }) => (
-          <li key={message}>{message}</li>
-        ))}
-      </ul>
-    )
-  }
 
   const reloadAllScreenData = () => {
     loadCostumers()
@@ -170,20 +144,8 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
     loadServices()
   }
 
-  const openOrderServicePiecesScreen = (props: {
-    orderId: number
-    services: Service[]
-  }) => {
-    openSubScreen(
-      {
-        headerTitle: 'Cadastro de peça nos serviços escolhidos',
-        id: 'save-order-service-parts',
-        path: 'Register/ServiceOrder/subScreens/ServiceOrderParts',
-        contentSize: '400 330'
-      },
-      screen.id,
-      props
-    )
+  const openOrderServicePiecesScreen = () => {
+
   }
   const saveAction = async (stopLoad: () => void) => {
     if (!validate()) {
@@ -192,20 +154,16 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
     }
     try {
       const requestPayload: OrderPayload = {
-        costumerId: payload.costumerId!,
-        servicesId: payload.servicesId!,
+        costumerId: payload.costumer_id!,
+        servicesId: payload.services_id!,
         description: payload?.description,
       }
       const response = await OrderService.create(requestPayload)
       setReloadGrid(true)
       const openServiceOrderPartsScreen = () => {
-        openOrderServicePiecesScreen({
-          orderId: response.data.data.id,
-          services: services.filter((s) => payload.servicesId?.includes(s.id)),
-        })
       }
-      
-      OrderService.addServices(response.data.data.id, payload.servicesId! )
+
+      OrderService.addServices(response.data.data.id, payload.services_id!)
       openAlert({
         text: 'Você deseja adicionar os produtos do serviço?',
         intent: Intent.SUCCESS,
@@ -215,7 +173,7 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
         canOutsideClickCancel: true,
       })
       setPayload({
-        estimatedTimeType: 'DAYS',
+        estimated_time_type: 'DAYS',
       })
     } catch (error) {
       console.log(error)
@@ -255,7 +213,7 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
       }
 
       openAlert({
-        text: 'Você tem certeza que deseja deletar a ordemd e serviço?',
+        text: 'Você tem certeza que deseja deletar a ordem de serviço?',
         onConfirm,
         intent: Intent.DANGER,
       })
@@ -265,11 +223,11 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
 
   const handleServiceDetailsClick = () => {
 
-    if(!payload.servicesId?.length) return
+    if (!payload.services_id?.length) return
     
     openOrderServicePiecesScreen({
       orderId: payload?.id as number,
-      services: services.filter((s) => payload.servicesId?.includes(s.id)),
+      services: services.filter((s) => payload.services_id?.includes(s.id)),
     })
   }
 
@@ -286,11 +244,11 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
             itent={Intent.DANGER}
             required
             allowCreate
-            activeItem={payload?.costumerId}
+            activeItem={payload?.costumer_id}
             onChange={(option) =>
               setPayload((prev) => ({
                 ...prev,
-                costumerId: option.value as number,
+                costumer_id: option.value as number,
               }))
             }
             defaultButtonText='Escolha um profissional'
@@ -299,10 +257,9 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
             handleCreateButtonClick={(query) => {
               openSubScreen(
                 {
-                  id: 'register-costumer',
+                  id: 'costumer-register',
                   contentSize: '700px 350px',
-                  headerTitle: 'Clientes',
-                  path: 'Register/Costumer',
+                  headerTitle: 'Criar Clientes',
                 },
                 screen.id,
                 {
@@ -329,26 +286,26 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
           <MultiSelect
             id={`${screen.id}-select-services`}
             onChange={(o) => {
-              if (payload?.servicesId?.includes(o.value as number)) {
+              if (payload?.services_id?.includes(o.value as number)) {
                 setPayload((prev) => ({
                   ...prev,
-                  servicesId: prev?.servicesId?.filter((s) => s !== o.value),
+                  services_id: prev?.services_id?.filter((s) => s !== o.value),
                 }))
               } else {
                 setPayload((prev) => ({
                   ...prev,
-                  servicesId: [...(prev?.servicesId || []), o.value as number],
+                  services_id: [...(prev?.services_id || []), o.value as number],
                 }))
               }
             }}
             maxWidth={'100%'}
-            selectedItems={payload?.servicesId}
+            selectedItems={payload?.services_id}
             items={serviceOptions}
-            onClear={() => setPayload((prev) => ({ ...prev, servicesId: [] }))}
+            onClear={() => setPayload((prev) => ({...prev, services_id: []}))}
             onTagRemove={(_, indexOption) => {
               setPayload((prev) => ({
                 ...prev,
-                servicesId: prev.servicesId?.filter(
+                services_id: prev.services_id?.filter(
                   (_: any, indexStatus: number) => indexStatus !== indexOption
                 ),
               }))

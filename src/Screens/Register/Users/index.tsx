@@ -23,8 +23,7 @@ const Users: React.FC<UserProps> = ({ parentScreen, screen, text }) => {
             ? frontParent()
             : openSubPanel(
               {
-                id: 'esse-e-um-sub-panel',
-                path: 'Register/Users',
+                id: 'user-register',
                 headerTitle: 'Ola mundo',
                 callback: () => {
                   showToast({

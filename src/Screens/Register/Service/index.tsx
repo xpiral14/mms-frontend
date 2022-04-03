@@ -5,7 +5,7 @@ import { Container, Header, Body } from './style'
 import PaginatedTable from '../../../Components/PaginatedTable'
 import ServicesService from '../../../Services/ServicesService'
 import ScreenProps from '../../../Contracts/Components/ScreenProps'
-import { RegistrationButtonBarProps } from '../../../Contracts/Components/RegistrationButtonBarProps'
+import { RegistrationButtonBarProps, StopLoadFunc } from '../../../Contracts/Components/RegistrationButtonBarProps'
 import { useGrid } from '../../../Hooks/useGrid'
 import { useWindow } from '../../../Hooks/useWindow'
 import { useAlert } from '../../../Hooks/useAlert'
@@ -46,7 +46,7 @@ const ServiceScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
     Boolean(screenStatus === ScreenStatus.VISUALIZE)
 
   const getErrorMessages = (errors?: any[], defaultMessage?: string) => {
-    const errorMessages = errors?.map((error) => ({
+    const errorMessages = errors?.map((error: any) => ({
       message: error.message,
     })) || [{ message: defaultMessage }]
 
@@ -59,7 +59,7 @@ const ServiceScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
     )
   }
 
-  const handleButtonCreateServiceOnClick = async () => {
+  const handleButtonCreateServiceOnClick = async (stopLoad: StopLoadFunc) => {
     if (!validate()) {
       return
     }
@@ -86,7 +86,7 @@ const ServiceScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
           intent: Intent.DANGER,
         })
       }
-    } catch (error) {
+    } catch (error: any) {
       const errorMessages = getErrorMessages(
         error.response?.data?.errors,
         'Não foi possível cadastrar o serviço'
@@ -96,16 +96,15 @@ const ServiceScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
         text: errorMessages,
         intent: Intent.DANGER,
       })
+    } finally {
+      stopLoad()
     }
   }
 
-  const handleButtonUpdateServiceOnClick = async () => {
+  const handleButtonUpdateServiceOnClick = async (stopLoad: StopLoadFunc) => {
     if (!validate()) {
       return
     }
-
-    const updatePayload = payload
-    delete updatePayload.id
 
     try {
       const response = await ServicesService.update(
@@ -128,7 +127,7 @@ const ServiceScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
           intent: Intent.DANGER,
         })
       }
-    } catch (error) {
+    } catch (error: any) {
       const ErrorMessages = getErrorMessages(
         error.response?.data?.errors,
         'Não foi possível atualizar o serviço'
@@ -138,6 +137,8 @@ const ServiceScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
         text: ErrorMessages,
         intent: Intent.DANGER,
       })
+    } finally {
+      stopLoad()
     }
   }
 
@@ -162,7 +163,7 @@ const ServiceScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
           intent: Intent.DANGER,
         })
       }
-    } catch (error) {
+    } catch (error: any) {
       const ErrorMessages = getErrorMessages(
         error.response?.data?.errors,
         'Não foi possível deletar o serviço'

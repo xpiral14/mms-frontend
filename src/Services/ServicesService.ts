@@ -5,11 +5,11 @@ import Paginated from '../Contracts/Models/Paginated'
 const DEFAULT_PATH = '/services'
 
 class ServicesService {
-  static async getAll(page = 10, limit = 20) {
+  static async getAll(page = 10, perPage = 20) {
     return api.get<Paginated<Service>>(`${DEFAULT_PATH}/paginated`, {
       params: {
         page,
-        limit,
+        perPage,
       },
     })
   }

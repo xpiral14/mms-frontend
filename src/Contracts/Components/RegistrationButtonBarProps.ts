@@ -1,6 +1,8 @@
 import { ButtonProps } from '@blueprintjs/core'
 import { Screen } from './ScreenProps'
 
+
+export type StopLoadFunc = () => void
 export interface RegistrationButtonBarProps {
   exitButton?: boolean
   buttonNewProps?: ButtonProps
@@ -10,7 +12,7 @@ export interface RegistrationButtonBarProps {
   buttonDeleteProps?: ButtonProps
   buttonExitProps?: ButtonProps
   handleNewButtonOnClick?: () => void
-  handleSaveButtonOnClick?: (stopLoad: () => void) => void
+  handleSaveButtonOnClick?: (stopLoad: StopLoadFunc) => void
   handleEditButtonOnClick?: () => void
   handleCancelButtonOnClick?: () => void
   handleDeleteButtonOnClick?: () => void

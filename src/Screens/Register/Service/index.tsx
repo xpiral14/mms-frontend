@@ -5,7 +5,7 @@ import { Container, Header, Body } from './style'
 import PaginatedTable from '../../../Components/PaginatedTable'
 import ServicesService from '../../../Services/ServicesService'
 import ScreenProps from '../../../Contracts/Components/ScreenProps'
-import { RegistrationButtonBarProps } from '../../../Contracts/Components/RegistrationButtonBarProps'
+import { RegistrationButtonBarProps, StopLoadFunc } from '../../../Contracts/Components/RegistrationButtonBarProps'
 import { useGrid } from '../../../Hooks/useGrid'
 import { useWindow } from '../../../Hooks/useWindow'
 import { useAlert } from '../../../Hooks/useAlert'
@@ -39,14 +39,14 @@ const ServiceScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
 
   const { validate } = useValidation(validations)
   const { setReloadGrid } = useGrid()
-  const { showSuccessToast } = useToast()
+  const { showSuccessToast, showErrorToast } = useToast()
   const { openAlert } = useAlert()
 
   const isStatusVizualize = () =>
     Boolean(screenStatus === ScreenStatus.VISUALIZE)
 
   const getErrorMessages = (errors?: any[], defaultMessage?: string) => {
-    const errorMessages = errors?.map((error) => ({
+    const errorMessages = errors?.map((error: any) => ({
       message: error.message,
     })) || [{ message: defaultMessage }]
 
@@ -59,7 +59,7 @@ const ServiceScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
     )
   }
 
-  const handleButtonCreateServiceOnClick = async (stopLoad: () => void) => {
+  const handleButtonCreateServiceOnClick = async (stopLoad: StopLoadFunc) => {
     if (!validate()) {
       stopLoad()
       return
@@ -99,13 +99,12 @@ const ServiceScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
         text: errorMessages,
         intent: Intent.DANGER,
       })
-    }
-    finally{
+    } finally {
       stopLoad()
     }
   }
 
-  const handleButtonUpdateServiceOnClick = async (stopLoad: () => void) => {
+  const handleButtonUpdateServiceOnClick = async (stopLoad: StopLoadFunc) => {
     if (!validate()) {
       stopLoad()
       return
@@ -151,7 +150,7 @@ const ServiceScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
 
   const handleButtonDeleteServiceOnClick = async () => {
     try {
-      await ServicesService.delete(payload.id as number)
+      const response = await ServicesService.delete(payload.id as number)
 
       showSuccessToast({
         message: 'Item deletado com sucesso',
@@ -162,6 +161,12 @@ const ServiceScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
 
       setScreenStatus(ScreenStatus.VISUALIZE)
 
+      if (!response) {
+        showErrorToast({
+          message: 'Não foi possível deletar o item selecionado',
+          intent: Intent.DANGER,
+        })
+      }
       setReloadGrid(true)
 
 

@@ -8,6 +8,8 @@ import { useAuth } from '../Hooks/useAuth'
 import PrivateLayout from '../Pages/_Layouts/Private'
 import PublicLayout from '../Pages/_Layouts/Public'
 import LoadingPage from '../Pages/LoadingPage'
+// import { isBefore } from 'date-fns'
+import Strip from '../Components/Strip'
 interface RouteProps extends ReactDomRouteProps {
   component: React.FC<any>
   isPrivate?: boolean
@@ -18,17 +20,9 @@ const Route: FC<RouteProps> = ({
   isPrivate,
   ...rest
 }) => {
-  const { auth, setAuth } = useAuth()
+  const { auth } = useAuth()
   const history = useHistory()
   const [loading, setLoading] = useState(true)
-  useEffect(() => {
-    setLoading(true)
-    const storageAuth = localStorage.getItem('@auth')
-    if (!auth && storageAuth) {
-      setAuth(JSON.parse(storageAuth))
-    }
-    setLoading(true)
-  }, [])
 
   useEffect(() => {
     setLoading(true)
@@ -46,7 +40,7 @@ const Route: FC<RouteProps> = ({
     if (loading) {
       return <LoadingPage />
     }
-    let Layout
+    let Layout: React.FunctionComponent
 
     if (auth?.user) {
       Layout = () => (
@@ -62,7 +56,13 @@ const Route: FC<RouteProps> = ({
       )
     }
 
-    return <Layout />
+    const isDevelopment = process.env.NODE_ENV === 'development'  
+    return <>
+      {isDevelopment && <Strip variation="warning">
+      </Strip>}
+
+      <Layout />
+    </>
   }
 
   return (

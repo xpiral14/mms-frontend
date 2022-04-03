@@ -5,14 +5,14 @@ import { Container, Header, Body } from './style'
 import PaginatedTable from '../../../Components/PaginatedTable'
 import PartsService from '../../../Services/PartsService'
 import ScreenProps from '../../../Contracts/Components/ScreenProps'
-import { RegistrationButtonBarProps } from '../../../Contracts/Components/RegistrationButtonBarProps'
+import { RegistrationButtonBarProps, StopLoadFunc } from '../../../Contracts/Components/RegistrationButtonBarProps'
 import { useGrid } from '../../../Hooks/useGrid'
 import { useWindow } from '../../../Hooks/useWindow'
 import { useAlert } from '../../../Hooks/useAlert'
 import { ScreenStatus } from '../../../Constants/Enums'
 import { Intent } from '@blueprintjs/core'
 import { useToast } from '../../../Hooks/useToast'
-import Piece from '../../../Contracts/Models/Piece'
+import Part from '../../../Contracts/Models/Part'
 import useValidation from '../../../Hooks/useValidation'
 import { Validation } from '../../../Contracts/Hooks/useValidation'
 import { RenderMode } from '@blueprintjs/table'
@@ -23,7 +23,7 @@ import UnitService from '../../../Services/UnitService'
 
 const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
   const { payload, setPayload, screenStatus, setScreenStatus } =
-    useWindow<Piece>()
+    useWindow<Part>()
 
   const [units, setUnits] = useState<Unit[]>([])
 
@@ -94,6 +94,7 @@ const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
     try {
       const createPayload = {
         ...payload,
+        unitId : 201
       }
 
       const response = await PartsService.create(createPayload as any)
@@ -128,16 +129,18 @@ const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
     }
   }
 
-  const handleButtonUpdatePartOnClick = async (stopLoad: Function) => {
-    if (!validate()) {
-      stopLoad()
+  const handleButtonUpdatePartOnClick = async (stopLoad: StopLoadFunc) => {
+    if (!validate) {
       return
     }
-
+    const requestPayload = {
+      ...payload,
+      unitId: 201
+    }
     try {
       const response = await PartsService.update(
-        payload.id as number,
-        payload as Piece
+        requestPayload.id as number,
+        requestPayload as Part
       )
 
       if (response.status) {
@@ -165,8 +168,7 @@ const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
         text: ErrorMessages,
         intent: Intent.DANGER,
       })
-    }
-    finally{
+    }finally{
       stopLoad()
     }
   }

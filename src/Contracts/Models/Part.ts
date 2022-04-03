@@ -1,4 +1,4 @@
-export default  interface Piece {
+export default  interface Part {
   id: number;
   companyId: number;
   unitId: number;

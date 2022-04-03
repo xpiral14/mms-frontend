@@ -14,7 +14,7 @@ class ServicesService {
     })
   }
 
-  static async create(serviceData: Service) {
+  static async create(serviceData: Partial<Service>) {
     return api.post(`${DEFAULT_PATH}`, serviceData)
   }
 

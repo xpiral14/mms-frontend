@@ -5,21 +5,21 @@ import { Container, Header, Body } from './style'
 import PaginatedTable from '../../../Components/PaginatedTable'
 import PartsService from '../../../Services/PartsService'
 import ScreenProps from '../../../Contracts/Components/ScreenProps'
-import { RegistrationButtonBarProps } from '../../../Contracts/Components/RegistrationButtonBarProps'
+import { RegistrationButtonBarProps, StopLoadFunc } from '../../../Contracts/Components/RegistrationButtonBarProps'
 import { useGrid } from '../../../Hooks/useGrid'
 import { useWindow } from '../../../Hooks/useWindow'
 import { useAlert } from '../../../Hooks/useAlert'
 import { ScreenStatus } from '../../../Constants/Enums'
 import { Intent } from '@blueprintjs/core'
 import { useToast } from '../../../Hooks/useToast'
-import Piece from '../../../Contracts/Models/Piece'
+import Part from '../../../Contracts/Models/Part'
 import useValidation from '../../../Hooks/useValidation'
 import { Validation } from '../../../Contracts/Hooks/useValidation'
 import { RenderMode } from '@blueprintjs/table'
 
 const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
   const { payload, setPayload, screenStatus, setScreenStatus } =
-    useWindow<Piece>()
+    useWindow<Part>()
 
   const createValidation = (keyName: any) => () =>
     Boolean((payload as any)[keyName])
@@ -64,7 +64,7 @@ const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
     )
   }
 
-  const handleButtonCreatePartOnClick = async () => {
+  const handleButtonCreatePartOnClick = async (stopLoad: StopLoadFunc) => {
     if (!validate) {
       return
     }
@@ -72,6 +72,7 @@ const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
     try {
       const createPayload = {
         ...payload,
+        unitId : 201
       }
 
       const response = await PartsService.create(createPayload as any)
@@ -91,7 +92,7 @@ const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
           intent: Intent.DANGER,
         })
       }
-    } catch (error) {
+    } catch (error: any) {
       const errorMessages = getErrorMessages(
         error.response?.data?.errors,
         'Não foi possível cadastrar a peça'
@@ -101,21 +102,23 @@ const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
         text: errorMessages,
         intent: Intent.DANGER,
       })
+    } finally{
+      stopLoad()
     }
   }
 
-  const handleButtonUpdatePartOnClick = async () => {
+  const handleButtonUpdatePartOnClick = async (stopLoad: StopLoadFunc) => {
     if (!validate) {
       return
     }
-
-    const updatePayload = payload
-    delete updatePayload.id
-
+    const requestPayload = {
+      ...payload,
+      unitId: 201
+    }
     try {
       const response = await PartsService.update(
-        payload.id as number,
-        payload as Piece
+        requestPayload.id as number,
+        requestPayload as Part
       )
 
       if (response.status) {
@@ -133,7 +136,7 @@ const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
           intent: Intent.DANGER,
         })
       }
-    } catch (error) {
+    } catch (error: any) {
       const ErrorMessages = getErrorMessages(
         error.response?.data?.errors,
         'Não foi possível atualizar a peça'
@@ -143,6 +146,8 @@ const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
         text: ErrorMessages,
         intent: Intent.DANGER,
       })
+    }finally{
+      stopLoad()
     }
   }
 
@@ -167,7 +172,7 @@ const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
           intent: Intent.DANGER,
         })
       }
-    } catch (error) {
+    } catch (error: any) {
       const ErrorMessages = getErrorMessages(
         error.response?.data?.errors,
         'Não foi possível deletar a peça'

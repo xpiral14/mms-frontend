@@ -1,6 +1,12 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { FormGroup, Intent, NumericInput, TextArea } from '@blueprintjs/core'
+import {
+  Collapse,
+  FormGroup,
+  Intent,
+  NumericInput,
+  TextArea,
+} from '@blueprintjs/core'
 import { TimePicker } from '@blueprintjs/datetime'
 import { Cell } from '@blueprintjs/table'
 import React, { useMemo, useState } from 'react'
@@ -48,7 +54,7 @@ orderStatusOptions.forEach((os) => (orderStatusKeyValue[os.value] = os.label))
 const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
   const [costumers, setCostumer] = useState<Costumer[]>([])
   const [services, setServices] = useState<Service[]>([])
-
+  const [isTableCollapsed, setIsTableCollapsed] = useState(true)
   const serviceOptions = useMemo<Option[]>(
     () => services.map((s) => ({ value: s.id, label: s.name })),
     [services]
@@ -422,69 +428,75 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
             style={{ flex: 1 }}
           />
         </div>
-        <PaginatedTable
-          containerProps={{
-            style: {
-              overflowY: 'scrool',
-              width: '100%',
-            },
-          }}
-          columns={[
-            {
-              id: 1,
-              name: 'Status',
-              keyName: 'status',
-
-              formatText: (text) =>
-                orderStatus[text as keyof typeof orderStatus],
-            },
-            {
-              id: 1,
-              name: 'Observação',
-              keyName: 'notice',
-            },
-            {
-              id: 1,
-              name: 'Valor',
-              formatText: (text, row) => {
-                return (
-                  row?.orderPiece?.reduce(
-                    (acc: any, curr: any) => acc + curr.piece.price,
-                    0
-                  ) || 'R$ 0'
-                )
-              },
-            },
-            {
-              id: 1,
-              name: 'Criado em',
-              cellRenderer: (cell) => (
-                <Cell>
-                  {new Date(cell.created_at).toLocaleDateString('pt-BR')}
-                </Cell>
-              ),
-            },
-          ]}
-          request={OrderService.getAll as any}
-          onRowSelect={(row) => {
-            setScreenStatus(ScreenStatus.VISUALIZE)
-
-            const formattedRow = {
-              ...row,
-              estimatedTimeType:
-                row?.estimatedTime && row.estimatedTime < 86399
-                  ? 'HOURS'
-                  : 'DAYS',
-              estimatedTime: addSeconds(
-                new Date('2021-01-01T00:00:00'),
-                row.estimatedTime || 0
-              ),
-              estimatedTimeDay: row.estimatedTime / (3600 * 24),
-              servicesId: row?.services?.map((s: Service) => s.id),
-            }
-            setPayload(formattedRow)
-          }}
+        <Button
+          text={isTableCollapsed ? 'Colpsar tabela' : 'Descolapsar tabela'}
+          onClick={() => setIsTableCollapsed((prev) => !prev)}
         />
+        <Collapse isOpen={isTableCollapsed}>
+          <PaginatedTable
+            containerProps={{
+              style: {
+                overflowY: 'scrool',
+                width: '100%',
+              },
+            }}
+            columns={[
+              {
+                id: 1,
+                name: 'Status',
+                keyName: 'status',
+
+                formatText: (text) =>
+                  orderStatus[text as keyof typeof orderStatus],
+              },
+              {
+                id: 1,
+                name: 'Observação',
+                keyName: 'notice',
+              },
+              {
+                id: 1,
+                name: 'Valor',
+                formatText: (text, row) => {
+                  return (
+                    row?.order_part?.reduce(
+                      (acc: any, curr: any) => acc + curr.piece.price,
+                      0
+                    ) || 'R$ 0'
+                  )
+                },
+              },
+              {
+                id: 1,
+                name: 'Criado em',
+                cellRenderer: (cell) => (
+                  <Cell>
+                    {new Date(cell.created_at).toLocaleDateString('pt-BR')}
+                  </Cell>
+                ),
+              },
+            ]}
+            request={OrderService.getAll as any}
+            onRowSelect={(row) => {
+              setScreenStatus(ScreenStatus.VISUALIZE)
+
+              const formattedRow = {
+                ...row,
+                estimatedTimeType:
+                  row?.estimatedTime && row.estimatedTime < 86399
+                    ? 'HOURS'
+                    : 'DAYS',
+                estimatedTime: addSeconds(
+                  new Date('2021-01-01T00:00:00'),
+                  row.estimatedTime || 0
+                ),
+                estimatedTimeDay: row.estimatedTime / (3600 * 24),
+                servicesId: row?.services?.map((s: Service) => s.id),
+              }
+              setPayload(formattedRow)
+            }}
+          />
+        </Collapse>
       </Body>
     </Container>
   )

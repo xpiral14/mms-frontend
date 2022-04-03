@@ -1,14 +1,14 @@
-import Piece from './Piece'
+import Part from './Part'
 
 export default  interface Service {
   id: number;
-  companyId: number;
+  company_id: number;
   reference: string;
   name: string;
   description: string;
   created_at: string;
   updated_at: string;
-  pieces?: Piece[]
+  parts?: Part[]
 }
 
 

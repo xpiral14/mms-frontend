@@ -1,25 +1,25 @@
 import Costumer from './Costumer'
-import OrderPiece from './OrderPiece'
+import OrderPart from './OrderPart'
 import Service from './Service'
 import User from './User'
 import Vehicle from './Vehicle'
 
 export default interface Order {
   id: number
-  employeeId: number
-  vehicleId: number
-  costumerId: number
-  registeredBy?: number
-  canceledBy?: string
-  executedBy?: string
-  estimatedTime: number
+  employee_id: number
+  vehicle_id: number
+  costumer_id: number
+  registered_by?: number
+  canceled_by?: string
+  executed_by?: string
+  estimated_time: number
   status: string
   notice?: string
   created_at: string
   updated_at: string
-  userThatRegistered?: User
+  user_that_registered?: User
   vehicle?: Vehicle
-  orderPiece?: OrderPiece[]
+  order_part?: OrderPart[]
   costumer?: Costumer
   services: Service
 }

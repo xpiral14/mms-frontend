@@ -7,7 +7,7 @@ import MultiSelect, {
 import Select from '../../../../../Components/Select'
 import ScreenProps from '../../../../../Contracts/Components/ScreenProps'
 import { Option } from '../../../../../Contracts/Components/Suggest'
-import Piece from '../../../../../Contracts/Models/Piece'
+import Part from '../../../../../Contracts/Models/Part'
 import Service from '../../../../../Contracts/Models/Service'
 import useAsync from '../../../../../Hooks/useAsync'
 import { useScreen } from '../../../../../Hooks/useScreen'
@@ -21,7 +21,7 @@ import TextArea from '../../../../../Components/TextArea'
 import OrderService from '../../../../../Services/OrderService'
 interface ServiceOrderPartsScreenProps extends ScreenProps {
   services: Service[]
-  parts: Piece[]
+  parts: Part[]
   orderId: number
 }
 
@@ -42,7 +42,7 @@ const ServiceOrderParts = ({
   const [payload, setPayload] = useState<{
     [x: string]: PayloadData
   }>()
-  const [parts, setParts] = useState<Piece[]>([])
+  const [parts, setParts] = useState<Part[]>([])
 
   const [loadingParts, loadParts] = useAsync(async () => {
     const parts = await PartsService.getAll(1, 100)

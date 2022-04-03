@@ -28,7 +28,10 @@ export const useAuth = () => {
 }
 
 const AuthProvider: FC = ({ children }) => {
-  const [auth, setAuth] = useState<Auth | null>(null)
+  const [auth, setAuth] = useState<Auth | null>(() => {
+    const authStorage = localStorage.getItem('@auth')
+    return authStorage ?  JSON.parse(authStorage) as Auth : null
+  })
 
   const { showErrorToast } = useToast()
   const logout = () => {
@@ -36,9 +39,10 @@ const AuthProvider: FC = ({ children }) => {
     localStorage.removeItem(AUTH_LOCAL_STORAGE_KEY)
   }
 
+
   useEffect(() => {
     if (auth) {
-      api.defaults.headers.authorization = `${auth.type} ${auth.token}`
+      api.defaults.headers.authorization = `Bearer ${auth.token}`
       api.interceptors.response.use(
         (response) => {
           return response

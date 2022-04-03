@@ -39,7 +39,7 @@ const ServiceScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
 
   const { validate } = useValidation(validations)
   const { setReloadGrid } = useGrid()
-  const { showErrorToast, showSuccessToast } = useToast()
+  const { showSuccessToast, showErrorToast } = useToast()
   const { openAlert } = useAlert()
 
   const isStatusVizualize = () =>
@@ -61,6 +61,7 @@ const ServiceScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
 
   const handleButtonCreateServiceOnClick = async (stopLoad: StopLoadFunc) => {
     if (!validate()) {
+      stopLoad()
       return
     }
 
@@ -86,6 +87,8 @@ const ServiceScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
           intent: Intent.DANGER,
         })
       }
+      setScreenStatus(ScreenStatus.VISUALIZE)
+      setPayload({})
     } catch (error: any) {
       const errorMessages = getErrorMessages(
         error.response?.data?.errors,
@@ -103,6 +106,7 @@ const ServiceScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
 
   const handleButtonUpdateServiceOnClick = async (stopLoad: StopLoadFunc) => {
     if (!validate()) {
+      stopLoad()
       return
     }
 
@@ -119,6 +123,8 @@ const ServiceScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
         })
 
         setReloadGrid(true)
+        setScreenStatus(ScreenStatus.VISUALIZE)
+        setPayload({})
       }
 
       if (!response) {
@@ -137,7 +143,7 @@ const ServiceScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
         text: ErrorMessages,
         intent: Intent.DANGER,
       })
-    } finally {
+    } finally{
       stopLoad()
     }
   }
@@ -146,16 +152,14 @@ const ServiceScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
     try {
       const response = await ServicesService.delete(payload.id as number)
 
-      if (response.status) {
-        showSuccessToast({
-          message: 'Item deletado com sucesso',
-          intent: Intent.SUCCESS,
-        })
+      showSuccessToast({
+        message: 'Item deletado com sucesso',
+        intent: Intent.SUCCESS,
+      })
 
-        setPayload({})
+      setPayload({})
 
-        setReloadGrid(true)
-      }
+      setScreenStatus(ScreenStatus.VISUALIZE)
 
       if (!response) {
         showErrorToast({
@@ -163,6 +167,9 @@ const ServiceScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
           intent: Intent.DANGER,
         })
       }
+      setReloadGrid(true)
+
+
     } catch (error: any) {
       const ErrorMessages = getErrorMessages(
         error.response?.data?.errors,

@@ -2,7 +2,7 @@ import api from '../Config/api'
 import Costumer from '../Contracts/Models/Costumer'
 import Paginated from '../Contracts/Models/Paginated'
 
-const DEFAULT_URL = '/costumers'
+const DEFAULT_URL = '/users'
 export default class CostumerService {
   static async create(costumerData: Partial<Costumer>) {
     return api.post(`${DEFAULT_URL}`, costumerData)

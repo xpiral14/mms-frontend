@@ -21,14 +21,13 @@ export default interface Order {
   vehicle?: Vehicle
   order_part?: OrderPart[]
   costumer?: Costumer
-  services: Service
+  services: Service[]
 }
 
 
 export interface OrderPayload {
   costumerId: number
   servicesId: number[],
-  estimatedTime: number
-  notice?: string
+  description?: string
   vehicleId?: number
 } 

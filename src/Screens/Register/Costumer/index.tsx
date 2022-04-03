@@ -19,14 +19,14 @@ import { Container, Header, Body, FormContainer, TableContainer } from './style'
 
 const personTypesOptions = [
   {
-    value: PersonType.PHYSICAL,
+    value: PersonType.PHYSICAL as string,
     label: 'Física',
-    id: PersonType.PHYSICAL,
+    id: String(PersonType.PHYSICAL),
   },
   {
-    value: PersonType.LEGAL,
+    value: PersonType.LEGAL as string,
     label: 'Jurídica',
-    id: PersonType.LEGAL,
+    id: String(PersonType.LEGAL),
   },
 ]
 
@@ -54,11 +54,16 @@ const CostumerRegister: React.FC<CostumerRegisterScreenProps> = ({
     {
       check: createValidation('personType'),
       errorMessage: 'O tipo de pessoa é obrigatório',
-      inputId: PersonType.PHYSICAL,
+      inputId:  String(PersonType.PHYSICAL),
     },
     {
       check: createValidation('name'),
       errorMessage: 'O nome é obrigatório',
+      inputId: 'name',
+    },
+    {
+      check: createValidation('identification'),
+      errorMessage: `O ${payload.personType === PersonType.LEGAL ? 'cpf' : 'cnpj'} é obrigatório`,
       inputId: 'name',
     },
     {
@@ -88,13 +93,16 @@ const CostumerRegister: React.FC<CostumerRegisterScreenProps> = ({
     )
   }
 
-  const createCostumer = async () => {
+  const createCostumer = async (stopLoad: () => void) => {
     if (!validate()) {
+      stopLoad()
       return
     }
     try {
       const createPayload = {
         ...payload,
+        roleId: 1, // TODO change this after
+        identification: payload.identification?.replace(/[^0-9]/g,  ''),
         phone: payload.phone?.replace(/[^0-9]/g, ''),
       }
       const response = await CostumerService.create(createPayload)
@@ -111,7 +119,7 @@ const CostumerRegister: React.FC<CostumerRegisterScreenProps> = ({
           intent: Intent.DANGER,
         })
       }
-    } catch (error) {
+    } catch (error: any) {
       const ErrorMessages = getErrorMessages(
         error.response?.data?.errors,
         'Não foi possível criar o cliente'
@@ -121,11 +129,19 @@ const CostumerRegister: React.FC<CostumerRegisterScreenProps> = ({
         text: ErrorMessages,
         intent: Intent.DANGER,
       })
+    } finally{
+      stopLoad()
     }
   }
 
-  const saveCostumer = async () => {
+  const saveCostumer = async (stopLoad: () => void) => {
+    if(!validate()){
+      stopLoad()
+      return
+    }
     try {
+      payload.roleId = 1
+      payload.identification = payload?.identification?.replace(/^[0-9]/g, '')
       const response = await CostumerService.edit(payload)
       if (response.status) {
         showSuccessToast({
@@ -142,7 +158,7 @@ const CostumerRegister: React.FC<CostumerRegisterScreenProps> = ({
           intent: Intent.DANGER,
         })
       }
-    } catch (error) {
+    } catch (error: any) {
       const ErrorMessages = getErrorMessages(
         error.response?.data?.errors,
         'Não foi possível atualizar o cliente'
@@ -153,28 +169,19 @@ const CostumerRegister: React.FC<CostumerRegisterScreenProps> = ({
         intent: Intent.DANGER,
       })
     }
+    finally{
+      stopLoad() 
+    }
   }
 
   const deleteCostumer = () => {
     const onConfirm = async () => {
       try {
-        const response = await CostumerService.delete(payload?.id as number)
-        if (response.status) {
-          showSuccessToast({
-            message: 'Cliente criado com sucesso',
-            intent: Intent.SUCCESS,
-          })
-          setReloadGrid(true)
-          setScreenStatus(ScreenStatus.VISUALIZE)
-          setPayload({})
-        }
-        if (!response) {
-          openAlert({
-            text: 'Não foi possível criar o cliente',
-            intent: Intent.DANGER,
-          })
-        }
-      } catch (error) {
+        await CostumerService.delete(payload?.id as number)
+        setReloadGrid(true)
+        setScreenStatus(ScreenStatus.VISUALIZE)
+        setPayload({})
+      } catch (error: any) {
         const ErrorMessages = getErrorMessages(
           error.response?.data?.errors,
           'Não foi possível criar o cliente'
@@ -227,9 +234,8 @@ const CostumerRegister: React.FC<CostumerRegisterScreenProps> = ({
               onChange={(evt) =>
                 setPayload((prev) => ({
                   ...prev,
-                  cpf: '',
-                  cnpj: '',
-                  personType: evt.currentTarget.value as PersonType,
+                  identification: '',
+                  personType: evt.currentTarget.value as any,
                 }))
               }
             />
@@ -238,23 +244,23 @@ const CostumerRegister: React.FC<CostumerRegisterScreenProps> = ({
             {Boolean(payload.personType) &&
               (payload.personType === PersonType.PHYSICAL ? (
                 <InputText
-                  value={payload?.cpf}
+                  value={payload?.identification}
                   id='CPF'
                   mask='999.999.999-99'
                   label='CPF'
                   placeholder='Digite o email do cliente'
                   disabled={isStatusVizualize()}
-                  onChange={createOnChange('cpf')}
+                  onChange={createOnChange('identification')}
                 />
               ) : (
                 <InputText
-                  value={payload.cnpj}
+                  value={payload.identification}
                   id='CNPJ'
                   mask='99.999.999/9999-99'
                   label='CNPJ'
                   placeholder='Digite o email do cliente'
                   disabled={isStatusVizualize()}
-                  onChange={createOnChange('cnpj')}
+                  onChange={createOnChange('identification')}
                 />
               ))}
             <InputText
@@ -305,7 +311,7 @@ const CostumerRegister: React.FC<CostumerRegisterScreenProps> = ({
               {
                 id: 1,
                 name: 'CPF',
-                keyName: 'cpf',
+                keyName: 'identification',
               },
               {
                 id: 1,

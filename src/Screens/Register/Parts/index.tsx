@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react'
+import React, { useCallback, useMemo, useState } from 'react'
 import RegistrationButtonBar from '../../../Components/RegistrationButtonBar'
 import InputText from '../../../Components/InputText'
 import { Container, Header, Body } from './style'
@@ -16,22 +16,43 @@ import Part from '../../../Contracts/Models/Part'
 import useValidation from '../../../Hooks/useValidation'
 import { Validation } from '../../../Contracts/Hooks/useValidation'
 import { RenderMode } from '@blueprintjs/table'
+import useAsync from '../../../Hooks/useAsync'
+import Unit from '../../../Contracts/Models/Unit'
+import Select from '../../../Components/Select'
+import UnitService from '../../../Services/UnitService'
 
 const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
   const { payload, setPayload, screenStatus, setScreenStatus } =
     useWindow<Part>()
 
+  const [units, setUnits] = useState<Unit[]>([])
+
+  const unitsOptions = useMemo(() => units.map((unit) => ({
+    label: unit.name,
+    value: unit.id
+  })), [units])
+
+  const [loadingUnits, loadUnits] = useAsync(async () => {
+    try {
+      const response = await UnitService.getAll(1, 100)
+      setUnits(response.data.data)
+    } catch (error) {
+      showErrorToast({
+        message: 'Erro ao obter lista de clientes',
+      })
+    }
+  }, [])
   const createValidation = (keyName: any) => () =>
     Boolean((payload as any)[keyName])
 
   const validations: Validation[] = [
     {
-      check: createValidation('partReference'),
+      check: createValidation('reference'),
       errorMessage: 'A referência é obrigatória',
       inputId: 'partReference',
     },
     {
-      check: createValidation('partName'),
+      check: createValidation('name'),
       errorMessage: 'O nome é obrigatório',
       inputId: 'partName',
     },
@@ -64,8 +85,9 @@ const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
     )
   }
 
-  const handleButtonCreatePartOnClick = async (stopLoad: StopLoadFunc) => {
+  const handleButtonCreatePartOnClick = async (stopLoad: Function) => {
     if (!validate) {
+      stopLoad()
       return
     }
 
@@ -276,6 +298,27 @@ const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
               </div>
 
               <div>
+                <Select 
+                  defaultButtonText='Escolha uma unidade'
+                  items={unitsOptions}
+                  onChange={(o) => {
+                    setPayload(prev => ({...prev, unitId: o.value as number }))
+                  }}
+                  activeItem={payload.unitId }
+                  id='partId'
+                  label='Unidade'
+                  disabled={
+                    screenStatus === ScreenStatus.VISUALIZE
+                  }
+                  loading={loadingUnits}
+                  handleButtonReloadClick={loadUnits}
+                />
+              </div>
+            </div>
+            <div className='flexRow'>
+              
+
+              <div>
                 <InputText
                   id='partReference'
                   label='Referência:'
@@ -299,7 +342,6 @@ const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
                 />
               </div>
             </div>
-
             <div className='flexRow'>
               <div style={{ width: '80%' }}>
                 <InputText

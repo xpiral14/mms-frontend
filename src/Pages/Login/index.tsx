@@ -17,12 +17,11 @@ const LoginPage = () => {
     try {
       setLoading(true)
       const auth = await AuthService.login(email, password)
-      localStorage.setItem('@auth', JSON.stringify(auth))
       if (auth) {
-        setAuth(auth)
+        setAuth(auth.data)
         history.push('/')
       }
-    } catch (error) {
+    } catch (error: any) {
       if (error.response) {
         error?.response?.data?.errors?.map((error: any) => {
           showToast({

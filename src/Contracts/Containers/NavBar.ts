@@ -1,5 +1,6 @@
 import { IconName } from '@blueprintjs/core'
 import { PanelOptions } from 'jspanel4/es6module/jspanel'
+import {ScreenIds} from '../Hooks/useScreen'
 
 export type MenuType = { [key: string]: MenuItemType }
 export type NavBarProps = {
@@ -8,14 +9,14 @@ export type NavBarProps = {
 
 export type MenuItemType = {
   name: string
-  screen?: NabBarMPanelOption
+  screen?: NavBarPanelOption
   icon?: IconName
   isMain?: boolean
   items?: MenuType
 }
 
 
-export interface NabBarMPanelOption extends PanelOptions {
+export interface NavBarPanelOption extends PanelOptions {
   path: string
-  id: string
+  id: ScreenIds
 }

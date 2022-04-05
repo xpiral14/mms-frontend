@@ -21,6 +21,7 @@ import Select from '../../Components/Select'
 import {Option} from '../../Contracts/Components/Suggest'
 import NumericInput from '../../Components/NumericInput'
 import {useAlert} from '../../Hooks/useAlert'
+import Empty from '../../Components/Empty'
 
 type SelectedOrderService = Record<string | number, OrderServiceItem>;
 const OrderServiceDetails: FunctionComponent<OrderServiceDetailScreenProps> = (props) => {
@@ -321,7 +322,9 @@ const OrderServiceDetails: FunctionComponent<OrderServiceDetailScreenProps> = (p
     <Render renderIf={Boolean(props?.order?.id && !Object.keys(orderServices).length && !loadingOrderServices)}>
       Não existe serviços para a ordem atual
     </Render>
-
+    <Render renderIf={!orderServiceValues.length && !loadingOrderServices}>
+      <Empty />
+    </Render>
     {Object.keys(orderServices).map((serviceKey) => {
       const orderService = orderServices[serviceKey]
       const price = orderService.replaced_price ?? orderService.service_price

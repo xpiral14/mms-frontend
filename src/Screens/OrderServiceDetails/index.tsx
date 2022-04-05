@@ -64,13 +64,13 @@ const OrderServiceDetails: FunctionComponent<OrderServiceDetailScreenProps> = (p
     const orderServicesByKey = {} as any
 
     orderServicesResponse.data.data.forEach(orderService => {
-      orderServicesByKey[orderService.id] = orderService
+      orderServicesByKey[orderService.id!] = orderService
     })
 
     setOrderServices(orderServicesByKey)
   }, [])
 
-  const changeOrderServiceItem = (serviceId: string, attributes: OrderServiceItem) => {
+  const changeOrderServiceItem = (serviceId: string | number, attributes: OrderServiceItem) => {
     setOrderServices(prev => ({
       ...prev,
       [serviceId]: {
@@ -116,7 +116,8 @@ const OrderServiceDetails: FunctionComponent<OrderServiceDetailScreenProps> = (p
       intent: Intent.DANGER
     })
   }
-  function toOrderServiceModel(orderServiceItem: OrderServiceItem){
+
+  function toOrderServiceModel(orderServiceItem: OrderServiceItem) {
     return {
       id: undefined,
       order_id: props?.order?.id,
@@ -126,19 +127,153 @@ const OrderServiceDetails: FunctionComponent<OrderServiceDetailScreenProps> = (p
       description: orderServiceItem.description
     } as Partial<OrderServiceModel>
   }
+
+  const alertThatHasUnsavedOrderServiceItems = (onConfirm: () => void) => {
+    openAlert({
+      text: 'Quando a tela fechar os serviços não salvos não serão modificados. Deseja prosseguir?',
+      intent: 'warning',
+      icon: 'warning-sign',
+      onConfirm,
+    })
+  }
+
+  const orderServiceValues = useMemo(
+    () => Object.values(orderServices),
+    [orderServices]
+  )
+  const hasUnsavedOrderServiceItems = useMemo(
+    () => orderServiceValues.some(s => s.isEditMode),
+    [orderServices]
+  )
+
+  const handleButtonSave = () => {
+    const savedOrderServices = Object.values(orderServices)
+      .filter(s => !s.isEditMode)
+      .map(toOrderServiceModel as any) as OrderServiceModel[]
+
+    const onConfirm = () => props.onSave?.(
+      savedOrderServices,
+      props.screen
+    )
+
+    if (hasUnsavedOrderServiceItems) {
+      alertThatHasUnsavedOrderServiceItems(onConfirm)
+      return
+    }
+
+    onConfirm()
+  }
+
+  const handleButtonExit = () => {
+    const onConfirm = props.screen.close
+    if(hasUnsavedOrderServiceItems){
+      alertThatHasUnsavedOrderServiceItems(onConfirm)
+      return
+    }
+    onConfirm()
+  }
+
+  const handleServiceSelect = (option: Option) => {
+    if (!option.value) return
+    if (orderServices[option.value]) {
+      setOrderServices(prev => {
+        const copy = {...prev}
+        delete copy[option.value]
+        return copy
+      })
+      return
+    }
+    const service = services.find(s => s.id === option.value)!
+    const orderService: OrderServiceItem = {
+      id: undefined,
+      order_id: props?.order?.id ?? undefined,
+      service_id: option.value as number,
+      description: undefined,
+      quantity: 1,
+      replaced_price: undefined,
+      service_name: service.name,
+      service_price: service.price,
+      service_unit_name: service?.unit_name,
+      service_unit_id: service.unit_id,
+      isEditMode: false,
+      isCollapsed: true
+    }
+    setOrderServices(prev => ({
+      ...prev,
+      [service.id]: orderService
+    }))
+  }
+
+  const handleOrderServiceSave = (orderServiceItem: OrderServiceItem) => (event: any) => {
+    event.stopPropagation()
+
+    const orderId = props.order?.id
+
+    const onErrorRequest = () => {
+      showErrorToast({
+        message: 'Não foi possível salvar o serviço'
+      })
+      changeOrderServiceItem(orderServiceItem.service_id!, {
+        isCollapsed: false,
+        isEditMode: true
+      })
+    }
+    const orderService = toOrderServiceModel(orderServiceItem)
+
+    if (orderId && !orderServiceItem.id) {
+      OrderService.addService(orderId, orderService).catch(onErrorRequest)
+    }
+
+    if (orderId && orderServiceItem.id) {
+      OrderService.editService(orderId, orderService).catch(onErrorRequest)
+    }
+
+    setOrderServices(prev => {
+      const serviceId = orderServiceItem.service_id
+      const prevOrderService = prev[serviceId as number]
+      return ({
+        ...prev,
+        [serviceId as number]: {
+          ...prevOrderService,
+          isCollapsed: false,
+          isEditMode: prevOrderService.isCollapsed || !prevOrderService.isEditMode
+        }
+      })
+    })
+  }
+
+  const handleOrderServiceEdit = (orderServiceItem: OrderServiceItem) => (event: any) => {
+    event.stopPropagation()
+    changeOrderServiceItem(orderServiceItem.service_id!, {
+      isCollapsed: false,
+      isEditMode: true
+    })
+  }
+  const handleQuantityChange = (serviceId: string) => (value: number) => {
+    changeOrderServiceItem(serviceId, {
+      replaced_price: value
+    })
+  }
+
+  const handleDescriptionChange = (serviceId: string) => (event: any) => {
+    changeOrderServiceItem(serviceId, {
+      description: event.target.value
+    })
+  }
+
   return <Container>
     <Row className='w-100 mb-2'>
       <Bar style={{display: 'flex', justifyContent: 'space-between'}}>
         <Button
           intent={Intent.SUCCESS}
           icon='floppy-disk'
-          onClick={() => props?.onSave?.(Object.values(orderServices).map(toOrderServiceModel as any), props.screen)}
+          onClick={handleButtonSave}
         >
           Salvar
         </Button>
 
-        <Button icon='log-out' intent={Intent.NONE}  onClick={() => props.screen.close()}>
-            Sair
+        <Button icon='log-out' intent={Intent.NONE} onClick={handleButtonExit}>
+          Sair
         </Button>
       </Bar>
     </Row>
@@ -152,41 +287,13 @@ const OrderServiceDetails: FunctionComponent<OrderServiceDetailScreenProps> = (p
           }
         } as any
       }
-      onChange={(item) => {
-        if (!item.value) return
-        if (orderServices[item.value]) {
-          setOrderServices(prev => {
-            const copy = {...prev}
-            delete copy[item.value]
-            return copy
-          })
-          return
-        }
-        const service = services.find(s => s.id === item.value)!
-        const orderService: OrderServiceItem = {
-          id: undefined,
-          order_id: props?.order?.id ?? undefined,
-          service_id: item.value as number,
-          description: undefined,
-          quantity: 1,
-          replaced_price: undefined,
-          service_name: service.name,
-          service_price: service.price,
-          service_unit_name: service?.unit_name,
-          service_unit_id: service.unit_id
-
-        }
-        setOrderServices(prev => ({
-          ...prev,
-          [service.id]: orderService
-        }))
-      }}
+      onChange={handleServiceSelect}
       id=""
       items={serviceOptions}
       loading={loadingServices}
       handleButtonReloadClick={loadServices}
     />
-    <Render renderIf={Boolean(props?.order?.id && !orderServices.length && !loadingOrderServices)}>
+    <Render renderIf={Boolean(props?.order?.id && !Object.keys(orderServices).length && !loadingOrderServices)}>
       Não existe serviços para a ordem atual
     </Render>
 
@@ -211,34 +318,27 @@ const OrderServiceDetails: FunctionComponent<OrderServiceDetailScreenProps> = (p
             <Row className="flex-between w-100">
               <span>{orderService.service_name}</span>
               <ButtonGroup>
-                <Button
-                  icon={orderService.isEditMode ? 'floppy-disk' : 'edit'}
-                  intent={orderService.isEditMode ? Intent.SUCCESS : Intent.NONE}
-                  onClick={(event: any) => {
-                    event.stopPropagation()
-                    setOrderServices(prev => {
-                      const prevOrderService = prev[serviceKey]
-                      return ({
-                        ...prev,
-                        [serviceKey]: {
-                          ...prevOrderService,
-                          isCollapsed: false,
-                          isEditMode: prevOrderService.isCollapsed || !prevOrderService.isEditMode
-                        }
-                      })
-                    })
-                  }
-                  }/>
+                <Render renderIf={!orderService.isEditMode}>
+                  <Button
+                    icon='edit'
+                    intent={Intent.NONE}
+                    onClick={handleOrderServiceEdit(orderService)}
+                  />
+                </Render>
+                <Render renderIf={orderService.isEditMode}>
+                  <Button
+                    icon={'floppy-disk'}
+                    intent={Intent.SUCCESS}
+                    onClick={handleOrderServiceSave(orderService)}
+                  />
+
+                </Render>
                 <Button icon='trash' intent={Intent.DANGER} onClick={handleDeleteButtonClick(+serviceKey)}/>
               </ButtonGroup>
             </Row>
           }>
-          <Row style={{width: '100%', alignItems: 'center', justifyContent: 'space-between'}}>
-            <section style={{
-              display: 'flex',
-              gap: 10,
-              flexWrap: 'wrap'
-            }}>
+          <Row className="w-100 align-center flex-between">
+            <section className="flex flex-wrap">
               <NumericInput
                 disabled={!orderService.isEditMode}
                 label="Quantidade"
@@ -263,20 +363,13 @@ const OrderServiceDetails: FunctionComponent<OrderServiceDetailScreenProps> = (p
                 value={price}
                 allowNumericCharactersOnly
                 clampValueOnBlur
-                onValueChange={value => {
-                  changeOrderServiceItem(serviceKey, {
-                    replaced_price: parseFloat(String(value))
-                  })
-                }}
+                onValueChange={handleQuantityChange(serviceKey)}
               />
             </section>
 
             <section className="flex-between flex">
               <InputText
                 readOnly
-                style={{
-                  width: 100
-                }}
                 label="Valor por unidade"
                 value={`R$ ${price ?? 0} / ${orderService?.service_unit_name}`}
                 id={props.screen.id + 'unit_name'}
@@ -293,9 +386,7 @@ const OrderServiceDetails: FunctionComponent<OrderServiceDetailScreenProps> = (p
           <Row className="w-100 flex-between">
             <TextArea
               value={orderService.description}
-              onChange={event => changeOrderServiceItem(serviceKey, {
-                description: event.target.value
-              })}
+              onChange={handleDescriptionChange(serviceKey)}
               disabled={!orderService.isEditMode}
               id={props.screen.id + 'order_service' + serviceKey + '_description'}
               placeholder="Descrição"

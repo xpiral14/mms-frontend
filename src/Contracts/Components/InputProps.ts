@@ -1,4 +1,5 @@
 import { Intent } from '@blueprintjs/core'
+import {CSSProperties} from 'react'
 
 export interface InputProps extends React.DetailedHTMLProps<React.InputHTMLAttributes<HTMLInputElement>, HTMLInputElement> {
   label?: string
@@ -8,5 +9,6 @@ export interface InputProps extends React.DetailedHTMLProps<React.InputHTMLAttri
   placeholder?: string
   disabled?: boolean
   itent?: Intent
-  defaultValue?: string
+  defaultValue?: string,
+  style?: CSSProperties
 }

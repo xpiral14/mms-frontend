@@ -27,7 +27,7 @@ export default interface Order {
 
 export interface OrderPayload {
   costumerId: number
-  servicesId: number[],
   description?: string
-  vehicleId?: number
-} 
+  partIds: number[],
+  serviceIds: number[]
+}

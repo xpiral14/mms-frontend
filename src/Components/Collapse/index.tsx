@@ -6,7 +6,8 @@ import Render from '../Render'
 type Props = {
   isCollapsed?: boolean,
   title: React.ReactNode,
-  onChange?: () => void
+  onChange?: () => void,
+  bordered?: boolean
 };
 
 const Collapse: FunctionComponent<Props> = (props) => {
@@ -23,7 +24,7 @@ const Collapse: FunctionComponent<Props> = (props) => {
     <BluePrintCollapse isOpen={!props.isCollapsed}>
       {props.children}
     </BluePrintCollapse>
-    <Render renderIf={props.isCollapsed}>
+    <Render renderIf={props.bordered && props.isCollapsed}>
       <Divider />
     </Render>
   </>

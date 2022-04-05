@@ -1,5 +1,4 @@
 import { Colors, Icon } from '@blueprintjs/core'
-import React from 'react'
 import Box from '../Layout/Box'
 import Container from '../Layout/Container'
 

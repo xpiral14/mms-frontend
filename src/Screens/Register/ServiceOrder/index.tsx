@@ -11,7 +11,7 @@ import ScreenProps from '../../../Contracts/Components/ScreenProps'
 import {Option} from '../../../Contracts/Components/Suggest'
 import {Validation} from '../../../Contracts/Hooks/useValidation'
 import Costumer from '../../../Contracts/Models/Costumer'
-import {OrderPayload} from '../../../Contracts/Models/Order'
+import Order from '../../../Contracts/Models/Order'
 import Service from '../../../Contracts/Models/Service'
 import OrderServiceModel from '../../../Contracts/Models/OrderService'
 import {useAlert} from '../../../Hooks/useAlert'
@@ -32,6 +32,7 @@ import InputDate from '../../../Components/InputDate'
 import Collapse from '../../../Components/Collapse'
 import Row from '../../../Components/Layout/Row'
 import {OrderServiceDetailsProps} from '../../../Contracts/Screen/OrderServiceDetails/OrderServiceDetailsProps'
+import Part from '../../../Contracts/Models/Part'
 
 const orderStatusOptions: MultiSelectOption[] = Object.keys(orderStatus).map(
   (key) => ({
@@ -44,6 +45,18 @@ const orderStatusOptions: MultiSelectOption[] = Object.keys(orderStatus).map(
 const orderStatusKeyValue: any = {}
 
 orderStatusOptions.forEach((os) => (orderStatusKeyValue[os.value] = os.label))
+type OrderPayload = {
+  id?: number
+  serviceIds: number[],
+  partIds: number[]
+  costumer_id?: number
+  description?: string,
+  date: Date,
+  reference: string,
+  estimated_date: Date,
+  services?: OrderServiceModel[],
+  parts?: Part[]
+};
 const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
   const [costumers, setCostumer] = useState<Costumer[]>([])
   const [isTableCollapsed, setIsTableCollapsed] = useState(true)
@@ -78,15 +91,7 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
     }
   }, [])
 
-  const {payload, setPayload, screenStatus, setScreenStatus} = useWindow<{
-    id: number
-    services: OrderServiceModel[]
-    costumer_id: number
-    description: string,
-    date: Date,
-    reference: string,
-    estimated_date: Date
-  }>()
+  const {payload, setPayload, screenStatus, setScreenStatus} = useWindow<OrderPayload>()
   const isStatusVisualize =
     Boolean(screenStatus === ScreenStatus.VISUALIZE)
   useEffect(() => {
@@ -141,17 +146,20 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
       return
     }
     try {
-      const requestPayload: OrderPayload = {
+      const requestPayload = {
+        date: '',
+        estimated_date: payload.estimated_date,
+        reference: payload.reference, 
         costumerId: payload.costumer_id!,
         description: payload?.description,
-        partIds: [],
-        serviceIds: []
+        partIds: [] as number[],
+        serviceIds: [] as number[]
       }
       const response = await OrderService.create(requestPayload)
       const orderId = response.data.data.id
       setReloadGrid(true)
 
-      Promise.all(payload.services?.map((orderService) => OrderService.addService(orderId, orderService)) as any)
+      Promise.all((payload.services || [])?.map((orderService) => OrderService.addService(orderId, orderService)))
 
       openAlert({
         text: 'Você deseja adicionar os produtos do serviço?',
@@ -210,18 +218,33 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
     openOrderServicePiecesScreen()
   }
 
+  const toOrderModel = (data: Partial<OrderPayload>) => {
+    return {
+      id: data.id!,
+      costumer_id: data.costumer_id,
+      employee_id: data.costumer_id,
+      status: '1',
+    } as Order
+  }
+
   const openOrderDetailsScreen = () => {
-    openSubScreen<OrderServiceDetailsProps>({
-      id: 'order-details',
-      contentSize: '700 430',
-      headerTitle: 'Serviços da ordem'
-    }, screen.id, {
-      onSave(orderServices, screen){
+    const orderServiceDetailsProps: OrderServiceDetailsProps = {
+      onSave(orderServices, screen) {
         screen.close()
         changePayload('services', orderServices)
       }
-    })
+    }
+
+    if (payload.id) {
+      orderServiceDetailsProps.order = toOrderModel(payload)
+    }
+    openSubScreen<OrderServiceDetailsProps>({
+      id: 'order-details',
+      contentSize: '770 430',
+      headerTitle: 'Serviços da ordem'
+    }, screen.id, orderServiceDetailsProps)
   }
+
   return (
     <Container>
       <Header>
@@ -376,7 +399,7 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
           <PaginatedTable
             containerProps={{
               style: {
-                overflowY: 'scrool',
+                overflowY: 'scroll',
                 width: '100%',
               },
             }}

@@ -21,7 +21,8 @@
     "indent": ["error", 2],
     "linebreak-style": ["error", "unix"],
     "quotes": ["error", "single"],
-    "semi": ["error", "never"]
+    "semi": ["error", "never"],
+    "no-debugger": "off"
   },
   "overrides": [
     {
@@ -34,7 +35,8 @@
         "react/react-in-jsx-scope": ["off"],
         "@typescript-eslint/no-non-null-assertion": ["off"],
         "@typescript-eslint/ban-types": "off",
-        "react/display-name": "off"
+        "react/display-name": "off",
+        "no-debugger": "off"
       }
     }
   ]

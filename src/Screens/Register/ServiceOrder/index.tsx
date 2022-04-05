@@ -1,4 +1,3 @@
-
 import {Intent, TextArea,} from '@blueprintjs/core'
 import {Cell} from '@blueprintjs/table'
 import React, {useEffect, useMemo, useState} from 'react'
@@ -14,6 +13,7 @@ import {Validation} from '../../../Contracts/Hooks/useValidation'
 import Costumer from '../../../Contracts/Models/Costumer'
 import {OrderPayload} from '../../../Contracts/Models/Order'
 import Service from '../../../Contracts/Models/Service'
+import OrderServiceModel from '../../../Contracts/Models/OrderService'
 import {useAlert} from '../../../Hooks/useAlert'
 import useAsync from '../../../Hooks/useAsync'
 import {useGrid} from '../../../Hooks/useGrid'
@@ -31,6 +31,7 @@ import Render from '../../../Components/Render'
 import InputDate from '../../../Components/InputDate'
 import Collapse from '../../../Components/Collapse'
 import Row from '../../../Components/Layout/Row'
+import {OrderServiceDetailsProps} from '../../../Contracts/Screen/OrderServiceDetails/OrderServiceDetailsProps'
 
 const orderStatusOptions: MultiSelectOption[] = Object.keys(orderStatus).map(
   (key) => ({
@@ -79,7 +80,7 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
 
   const {payload, setPayload, screenStatus, setScreenStatus} = useWindow<{
     id: number
-    services_id: number[]
+    services: OrderServiceModel[]
     costumer_id: number
     description: string,
     date: Date,
@@ -117,12 +118,7 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
       check: createValidation('costumer_id'),
       errorMessage: 'Escolha o cliente',
       inputId: `${screen.id}-select-costumer`,
-    },
-    {
-      check: createValidation('services_id'),
-      errorMessage: 'Escolha ao menos um serviço',
-      inputId: `${screen.id}-select-services`,
-    },
+    }
   ]
   const { validate } = useValidation(validations)
 
@@ -147,13 +143,16 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
     try {
       const requestPayload: OrderPayload = {
         costumerId: payload.costumer_id!,
-        servicesId: payload.services_id!,
         description: payload?.description,
+        partIds: [],
+        serviceIds: []
       }
       const response = await OrderService.create(requestPayload)
+      const orderId = response.data.data.id
       setReloadGrid(true)
 
-      OrderService.addServices(response.data.data.id, payload.services_id!)
+      Promise.all(payload.services?.map((orderService) => OrderService.addService(orderId, orderService)) as any)
+
       openAlert({
         text: 'Você deseja adicionar os produtos do serviço?',
         intent: Intent.SUCCESS,
@@ -187,7 +186,7 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
         try {
           await OrderService.delete(payload.id!)
           showSuccessToast({
-            message: 'A ordem foi deletada com successo',
+            message: 'A ordem foi deletada com sucesso',
           })
 
           setReloadGrid(true)
@@ -208,12 +207,21 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
   }
 
   const handleServiceDetailsClick = () => {
-
-    if (!payload.services_id?.length) return
-
     openOrderServicePiecesScreen()
   }
 
+  const openOrderDetailsScreen = () => {
+    openSubScreen<OrderServiceDetailsProps>({
+      id: 'order-details',
+      contentSize: '700 430',
+      headerTitle: 'Serviços da ordem'
+    }, screen.id, {
+      onSave(orderServices, screen){
+        screen.close()
+        changePayload('services', orderServices)
+      }
+    })
+  }
   return (
     <Container>
       <Header>
@@ -286,10 +294,21 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
             }
             disabled={screenStatus === ScreenStatus.VISUALIZE}
           />
-          <Button intent="primary" title="Mostrar serviços" rightIcon="wrench">
+          <Button
+            intent="primary"
+            title="Mostrar serviços"
+            rightIcon="wrench"
+            onClick={openOrderDetailsScreen}
+            disabled={isStatusVisualize}
+          >
             Serviços
           </Button>
-          <Button intent="primary" title="Mostrar serviços" rightIcon="barcode">
+          <Button
+            intent="primary"
+            title="Mostrar serviços"
+            rightIcon="barcode"
+            disabled={isStatusVisualize}
+          >
             Produtos
           </Button>
           <Render renderIf={Boolean(payload?.id)}>

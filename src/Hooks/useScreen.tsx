@@ -28,6 +28,7 @@ export default function ScreenProvider({ children }: any) {
   const [screens, setPanels] = useState<{
     [x: string]: ScreenObject
   }>({})
+
   const [screenError, setScreenError] = useState(null as any)
   useEffect(() => {
     if (screenError && screens[screenError]) {

@@ -238,6 +238,11 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
     if (payload.id) {
       orderServiceDetailsProps.order = toOrderModel(payload)
     }
+
+    if(payload?.services?.length){
+      orderServiceDetailsProps.selectedOrderServices = payload.services
+    }
+    
     openSubScreen<OrderServiceDetailsProps>({
       id: 'order-details',
       contentSize: '770 430',

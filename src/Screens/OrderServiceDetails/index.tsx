@@ -1,4 +1,4 @@
-import React, {FunctionComponent, useMemo, useState} from 'react'
+import React, {FunctionComponent, useEffect, useMemo, useState} from 'react'
 import {
   OrderServiceDetailScreenProps,
   OrderServiceItem
@@ -44,6 +44,31 @@ const OrderServiceDetails: FunctionComponent<OrderServiceDetailScreenProps> = (p
     }
   }, [])
 
+  useEffect(() => {
+    if(!props.selectedOrderServices?.length || !services.length){
+      return
+    }    
+    const defaultValue = {} as SelectedOrderService
+    props.selectedOrderServices.forEach(orderServiceItem => {
+      const service = services.find(s => s.id === orderServiceItem.service_id)
+      defaultValue[orderServiceItem.service_id as number] = {
+        description: orderServiceItem.description,
+        id: orderServiceItem.id,
+        isCollapsed: true,
+        isEditMode: false,
+        order_id: orderServiceItem.order_id,
+        quantity: orderServiceItem.quantity,
+        replaced_price: orderServiceItem.replaced_price,
+        service_id: orderServiceItem.service_id,
+        service_name: service?.name,
+        service_price: service?.price,
+        service_unit_id: 1,
+        service_unit_name: 'Hora'
+      }
+    })
+  
+    setOrderServices(defaultValue)
+  }, [services, props.selectedOrderServices])
   const serviceOptions: Option[] = useMemo(() => {
 
     const options = services.filter(s => !Object.keys(orderServices).includes(String(s.id))).map((s) => ({
@@ -165,7 +190,7 @@ const OrderServiceDetails: FunctionComponent<OrderServiceDetailScreenProps> = (p
   }
 
   const handleButtonExit = () => {
-    const onConfirm = props.screen.close
+    const onConfirm = () => props.screen.close()
     if(hasUnsavedOrderServiceItems){
       alertThatHasUnsavedOrderServiceItems(onConfirm)
       return

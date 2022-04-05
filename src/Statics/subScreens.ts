@@ -1,7 +1,7 @@
 export default {
   'order-details': {
-    id: 'order-register',
-    name: 'Detalhes da ordem',
-    path: 'OrderDetails',
+    id: 'order-details',
+    name: 'Serviços adicionado a ordem',
+    path: 'OrderServiceDetails',
   }
 }

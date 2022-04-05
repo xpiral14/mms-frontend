@@ -31,6 +31,10 @@ body {
   font-size: 0.7rem !important;
 }
 
+.jsPanel-replacement {
+ border-radius: 5px 5px 0 0;
+}
+
 .screen-container {
   padding: 5px;
   height: 100%;
@@ -51,6 +55,9 @@ body {
 .flex-center {
   align-items: center;
   justify-content: center;
+}
+.flex-wrap  {
+  flex-wrap: wrap;
 }
 
 .align-center {

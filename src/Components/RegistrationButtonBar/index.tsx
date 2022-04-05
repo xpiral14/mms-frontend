@@ -1,24 +1,9 @@
 import React, { useMemo, useState } from 'react'
-import styled from 'styled-components'
 import { Button, ButtonGroup, Intent, Icon } from '@blueprintjs/core'
 import { RegistrationButtonBarProps } from '../../Contracts/Components/RegistrationButtonBarProps'
 import { ScreenStatus } from '../../Constants/Enums'
 import { useWindow } from '../../Hooks/useWindow'
-
-const BarContainer = styled.div`
-  background-color: #ebf1f5;
-  padding: 5px;
-  border-radius: 5px;
-  display: flex;
-  justify-content: space-between;
-  box-shadow: 0px 0px 5px #d3d3d3;
-  background: linear-gradient(
-    180deg,
-    rgba(235, 241, 245, 1) 0%,
-    rgba(233, 237, 238, 1) 50%,
-    rgba(218, 222, 224, 1) 100%
-  );
-`
+import Bar from '../Layout/Bar'
 
 const RegistrationButtonBar: React.FC<RegistrationButtonBarProps> = (
   props
@@ -86,11 +71,11 @@ const RegistrationButtonBar: React.FC<RegistrationButtonBarProps> = (
   }
 
   const hasPayload = useMemo(() => {
-    return Boolean(Object.keys(payload || {}).length)
+    return Boolean(payload.id)
   }, [payload])
 
   return (
-    <BarContainer>
+    <Bar>
       <ButtonGroup>
         <Button
           icon='add'
@@ -175,12 +160,12 @@ const RegistrationButtonBar: React.FC<RegistrationButtonBarProps> = (
               Recarregar dados da tela
             </Button>
           )}
-          <Button icon='log-in' outlined onClick={handleExitButtonOnClick}>
+          <Button icon='log-out' outlined onClick={handleExitButtonOnClick}>
             Sair
           </Button>
         </ButtonGroup>
       )}
-    </BarContainer>
+    </Bar>
   )
 }
 

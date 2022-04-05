@@ -161,11 +161,11 @@ export default function ScreenProvider({ children }: any) {
     })
   }
 
-  const openSubPanel = (
+  function openSubPanel<T = any> (
     panelOptions: Omit<ContextPanelOptions, 'path'>,
     parentPanelId: ScreenIds,
-    props?: any
-  ) => {
+    props?: T
+  ){
     const screen = allScreens[panelOptions.id]
     openScreen(
       {

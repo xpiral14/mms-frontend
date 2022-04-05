@@ -1,5 +1,5 @@
 import api from '../Config/api'
-import Order, {OrderPayload} from '../Contracts/Models/Order'
+import Order from '../Contracts/Models/Order'
 import Paginated from '../Contracts/Models/Paginated'
 import Response from '../Contracts/Models/Response'
 import OrderServiceModel from '../Contracts/Models/OrderService'
@@ -16,7 +16,7 @@ export default class OrderService {
     })
   }
 
-  static async create(order: Partial<OrderPayload>) {
+  static async create(order: any) {
     return api.post<Response<Order>>(DEFAULT_PATH, order)
   }
 
@@ -28,7 +28,7 @@ export default class OrderService {
     return api.get<Response<Order>>(`${DEFAULT_PATH}/${orderId}`)
   }
 
-  static async addService(orderId: number, orderService: OrderServiceModel) {
+  static async addService(orderId: number, orderService: Partial<OrderServiceModel>) {
     return api.post(`${DEFAULT_PATH}/${orderId}/orderServices`, orderService)
   }
 
@@ -47,10 +47,14 @@ export default class OrderService {
   }
 
   static async getOrderServices(orderId: number) {
-    return api.get<Paginated<OrderServiceModel>>(`${DEFAULT_PATH}/${orderId}/orderParts`)
+    return api.get<Paginated<OrderServiceModel>>(`${DEFAULT_PATH}/${orderId}/orderServices`)
   }
 
   static async deleteOrderService(orderId: number, orderServiceId: number) {
     return api.delete(`${DEFAULT_PATH}/${orderId}/orderServices/${orderServiceId}`)
+  }
+
+  static editService(orderId: number, orderService: Partial<OrderServiceModel>) {
+    return api.put(`${DEFAULT_PATH}/${orderId}/orderServices/${orderService.id}`)
   }
 }

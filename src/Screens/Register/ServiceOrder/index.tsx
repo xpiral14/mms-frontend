@@ -32,7 +32,9 @@ import InputDate from '../../../Components/InputDate'
 import Collapse from '../../../Components/Collapse'
 import Row from '../../../Components/Layout/Row'
 import {OrderServiceDetailsProps} from '../../../Contracts/Screen/OrderServiceDetails/OrderServiceDetailsProps'
-import Part from '../../../Contracts/Models/Part'
+import {OrderPartDetailsProps} from '../../../Contracts/Screen/OrderPartDetails'
+import OrderPart from '../../../Contracts/Models/OrderPart'
+import Box from '../../../Components/Layout/Box'
 
 const orderStatusOptions: MultiSelectOption[] = Object.keys(orderStatus).map(
   (key) => ({
@@ -55,7 +57,7 @@ type OrderPayload = {
   reference: string,
   estimated_date: Date,
   services?: OrderServiceModel[],
-  parts?: Part[]
+  parts?: OrderPart[]
 };
 const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
   const [costumers, setCostumer] = useState<Costumer[]>([])
@@ -232,22 +234,54 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
       onSave(orderServices, screen) {
         screen.close()
         changePayload('services', orderServices)
-      }
+      },
     }
 
     if (payload.id) {
       orderServiceDetailsProps.order = toOrderModel(payload)
     }
 
-    if(payload?.services?.length){
+    if (payload?.services?.length) {
       orderServiceDetailsProps.selectedOrderServices = payload.services
     }
-    
-    openSubScreen<OrderServiceDetailsProps>({
-      id: 'order-details',
-      contentSize: '770 430',
-      headerTitle: 'Serviços da ordem'
-    }, screen.id, orderServiceDetailsProps)
+
+    openSubScreen<OrderServiceDetailsProps>(
+      {
+        id: 'order-service-details',
+        contentSize: '770 430',
+        headerTitle: 'Serviços da ordem',
+      },
+      screen.id,
+      orderServiceDetailsProps
+    )
+  }
+
+  const openOrderPartScreen = () => {
+    const orderServiceDetailsProps: OrderPartDetailsProps = {
+      onSave(orderServices, screen) {
+        screen.close()
+        changePayload('services', orderServices)
+      },
+    }
+
+    if (payload.id) {
+      orderServiceDetailsProps.order = toOrderModel(payload)
+    }
+
+
+    if (payload?.services?.length) {
+      orderServiceDetailsProps.selectedOrderParts = payload.parts
+    }
+
+    openSubScreen<OrderPartDetailsProps>(
+      {
+        id: 'order-part-details',
+        contentSize: '770 430',
+        headerTitle: 'Produtos da ordem',
+      },
+      screen.id,
+      orderServiceDetailsProps
+    )
   }
 
   return (
@@ -256,26 +290,26 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
         <RegistrationButtonBar {...registrationButtonBarProps} />
       </Header>
       <Body>
-        <div>
+        <Box className="flex align-center flex-wrap">
           <InputText
-            label="Número da ordem"
+            label='Número da ordem'
             id={`${screen.id}-order-id`}
             value={payload.reference}
-            onChange={event => changePayload('reference', event.target.value)}
+            onChange={(event) => changePayload('reference', event.target.value)}
             disabled={isStatusVisualize}
           />
           <InputText
-            label="Referência"
+            label='Referência'
             id={`${screen.id}-reference`}
             value={payload.reference}
-            onChange={event => changePayload('reference', event.target.value)}
+            onChange={(event) => changePayload('reference', event.target.value)}
             disabled={isStatusVisualize}
           />
           <InputDate
-            label="Data"
+            label='Data'
             id={`${screen.id}-order-date`}
             value={payload.date}
-            onChange={selectedDate => changePayload('date', selectedDate)}
+            onChange={(selectedDate) => changePayload('date', selectedDate)}
             disabled={isStatusVisualize}
           />
           <Select
@@ -323,19 +357,20 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
             disabled={screenStatus === ScreenStatus.VISUALIZE}
           />
           <Button
-            intent="primary"
-            title="Mostrar serviços"
-            rightIcon="wrench"
+            intent='primary'
+            title='Mostrar serviços'
+            rightIcon='wrench'
             onClick={openOrderDetailsScreen}
             disabled={isStatusVisualize}
           >
             Serviços
           </Button>
           <Button
-            intent="primary"
-            title="Mostrar serviços"
-            rightIcon="barcode"
+            intent='primary'
+            title='Mostrar produtos'
+            rightIcon='barcode'
             disabled={isStatusVisualize}
+            onClick={openOrderPartScreen}
           >
             Produtos
           </Button>
@@ -344,126 +379,141 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
               Detalhes de serviços
             </Button>
           </Render>
-
-        </div>
+        </Box>
         <Collapse
           title={
-            <Row style={{
-              flex: 1,
-              justifyContent: 'space-between'
-            }}>
+            <Row
+              style={{
+                flex: 1,
+                justifyContent: 'space-between',
+              }}
+            >
               <span> Detalhes da ordem </span>
-              <span>
-               R$ 123.45
-              </span>
+              <span>R$ 123.45</span>
             </Row>
           }
           isCollapsed={isDetailsCollapsed}
-          onChange={() => setIsDetailsCollapsed(prev => !prev)}
+          onChange={() => setIsDetailsCollapsed((prev) => !prev)}
         >
-          <Row>
-            <InputDate
-              label="Validade do orçamento"
-              id={`${screen.id}-order-estimated-date`}
-              value={payload.estimated_date}
-              onChange={selectedDate => changePayload('estimated_date', selectedDate)}
-              disabled={isStatusVisualize}
-            />
-            <InputDate
-              label="Prazo de execução"
-              id={`${screen.id}-order-estimated-date`}
-              value={payload.estimated_date}
-              onChange={selectedDate => changePayload('estimated_date', selectedDate)}
-              disabled={isStatusVisualize}
-            />
-            <InputText id={screen.id + 'vehicle'} label="Marca"/>
-            <InputText id={screen.id + 'vehicle'} label="Model"/>
-            <InputText id={screen.id + 'vehicle'} label="Placa"/>
-            <InputText id={screen.id + 'vehicle'} label="Cor"/>
-            <InputText id={screen.id + 'vehicle'} label="Ano"/>
-            <InputText id={screen.id + 'vehicle'} label="Combustível"/>
-            <InputText id={screen.id + 'vehicle'} label="Quilometragem"/>
-            <InputText id={screen.id + 'vehicle'} label="Defeito"/>
-          </Row>
-          <Row>
-            <TextArea
-              value={payload?.description || ''}
-              onChange={(e) =>
-                setPayload((prev) => ({...prev, description: e.currentTarget.value}))
-              }
-              placeholder='Digite a observação'
-              disabled={screenStatus === ScreenStatus.VISUALIZE}
-              growVertically={false}
-              style={{flex: 1}}
-            />
-          </Row>
+          <Box>
+            <Row>
+              <InputDate
+                label='Validade do orçamento'
+                id={`${screen.id}-order-estimated-date`}
+                value={payload.estimated_date}
+                onChange={(selectedDate) =>
+                  changePayload('estimated_date', selectedDate)
+                }
+                disabled={isStatusVisualize}
+              />
+              <InputDate
+                label='Prazo de execução'
+                id={`${screen.id}-order-estimated-date`}
+                value={payload.estimated_date}
+                onChange={(selectedDate) =>
+                  changePayload('estimated_date', selectedDate)
+                }
+                disabled={isStatusVisualize}
+              />
+              <InputText id={screen.id + 'vehicle'} label='Marca'/>
+              <InputText id={screen.id + 'vehicle'} label='Model'/>
+              <InputText id={screen.id + 'vehicle'} label='Placa'/>
+              <InputText id={screen.id + 'vehicle'} label='Cor'/>
+              <InputText id={screen.id + 'vehicle'} label='Ano'/>
+              <InputText id={screen.id + 'vehicle'} label='Combustível'/>
+              <InputText id={screen.id + 'vehicle'} label='Quilometragem'/>
+              <InputText id={screen.id + 'vehicle'} label='Defeito'/>
+            </Row>
+
+            <Row>
+              <TextArea
+                value={payload?.description || ''}
+                onChange={(e) =>
+                  setPayload((prev) => ({
+                    ...prev,
+                    description: e.currentTarget.value,
+                  }))
+                }
+                placeholder='Digite a observação'
+                disabled={screenStatus === ScreenStatus.VISUALIZE}
+                growVertically={false}
+                style={{flex: 1}}
+              />
+            </Row>
+          </Box>
         </Collapse>
         <Collapse
-          isCollapsed={isTableCollapsed} title="Mostrar ordens cadastradas"
-          onChange={() => setIsTableCollapsed(prev => !prev)}>
-          <PaginatedTable
-            containerProps={{
-              style: {
-                overflowY: 'scroll',
-                width: '100%',
-              },
-            }}
-            columns={[
-              {
-                id: 1,
-                name: 'Status',
-                keyName: 'status',
+          isCollapsed={isTableCollapsed}
+          title='Mostrar ordens cadastradas'
+          onChange={() => setIsTableCollapsed((prev) => !prev)}
+        >
+          <Box>
+            <Row>
+              <PaginatedTable
+                containerProps={{
+                  style: {
+                    overflowY: 'scroll',
+                    width: '100%',
+                  },
+                }}
+                columns={[
+                  {
+                    id: 1,
+                    name: 'Status',
+                    keyName: 'status',
 
-                formatText: (text) =>
-                  orderStatus[text as keyof typeof orderStatus],
-              },
-              {
-                id: 1,
-                name: 'Observação',
-                keyName: 'notice',
-              },
-              {
-                id: 1,
-                name: 'Valor',
-                formatText: (text, row) => {
-                  return (
-                    row?.order_part?.reduce(
-                      (acc: any, curr: any) => acc + curr.piece.price,
-                      0
-                    ) || 'R$ 0'
-                  )
-                },
-              },
-              {
-                id: 1,
-                name: 'Criado em',
-                cellRenderer: (cell) => (
-                  <Cell>
-                    {new Date(cell.created_at).toLocaleDateString('pt-BR')}
-                  </Cell>
-                ),
-              },
-            ]}
-            request={OrderService.getAll as any}
-            onRowSelect={(row) => {
-              setScreenStatus(ScreenStatus.VISUALIZE)
+                    formatText: (text) =>
+                      orderStatus[text as keyof typeof orderStatus],
+                  },
+                  {
+                    id: 1,
+                    name: 'Observação',
+                    keyName: 'notice',
+                  },
+                  {
+                    id: 1,
+                    name: 'Valor',
+                    formatText: (text, row) => {
+                      return (
+                        row?.order_part?.reduce(
+                          (acc: any, curr: any) => acc + curr.piece.price,
+                          0
+                        ) || 'R$ 0'
+                      )
+                    },
+                  },
+                  {
+                    id: 1,
+                    name: 'Criado em',
+                    cellRenderer: (cell) => (
+                      <Cell>
+                        {new Date(cell.created_at).toLocaleDateString('pt-BR')}
+                      </Cell>
+                    ),
+                  },
+                ]}
+                request={OrderService.getAll as any}
+                onRowSelect={(row) => {
+                  setScreenStatus(ScreenStatus.VISUALIZE)
 
-              const formattedRow = {
-                ...row,
-                estimatedTimeType:
+                  const formattedRow = {
+                    ...row,
+                    estimatedTimeType:
                   row?.estimatedTime && row.estimatedTime < 86399
                     ? 'HOURS'
                     : 'DAYS',
-                estimatedTime: addSeconds(
-                  new Date('2021-01-01T00:00:00'),
-                  row.estimatedTime || 0
-                ),
-                estimatedTimeDay: row.estimatedTime / (3600 * 24),
-                servicesId: row?.services?.map((s: Service) => s.id),
-              }
-              setPayload(formattedRow)
-            }}
-          />
+                    estimatedTime: addSeconds(
+                      new Date('2021-01-01T00:00:00'),
+                      row.estimatedTime || 0
+                    ),
+                    estimatedTimeDay: row.estimatedTime / (3600 * 24),
+                    servicesId: row?.services?.map((s: Service) => s.id),
+                  }
+                  setPayload(formattedRow)
+                }}
+              />
+            </Row>
+          </Box>
         </Collapse>
       </Body>
     </Container>

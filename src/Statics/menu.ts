@@ -7,7 +7,7 @@ const menus = {
     isMain: true,
     icon: 'drive-time',
     items: {
-      Pecas: {
+      Produtos: {
         name: 'Peças',
         screen: {
           ...screens['part-register'],
@@ -18,7 +18,7 @@ const menus = {
       Clientes: {
         name: 'Clientes',
         screen: {
-          ...screens['part-register'],
+          ...screens['costumer-register'],
           contentSize: '900 500',
           icon: 'person',
           headerTitle: 'Clientes',

@@ -302,9 +302,9 @@ const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
                   defaultButtonText='Escolha uma unidade'
                   items={unitsOptions}
                   onChange={(o) => {
-                    setPayload(prev => ({...prev, unitId: o.value as number }))
+                    setPayload(prev => ({...prev, unit_id: o.value as number }))
                   }}
-                  activeItem={payload.unitId }
+                  activeItem={payload.unit_id }
                   id='partId'
                   label='Unidade'
                   disabled={

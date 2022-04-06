@@ -1,7 +1,7 @@
 import { Panel, PanelOptions } from 'jspanel4/es6module/jspanel'
-import screens from '../../Statics/screens'
+import {allScreens} from '../../Statics/screens'
 
-export type ScreenIds = keyof  typeof  screens
+export type ScreenIds = keyof  typeof  allScreens
 
 export interface ContextPanelOptions extends PanelOptions {
   id: ScreenIds
@@ -31,9 +31,9 @@ export type ScreenContext = {
     isModal?: boolean | undefined
   ) => void
 
-  openSubScreen: (
+  openSubScreen<T = any>(
     screen: Omit<ContextPanelOptions, 'path'>,
     parentScreenId: ScreenIds,
-    props?: any
-  ) => void
+    props?: T
+  ): void
 }

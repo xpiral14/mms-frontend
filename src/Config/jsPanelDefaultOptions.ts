@@ -7,12 +7,10 @@ export default {
   onwindowresize: false,
   content: (panel: any) => {
     const div = document.createElement('div')
-    const newId = `${panel.id}-node`
-    div.id = newId
+    div.id = `${panel.id}-node`
     div.classList.add('screen-container')
     panel.content.append(div)
   },
-  onclosed: () => {},
   borderRadius: '3px',
-  iconfont: 'material-icons',
+  iconfont: ['flex-center bp3-icon bp3-icon-chevron-up', 'flex-center bp3-icon bp3-icon-minus','flex-center bp3-icon bp3-icon-maximize', 'flex-center bp3-icon bp3-icon-fullscreen', 'flex-center bp3-icon bp3-icon-cross'],
 }

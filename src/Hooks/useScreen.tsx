@@ -1,24 +1,13 @@
-import {
-  createContext,
-  lazy,
-  Suspense,
-  useContext,
-  useEffect,
-  useState,
-} from 'react'
-import { jsPanel, Panel } from 'jspanel4/es6module/jspanel'
+import {createContext, lazy, Suspense, useContext, useEffect, useState,} from 'react'
+import {jsPanel, Panel} from 'jspanel4/es6module/jspanel'
 import CreatePortal from '../Components/createPortal'
 import jsPanelDefaultOptions from '../Config/jsPanelDefaultOptions'
-import { useAlert } from './useAlert'
-import { useAuth } from './useAuth'
+import {useAlert} from './useAlert'
+import {useAuth} from './useAuth'
 import GridProvider from './useGrid'
 import WindowContextProvider from './useWindow'
-import {
-  ScreenContext,
-  ScreenObject,
-  ContextPanelOptions, ScreenIds
-} from '../Contracts/Hooks/useScreen'
-import { Intent } from '@blueprintjs/core'
+import {ContextPanelOptions, ScreenContext, ScreenIds, ScreenObject} from '../Contracts/Hooks/useScreen'
+import {Intent} from '@blueprintjs/core'
 import {allScreens} from '../Statics/screens'
 
 export const screenContext = createContext<ScreenContext>(null as any)
@@ -39,6 +28,7 @@ export default function ScreenProvider({ children }: any) {
   const [screens, setPanels] = useState<{
     [x: string]: ScreenObject
   }>({})
+
   const [screenError, setScreenError] = useState(null as any)
   useEffect(() => {
     if (screenError && screens[screenError]) {
@@ -172,17 +162,18 @@ export default function ScreenProvider({ children }: any) {
     })
   }
 
-  const openSubPanel = (
+  function openSubPanel<T = any> (
     panelOptions: Omit<ContextPanelOptions, 'path'>,
     parentPanelId: ScreenIds,
-    props?: any
-  ) => {
-    const path = allScreens[panelOptions.id].path
+    props?: T
+  ){
+    const screen = allScreens[panelOptions.id]
     openScreen(
       {
-        ...panelOptions,
-        path,
+        ...screen,
+        headerTitle: screen.name,
         parentScreenId: parentPanelId,
+        ...panelOptions,
       },
       props
     )

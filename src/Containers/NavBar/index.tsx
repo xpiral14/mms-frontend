@@ -1,21 +1,13 @@
-import {
-  Button,
-  Menu,
-  MenuItem,
-  Navbar,
-  NavbarGroup,
-  Popover,
-  Position,
-} from '@blueprintjs/core'
-import React, { useMemo } from 'react'
-import { MenuType, NavBarProps } from '../../Contracts/Containers/NavBar'
-import { useAlert } from '../../Hooks/useAlert'
-import { useAuth } from '../../Hooks/useAuth'
-import { useScreen } from '../../Hooks/useScreen'
+import {Button, Menu, MenuItem, Navbar, NavbarGroup, Popover, Position,} from '@blueprintjs/core'
+import React, {useMemo} from 'react'
+import {MenuType, NavBarProps} from '../../Contracts/Containers/NavBar'
+import {useAlert} from '../../Hooks/useAlert'
+import {useAuth} from '../../Hooks/useAuth'
+import {useScreen} from '../../Hooks/useScreen'
 
 
-const NavBar: React.FC<NavBarProps> = ({ menuItems }) => {
-  const { openScreen, screens: screens } = useScreen()
+const NavBar: React.FC<NavBarProps> = ({menuItems}) => {
+  const {openScreen, screens: screens} = useScreen()
   const buildMenu = (m: MenuType) => {
     const menuItemsArray = Object.values(m)
     const menuArray: any[] = []
@@ -41,14 +33,15 @@ const NavBar: React.FC<NavBarProps> = ({ menuItems }) => {
           return menuArray.push(<Component key={menu.name} />)
         }
         return menuArray.push(
-          <MenuItem key={menu.icon} icon={menu?.icon} text={menu.name}>
-            <MenuItems />
+          <MenuItem tagName="button" key={menu.icon} icon={menu?.icon} text={menu.name}>
+            <MenuItems/>
           </MenuItem>
         )
       }
       menuArray.push(
         <MenuItem
           key={menu.name}
+          tagName="button"
           text={menu?.name}
           icon={menu?.icon}
           onClick={() => {
@@ -59,7 +52,7 @@ const NavBar: React.FC<NavBarProps> = ({ menuItems }) => {
     })
     return menuArray
   }
-  const BuildedMenu = useMemo(
+  const BuiltMenu = useMemo(
     () => () => <>{buildMenu(menuItems)}</>,
     [menuItems, screens]
   )
@@ -69,7 +62,7 @@ const NavBar: React.FC<NavBarProps> = ({ menuItems }) => {
   return (
     <Navbar style={{ display: 'flex', justifyContent: 'space-between' }}>
       <NavbarGroup>
-        <BuildedMenu />
+        <BuiltMenu />
       </NavbarGroup>
       <NavbarGroup>
         <Button

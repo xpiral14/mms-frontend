@@ -117,7 +117,9 @@ export default function MultiSelect(props: MultiSelectProps) {
     )
   }
 
-  const renderTag = (option: MultiSelectOption) => option.label
+  const renderTag = (option: MultiSelectOption) => {
+    return option?.label
+  }
 
   const filterOption: ItemPredicate<MultiSelectOption> = (
     query,

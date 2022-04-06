@@ -29,7 +29,7 @@ const menus = {
         icon: 'add',
         screen: {
           ...screens['order-register'],
-          contentSize: '900 500',
+          contentSize: '990 500',
           headerTitle: 'Registrar ordem de serviço',
         },
       },

@@ -10,7 +10,8 @@ export const Container = styled.div<{
   flex-direction: ${(p) =>
     p.labelPosition === 'horizontal' ? 'row' : 'column'};
   gap: 5px;
-
+  width: ${p => p.width};
+  margin-bottom: 15px;
   ${(p) =>
     p.width &&
     css`

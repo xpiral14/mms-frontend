@@ -349,20 +349,26 @@ const OrderPartDetails: FunctionComponent<OrderPartDetailsScreenProps> = (props)
     {Object.keys(orderParts).map((partKey) => {
       const orderPart = orderParts[partKey]
       const price = orderPart.replaced_price ?? orderPart.part_price
+      const onCollapseChange = () => setOrderParts(prev => {
+        const prevPart = orderPart
+        return ({
+          ...prev,
+          [partKey]: {
+            ...prevPart,
+            isCollapsed: !prevPart.isCollapsed
+          }
+        })
+      })
+      const onQuantityValueChange = (value: any) => {
+        changeOrderPartItem(partKey, {
+          quantity: value
+        })
+      }
       return <Box key={partKey} style={{marginBottom: 10}}>
         <Collapse
           bordered
           isCollapsed={orderPart.isCollapsed}
-          onChange={() => setOrderParts(prev => {
-            const prevPart = orderPart
-            return ({
-              ...prev,
-              [partKey]: {
-                ...prevPart,
-                isCollapsed: !prevPart.isCollapsed
-              }
-            })
-          })}
+          onChange={onCollapseChange}
           title={
             <Row className="flex-between w-100">
               <span>{orderPart.part_name}</span>
@@ -395,11 +401,7 @@ const OrderPartDetails: FunctionComponent<OrderPartDetailsScreenProps> = (props)
                 placeholder="Quantidade"
                 value={orderPart.quantity}
                 min={1}
-                onValueChange={value => {
-                  changeOrderPartItem(partKey, {
-                    quantity: value
-                  })
-                }}
+                onValueChange={onQuantityValueChange}
               />
               <NumericInput
                 leftIcon='bank-account'

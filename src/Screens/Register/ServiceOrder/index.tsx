@@ -1,7 +1,6 @@
 import {Intent, TextArea,} from '@blueprintjs/core'
 import {Cell} from '@blueprintjs/table'
 import React, {useEffect, useMemo, useState} from 'react'
-import {MultiSelectOption} from '../../../Components/MultiSelect'
 import PaginatedTable from '../../../Components/PaginatedTable'
 import RegistrationButtonBar from '../../../Components/RegistrationButtonBar'
 import Select from '../../../Components/Select'
@@ -36,17 +35,30 @@ import {OrderPartDetailsProps} from '../../../Contracts/Screen/OrderPartDetails'
 import OrderPart from '../../../Contracts/Models/OrderPart'
 import Box from '../../../Components/Layout/Box'
 
-const orderStatusOptions: MultiSelectOption[] = Object.keys(orderStatus).map(
-  (key) => ({
-    label: orderStatus[key as keyof typeof orderStatus],
-    value: key,
-    intent: Intent.SUCCESS,
-  })
-)
+const orderStatusOptions: Option[] = [
+  {
+    value: orderStatus.PENDING,
+    label: 'Pendente',
+    intent: Intent.NONE
+  },
+  {
+    value: orderStatus.EXECUTING,
+    label: 'Executando',
+    intent: Intent.PRIMARY
+  },
+  {
+    value: orderStatus.EXECUTED,
+    label: 'Executada',
+    intent: Intent.SUCCESS
 
-const orderStatusKeyValue: any = {}
+  },
+  {
+    value: orderStatus.CANCELED,
+    label: 'Cancelada',
+    intent: Intent.DANGER
+  }
+]
 
-orderStatusOptions.forEach((os) => (orderStatusKeyValue[os.value] = os.label))
 type OrderPayload = {
   id?: number
   serviceIds: number[],
@@ -290,6 +302,26 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
         <RegistrationButtonBar {...registrationButtonBarProps} />
       </Header>
       <Body>
+        <Box className="flex flex-justify-end">
+          <Button
+            intent='primary'
+            title='Mostrar serviços'
+            rightIcon='wrench'
+            onClick={openOrderDetailsScreen}
+            disabled={isStatusVisualize}
+          >
+            Serviços
+          </Button>
+          <Button
+            intent='primary'
+            title='Mostrar produtos'
+            rightIcon='barcode'
+            disabled={isStatusVisualize}
+            onClick={openOrderPartScreen}
+          >
+            Produtos
+          </Button>
+        </Box>
         <Box className="flex align-center flex-wrap">
           <InputText
             label='Número da ordem'
@@ -313,9 +345,17 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
             disabled={isStatusVisualize}
           />
           <Select
+            onChange={() => {
+              console.log('hello')
+            }}
+            label="Status da ordem"
+
+            items={orderStatusOptions}
+          />
+          <Select
             handleButtonReloadClick={loadCostumers}
             loading={loadingCostumers}
-            itent={Intent.DANGER}
+            intent={Intent.DANGER}
             required
             allowCreate
             activeItem={payload?.costumer_id}
@@ -356,24 +396,6 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
             }
             disabled={screenStatus === ScreenStatus.VISUALIZE}
           />
-          <Button
-            intent='primary'
-            title='Mostrar serviços'
-            rightIcon='wrench'
-            onClick={openOrderDetailsScreen}
-            disabled={isStatusVisualize}
-          >
-            Serviços
-          </Button>
-          <Button
-            intent='primary'
-            title='Mostrar produtos'
-            rightIcon='barcode'
-            disabled={isStatusVisualize}
-            onClick={openOrderPartScreen}
-          >
-            Produtos
-          </Button>
           <Render renderIf={Boolean(payload?.id)}>
             <Button onClick={handleServiceDetailsClick}>
               Detalhes de serviços

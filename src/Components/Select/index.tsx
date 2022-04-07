@@ -6,10 +6,11 @@ import {
   Button,
   ButtonProps,
   FormGroup,
-  Intent,
+  Intent, Menu,
   MenuItem,
 } from '@blueprintjs/core'
 import {
+  ItemListRenderer,
   ItemPredicate,
   ItemRenderer,
   Select as CreateSelect,
@@ -18,6 +19,7 @@ import {
 
 import { Option } from '../../Contracts/Components/Suggest'
 import { useMemo } from 'react'
+import Render from '../Render'
 
 interface SelectProps
   extends Partial<Omit<BluePrintSelectProps<Option>, 'activeItem'>> {
@@ -31,7 +33,7 @@ interface SelectProps
   label?: string
   required?: boolean
   disabled?: boolean
-  itent?: Intent
+  intent?: Intent
   buttonProps?: ButtonProps
   defaultButtonText?: string
   loading?: boolean
@@ -124,6 +126,7 @@ export default function Select({
     const text = option.label
     return (
       <MenuItem
+        intent={option.intent}
         active={modifiers.active}
         disabled={modifiers.disabled}
         key={option.value}
@@ -132,12 +135,32 @@ export default function Select({
       />
     )
   }
+
+  const renderMenu: ItemListRenderer<Option> = ({ items, itemsParentRef, query, renderItem }) => {
+    const renderedItems = items.map(renderItem).filter(item => item != null)
+    return (
+      <Menu ulRef={itemsParentRef} style={{
+        maxHeight: 100,
+        overflowY: 'scroll'
+      }}
+
+      >
+        <Render renderIf={Boolean(query)}>
+          <MenuItem
+            disabled={true}
+            text={`Encontrado ${renderedItems.length} items com a pesquisa "${query}"`}
+          />
+        </Render>
+        {renderedItems}
+      </Menu>
+    )
+  }
   return (
     <FormGroup
       label={props.label}
       labelInfo={props.required && '*'}
       disabled={props.disabled}
-      intent={props.itent}
+      intent={props.intent}
       labelFor={props.id}
     >
       <div
@@ -153,6 +176,7 @@ export default function Select({
           }}
           itemPredicate={filterOption}
           items={props.items || []}
+          itemListRenderer={renderMenu}
           itemRenderer={renderOption}
           createNewItemFromQuery={(() => {}) as any}
           createNewItemRenderer={maybeCreateNewItemRenderer}

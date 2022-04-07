@@ -49,6 +49,9 @@ body {
   gap: 10px;
 }
 
+.flex-justify-end{
+  justify-content: flex-end;
+}
 .flex-between {
   justify-content: space-between;
 }
@@ -60,8 +63,15 @@ body {
   flex-wrap: wrap;
 }
 
+.flex-column{
+ flex-direction: column;
+}
+
 .align-center {
   align-items: center;
+}
+.align-end {
+  align-items: flex-end;
 }
 .mt-1 {
   margin-top: 5px;

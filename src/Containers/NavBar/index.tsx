@@ -1,4 +1,4 @@
-import {Button, Menu, MenuItem, Navbar, NavbarGroup, Popover, Position,} from '@blueprintjs/core'
+import {Button, ButtonGroup, Menu, MenuItem, Navbar, NavbarGroup, Popover, Position,} from '@blueprintjs/core'
 import React, {useMemo} from 'react'
 import {MenuType, NavBarProps} from '../../Contracts/Containers/NavBar'
 import {useAlert} from '../../Hooks/useAlert'
@@ -62,7 +62,9 @@ const NavBar: React.FC<NavBarProps> = ({menuItems}) => {
   return (
     <Navbar style={{ display: 'flex', justifyContent: 'space-between' }}>
       <NavbarGroup>
-        <BuiltMenu />
+        <ButtonGroup>
+          <BuiltMenu/>
+        </ButtonGroup>
       </NavbarGroup>
       <NavbarGroup>
         <Button

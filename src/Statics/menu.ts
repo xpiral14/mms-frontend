@@ -2,31 +2,59 @@ import {MenuType} from '../Contracts/Containers/NavBar'
 import screens from './screens'
 
 const menus = {
-  Cadastro: {
-    name: 'Cadastro',
+  Estoque: {
+    name: 'Estoque',
     isMain: true,
-    icon: 'drive-time',
+    icon: 'box',
     items: {
-      Pecas: {
-        name: 'Peças',
+      Produtos: {
+        name: 'Produtos',
+        icon: 'wrench',
+        screen: {
+          ...screens['part-register'],
+          headerTitle: 'Peças',
+          contentSize: '750px 500px',
+        },
+        items: {
+          Produtos: {
+            name: 'Peças',
+            icon: 'wrench',
+            screen: {
+              ...screens['part-register'],
+              headerTitle: 'Peças',
+              contentSize: '750px 500px',
+            },
+          },
+        }
+      },
+      Unidades: {
+        name: 'Unidades',
+        icon: 'numerical',
         screen: {
           ...screens['part-register'],
           headerTitle: 'Peças',
           contentSize: '750px 500px',
         },
       },
+    }
+  },
+  Vendas: {
+    name: 'Vendas',
+    isMain: true,
+    icon: 'dollar',
+    items: {
       Clientes: {
-        name: 'Clientes',
+        name: 'clientes',
+        icon: 'person',
         screen: {
-          ...screens['part-register'],
+          ...screens['costumer-register'],
           contentSize: '900 500',
-          icon: 'person',
           headerTitle: 'Clientes',
-        },
+        }
       },
       OrdemServico: {
         name: 'Ordem de serviços',
-        icon: 'add',
+        icon: 'clipboard',
         screen: {
           ...screens['order-register'],
           contentSize: '990 500',
@@ -35,7 +63,7 @@ const menus = {
       },
       Servico: {
         name: 'Serviços',
-        icon: 'add',
+        icon: 'build',
         screen: {
           ...screens['service-register'],
           contentSize: '900 500',
@@ -43,6 +71,12 @@ const menus = {
         },
       },
     },
+  },
+  Configuracoes: {
+    name: 'Configurações',
+    icon: 'cog',
+    isMain:true,
+    items: {}
   }
 } as MenuType
 

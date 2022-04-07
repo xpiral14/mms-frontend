@@ -1,11 +1,12 @@
 export default  interface Part {
   id: number;
   companyId: number;
-  unitId: number;
+  unit_id: number;
+  unit_name?: string;
   reference: string;
   name: string;
   price: number;
-  description: string;
+  description?: string;
   created_at: string;
   updated_at: string;
 }

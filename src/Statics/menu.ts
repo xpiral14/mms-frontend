@@ -8,13 +8,24 @@ const menus = {
     icon: 'box',
     items: {
       Produtos: {
-        name: 'Peças',
+        name: 'Produtos',
         icon: 'wrench',
         screen: {
           ...screens['part-register'],
           headerTitle: 'Peças',
           contentSize: '750px 500px',
         },
+        items: {
+          Produtos: {
+            name: 'Peças',
+            icon: 'wrench',
+            screen: {
+              ...screens['part-register'],
+              headerTitle: 'Peças',
+              contentSize: '750px 500px',
+            },
+          },
+        }
       },
       Unidades: {
         name: 'Unidades',

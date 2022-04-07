@@ -17,24 +17,36 @@ const NavBar: React.FC<NavBarProps> = ({menuItems}) => {
         const menuItems = buildMenu(menu.items!)
         const MenuItems = () => <>{menuItems}</>
         if (menu.isMain) {
-          Component = () => (
-            <Popover
-              hasBackdrop={false}
-              position={Position.BOTTOM}
-              content={
-                <Menu>
-                  <MenuItems />
-                </Menu>
-              }
-            >
+          Component = () =>
+            menuItems.length ? (
+              <Popover
+                hasBackdrop={false}
+                position={Position.BOTTOM}
+                content={
+                  <Menu>
+                    <MenuItems />
+                  </Menu>
+                }
+              >
+                <Button icon={menu.icon} text={menu.name} />
+              </Popover>
+            ) : (
               <Button icon={menu.icon} text={menu.name} />
-            </Popover>
-          )
+            )
           return menuArray.push(<Component key={menu.name} />)
         }
         return menuArray.push(
-          <MenuItem tagName="button" key={menu.icon} icon={menu?.icon} text={menu.name}>
-            <MenuItems/>
+          <MenuItem
+            tagName='button'
+            key={menu.icon}
+            icon={menu?.icon}
+            text={menu.name}
+            onClick={() => {
+              if (!menu?.screen) return
+              openScreen(menu.screen)
+            }}
+          >
+            <MenuItems />
           </MenuItem>
         )
       }

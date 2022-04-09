@@ -17,9 +17,10 @@ export enum ScreenStatus {
   VISUALIZE = 'visualize',
   NEW = 'new',
   EDIT = 'edit',
+  SEE_REGISTERS = 'see_registers',
 }
 
 export enum PersonType {
   PHYSICAL = '1',
-  LEGAL  = '2',
+  LEGAL = '2',
 }

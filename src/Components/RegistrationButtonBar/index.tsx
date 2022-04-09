@@ -20,11 +20,13 @@ const RegistrationButtonBar: React.FC<RegistrationButtonBarProps> = (
   }
 
   const { exitButton = true, screen } = props
+
   const handleNewButtonOnClick = () => {
     if (props?.handleNewButtonOnClick?.()) {
       props?.handleNewButtonOnClick()
       return
     }
+
     setPayload?.({})
     setScreenStatus(ScreenStatus.NEW)
   }
@@ -42,6 +44,7 @@ const RegistrationButtonBar: React.FC<RegistrationButtonBarProps> = (
       props?.handleEditButtonOnClick()
       return
     }
+
     setScreenStatus(ScreenStatus.EDIT)
   }
 
@@ -50,7 +53,9 @@ const RegistrationButtonBar: React.FC<RegistrationButtonBarProps> = (
       props?.handleCancelButtonOnClick()
       return
     }
+
     setPayload?.({})
+
     setScreenStatus(ScreenStatus.VISUALIZE)
   }
 
@@ -59,6 +64,15 @@ const RegistrationButtonBar: React.FC<RegistrationButtonBarProps> = (
       props?.handleDeleteButtonOnClick()
       return
     }
+  }
+
+  const handleVisualizeRegistersButtonOnClick = () => {
+    if (props?.handleButtonVisualizeOnClick) {
+      props?.handleButtonVisualizeOnClick()
+      return
+    }
+
+    setScreenStatus(ScreenStatus.SEE_REGISTERS)
   }
 
   const handleExitButtonOnClick = () => {
@@ -93,7 +107,10 @@ const RegistrationButtonBar: React.FC<RegistrationButtonBarProps> = (
           icon='floppy-disk'
           intent={Intent.SUCCESS}
           loading={loadings.isSaveLoading}
-          disabled={screenStatus === ScreenStatus.VISUALIZE}
+          disabled={
+            screenStatus === ScreenStatus.SEE_REGISTERS ||
+            screenStatus === ScreenStatus.VISUALIZE
+          }
           onClick={handleSaveButtonOnClick}
         >
           Salvar
@@ -108,7 +125,10 @@ const RegistrationButtonBar: React.FC<RegistrationButtonBarProps> = (
             />
           }
           outlined
-          disabled={screenStatus === ScreenStatus.VISUALIZE}
+          disabled={
+            screenStatus === ScreenStatus.SEE_REGISTERS ||
+            screenStatus === ScreenStatus.VISUALIZE
+          }
           onClick={handleCancelButtonOnClick}
         >
           Cancelar
@@ -147,6 +167,16 @@ const RegistrationButtonBar: React.FC<RegistrationButtonBarProps> = (
         >
           Excluir
         </Button>
+
+        <Button
+          icon='filter-list'
+          intent={Intent.NONE}
+          onClick={handleVisualizeRegistersButtonOnClick}
+          disabled={screenStatus !== ScreenStatus.VISUALIZE}
+          {...(props?.buttonVisualizeProps || {})}
+        >
+          Registros
+        </Button>
       </ButtonGroup>
 
       {exitButton && (
@@ -160,6 +190,7 @@ const RegistrationButtonBar: React.FC<RegistrationButtonBarProps> = (
               Recarregar dados da tela
             </Button>
           )}
+
           <Button icon='log-out' outlined onClick={handleExitButtonOnClick}>
             Sair
           </Button>

@@ -11,6 +11,8 @@ export interface RegistrationButtonBarProps {
   buttonCancelProps?: ButtonProps
   buttonDeleteProps?: ButtonProps
   buttonExitProps?: ButtonProps
+  buttonVisualizeProps?: ButtonProps
+
   handleNewButtonOnClick?: () => void
   handleSaveButtonOnClick?: (stopLoad: StopLoadFunc) => void
   handleEditButtonOnClick?: () => void
@@ -19,5 +21,7 @@ export interface RegistrationButtonBarProps {
   handleExitButtonOnClick?: () => void
   handleReloadScreenOnClick?: () => void
   handleButtonInfoOnClick?: () => void
+  handleButtonVisualizeOnClick?: () => void
+
   screen?: Screen
 }

@@ -1,4 +1,4 @@
-import {MenuType} from '../Contracts/Containers/NavBar'
+import { MenuType } from '../Contracts/Containers/NavBar'
 import screens from './screens'
 
 const menus = {
@@ -25,18 +25,26 @@ const menus = {
               contentSize: '750px 500px',
             },
           },
-        }
+        },
       },
       Unidades: {
         name: 'Unidades',
         icon: 'numerical',
+        screen: {
+          ...screens['unit-register'],
+          headerTitle: 'Unidades',
+          contentSize: '750px 500px',
+        },
+      },
+      Clientes: {
+        name: 'Clientes',
         screen: {
           ...screens['part-register'],
           headerTitle: 'Peças',
           contentSize: '750px 500px',
         },
       },
-    }
+    },
   },
   Vendas: {
     name: 'Vendas',
@@ -50,7 +58,7 @@ const menus = {
           ...screens['costumer-register'],
           contentSize: '900 500',
           headerTitle: 'Clientes',
-        }
+        },
       },
       OrdemServico: {
         name: 'Ordem de serviços',
@@ -75,11 +83,9 @@ const menus = {
   Configuracoes: {
     name: 'Configurações',
     icon: 'cog',
-    isMain:true,
-    items: {}
-  }
+    isMain: true,
+    items: {},
+  },
 } as MenuType
 
 export default menus
-
-

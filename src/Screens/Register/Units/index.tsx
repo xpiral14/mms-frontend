@@ -1,9 +1,9 @@
-import React, { useCallback, useMemo, useState } from 'react'
+import React, { useCallback, useMemo } from 'react'
 import RegistrationButtonBar from '../../../Components/RegistrationButtonBar'
 import InputText from '../../../Components/InputText'
 import { Container, Header, Body } from './style'
 import PaginatedTable from '../../../Components/PaginatedTable'
-import PartsService from '../../../Services/PartsService'
+import UnitService from '../../../Services/UnitService'
 import ScreenProps from '../../../Contracts/Components/ScreenProps'
 import {
   RegistrationButtonBarProps,
@@ -15,60 +15,26 @@ import { useAlert } from '../../../Hooks/useAlert'
 import { ScreenStatus } from '../../../Constants/Enums'
 import { Intent } from '@blueprintjs/core'
 import { useToast } from '../../../Hooks/useToast'
-import Part from '../../../Contracts/Models/Part'
 import useValidation from '../../../Hooks/useValidation'
 import { Validation } from '../../../Contracts/Hooks/useValidation'
 import { RenderMode } from '@blueprintjs/table'
-import useAsync from '../../../Hooks/useAsync'
 import Unit from '../../../Contracts/Models/Unit'
-import Select from '../../../Components/Select'
-import UnitService from '../../../Services/UnitService'
 
-const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
+const UnitsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
   const { payload, setPayload, screenStatus, setScreenStatus } =
-    useWindow<Part>()
+    useWindow<Unit>()
 
-  const [units, setUnits] = useState<Unit[]>([])
-
-  const unitsOptions = useMemo(
-    () =>
-      units.map((unit) => ({
-        label: unit.name,
-        value: unit.id,
-      })),
-    [units]
-  )
-
-  const [loadingUnits, loadUnits] = useAsync(async () => {
-    try {
-      const response = await UnitService.getAll(1, 100)
-      setUnits(response.data.data)
-    } catch (error) {
-      showErrorToast({
-        message: 'Erro ao obter lista de clientes',
-      })
-    }
-  }, [])
   const createValidation = (keyName: any) => () =>
     Boolean((payload as any)[keyName])
 
   const validations: Validation[] = [
     {
-      check: createValidation('reference'),
-      errorMessage: 'A referência é obrigatória',
-      inputId: 'partReference',
-    },
-    {
       check: createValidation('name'),
       errorMessage: 'O nome é obrigatório',
-      inputId: 'partName',
-    },
-    {
-      check: createValidation('price'),
-      errorMessage: 'O preço é obrigatório',
-      inputId: 'partPrice',
+      inputId: 'unitName',
     },
   ]
+
   const { validate } = useValidation(validations)
 
   const { setReloadGrid } = useGrid()
@@ -92,23 +58,18 @@ const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
     )
   }
 
-  const handleButtonCreatePartOnClick = async (stopLoad: Function) => {
+  const handleButtonCreateUnitOnClick = async (stopLoad: Function) => {
     if (!validate()) {
       stopLoad()
       return
     }
 
     try {
-      const createPayload = {
-        ...payload,
-        unitId: 201,
-      }
-
-      const response = await PartsService.create(createPayload as any)
+      const response = await UnitService.create(payload as Unit)
 
       if (response.status) {
         showSuccessToast({
-          message: 'Peça cadastrada com sucesso',
+          message: 'Unidade cadastrada com sucesso',
           intent: Intent.SUCCESS,
         })
 
@@ -117,14 +78,14 @@ const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
 
       if (!response) {
         openAlert({
-          text: 'Não foi possível cadastrar a peça',
+          text: 'Não foi possível cadastrar a unidade',
           intent: Intent.DANGER,
         })
       }
     } catch (error: any) {
       const errorMessages = getErrorMessages(
         error.response?.data?.errors,
-        'Não foi possível cadastrar a peça'
+        'Não foi possível cadastrar a unidade'
       )
 
       openAlert({
@@ -132,23 +93,19 @@ const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
         intent: Intent.DANGER,
       })
     } finally {
+      setPayload({})
+      setScreenStatus(ScreenStatus.VISUALIZE)
       stopLoad()
     }
   }
 
-  const handleButtonUpdatePartOnClick = async (stopLoad: StopLoadFunc) => {
+  const handleButtonUpdateUnitOnClick = async (stopLoad: StopLoadFunc) => {
     if (!validate()) {
       return
     }
-    const requestPayload = {
-      ...payload,
-      unitId: 201,
-    }
+
     try {
-      const response = await PartsService.update(
-        requestPayload.id as number,
-        requestPayload as Part
-      )
+      const response = await UnitService.update(payload as Unit)
 
       if (response.status) {
         showSuccessToast({
@@ -176,13 +133,15 @@ const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
         intent: Intent.DANGER,
       })
     } finally {
+      setPayload({})
+      setScreenStatus(ScreenStatus.VISUALIZE)
       stopLoad()
     }
   }
 
-  const handleButtonDeletePartOnClick = async () => {
+  const handleButtonDeleteUnitOnClick = async () => {
     try {
-      const response = await PartsService.delete(payload.id as number)
+      const response = await UnitService.delete(payload.id as number)
 
       if (response.status) {
         showSuccessToast({
@@ -204,13 +163,15 @@ const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
     } catch (error: any) {
       const ErrorMessages = getErrorMessages(
         error.response?.data?.errors,
-        'Não foi possível deletar a peça'
+        'Não foi possível deletar a unidade'
       )
 
       openAlert({
         text: ErrorMessages,
         intent: Intent.DANGER,
       })
+    } finally {
+      setScreenStatus(ScreenStatus.VISUALIZE)
     }
   }
 
@@ -218,23 +179,13 @@ const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
     () => [
       {
         id: 1,
-        name: 'Referencia',
-        keyName: 'reference',
-      },
-      {
-        id: 2,
         name: 'Nome',
         keyName: 'name',
       },
       {
-        id: 3,
+        id: 2,
         name: 'Descrição',
         keyName: 'description',
-      },
-      {
-        id: 4,
-        name: 'Preço',
-        keyName: 'price',
       },
     ],
     []
@@ -248,11 +199,12 @@ const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
     }),
     []
   )
+
   const handleButtonNewOnClick = () => {
     setPayload({})
     setScreenStatus(ScreenStatus.NEW)
 
-    const referenceInput = document.getElementById('partReference')
+    const referenceInput = document.getElementById('unitName')
     referenceInput?.focus()
   }
 
@@ -261,13 +213,14 @@ const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
     handleNewButtonOnClick: handleButtonNewOnClick,
     handleSaveButtonOnClick:
       screenStatus === ScreenStatus.NEW
-        ? handleButtonCreatePartOnClick
-        : handleButtonUpdatePartOnClick,
+        ? handleButtonCreateUnitOnClick
+        : handleButtonUpdateUnitOnClick,
+
     handleDeleteButtonOnClick: () => {
       openAlert({
         text: 'Deletar o item selecionado?',
         intent: Intent.DANGER,
-        onConfirm: handleButtonDeletePartOnClick,
+        onConfirm: handleButtonDeleteUnitOnClick,
         cancelButtonText: 'Cancelar',
       })
     },
@@ -280,10 +233,12 @@ const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
         [attributeName]: evt.target.value || undefined,
       }))
     }
+
   const onRowSelect = useCallback(
     (row: { [key: string]: any }) => setPayload(row),
     []
   )
+
   return (
     <Container>
       <Header>
@@ -294,82 +249,30 @@ const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
         <div>
           <form>
             <div className='flexRow'>
-              <div style={{ width: '10%' }}>
+              <div style={{ width: '20%' }}>
                 <InputText
-                  id='partId'
-                  label='Id:'
-                  value={payload?.id || ''}
-                  disabled
-                  style={{ width: '100%' }}
-                />
-              </div>
-
-              <div>
-                <Select
-                  defaultButtonText='Escolha uma unidade'
-                  items={unitsOptions}
-                  onChange={(o) => {
-                    setPayload((prev) => ({
-                      ...prev,
-                      unit_id: o.value as number,
-                    }))
-                  }}
-                  activeItem={payload.unit_id}
-                  id='partId'
-                  label='Unidade'
-                  disabled={screenStatus === ScreenStatus.VISUALIZE}
-                  loading={loadingUnits}
-                  handleButtonReloadClick={loadUnits}
-                />
-              </div>
-            </div>
-            <div className='flexRow'>
-              <div>
-                <InputText
-                  id='partReference'
-                  label='Referência:'
-                  disabled={isStatusVizualize()}
+                  id='unitName'
+                  label='Nome:'
                   itent='primary'
+                  value={payload?.name || ''}
+                  disabled={isStatusVizualize()}
                   style={{ width: '100%' }}
-                  value={payload?.reference || ''}
-                  onChange={createOnChange('reference')}
+                  onChange={createOnChange('name')}
+                  maxLength={6}
                   required
                 />
               </div>
 
-              <div style={{ width: '90%' }}>
-                <InputText
-                  id='partName'
-                  label='Nome:'
-                  disabled={isStatusVizualize()}
-                  style={{ width: '100%' }}
-                  value={payload.name || ''}
-                  placeholder='Vela de ignição'
-                  onChange={createOnChange('name')}
-                />
-              </div>
-            </div>
-            <div className='flexRow'>
               <div style={{ width: '80%' }}>
                 <InputText
-                  id='partDescription'
+                  id='unitDescription'
                   label='Descrição:'
                   disabled={isStatusVizualize()}
+                  itent='primary'
                   style={{ width: '100%' }}
                   value={payload?.description || ''}
                   onChange={createOnChange('description')}
-                />
-              </div>
-
-              <div style={{ width: '20%' }}>
-                <InputText
-                  id='partPrice'
-                  label='Preço:'
-                  disabled={isStatusVizualize()}
-                  placeholder='R$'
-                  style={{ width: '100%' }}
-                  value={payload?.price || ''}
-                  onChange={createOnChange('price')}
+                  maxLength={120}
                 />
               </div>
             </div>
@@ -381,7 +284,7 @@ const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
             onRowSelect={onRowSelect}
             enableGhostCells
             renderMode={RenderMode.BATCH_ON_UPDATE}
-            request={PartsService.getAll}
+            request={UnitService.getAll}
             containerProps={containerProps}
             columns={columns}
           />
@@ -391,4 +294,4 @@ const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
   )
 }
 
-export default PartsScreen
+export default UnitsScreen

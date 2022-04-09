@@ -5,7 +5,10 @@ import { Container, Header, Body } from './style'
 import PaginatedTable from '../../../Components/PaginatedTable'
 import PartsService from '../../../Services/PartsService'
 import ScreenProps from '../../../Contracts/Components/ScreenProps'
-import { RegistrationButtonBarProps, StopLoadFunc } from '../../../Contracts/Components/RegistrationButtonBarProps'
+import {
+  RegistrationButtonBarProps,
+  StopLoadFunc,
+} from '../../../Contracts/Components/RegistrationButtonBarProps'
 import { useGrid } from '../../../Hooks/useGrid'
 import { useWindow } from '../../../Hooks/useWindow'
 import { useAlert } from '../../../Hooks/useAlert'
@@ -27,10 +30,14 @@ const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
 
   const [units, setUnits] = useState<Unit[]>([])
 
-  const unitsOptions = useMemo(() => units.map((unit) => ({
-    label: unit.name,
-    value: unit.id
-  })), [units])
+  const unitsOptions = useMemo(
+    () =>
+      units.map((unit) => ({
+        label: unit.name,
+        value: unit.id,
+      })),
+    [units]
+  )
 
   const [loadingUnits, loadUnits] = useAsync(async () => {
     try {
@@ -86,7 +93,7 @@ const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
   }
 
   const handleButtonCreatePartOnClick = async (stopLoad: Function) => {
-    if (!validate) {
+    if (!validate()) {
       stopLoad()
       return
     }
@@ -94,7 +101,7 @@ const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
     try {
       const createPayload = {
         ...payload,
-        unitId : 201
+        unitId: 201,
       }
 
       const response = await PartsService.create(createPayload as any)
@@ -124,18 +131,18 @@ const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
         text: errorMessages,
         intent: Intent.DANGER,
       })
-    } finally{
+    } finally {
       stopLoad()
     }
   }
 
   const handleButtonUpdatePartOnClick = async (stopLoad: StopLoadFunc) => {
-    if (!validate) {
+    if (!validate()) {
       return
     }
     const requestPayload = {
       ...payload,
-      unitId: 201
+      unitId: 201,
     }
     try {
       const response = await PartsService.update(
@@ -168,7 +175,7 @@ const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
         text: ErrorMessages,
         intent: Intent.DANGER,
       })
-    }finally{
+    } finally {
       stopLoad()
     }
   }
@@ -298,26 +305,25 @@ const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
               </div>
 
               <div>
-                <Select 
+                <Select
                   defaultButtonText='Escolha uma unidade'
                   items={unitsOptions}
                   onChange={(o) => {
-                    setPayload(prev => ({...prev, unit_id: o.value as number }))
+                    setPayload((prev) => ({
+                      ...prev,
+                      unit_id: o.value as number,
+                    }))
                   }}
-                  activeItem={payload.unit_id }
+                  activeItem={payload.unit_id}
                   id='partId'
                   label='Unidade'
-                  disabled={
-                    screenStatus === ScreenStatus.VISUALIZE
-                  }
+                  disabled={screenStatus === ScreenStatus.VISUALIZE}
                   loading={loadingUnits}
                   handleButtonReloadClick={loadUnits}
                 />
               </div>
             </div>
             <div className='flexRow'>
-              
-
               <div>
                 <InputText
                   id='partReference'
@@ -327,6 +333,7 @@ const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
                   style={{ width: '100%' }}
                   value={payload?.reference || ''}
                   onChange={createOnChange('reference')}
+                  required
                 />
               </div>
 

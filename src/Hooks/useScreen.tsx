@@ -1,26 +1,15 @@
-import {
-  createContext,
-  lazy,
-  Suspense,
-  useContext,
-  useEffect,
-  useState,
-} from 'react'
-import { jsPanel, Panel } from 'jspanel4/es6module/jspanel'
+import {createContext, lazy, Suspense, useContext, useEffect, useState,} from 'react'
+import {jsPanel, Panel} from 'jspanel4/es6module/jspanel'
 import CreatePortal from '../Components/createPortal'
 import jsPanelDefaultOptions from '../Config/jsPanelDefaultOptions'
-import { useAlert } from './useAlert'
-import { useAuth } from './useAuth'
+import {useAlert} from './useAlert'
+import {useAuth} from './useAuth'
 import GridProvider from './useGrid'
 import WindowContextProvider from './useWindow'
-import {
-  ContextPanelOptions,
-  ScreenContext,
-  ScreenIds,
-  ScreenObject,
-} from '../Contracts/Hooks/useScreen'
-import { Intent } from '@blueprintjs/core'
-import { allScreens } from '../Statics/screens'
+import {ContextPanelOptions, ScreenContext, ScreenIds, ScreenObject,} from '../Contracts/Hooks/useScreen'
+import {Intent} from '@blueprintjs/core'
+import {allScreens} from '../Statics/screens'
+import {Screen} from '../Contracts/Components/ScreenProps'
 
 export const screenContext = createContext<ScreenContext>(null as any)
 
@@ -64,7 +53,7 @@ export default function ScreenProvider({ children }: any) {
 
   const { openAlert } = useAlert()
 
-  const changeScreenHeight = (screen: Panel, size: number) => () => {
+  const changeScreenHeight = (screen: Panel, size: number | string) => () => {
     screen.resize({
       height: size,
     })
@@ -87,7 +76,7 @@ export default function ScreenProvider({ children }: any) {
       headerTitle: screenOptions.headerTitle,
       onclosed: () => {
         setPanels((prev) => {
-          const appPanels = { ...prev }
+          const appPanels = {...prev}
           if (appPanels[screenOptions.id]) {
             delete appPanels[screenOptions.id]
           }
@@ -95,9 +84,13 @@ export default function ScreenProvider({ children }: any) {
         })
       },
     } as any
-    const screen = modal
+    const screen = (modal
       ? jsPanel.modal.create(options)
-      : jsPanel.create(options)
+      : jsPanel.create(options)) as any as Screen
+
+    screen.decreaseScreenSize = screenOptions.minHeight ? changeScreenHeight(screen, screenOptions.minHeight) : undefined
+    screen.increaseScreenSize = screenOptions.minHeight ? changeScreenHeight(screen, screenOptions.maxHeight as any) : undefined
+    screen.id = screenOptions.id
 
     const Component = lazy(() => {
       return new Promise((resolve) => {
@@ -125,27 +118,14 @@ export default function ScreenProvider({ children }: any) {
 
   const renderJsPanelsInsidePortal = () => {
     return Object.keys(screens).map((panelId) => {
-      let screen = screens[panelId].screen
-      const screenOptions = screens[panelId]?.screenOptions
+      const screen = screens[panelId].screen
       const Comp = screens[panelId].component
       const parentScreen = screens[panelId].parentScreen
       const { componentProps } = screens[panelId]
       const node = document.getElementById(`${screen.id}-node`)
 
       if (!Comp) return null
-
-      const increaseScreenSize = changeScreenHeight(
-        screen,
-        screenOptions?.maxHeight as number
-      )
-
-      const decreaseScreenSize = changeScreenHeight(
-        screen,
-        screenOptions?.minHeight as number
-      )
-
-      screen = { ...screen, decreaseScreenSize, increaseScreenSize }
-
+      
       return (
         <CreatePortal rootNode={node} key={screen.id as string}>
           <WindowContextProvider>

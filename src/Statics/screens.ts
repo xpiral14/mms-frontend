@@ -16,6 +16,11 @@ const screens = {
     name: 'Cadastro de produtos',
     path: 'Register/Parts'
   },
+  'unit-register': {
+    id: 'unit-register',
+    name: 'Cadastro de unidades',
+    path: 'Register/Units'
+  },
   'service-register': {
     id: 'service-register',
     name: 'Cadastro de serviços',

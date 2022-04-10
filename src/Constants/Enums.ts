@@ -6,11 +6,11 @@ export enum fuelType {
 }
 
 export enum orderStatus {
-  PENDING = 'Aberto',
-  EXECUTING = 'Executando',
-  EXECUTED = 'Executada',
-  CANCELED = 'Cancelada',
-  DELETED = 'Apagada',
+  PENDING = '1',
+  EXECUTING = '2',
+  EXECUTED = '3',
+  CANCELED = '4',
+  DELETED = '5',
 }
 
 export enum ScreenStatus {

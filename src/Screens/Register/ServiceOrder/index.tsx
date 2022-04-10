@@ -11,7 +11,6 @@ import {Option} from '../../../Contracts/Components/Suggest'
 import {Validation} from '../../../Contracts/Hooks/useValidation'
 import Costumer from '../../../Contracts/Models/Costumer'
 import Order from '../../../Contracts/Models/Order'
-import Service from '../../../Contracts/Models/Service'
 import OrderServiceModel from '../../../Contracts/Models/OrderService'
 import {useAlert} from '../../../Hooks/useAlert'
 import useAsync from '../../../Hooks/useAsync'
@@ -23,7 +22,6 @@ import {useWindow} from '../../../Hooks/useWindow'
 import CostumerService from '../../../Services/CostumerService'
 import OrderService from '../../../Services/OrderService'
 import {Body, Container, Header} from './style'
-import {addSeconds} from 'date-fns'
 import Button from '../../../Components/Button'
 import InputText from '../../../Components/InputText'
 import Render from '../../../Components/Render'
@@ -34,6 +32,7 @@ import {OrderServiceDetailsProps} from '../../../Contracts/Screen/OrderServiceDe
 import {OrderPartDetailsProps} from '../../../Contracts/Screen/OrderPartDetails'
 import OrderPart from '../../../Contracts/Models/OrderPart'
 import Box from '../../../Components/Layout/Box'
+import { format } from 'date-fns'
 
 const orderStatusOptions: Option[] = [
   {
@@ -61,16 +60,17 @@ const orderStatusOptions: Option[] = [
 
 type OrderPayload = {
   id?: number
-  serviceIds: number[],
+  serviceIds: number[]
   partIds: number[]
   costumer_id?: number
-  description?: string,
-  date: Date,
-  reference: string,
-  estimated_date: Date,
-  services?: OrderServiceModel[],
+  description?: string
+  date: Date
+  status: orderStatus
+  reference: string
+  estimated_date: Date
+  services?: OrderServiceModel[]
   parts?: OrderPart[]
-};
+}
 const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
   const [costumers, setCostumer] = useState<Costumer[]>([])
   const [isTableCollapsed, setIsTableCollapsed] = useState(true)
@@ -151,9 +151,6 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
     setReloadGrid(true)
   }
 
-  const openOrderServicePiecesScreen = () => {
-    console.log('hello world')
-  }
   const saveAction = async (stopLoad: StopLoadFunc) => {
     if (!validate()) {
       stopLoad()
@@ -161,43 +158,85 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
     }
     try {
       const requestPayload = {
-        date: '',
+        date: payload?.date ? format(payload?.date, 'yyyy-MM-dd') : null,
         estimated_date: payload.estimated_date,
-        reference: payload.reference, 
+        reference: payload.reference,
         costumerId: payload.costumer_id!,
         description: payload?.description,
         partIds: [] as number[],
-        serviceIds: [] as number[]
+        serviceIds: [] as number[],
+        status: payload.status,
       }
       const response = await OrderService.create(requestPayload)
       const orderId = response.data.data.id
       setReloadGrid(true)
+      changePayload('id', orderId)
+      if (payload.services) {
+        Promise.all(
+          (payload.services)?.map((orderService) =>
+            OrderService.addService(orderId, orderService)
+          )
+        )
+      }
 
-      Promise.all((payload.services || [])?.map((orderService) => OrderService.addService(orderId, orderService)))
-
-      openAlert({
-        text: 'Você deseja adicionar os produtos do serviço?',
-        intent: Intent.SUCCESS,
-        icon: 'add',
-        confirmButtonText: 'Sim',
-        canOutsideClickCancel: true,
+      if (payload.parts) {
+        Promise.all(
+          (payload.parts)?.map((orderPart) =>
+            OrderService.addPart(orderId, orderPart)
+          )
+        )
+      }
+      showSuccessToast({
+        message: 'Ordem de serviço criada com sucesso!',
       })
-    } catch (error) {
-      console.log(error)
+      setScreenStatus(ScreenStatus.VISUALIZE)
+      setPayload({})
+    } catch (error: any) {
+      let message = 'Erro ao criar ordem serviço. Por favor, tente novamente.' 
+      if(error?.response?.data?.data?.messages){
+        message = error?.response?.data?.data?.messages
+      }
       showErrorToast({
-        message: 'Erro ao criar ordem serviço. Por favor, tente novamente.',
+        message: message,
       })
     } finally {
       stopLoad()
     }
 
-    showSuccessToast({
-      message: 'Ordem de serviço criada com sucesso!',
-    })
+    
   }
 
-  const updateAction = (stopLoad: StopLoadFunc) => {
-    stopLoad()
+  const updateAction = async (stopLoad: StopLoadFunc) => {
+    const order = {
+      id: payload.id,
+      date: payload?.date ? format(payload?.date, 'yyyy-MM-dd') : null,
+      reference: payload.reference,
+      costumerId: payload.costumer_id!,
+      description: payload?.description,
+      status: payload.status,
+    } as Order
+
+    try {
+      await OrderService.edit(order)
+
+      showSuccessToast({
+        message: 'Ordem editada com sucesso.'
+      })
+      setReloadGrid(true)
+      setScreenStatus(ScreenStatus.VISUALIZE)
+    
+    } catch (error: any) {
+      let errorMessage = 'Erro ao tentar editar a ordem. Por favor tente novamente.'
+      if(error?.response?.data?.data?.messages) {
+        errorMessage = error?.response?.data?.data?.messages
+      }
+      showErrorToast({
+        message: errorMessage
+      })
+    } finally {
+      stopLoad()
+    }
+    
   }
   const registrationButtonBarProps: RegistrationButtonBarProps = {
     screen,
@@ -228,9 +267,6 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
     handleReloadScreenOnClick: reloadAllScreenData,
   }
 
-  const handleServiceDetailsClick = () => {
-    openOrderServicePiecesScreen()
-  }
 
   const toOrderModel = (data: Partial<OrderPayload>) => {
     return {
@@ -269,20 +305,19 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
   }
 
   const openOrderPartScreen = () => {
-    const orderServiceDetailsProps: OrderPartDetailsProps = {
-      onSave(orderServices, screen) {
+    const orderPartDetailsProps: OrderPartDetailsProps = {
+      onSave(orderParts, screen) {
         screen.close()
-        changePayload('services', orderServices)
+        changePayload('parts', orderParts)
       },
     }
 
     if (payload.id) {
-      orderServiceDetailsProps.order = toOrderModel(payload)
+      orderPartDetailsProps.order = toOrderModel(payload)
     }
 
-
     if (payload?.services?.length) {
-      orderServiceDetailsProps.selectedOrderParts = payload.parts
+      orderPartDetailsProps.selectedOrderParts = payload.parts
     }
 
     openSubScreen<OrderPartDetailsProps>(
@@ -292,7 +327,7 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
         headerTitle: 'Produtos da ordem',
       },
       screen.id,
-      orderServiceDetailsProps
+      orderPartDetailsProps
     )
   }
 
@@ -302,7 +337,7 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
         <RegistrationButtonBar {...registrationButtonBarProps} />
       </Header>
       <Body>
-        <Box className="flex flex-justify-end">
+        <Box className='flex flex-justify-end'>
           <Button
             intent='primary'
             title='Mostrar serviços'
@@ -322,18 +357,21 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
             Produtos
           </Button>
         </Box>
-        <Box className="flex align-center flex-wrap">
-          <InputText
-            label='Número da ordem'
-            id={`${screen.id}-order-id`}
-            value={payload.reference}
-            onChange={(event) => changePayload('reference', event.target.value)}
-            disabled={isStatusVisualize}
-          />
+        <Box className='flex align-center flex-wrap'>
+          <Render renderIf={Boolean(payload.id)}>
+            <InputText
+              label='Número da ordem'
+              id={`${screen.id}-order-id`}
+              value={payload.id ?? ''}
+              disabled={isStatusVisualize}
+              readOnly
+            />
+          </Render>
+
           <InputText
             label='Referência'
             id={`${screen.id}-reference`}
-            value={payload.reference}
+            value={payload.reference ?? ''}
             onChange={(event) => changePayload('reference', event.target.value)}
             disabled={isStatusVisualize}
           />
@@ -345,12 +383,11 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
             disabled={isStatusVisualize}
           />
           <Select
-            onChange={() => {
-              console.log('hello')
-            }}
-            label="Status da ordem"
-
+            onChange={(item) => changePayload('status', item.value)}
+            label='Status da ordem'
+            activeItem={payload?.status}
             items={orderStatusOptions}
+            disabled={isStatusVisualize}
           />
           <Select
             handleButtonReloadClick={loadCostumers}
@@ -396,11 +433,6 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
             }
             disabled={screenStatus === ScreenStatus.VISUALIZE}
           />
-          <Render renderIf={Boolean(payload?.id)}>
-            <Button onClick={handleServiceDetailsClick}>
-              Detalhes de serviços
-            </Button>
-          </Render>
         </Box>
         <Collapse
           title={
@@ -437,14 +469,14 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
                 }
                 disabled={isStatusVisualize}
               />
-              <InputText id={screen.id + 'vehicle'} label='Marca'/>
-              <InputText id={screen.id + 'vehicle'} label='Model'/>
-              <InputText id={screen.id + 'vehicle'} label='Placa'/>
-              <InputText id={screen.id + 'vehicle'} label='Cor'/>
-              <InputText id={screen.id + 'vehicle'} label='Ano'/>
-              <InputText id={screen.id + 'vehicle'} label='Combustível'/>
-              <InputText id={screen.id + 'vehicle'} label='Quilometragem'/>
-              <InputText id={screen.id + 'vehicle'} label='Defeito'/>
+              <InputText id={screen.id + 'vehicle'} label='Marca' />
+              <InputText id={screen.id + 'vehicle'} label='Model' />
+              <InputText id={screen.id + 'vehicle'} label='Placa' />
+              <InputText id={screen.id + 'vehicle'} label='Cor' />
+              <InputText id={screen.id + 'vehicle'} label='Ano' />
+              <InputText id={screen.id + 'vehicle'} label='Combustível' />
+              <InputText id={screen.id + 'vehicle'} label='Quilometragem' />
+              <InputText id={screen.id + 'vehicle'} label='Defeito' />
             </Row>
 
             <Row>
@@ -459,7 +491,7 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
                 placeholder='Digite a observação'
                 disabled={screenStatus === ScreenStatus.VISUALIZE}
                 growVertically={false}
-                style={{flex: 1}}
+                style={{ flex: 1 }}
               />
             </Row>
           </Box>
@@ -509,29 +541,21 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
                     name: 'Criado em',
                     cellRenderer: (cell) => (
                       <Cell>
-                        {new Date(cell.created_at).toLocaleDateString('pt-BR')}
+                        {cell.date ? new Date(cell.date).toLocaleDateString('pt-BR') : '-'}
                       </Cell>
                     ),
                   },
                 ]}
                 request={OrderService.getAll as any}
                 onRowSelect={(row) => {
-                  setScreenStatus(ScreenStatus.VISUALIZE)
-
-                  const formattedRow = {
-                    ...row,
-                    estimatedTimeType:
-                  row?.estimatedTime && row.estimatedTime < 86399
-                    ? 'HOURS'
-                    : 'DAYS',
-                    estimatedTime: addSeconds(
-                      new Date('2021-01-01T00:00:00'),
-                      row.estimatedTime || 0
-                    ),
-                    estimatedTimeDay: row.estimatedTime / (3600 * 24),
-                    servicesId: row?.services?.map((s: Service) => s.id),
+                  if(!isStatusVisualize) {
+                    setScreenStatus(ScreenStatus.VISUALIZE)
                   }
-                  setPayload(formattedRow)
+
+                  setPayload({
+                    ...row,
+                    date: row.date ? new Date(row.date) : undefined
+                  })
                 }}
               />
             </Row>

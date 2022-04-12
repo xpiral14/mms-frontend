@@ -22,6 +22,10 @@ export default class OrderService {
     return api.post<Response<Order>>(DEFAULT_PATH, order)
   }
 
+  static async edit(order: Order){
+    return api.put<Response<Order>>(`${DEFAULT_PATH}/${order.id}`, order)
+  }
+
   static async delete(orderId: number) {
     return api.delete(`${DEFAULT_PATH}/${orderId}`)
   }

@@ -6,7 +6,6 @@ export default interface Order {
   id: number
   employee_id?: number
   costumer_id?: number
-  executed_by?: string
   status: string
   description?: string
   created_at?: string

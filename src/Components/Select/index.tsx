@@ -191,6 +191,7 @@ export default function Select({
             text={
               activeOption?.label || props.defaultButtonText || 'Escolha um item'
             }
+            intent={activeOption?.intent}
             disabled={props.disabled}
             {...props?.buttonProps}
           />

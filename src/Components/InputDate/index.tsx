@@ -21,6 +21,9 @@ const InputDate: FunctionComponent<Props> = (props) => {
     labelFor={props.id}
   >
     <DateInput
+      invalidDateMessage='Data inválida'
+      highlightCurrentDay
+      todayButtonText='Hoje'
       inputProps={{
         id: props.id
       }}

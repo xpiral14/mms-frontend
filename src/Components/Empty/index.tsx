@@ -7,7 +7,7 @@ const Empty = () => {
     <Container className='w-100'>
       <Box className='w-100 flex flex-center flex-column'>
         <Icon  icon='zoom-out' color={Colors.GRAY3} iconSize={30} />
-        <h2 style={{ color: Colors.GRAY3, alignSelf: 'center' }} className='bp3-heading'>
+        <h2 style={{ color: Colors.GRAY3, alignSelf: 'center' }} className='bp4-heading'>
           Nada por aqui ainda
         </h2>
       </Box>

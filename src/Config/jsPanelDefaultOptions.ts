@@ -12,5 +12,5 @@ export default {
     panel.content.append(div)
   },
   borderRadius: '3px',
-  iconfont: ['flex-center bp3-icon bp3-icon-chevron-up', 'flex-center bp3-icon bp3-icon-minus','flex-center bp3-icon bp3-icon-maximize', 'flex-center bp3-icon bp3-icon-fullscreen', 'flex-center bp3-icon bp3-icon-cross'],
+  iconfont: ['flex-center bp4-icon bp4-icon-chevron-up', 'flex-center bp4-icon bp4-icon-minus','flex-center bp4-icon bp4-icon-maximize', 'flex-center bp4-icon bp4-icon-fullscreen', 'flex-center bp4-icon bp4-icon-cross'],
 }

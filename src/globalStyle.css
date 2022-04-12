@@ -15,7 +15,9 @@ body {
 [aria-disabled='true'] {
   opacity: 0.3;
 }
-
+.jsPanel-hdr {
+  background-color: #215CAF !important;
+}
 .jsPanel-title {
   font-family: Roboto, 'Open-sans', Lato, serif;
   text-transform: capitalize;
@@ -27,7 +29,7 @@ body {
 }
 
 .jsPanel-content,
-.bp3-input {
+.bp4-input {
   font-size: 0.7rem !important;
 }
 

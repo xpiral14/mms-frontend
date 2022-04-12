@@ -273,7 +273,6 @@ const UnitsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
     []
   )
 
-  console.log(screenStatus)
 
   return (
     <Container>

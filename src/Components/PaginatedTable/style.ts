@@ -5,7 +5,7 @@ export const Container = styled.div`
   display: flex;
   flex-direction: column;
 
-  [class='bp3-table-quadrant bp3-table-quadrant-main'] {
+  [class='bp4-table-quadrant bp4-table-quadrant-main'] {
     overflow-y: ${(p) => p.style?.overflowY};
     width: ${(p) => p.style?.width};
   }
@@ -25,7 +25,7 @@ export const Footer = styled.div`
     list-style-type: none !important;
     margin: 0;
   }
-  .bp3-form-group {
+  .bp4-form-group {
     margin: 0;
   }
 `

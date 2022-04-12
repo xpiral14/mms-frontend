@@ -15,7 +15,7 @@ export const Container = styled.div<{
   ${(p) =>
     p.width &&
     css`
-      .bp3-input {
+      .bp4-input {
         width: ${p.width} !important;
       }
     `}

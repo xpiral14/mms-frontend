@@ -608,7 +608,23 @@ declare module 'jspanel4/es6module/jspanel' {
      * The `<div class="jsPanel-content">` element containing the panel content.
      */
     content: any
+
+    /**
+     * Reposition panel in order to maintain centered position
+     */
+    reposition: () => void
+
+    /**
+     * This method normalizes the panel to position and size before it was maximized, minimized or smallified.
+     * @param callback Callback function to execute after the method normalize was called.
+     * The keyword this inside the callback function refers to the panel the method is called on.
+     */
+    normalize: (
+      callback?: (panel: Panel, status: PanelStatus) => undefined
+    ) => Panel
   }
+
+  type PanelStatus = 'normalized' | 'minimized' | 'maximized' | 'smallified' | 'smallifiedmax'
 
   type JsPanel = {
     modal: JsPanel
@@ -982,7 +998,6 @@ declare module 'jspanel4/es6module/jspanel' {
   }
   export const jsPanel: JsPanel
 }
-
 
 declare module '*.json' {
   const value: any

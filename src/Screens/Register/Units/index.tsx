@@ -19,6 +19,7 @@ import useValidation from '../../../Hooks/useValidation'
 import { Validation } from '../../../Contracts/Hooks/useValidation'
 import { RenderMode } from '@blueprintjs/table'
 import Unit from '../../../Contracts/Models/Unit'
+import Render from '../../../Components/Render'
 
 const UnitsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
   const { payload, setPayload, screenStatus, setScreenStatus } =
@@ -94,12 +95,15 @@ const UnitsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
       })
     } finally {
       setPayload({})
-      setScreenStatus(ScreenStatus.VISUALIZE)
+      setScreenStatus(ScreenStatus.SEE_REGISTERS)
       stopLoad()
+      increaseWindowSize?.()
     }
   }
 
   const handleButtonUpdateUnitOnClick = async (stopLoad: StopLoadFunc) => {
+    decreaseWindowSize?.()
+
     if (!validate()) {
       return
     }
@@ -134,8 +138,9 @@ const UnitsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
       })
     } finally {
       setPayload({})
-      setScreenStatus(ScreenStatus.VISUALIZE)
+      setScreenStatus(ScreenStatus.SEE_REGISTERS)
       stopLoad()
+      increaseWindowSize?.()
     }
   }
 
@@ -171,7 +176,7 @@ const UnitsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
         intent: Intent.DANGER,
       })
     } finally {
-      setScreenStatus(ScreenStatus.VISUALIZE)
+      setScreenStatus(ScreenStatus.SEE_REGISTERS)
     }
   }
 
@@ -200,12 +205,26 @@ const UnitsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
     []
   )
 
+  const increaseWindowSize = screen.increaseScreenSize
+
+  const decreaseWindowSize = screen.decreaseScreenSize
+
+  const focusNameInput = () => {
+    const referenceInput = document.getElementById('unitName')
+    referenceInput?.focus()
+  }
+
+  const handleVisualizeButtonOnClick = () => {
+    setScreenStatus(ScreenStatus.SEE_REGISTERS)
+
+    increaseWindowSize?.()
+  }
+
   const handleButtonNewOnClick = () => {
     setPayload({})
     setScreenStatus(ScreenStatus.NEW)
-
-    const referenceInput = document.getElementById('unitName')
-    referenceInput?.focus()
+    focusNameInput()
+    decreaseWindowSize?.()
   }
 
   const registrationButtonBarProps: RegistrationButtonBarProps = {
@@ -216,6 +235,11 @@ const UnitsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
         ? handleButtonCreateUnitOnClick
         : handleButtonUpdateUnitOnClick,
 
+    handleEditButtonOnClick: () => {
+      setScreenStatus(ScreenStatus.EDIT)
+      decreaseWindowSize?.()
+      focusNameInput()
+    },
     handleDeleteButtonOnClick: () => {
       openAlert({
         text: 'Deletar o item selecionado?',
@@ -223,6 +247,16 @@ const UnitsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
         onConfirm: handleButtonDeleteUnitOnClick,
         cancelButtonText: 'Cancelar',
       })
+    },
+    handleButtonVisualizeOnClick: handleVisualizeButtonOnClick,
+    handleCancelButtonOnClick: () => {
+      if (screenStatus === ScreenStatus.EDIT) {
+        increaseWindowSize?.()
+        setScreenStatus(ScreenStatus.SEE_REGISTERS)
+        return
+      }
+
+      setScreenStatus(ScreenStatus.VISUALIZE)
     },
   }
 
@@ -239,6 +273,8 @@ const UnitsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
     []
   )
 
+  console.log(screenStatus)
+
   return (
     <Container>
       <Header>
@@ -246,49 +282,53 @@ const UnitsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
       </Header>
 
       <Body>
-        <div>
-          <form>
-            <div className='flexRow'>
-              <div style={{ width: '20%' }}>
-                <InputText
-                  id='unitName'
-                  label='Nome:'
-                  itent='primary'
-                  value={payload?.name || ''}
-                  disabled={isStatusVizualize()}
-                  style={{ width: '100%' }}
-                  onChange={createOnChange('name')}
-                  maxLength={6}
-                  required
-                />
-              </div>
+        <Render renderIf={screenStatus !== ScreenStatus.SEE_REGISTERS}>
+          <div>
+            <form>
+              <div className='flexRow'>
+                <div style={{ width: '20%' }}>
+                  <InputText
+                    id='unitName'
+                    label='Nome:'
+                    itent='primary'
+                    value={payload?.name || ''}
+                    disabled={isStatusVizualize()}
+                    style={{ width: '100%' }}
+                    onChange={createOnChange('name')}
+                    maxLength={6}
+                    required
+                  />
+                </div>
 
-              <div style={{ width: '80%' }}>
-                <InputText
-                  id='unitDescription'
-                  label='Descrição:'
-                  disabled={isStatusVizualize()}
-                  itent='primary'
-                  style={{ width: '100%' }}
-                  value={payload?.description || ''}
-                  onChange={createOnChange('description')}
-                  maxLength={120}
-                />
+                <div style={{ width: '80%' }}>
+                  <InputText
+                    id='unitDescription'
+                    label='Descrição:'
+                    disabled={isStatusVizualize()}
+                    itent='primary'
+                    style={{ width: '100%' }}
+                    value={payload?.description || ''}
+                    onChange={createOnChange('description')}
+                    maxLength={120}
+                  />
+                </div>
               </div>
-            </div>
-          </form>
-        </div>
+            </form>
+          </div>
+        </Render>
 
-        <div className='tableRow'>
-          <PaginatedTable
-            onRowSelect={onRowSelect}
-            enableGhostCells
-            renderMode={RenderMode.BATCH_ON_UPDATE}
-            request={UnitService.getAll}
-            containerProps={containerProps}
-            columns={columns}
-          />
-        </div>
+        <Render renderIf={screenStatus === ScreenStatus.SEE_REGISTERS}>
+          <div className='tableRow'>
+            <PaginatedTable
+              onRowSelect={onRowSelect}
+              enableGhostCells
+              renderMode={RenderMode.BATCH_ON_UPDATE}
+              request={UnitService.getAll}
+              containerProps={containerProps}
+              columns={columns}
+            />
+          </div>
+        </Render>
       </Body>
     </Container>
   )

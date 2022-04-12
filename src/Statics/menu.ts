@@ -31,9 +31,11 @@ const menus = {
         name: 'Unidades',
         icon: 'numerical',
         screen: {
+          minHeight: 150,
+          maxHeight: 500,
           ...screens['unit-register'],
           headerTitle: 'Unidades',
-          contentSize: '750px 500px',
+          contentSize: '710px 150px',
         },
       },
       Clientes: {

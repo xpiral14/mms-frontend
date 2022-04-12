@@ -18,5 +18,8 @@ export type MenuItemType = {
 
 export interface NavBarPanelOption extends PanelOptions {
   path: string
-  id: ScreenIds
+  id: ScreenIds,
+
+  minHeight?: number | string
+  maxHeight?: number | string
 }

@@ -100,8 +100,7 @@ const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
 
     try {
       const createPayload = {
-        ...payload,
-        unitId: 201,
+        ...payload
       }
 
       const response = await PartsService.create(createPayload as any)

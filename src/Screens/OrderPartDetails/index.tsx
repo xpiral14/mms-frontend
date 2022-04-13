@@ -31,8 +31,6 @@ const OrderPartDetails: FunctionComponent<OrderPartDetailsScreenProps> = (props)
       const partsResponse = await PartPart.getAll(0, 20)
       setParts(partsResponse.data.data.map(s => ({
         ...s,
-        unit_id: 1,
-        unit_name: 'Hora',
         price: 20
       })))
     } catch (err) {
@@ -60,8 +58,8 @@ const OrderPartDetails: FunctionComponent<OrderPartDetailsScreenProps> = (props)
         part_id: orderParts.part_id,
         part_name: part?.name,
         part_price: part?.price,
-        part_unit_id: 1,
-        part_unit_name: 'Hora'
+        part_unit_id: part?.unit_id,
+        part_unit_name: part?.unit_name
       }
     })
 
@@ -222,7 +220,8 @@ const OrderPartDetails: FunctionComponent<OrderPartDetailsScreenProps> = (props)
     if (orderParts[option.value]) {
       setOrderParts(prev => {
         const copy = {...prev}
-        delete copy[option.value]
+        if(option?.value)
+          delete copy[option.value]
         return copy
       })
       return

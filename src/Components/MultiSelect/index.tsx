@@ -103,7 +103,7 @@ export default function MultiSelect(props: MultiSelectProps) {
       return null
     }
     const text = option.label
-    const isSelected = props.selectedItems?.includes(option.value)
+    const isSelected = Boolean(option?.value && props.selectedItems?.includes(option?.value))
     return (
       <MenuItem
         active={isSelected}

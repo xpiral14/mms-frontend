@@ -139,8 +139,7 @@ const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
       return
     }
     const requestPayload = {
-      ...payload,
-      unitId: 201,
+      ...payload
     }
     try {
       const response = await PartsService.update(

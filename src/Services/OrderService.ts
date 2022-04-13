@@ -22,7 +22,7 @@ export default class OrderService {
     return api.post<Response<Order>>(DEFAULT_PATH, order)
   }
 
-  static async edit(order: Order){
+  static async edit(order: any) {
     return api.put<Response<Order>>(`${DEFAULT_PATH}/${order.id}`, order)
   }
 
@@ -34,43 +34,69 @@ export default class OrderService {
     return api.get<Response<Order>>(`${DEFAULT_PATH}/${orderId}`)
   }
 
-  static async addService(orderId: number, orderService: Partial<OrderServiceModel>) {
+  static async addService(
+    orderId: number,
+    orderService: Partial<OrderServiceModel>
+  ) {
     return api.post(`${DEFAULT_PATH}/${orderId}/orderServices`, orderService)
   }
 
   static async addPart(orderId: number, orderService: Partial<OrderPart>) {
-    return api.post<Response<OrderPart>>(`${DEFAULT_PATH}/${orderId}/orderParts`, orderService)
+    return api.post<Response<OrderPart>>(
+      `${DEFAULT_PATH}/${orderId}/orderParts`,
+      orderService
+    )
   }
 
-  static async configServiceOrder(orderId: number, serviceId: number, payload: {
-    estimatedTime: number,
-    partIds: number[],
-    description?: string
-  }) {
+  static async configServiceOrder(
+    orderId: number,
+    serviceId: number,
+    payload: {
+      estimatedTime: number
+      partIds: number[]
+      description?: string
+    }
+  ) {
     return api.post(`${DEFAULT_PATH}/${orderId}/serivces/${serviceId}`, payload)
   }
 
   static async getOrderServices(orderId: number) {
-    return api.get<Paginated<OrderServiceModel>>(`${DEFAULT_PATH}/${orderId}/orderServices`)
+    return api.get<Paginated<OrderServiceModel>>(
+      `${DEFAULT_PATH}/${orderId}/orderServices`
+    )
   }
 
   static async deleteOrderService(orderId: number, orderServiceId: number) {
-    return api.delete(`${DEFAULT_PATH}/${orderId}/orderServices/${orderServiceId}`)
+    return api.delete(
+      `${DEFAULT_PATH}/${orderId}/orderServices/${orderServiceId}`
+    )
   }
 
-  static editService(orderId: number, orderService: Partial<OrderServiceModel>) {
-    return api.put(`${DEFAULT_PATH}/${orderId}/orderServices/${orderService.id}`)
+  static editService(
+    orderId: number,
+    orderService: Partial<OrderServiceModel>
+  ) {
+    return api.put(
+      `${DEFAULT_PATH}/${orderId}/orderServices/${orderService.id}`
+    )
   }
-  
+
   static editPart(orderId: number, orderPart: Partial<OrderPart>) {
-    return api.put(`${DEFAULT_PATH}/${orderId}/orderParts/${orderPart.id}`, orderPart)
+    return api.put(
+      `${DEFAULT_PATH}/${orderId}/orderParts/${orderPart.id}`,
+      orderPart
+    )
   }
 
   static async getOrderParts(orderId: number) {
-    return api.get<Response<{
-      part: Part,
-      order_part: OrderPart
-    }[]>>(`${DEFAULT_PATH}/${orderId}/orderParts`)
+    return api.get<
+      Response<
+        {
+          part: Part
+          order_part: OrderPart
+        }[]
+      >
+    >(`${DEFAULT_PATH}/${orderId}/orderParts`)
   }
 
   static async deleteOrderPart(orderId: number, orderServiceId: number) {

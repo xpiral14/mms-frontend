@@ -204,7 +204,9 @@ const OrderServiceDetails: FunctionComponent<OrderServiceDetailScreenProps> = (p
     if (orderServices[option.value]) {
       setOrderServices(prev => {
         const copy = {...prev}
-        delete copy[option.value]
+        if (option.value) {
+          delete copy[option.value]
+        }
         return copy
       })
       return

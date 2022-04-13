@@ -14,7 +14,7 @@ interface TextAreaProps extends BlueprintTextAreaProps {
 
 const TextArea: FC<TextAreaProps> = ({ label, ...props }) => {
   return (
-    <Container>
+    <Container style={props.style}>
       {label && <label htmlFor={props.id}>{label}</label>}
       <BlueprintTextArea {...props} />
     </Container>

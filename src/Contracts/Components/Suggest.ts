@@ -26,7 +26,7 @@ export interface SuggestProps {
 
 export interface Option {
   label: string
-  value: string | number,
+  value?: string | number,
   intent?: Intent
   icon?: IconName
 }

@@ -1,4 +1,4 @@
-import { Intent, TextArea } from '@blueprintjs/core'
+import { Intent } from '@blueprintjs/core'
 import React, { useEffect, useMemo, useState } from 'react'
 import PaginatedTable from '../../../Components/PaginatedTable'
 import RegistrationButtonBar from '../../../Components/RegistrationButtonBar'
@@ -43,6 +43,7 @@ import Box from '../../../Components/Layout/Box'
 import { format, isBefore } from 'date-fns'
 import InputGroup from '../../../Components/InputGroup'
 import keysToCamel from '../../../Util/keysToKamel'
+import TextArea from '../../../Components/TextArea'
 
 const orderStatusOptions: Option[] = [
   {
@@ -68,6 +69,11 @@ const orderStatusOptions: Option[] = [
 ]
 
 const discountTypeOptions: Option[] = [
+  {
+    value: undefined,
+    label: 'Selecionar desconto',
+  },
+
   {
     value: DiscountType.PERCENT,
     label: 'Porcentagem',
@@ -235,6 +241,10 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
   }
 
   const updateAction = async (stopLoad: StopLoadFunc) => {
+    if (!validate()) {
+      stopLoad()
+      return
+    }
     const order = {
       id: payload.id,
       date: payload?.date ? format(payload?.date, 'yyyy-MM-dd') : null,
@@ -242,7 +252,24 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
       costumerId: payload.costumerId!,
       description: payload?.description,
       status: payload.status,
-    } as Order
+      validity: payload?.date
+        ? format(payload?.date, 'yyyy-MM-dd HH:mm:ss')
+        : null,
+      serviceDiscountType: payload.serviceDiscountType ?? null,
+      serviceDiscount:
+        payload.serviceDiscountType === DiscountType.PERCENT
+          ? payload.serviceDiscount
+            ? payload.serviceDiscount / 100
+            : null
+          : payload.serviceDiscount ?? null,
+      productDiscount:
+        payload.productDiscountType === DiscountType.PERCENT
+          ? payload.productDiscount
+            ? payload.productDiscount / 100
+            : null
+          : payload.productDiscount ?? null,
+      productDiscountType: payload.productDiscountType,
+    }
 
     try {
       await OrderService.edit(order)
@@ -300,6 +327,14 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
       costumer_id: data.costumerId,
       employee_id: data.costumerId,
       status: '1',
+      date: data.date,
+      validity: data.validity,
+      reference: data.reference,
+      description: data.description,
+      product_discount: data.productDiscount,
+      product_discount_type: data.productDiscountType,
+      service_discount: data.serviceDiscount,
+      service_discount_type: data.serviceDiscountType,
     } as Order
   }
 
@@ -357,6 +392,11 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
     )
   }
 
+  const isProductDiscountTypePercent =
+    payload.productDiscountType === DiscountType.PERCENT
+
+  const isServiceDiscountTypePercent =
+    payload.serviceDiscountType === DiscountType.PERCENT
   return (
     <Container>
       <Header>
@@ -475,30 +515,23 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
             />
           </Box>
           <Collapse
-            title={
-              <Box>
-                <Row
-                  style={{
-                    flex: 1,
-                    justifyContent: 'space-between',
-                  }}
-                >
-                  <span> Informações básicas </span>
-                </Row>
-              </Box>
-            }
+            title={<h6> Informações básicas </h6>}
             isCollapsed={isDetailsCollapsed}
             onChange={() => setIsDetailsCollapsed((prev) => !prev)}
           >
             <Box>
               <Row>
                 <InputGroup
-                  id=''
-                  disabled={isStatusVisualize}
+                  type='number'
+                  id={screen.id + 'product_discount_value'}
+                  disabled={Boolean(
+                    isStatusVisualize || !payload.productDiscountType
+                  )}
                   label='Desconto nos produtos'
+                  max={isProductDiscountTypePercent ? 100 : undefined}
                   leftIcon={
                     payload.productDiscountType
-                      ? payload.productDiscountType === DiscountType.PERCENT
+                      ? isProductDiscountTypePercent
                         ? 'percentage'
                         : 'dollar'
                       : undefined
@@ -508,23 +541,55 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
                       ? String(payload?.productDiscount)
                       : ''
                   }
-                  onChange={(e: any) =>
-                    changePayload('productDiscount', +e.target.value)
-                  }
+                  onChange={(e: any) => {
+                    let value = +e.target.value
+                    if (isProductDiscountTypePercent && value > 100) {
+                      value = 100
+                    }
+
+                    changePayload('productDiscount', value)
+                  }}
                   selectProps={{
+                    id: screen.id + 'select_product_discount_value',
+                    disabled: isStatusVisualize,
                     activeItem: payload.productDiscountType,
-                    onChange: (item) =>
-                      changePayload('productDiscountType', item.value),
+                    onChange: (item) => {
+                      const productDiscountType = item.value as DiscountType
+
+                      setPayload((prev) => {
+                        let productDiscount = prev.productDiscount
+
+                        if (
+                          isProductDiscountTypePercent &&
+                          prev.productDiscount! > 100
+                        ) {
+                          productDiscount = 100
+                        }
+
+                        if (!productDiscountType) {
+                          productDiscount = undefined
+                        }
+                        return {
+                          ...prev,
+                          productDiscountType,
+                          productDiscount,
+                        }
+                      })
+                    },
                     intent: Intent.PRIMARY,
                     items: discountTypeOptions,
                   }}
                 />
                 <InputGroup
                   id=''
-                  disabled={isStatusVisualize}
+                  disabled={Boolean(
+                    isStatusVisualize || !payload.serviceDiscountType
+                  )}
+                  type='number'
+                  max={isServiceDiscountTypePercent ? 100 : undefined}
                   leftIcon={
                     payload.serviceDiscountType
-                      ? payload.serviceDiscountType === DiscountType.PERCENT
+                      ? isServiceDiscountTypePercent
                         ? 'percentage'
                         : 'dollar'
                       : undefined
@@ -535,14 +600,41 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
                       ? String(payload?.serviceDiscount)
                       : ''
                   }
-                  onChange={(e: any) =>
-                    changePayload('serviceDiscount', +e.target.value)
-                  }
+                  onChange={(e: any) => {
+                    let value = +e.target.value
+
+                    if (isServiceDiscountTypePercent && value > 100) {
+                      value = 100
+                    }
+                    changePayload('serviceDiscount', value)
+                  }}
                   selectProps={{
+                    disabled: isStatusVisualize,
                     intent: Intent.PRIMARY,
                     activeItem: payload.serviceDiscountType,
-                    onChange: (item) =>
-                      changePayload('serviceDiscountType', item.value),
+                    onChange: (item) => {
+                      const serviceDiscountType = item.value as DiscountType
+
+                      setPayload((prev) => {
+                        let serviceDiscount = prev.serviceDiscount
+
+                        if (
+                          isServiceDiscountTypePercent &&
+                          prev.serviceDiscount! > 100
+                        ) {
+                          serviceDiscount = 100
+                        }
+
+                        if (!serviceDiscountType) {
+                          serviceDiscount = undefined
+                        }
+                        return {
+                          ...prev,
+                          serviceDiscountType,
+                          serviceDiscount,
+                        }
+                      })
+                    },
                     items: discountTypeOptions,
                   }}
                 />
@@ -550,10 +642,13 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
 
               <Row>
                 <TextArea
+                  id={screen.id + 'order-description'}
+                  label='Descrição'
                   value={payload?.description || ''}
                   onChange={(e) => {
                     changePayload('description', e.currentTarget.value)
                   }}
+                  maxLength={150}
                   placeholder='Digite a observação'
                   disabled={screenStatus === ScreenStatus.VISUALIZE}
                   growVertically={false}
@@ -581,8 +676,7 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
                     name: 'Status',
                     keyName: 'status',
 
-                    formatText: (text) =>
-                      OrderStatusByValue[+text],
+                    formatText: (text) => OrderStatusByValue[+text],
                   },
                   {
                     id: 1,
@@ -611,6 +705,14 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
                     ...cameledObject,
                     validity: row.validity ? new Date(row.validity) : undefined,
                     date: row.date ? new Date(row.date) : undefined,
+                    productDiscount:
+                      row.product_discount_type === DiscountType.PERCENT
+                        ? row.product_discount * 100
+                        : row.product_discount,
+                    serviceDiscount:
+                      row.service_discount_type === DiscountType.PERCENT
+                        ? row.service_discount * 100
+                        : row.service_discount,
                   })
                 }}
                 height='calc(100% - 50px)'

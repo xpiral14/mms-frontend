@@ -1,7 +1,7 @@
 import React, { FunctionComponent } from 'react'
 import {
   InputGroup as BlueprintInputGroup,
-  InputGroupProps,
+  InputGroupProps2,
 } from '@blueprintjs/core'
 import { FormGroup, Intent } from '@blueprintjs/core'
 import Select, { SelectProps } from '../Select'
@@ -16,7 +16,7 @@ type Props = {
   onSelectChange?: () => void
   onChange?: React.ChangeEventHandler<HTMLInputElement> | undefined
   selectProps?: SelectProps
-} & InputGroupProps
+} & InputGroupProps2
 
 const InputGroup: FunctionComponent<Props> = ({ selectProps, ...props }) => {
   return (
@@ -31,7 +31,7 @@ const InputGroup: FunctionComponent<Props> = ({ selectProps, ...props }) => {
         type='number'
         className='disable-arrows'
         onChange={props.onChange}
-        rightElement={<Select {...selectProps} disabled = {props.disabled ?? selectProps?.disabled} />}
+        rightElement={<Select {...selectProps} disabled = {selectProps?.disabled ?? props.disabled} />}
         {...props}
       />
     </FormGroup>

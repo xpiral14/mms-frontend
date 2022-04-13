@@ -1,3 +1,4 @@
+import { Colors } from '@blueprintjs/core'
 import styled, { css } from 'styled-components'
 
 export const Container = styled.div`
@@ -15,8 +16,21 @@ export const Body = styled.div<{ height?: string }>`
   flex: 1;
   height: ${(p) =>
     css`
-      ${p.height}
-    ` || 'inherit'};
+      ${p.height || 'inherit'}
+    `};
+  ${(p) =>
+    p.height &&
+    css`
+      overflow-y: scroll;
+    `}
+  tr.active td {
+    background-color: ${Colors.BLUE2}!important;
+    color: ${Colors.WHITE};
+  }
+  tr.active:hover {
+    background-color: ${Colors.BLUE2}!important;
+    color: ${Colors.WHITE};
+  }
 `
 
 export const Footer = styled.div`

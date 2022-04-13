@@ -20,7 +20,4 @@ export const FormContainer = styled.div`
     flex-wrap: wrap;
   }
 `
-export const TableContainer = styled.div`
-  max-height: 335px;
-  overflow-y: scroll;
-`
+export const TableContainer = styled.div``

@@ -13,6 +13,10 @@ export enum orderStatus {
   DELETED = '5',
 }
 
+export const OrderStatusByValue =  [
+  'Pendente', 'Executando', 'Executada', 'Cancelada', 'Deletada'
+]
+
 export enum ScreenStatus {
   VISUALIZE = 'visualize',
   NEW = 'new',

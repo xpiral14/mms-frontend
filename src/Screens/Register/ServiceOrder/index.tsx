@@ -1,35 +1,43 @@
-import {Intent, TextArea,} from '@blueprintjs/core'
-import {Cell} from '@blueprintjs/table'
-import React, {useEffect, useMemo, useState} from 'react'
+import { Intent, TextArea } from '@blueprintjs/core'
+import React, { useEffect, useMemo, useState } from 'react'
 import PaginatedTable from '../../../Components/PaginatedTable'
 import RegistrationButtonBar from '../../../Components/RegistrationButtonBar'
 import Select from '../../../Components/Select'
-import {DiscountType, orderStatus, PersonType, ScreenStatus} from '../../../Constants/Enums'
-import {RegistrationButtonBarProps, StopLoadFunc} from '../../../Contracts/Components/RegistrationButtonBarProps'
+import {
+  DiscountType,
+  orderStatus,
+  OrderStatusByValue,
+  PersonType,
+  ScreenStatus,
+} from '../../../Constants/Enums'
+import {
+  RegistrationButtonBarProps,
+  StopLoadFunc,
+} from '../../../Contracts/Components/RegistrationButtonBarProps'
 import ScreenProps from '../../../Contracts/Components/ScreenProps'
-import {Option} from '../../../Contracts/Components/Suggest'
-import {Validation} from '../../../Contracts/Hooks/useValidation'
+import { Option } from '../../../Contracts/Components/Suggest'
+import { Validation } from '../../../Contracts/Hooks/useValidation'
 import Costumer from '../../../Contracts/Models/Costumer'
 import Order from '../../../Contracts/Models/Order'
 import OrderServiceModel from '../../../Contracts/Models/OrderService'
-import {useAlert} from '../../../Hooks/useAlert'
+import { useAlert } from '../../../Hooks/useAlert'
 import useAsync from '../../../Hooks/useAsync'
-import {useGrid} from '../../../Hooks/useGrid'
-import {useScreen} from '../../../Hooks/useScreen'
-import {useToast} from '../../../Hooks/useToast'
+import { useGrid } from '../../../Hooks/useGrid'
+import { useScreen } from '../../../Hooks/useScreen'
+import { useToast } from '../../../Hooks/useToast'
 import useValidation from '../../../Hooks/useValidation'
-import {useWindow} from '../../../Hooks/useWindow'
+import { useWindow } from '../../../Hooks/useWindow'
 import CostumerService from '../../../Services/CostumerService'
 import OrderService from '../../../Services/OrderService'
-import {Body, Container, Header} from './style'
+import { Body, Container, Header } from './style'
 import Button from '../../../Components/Button'
 import InputText from '../../../Components/InputText'
 import Render from '../../../Components/Render'
 import InputDate from '../../../Components/InputDate'
 import Collapse from '../../../Components/Collapse'
 import Row from '../../../Components/Layout/Row'
-import {OrderServiceDetailsProps} from '../../../Contracts/Screen/OrderServiceDetails/OrderServiceDetailsProps'
-import {OrderPartDetailsProps} from '../../../Contracts/Screen/OrderPartDetails'
+import { OrderServiceDetailsProps } from '../../../Contracts/Screen/OrderServiceDetails/OrderServiceDetailsProps'
+import { OrderPartDetailsProps } from '../../../Contracts/Screen/OrderPartDetails'
 import OrderPart from '../../../Contracts/Models/OrderPart'
 import Box from '../../../Components/Layout/Box'
 import { format, isBefore } from 'date-fns'
@@ -40,24 +48,23 @@ const orderStatusOptions: Option[] = [
   {
     value: orderStatus.PENDING,
     label: 'Pendente',
-    intent: Intent.NONE
+    intent: Intent.NONE,
   },
   {
     value: orderStatus.EXECUTING,
     label: 'Executando',
-    intent: Intent.PRIMARY
+    intent: Intent.PRIMARY,
   },
   {
     value: orderStatus.EXECUTED,
     label: 'Executada',
-    intent: Intent.SUCCESS
-
+    intent: Intent.SUCCESS,
   },
   {
     value: orderStatus.CANCELED,
     label: 'Cancelada',
-    intent: Intent.DANGER
-  }
+    intent: Intent.DANGER,
+  },
 ]
 
 const discountTypeOptions: Option[] = [
@@ -70,7 +77,7 @@ const discountTypeOptions: Option[] = [
     value: DiscountType.VALUE,
     label: 'Valor',
     icon: 'dollar',
-  }
+  },
 ]
 
 type OrderPayload = {
@@ -83,17 +90,16 @@ type OrderPayload = {
   status: orderStatus
   reference: string
   services?: OrderServiceModel[]
-  parts?: OrderPart[],
-  validity?: Date,
-  serviceDiscountType?: DiscountType;
+  parts?: OrderPart[]
+  validity?: Date
+  serviceDiscountType?: DiscountType
   serviceDiscount?: number
-  productDiscountType?: DiscountType;
+  productDiscountType?: DiscountType
   productDiscount?: number
 }
 const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
   const [costumers, setCostumer] = useState<Costumer[]>([])
   const [isDetailsCollapsed, setIsDetailsCollapsed] = useState(true)
-
 
   const costumerOptions = useMemo(() => {
     const normalized = {
@@ -123,16 +129,16 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
     }
   }, [])
 
-  const {payload, setPayload, screenStatus, setScreenStatus} = useWindow<OrderPayload>()
-  const isStatusVisualize =
-    Boolean(screenStatus === ScreenStatus.VISUALIZE)
+  const { payload, setPayload, screenStatus, setScreenStatus } =
+    useWindow<OrderPayload>()
+  const isStatusVisualize = Boolean(screenStatus === ScreenStatus.VISUALIZE)
   useEffect(() => {
     changePayload('date', new Date())
   }, [])
   const changePayload = (key: keyof typeof payload, value: any) => {
-    setPayload(prev => ({
+    setPayload((prev) => ({
       ...prev,
-      [key]: value
+      [key]: value,
     }))
   }
 
@@ -155,7 +161,7 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
       check: createValidation('costumerId'),
       errorMessage: 'Escolha o cliente',
       inputId: `${screen.id}-select-costumer`,
-    }
+    },
   ]
   const { validate } = useValidation(validations)
 
@@ -183,11 +189,13 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
         partIds: [] as number[],
         serviceIds: [] as number[],
         status: payload.status,
-        validity: payload?.date ? format(payload?.date, 'yyyy-MM-dd HH:mm:ss') : null,
+        validity: payload?.date
+          ? format(payload?.date, 'yyyy-MM-dd HH:mm:ss')
+          : null,
         serviceDiscountType: payload.serviceDiscountType,
         serviceDiscount: payload.serviceDiscount,
         productDiscount: payload.productDiscount,
-        productDiscountType: payload.productDiscountType
+        productDiscountType: payload.productDiscountType,
       }
       const response = await OrderService.create(requestPayload)
       const orderId = response.data.data.id
@@ -195,7 +203,7 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
       changePayload('id', orderId)
       if (payload.services) {
         Promise.all(
-          (payload.services)?.map((orderService) =>
+          payload.services?.map((orderService) =>
             OrderService.addService(orderId, orderService)
           )
         )
@@ -203,7 +211,7 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
 
       if (payload.parts) {
         Promise.all(
-          (payload.parts)?.map((orderPart) =>
+          payload.parts?.map((orderPart) =>
             OrderService.addPart(orderId, orderPart)
           )
         )
@@ -214,8 +222,8 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
       setScreenStatus(ScreenStatus.VISUALIZE)
       setPayload({})
     } catch (error: any) {
-      let message = 'Erro ao criar ordem serviço. Por favor, tente novamente.' 
-      if(error?.response?.data?.data?.messages){
+      let message = 'Erro ao criar ordem serviço. Por favor, tente novamente.'
+      if (error?.response?.data?.data?.messages) {
         message = error?.response?.data?.data?.messages
       }
       showErrorToast({
@@ -224,8 +232,6 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
     } finally {
       stopLoad()
     }
-
-    
   }
 
   const updateAction = async (stopLoad: StopLoadFunc) => {
@@ -242,23 +248,22 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
       await OrderService.edit(order)
 
       showSuccessToast({
-        message: 'Ordem editada com sucesso.'
+        message: 'Ordem editada com sucesso.',
       })
       setReloadGrid(true)
       setScreenStatus(ScreenStatus.VISUALIZE)
-    
     } catch (error: any) {
-      let errorMessage = 'Erro ao tentar editar a ordem. Por favor tente novamente.'
-      if(error?.response?.data?.data?.messages) {
+      let errorMessage =
+        'Erro ao tentar editar a ordem. Por favor tente novamente.'
+      if (error?.response?.data?.data?.messages) {
         errorMessage = error?.response?.data?.data?.messages
       }
       showErrorToast({
-        message: errorMessage
+        message: errorMessage,
       })
     } finally {
       stopLoad()
     }
-    
   }
   const registrationButtonBarProps: RegistrationButtonBarProps = {
     screen,
@@ -288,7 +293,6 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
     },
     handleReloadScreenOnClick: reloadAllScreenData,
   }
-
 
   const toOrderModel = (data: Partial<OrderPayload>) => {
     return {
@@ -369,7 +373,7 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
               onClick={openOrderDetailsScreen}
               disabled={isStatusVisualize}
             >
-            Serviços
+              Serviços
             </Button>
             <Button
               intent='primary'
@@ -378,7 +382,7 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
               disabled={isStatusVisualize}
               onClick={openOrderPartScreen}
             >
-            Produtos
+              Produtos
             </Button>
           </Box>
           <Box className='flex align-center flex-wrap'>
@@ -396,7 +400,9 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
               label='Referência'
               id={`${screen.id}-reference`}
               value={payload.reference ?? ''}
-              onChange={(event) => changePayload('reference', event.target.value)}
+              onChange={(event) =>
+                changePayload('reference', event.target.value)
+              }
               disabled={isStatusVisualize}
             />
             <InputDate
@@ -407,11 +413,19 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
               disabled={isStatusVisualize}
             />
             <InputDate
-              intent={payload?.validity ? isBefore(payload.validity, new Date()) ? Intent.WARNING: Intent.NONE : Intent.NONE }
+              intent={
+                payload?.validity
+                  ? isBefore(payload.validity, new Date())
+                    ? Intent.WARNING
+                    : Intent.NONE
+                  : Intent.NONE
+              }
               label='Validade da nota'
               id={`${screen.id}-order-date`}
               value={payload.validity}
-              onChange={(selectedDate) => changePayload('validity', selectedDate)}
+              onChange={(selectedDate) =>
+                changePayload('validity', selectedDate)
+              }
               disabled={isStatusVisualize}
             />
             <Select
@@ -427,9 +441,7 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
               required
               allowCreate
               activeItem={payload?.costumerId}
-              onChange={(option) =>
-                changePayload('costumerId', option.value)
-              }
+              onChange={(option) => changePayload('costumerId', option.value)}
               defaultButtonText='Escolha um profissional'
               label='Cliente'
               items={costumerOptions.options}
@@ -450,14 +462,14 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
                 )
               }}
               buttonProps={
-              {
-                id: `${screen.id}-select-costumer`,
-                style: {
-                  width: '100%',
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                },
-              } as any
+                {
+                  id: `${screen.id}-select-costumer`,
+                  style: {
+                    width: '100%',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                  },
+                } as any
               }
               disabled={screenStatus === ScreenStatus.VISUALIZE}
             />
@@ -472,55 +484,74 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
                   }}
                 >
                   <span> Informações básicas </span>
-
                 </Row>
               </Box>
-            
             }
             isCollapsed={isDetailsCollapsed}
             onChange={() => setIsDetailsCollapsed((prev) => !prev)}
           >
             <Box>
               <Row>
-
                 <InputGroup
-                  id='' 
-                  disabled={isStatusVisualize} 
+                  id=''
+                  disabled={isStatusVisualize}
                   label='Desconto nos produtos'
-                  leftIcon={payload.productDiscountType ? payload.productDiscountType  === DiscountType.PERCENT ? 'percentage': 'dollar' : undefined}
-                  value={payload?.productDiscount ? String(payload?.productDiscount) : ''}
-                  onChange={(e: any) => changePayload('productDiscount', +e.target.value)}
-                  selectProps={
-                    {
-                      activeItem: payload.productDiscountType,
-                      onChange: (item) => changePayload('productDiscountType', item.value),
-                      intent: Intent.PRIMARY,
-                      items: discountTypeOptions
-                    }
+                  leftIcon={
+                    payload.productDiscountType
+                      ? payload.productDiscountType === DiscountType.PERCENT
+                        ? 'percentage'
+                        : 'dollar'
+                      : undefined
                   }
+                  value={
+                    payload?.productDiscount
+                      ? String(payload?.productDiscount)
+                      : ''
+                  }
+                  onChange={(e: any) =>
+                    changePayload('productDiscount', +e.target.value)
+                  }
+                  selectProps={{
+                    activeItem: payload.productDiscountType,
+                    onChange: (item) =>
+                      changePayload('productDiscountType', item.value),
+                    intent: Intent.PRIMARY,
+                    items: discountTypeOptions,
+                  }}
                 />
                 <InputGroup
-                  id='' 
-                  disabled={isStatusVisualize} 
-                  leftIcon={payload.serviceDiscountType ? payload.serviceDiscountType  === DiscountType.PERCENT ? 'percentage': 'dollar' : undefined}
+                  id=''
+                  disabled={isStatusVisualize}
+                  leftIcon={
+                    payload.serviceDiscountType
+                      ? payload.serviceDiscountType === DiscountType.PERCENT
+                        ? 'percentage'
+                        : 'dollar'
+                      : undefined
+                  }
                   label='Desconto nos serviços'
-                  value={payload?.serviceDiscount ? String(payload?.serviceDiscount) : ''}
-                  onChange={(e: any) => changePayload('serviceDiscount', +e.target.value)}
-                  selectProps={
-                    {
-                      intent: Intent.PRIMARY,
-                      activeItem: payload.serviceDiscountType,
-                      onChange: (item) => changePayload('serviceDiscountType', item.value),
-                      items: discountTypeOptions
-                    }
-                  } 
+                  value={
+                    payload?.serviceDiscount
+                      ? String(payload?.serviceDiscount)
+                      : ''
+                  }
+                  onChange={(e: any) =>
+                    changePayload('serviceDiscount', +e.target.value)
+                  }
+                  selectProps={{
+                    intent: Intent.PRIMARY,
+                    activeItem: payload.serviceDiscountType,
+                    onChange: (item) =>
+                      changePayload('serviceDiscountType', item.value),
+                    items: discountTypeOptions,
+                  }}
                 />
               </Row>
 
               <Row>
                 <TextArea
                   value={payload?.description || ''}
-                  onChange={(e) =>{
+                  onChange={(e) => {
                     changePayload('description', e.currentTarget.value)
                   }}
                   placeholder='Digite a observação'
@@ -533,15 +564,17 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
           </Collapse>
         </Render>
         <Render renderIf={screenStatus === ScreenStatus.SEE_REGISTERS}>
-          <Box>
-            <Row>
+          <Box className='h-100'>
+            <Row className='h-100'>
               <PaginatedTable
                 containerProps={{
+                  className: 'styled-scroll',
                   style: {
                     overflowY: 'scroll',
                     width: '100%',
                   },
                 }}
+                rowKey={(row) => row.id + row.created_at}
                 columns={[
                   {
                     id: 1,
@@ -549,48 +582,38 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
                     keyName: 'status',
 
                     formatText: (text) =>
-                      orderStatus[text as keyof typeof orderStatus],
+                      OrderStatusByValue[+text],
                   },
                   {
                     id: 1,
                     name: 'Observação',
-                    keyName: 'notice',
+                    keyName: 'description',
+                    withoutValueText: 'Não possui observação',
                   },
                   {
                     id: 1,
-                    name: 'Valor',
-                    formatText: (text, row) => {
-                      return (
-                        row?.order_part?.reduce(
-                          (acc: any, curr: any) => acc + curr.piece.price,
-                          0
-                        ) || 'R$ 0'
-                      )
+                    name: 'Criado em',
+                    keyName: 'date',
+                    formatText: (date) => {
+                      return date
+                        ? new Date(date).toLocaleDateString('pt-BR')
+                        : '-'
                     },
                   },
-                  {
-                    id: 1,
-                    name: 'Criado e',
-                    cellRenderer: (cell) => (
-                      <Cell>
-                        {cell.date ? new Date(cell.date).toLocaleDateString('pt-BR') : '-'}
-                      </Cell>
-                    ),
-                  },
                 ]}
+                isSelected={(row) => row.id === payload?.id}
                 request={OrderService.getAll as any}
                 onRowSelect={(row) => {
-                  const cameledObject = keysToCamel(
-                    {
-                      ...row,
-                
-                    })
+                  const cameledObject = keysToCamel({
+                    ...row,
+                  })
                   setPayload({
-                    ...cameledObject, 
-                    validity: row.validty ? new Date(row.validity) : undefined,
+                    ...cameledObject,
+                    validity: row.validity ? new Date(row.validity) : undefined,
                     date: row.date ? new Date(row.date) : undefined,
                   })
                 }}
+                height='calc(100% - 50px)'
               />
             </Row>
           </Box>

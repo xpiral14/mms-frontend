@@ -296,12 +296,7 @@ const CostumerRegister: React.FC<CostumerRegisterScreenProps> = ({
 
         <TableContainer>
           <PaginatedTable
-            containerProps={{
-              style: {
-                overflowY: 'scrool',
-                width: '100%',
-              },
-            }}
+            height='350px'
             columns={[
               {
                 id: 1,

@@ -14,7 +14,6 @@ import { Intent } from '@blueprintjs/core'
 import { useToast } from '../../../Hooks/useToast'
 import useValidation from '../../../Hooks/useValidation'
 import { Validation } from '../../../Contracts/Hooks/useValidation'
-import { RenderMode } from '@blueprintjs/table'
 import Service from '../../../Contracts/Models/Service'
 
 const ServiceScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
@@ -320,8 +319,6 @@ const ServiceScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
         <div className='tableRow'>
           <PaginatedTable
             onRowSelect={onRowSelect}
-            enableGhostCells
-            renderMode={RenderMode.BATCH_ON_UPDATE}
             request={ServicesService.getAll}
             containerProps={containerProps}
             columns={columns}

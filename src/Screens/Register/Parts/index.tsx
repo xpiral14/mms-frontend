@@ -18,7 +18,6 @@ import { useToast } from '../../../Hooks/useToast'
 import Part from '../../../Contracts/Models/Part'
 import useValidation from '../../../Hooks/useValidation'
 import { Validation } from '../../../Contracts/Hooks/useValidation'
-import { RenderMode } from '@blueprintjs/table'
 import useAsync from '../../../Hooks/useAsync'
 import Unit from '../../../Contracts/Models/Unit'
 import Select from '../../../Components/Select'
@@ -378,8 +377,6 @@ const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
         <div className='tableRow'>
           <PaginatedTable
             onRowSelect={onRowSelect}
-            enableGhostCells
-            renderMode={RenderMode.BATCH_ON_UPDATE}
             request={PartsService.getAll}
             containerProps={containerProps}
             columns={columns}

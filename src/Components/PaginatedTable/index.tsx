@@ -3,15 +3,6 @@ import {
   PaginatedTableProps,
 } from '../../Contracts/Components/PaginatadeTable'
 import Paginate, { ReactPaginateProps } from 'react-paginate'
-import {
-  Cell,
-  Column,
-  ICellInterval,
-  IRegion,
-  SelectionModes,
-  Table as BluePrintTable,
-  TableLoadingOption,
-} from '@blueprintjs/table'
 
 import { Body, Container, Footer, PaginateContainer } from './style'
 import { Card, Classes, Icon, Button } from '@blueprintjs/core'
@@ -22,7 +13,6 @@ import Select from '../Select'
 import { Option } from '../../Contracts/Components/Suggest'
 import { CSSProperties } from 'styled-components'
 import React from 'react'
-
 const pageOptions: Option[] = [
   {
     label: '5',
@@ -46,10 +36,6 @@ const pageOptions: Option[] = [
   },
 ]
 
-const loadingOptions = [
-  TableLoadingOption.CELLS,
-  TableLoadingOption.ROW_HEADERS,
-]
 const PaginatedTable: React.FC<PaginatedTableProps> = ({
   columns,
   request,
@@ -65,9 +51,7 @@ const PaginatedTable: React.FC<PaginatedTableProps> = ({
     setGridResponse,
     gridResponse,
   } = useGrid()
-  const [selectedRegions, setselectedRegions] = useState<
-    { cols: number[]; rows: number[] }[]
-  >([])
+  const [selectedRegions] = useState<{ cols: number[]; rows: number[] }[]>([])
   const { showErrorToast } = useToast()
 
   useEffect(() => {
@@ -92,30 +76,23 @@ const PaginatedTable: React.FC<PaginatedTableProps> = ({
     return column.withoutValueText || '-'
   }
 
-  const getColumnText = (text: string, column: ColumnProps, row?: object) => {
-    if (column.keyName && !text) {
+  const getColumnText = (column: ColumnProps, row?: Record<string, any>) => {
+    const text = row?.[column.keyName!]
+    if (column.keyName && !row?.[column.keyName!]) {
       return getWithoutValueDefaultText(column)
     }
     return column?.formatText?.(text, row) || text
   }
-  const defaultCellRenderer =
-    (column: ColumnProps, key: string) => (rowIndex: number) =>
-      (
-        <Cell style={{ width: '100%' }}>
-          {getColumnText(
-            gridResponse?.data?.[rowIndex]?.[key],
-            column,
-            gridResponse?.data?.[rowIndex]
-          )}
-        </Cell>
-      )
-
-  const cellRender = (callback: any) => (rowIndex: number) =>
-    callback(gridResponse?.data?.[rowIndex])
+  const defaultCellRenderer = (column: ColumnProps, row: Record<any, any>) => (
+    <div>{getColumnText(column, row)}</div>
+  )
 
   const paginateOptions = useMemo(
     () =>
       ({
+        breakLinkClassName: `${Classes.BUTTON} ${
+          reloadGrid ? Classes.DISABLED : ''
+        }`,
         marginPagesDisplayed: 1,
         containerClassName: 'flex',
         nextLinkClassName: `${Classes.BUTTON} ${
@@ -149,28 +126,6 @@ const PaginatedTable: React.FC<PaginatedTableProps> = ({
     }
   }, [selectedRegions])
 
-  const renderColumns = () =>
-    columns?.map((column) => (
-      <Column
-        key={column.id}
-        {...column}
-        cellRenderer={
-          column.cellRenderer
-            ? cellRender(column.cellRenderer)
-            : defaultCellRenderer(column, column.keyName || '')
-        }
-      />
-    ))
-  const handleSelectRow = (s: any) => {
-    if (!s.length) return
-    setselectedRegions([
-      {
-        cols: [0, (columns?.length || 1) - 1],
-        rows: s[0].rows as ICellInterval,
-      },
-    ])
-  }
-
   const cardStyle: CSSProperties = {
     display: 'flex',
     justifyContent: 'space-between',
@@ -188,17 +143,30 @@ const PaginatedTable: React.FC<PaginatedTableProps> = ({
 
   return (
     <Container style={{ width: '100%' }} {...rest?.containerProps}>
-      <Body height={rest.height}>
-        <BluePrintTable
-          loadingOptions={reloadGrid ? loadingOptions : undefined}
-          selectionModes={SelectionModes.ROWS_AND_CELLS}
-          selectedRegions={selectedRegions as IRegion[]}
-          onSelection={handleSelectRow}
-          numRows={gridResponse?.data?.length}
-          {...rest}
-        >
-          {renderColumns()}
-        </BluePrintTable>
+      <Body height={rest?.height}>
+        <table className='w-100 bp4-html-table bp4-html-table-bordered bp4-html-table-striped bp4-interactive'>
+          <thead>
+            <tr>
+              {columns?.map((column) => (
+                <th key={column.name}>{column.name}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {gridResponse?.data.map((row) => (
+              <tr
+                key={rest.rowKey?.(row) || row?.id}
+                className={rest?.isSelected?.(row) ? 'active' : ''}
+              >
+                {columns?.map((column) => (
+                  <td key={column.name} onClick={() => rest.onRowSelect?.(row)}>
+                    {(column?.cellRenderer ?? defaultCellRenderer)(column, row)}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </Body>
       {Boolean(gridResponse?.meta) && (
         <Footer>

@@ -17,7 +17,6 @@ import { Intent } from '@blueprintjs/core'
 import { useToast } from '../../../Hooks/useToast'
 import useValidation from '../../../Hooks/useValidation'
 import { Validation } from '../../../Contracts/Hooks/useValidation'
-import { RenderMode } from '@blueprintjs/table'
 import Unit from '../../../Contracts/Models/Unit'
 import Render from '../../../Components/Render'
 
@@ -280,7 +279,7 @@ const UnitsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
         <RegistrationButtonBar {...registrationButtonBarProps} />
       </Header>
 
-      <Body>
+      <Body className='h-100'>
         <Render renderIf={screenStatus !== ScreenStatus.SEE_REGISTERS}>
           <div>
             <form>
@@ -317,16 +316,14 @@ const UnitsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
         </Render>
 
         <Render renderIf={screenStatus === ScreenStatus.SEE_REGISTERS}>
-          <div className='tableRow'>
-            <PaginatedTable
-              onRowSelect={onRowSelect}
-              enableGhostCells
-              renderMode={RenderMode.BATCH_ON_UPDATE}
-              request={UnitService.getAll}
-              containerProps={containerProps}
-              columns={columns}
-            />
-          </div>
+          <PaginatedTable
+            height='100%'
+            onRowSelect={onRowSelect}
+            request={UnitService.getAll}
+            containerProps={containerProps}
+            columns={columns}
+            isSelected={(row) => row.id === payload?.id}
+          />
         </Render>
       </Body>
     </Container>

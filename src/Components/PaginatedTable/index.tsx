@@ -93,6 +93,7 @@ const PaginatedTable: React.FC<PaginatedTableProps> = ({
         breakLinkClassName: `${Classes.BUTTON} ${
           reloadGrid ? Classes.DISABLED : ''
         }`,
+        disabledClassName: Classes.DISABLED,
         marginPagesDisplayed: 1,
         containerClassName: 'flex',
         nextLinkClassName: `${Classes.BUTTON} ${
@@ -112,6 +113,7 @@ const PaginatedTable: React.FC<PaginatedTableProps> = ({
         }`,
         initialPage: page,
         onPageChange: ({ selected }) => {
+          if(reloadGrid) return
           setPage(selected)
           setReloadGrid(true)
         },

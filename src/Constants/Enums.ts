@@ -24,3 +24,12 @@ export enum PersonType {
   PHYSICAL = '1',
   LEGAL = '2',
 }
+
+export enum DiscountType {
+  PERCENT = 'percent',
+  VALUE = 'value'
+}
+
+export const getEnumValues = (enumType: any): string[] => {
+  return Object.values(enumType)
+}

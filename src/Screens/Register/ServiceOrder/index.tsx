@@ -4,7 +4,7 @@ import React, {useEffect, useMemo, useState} from 'react'
 import PaginatedTable from '../../../Components/PaginatedTable'
 import RegistrationButtonBar from '../../../Components/RegistrationButtonBar'
 import Select from '../../../Components/Select'
-import {orderStatus, PersonType, ScreenStatus} from '../../../Constants/Enums'
+import {DiscountType, orderStatus, PersonType, ScreenStatus} from '../../../Constants/Enums'
 import {RegistrationButtonBarProps, StopLoadFunc} from '../../../Contracts/Components/RegistrationButtonBarProps'
 import ScreenProps from '../../../Contracts/Components/ScreenProps'
 import {Option} from '../../../Contracts/Components/Suggest'
@@ -32,7 +32,9 @@ import {OrderServiceDetailsProps} from '../../../Contracts/Screen/OrderServiceDe
 import {OrderPartDetailsProps} from '../../../Contracts/Screen/OrderPartDetails'
 import OrderPart from '../../../Contracts/Models/OrderPart'
 import Box from '../../../Components/Layout/Box'
-import { format } from 'date-fns'
+import { format, isBefore } from 'date-fns'
+import InputGroup from '../../../Components/InputGroup'
+import keysToCamel from '../../../Util/keysToKamel'
 
 const orderStatusOptions: Option[] = [
   {
@@ -58,22 +60,38 @@ const orderStatusOptions: Option[] = [
   }
 ]
 
+const discountTypeOptions: Option[] = [
+  {
+    value: DiscountType.PERCENT,
+    label: 'Porcentagem',
+    icon: 'percentage',
+  },
+  {
+    value: DiscountType.VALUE,
+    label: 'Valor',
+    icon: 'dollar',
+  }
+]
+
 type OrderPayload = {
   id?: number
   serviceIds: number[]
   partIds: number[]
-  costumer_id?: number
+  costumerId?: number
   description?: string
   date: Date
   status: orderStatus
   reference: string
-  estimated_date: Date
   services?: OrderServiceModel[]
-  parts?: OrderPart[]
+  parts?: OrderPart[],
+  validity?: Date,
+  serviceDiscountType?: DiscountType;
+  serviceDiscount?: number
+  productDiscountType?: DiscountType;
+  productDiscount?: number
 }
 const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
   const [costumers, setCostumer] = useState<Costumer[]>([])
-  const [isTableCollapsed, setIsTableCollapsed] = useState(true)
   const [isDetailsCollapsed, setIsDetailsCollapsed] = useState(true)
 
 
@@ -134,7 +152,7 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
 
   const validations: Validation[] = [
     {
-      check: createValidation('costumer_id'),
+      check: createValidation('costumerId'),
       errorMessage: 'Escolha o cliente',
       inputId: `${screen.id}-select-costumer`,
     }
@@ -159,13 +177,17 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
     try {
       const requestPayload = {
         date: payload?.date ? format(payload?.date, 'yyyy-MM-dd') : null,
-        estimated_date: payload.estimated_date,
         reference: payload.reference,
-        costumerId: payload.costumer_id!,
+        costumerId: payload.costumerId!,
         description: payload?.description,
         partIds: [] as number[],
         serviceIds: [] as number[],
         status: payload.status,
+        validity: payload?.date ? format(payload?.date, 'yyyy-MM-dd HH:mm:ss') : null,
+        serviceDiscountType: payload.serviceDiscountType,
+        serviceDiscount: payload.serviceDiscount,
+        productDiscount: payload.productDiscount,
+        productDiscountType: payload.productDiscountType
       }
       const response = await OrderService.create(requestPayload)
       const orderId = response.data.data.id
@@ -211,7 +233,7 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
       id: payload.id,
       date: payload?.date ? format(payload?.date, 'yyyy-MM-dd') : null,
       reference: payload.reference,
-      costumerId: payload.costumer_id!,
+      costumerId: payload.costumerId!,
       description: payload?.description,
       status: payload.status,
     } as Order
@@ -271,8 +293,8 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
   const toOrderModel = (data: Partial<OrderPayload>) => {
     return {
       id: data.id!,
-      costumer_id: data.costumer_id,
-      employee_id: data.costumer_id,
+      costumer_id: data.costumerId,
+      employee_id: data.costumerId,
       status: '1',
     } as Order
   }
@@ -336,92 +358,98 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
       <Header>
         <RegistrationButtonBar {...registrationButtonBarProps} />
       </Header>
-      <Body>
-        <Box className='flex flex-justify-end'>
-          <Button
-            intent='primary'
-            title='Mostrar serviços'
-            rightIcon='wrench'
-            onClick={openOrderDetailsScreen}
-            disabled={isStatusVisualize}
-          >
-            Serviços
-          </Button>
-          <Button
-            intent='primary'
-            title='Mostrar produtos'
-            rightIcon='barcode'
-            disabled={isStatusVisualize}
-            onClick={openOrderPartScreen}
-          >
-            Produtos
-          </Button>
-        </Box>
-        <Box className='flex align-center flex-wrap'>
-          <Render renderIf={Boolean(payload.id)}>
-            <InputText
-              label='Número da ordem'
-              id={`${screen.id}-order-id`}
-              value={payload.id ?? ''}
-              disabled={isStatusVisualize}
-              readOnly
-            />
-          </Render>
 
-          <InputText
-            label='Referência'
-            id={`${screen.id}-reference`}
-            value={payload.reference ?? ''}
-            onChange={(event) => changePayload('reference', event.target.value)}
-            disabled={isStatusVisualize}
-          />
-          <InputDate
-            label='Data'
-            id={`${screen.id}-order-date`}
-            value={payload.date}
-            onChange={(selectedDate) => changePayload('date', selectedDate)}
-            disabled={isStatusVisualize}
-          />
-          <Select
-            onChange={(item) => changePayload('status', item.value)}
-            label='Status da ordem'
-            activeItem={payload?.status}
-            items={orderStatusOptions}
-            disabled={isStatusVisualize}
-          />
-          <Select
-            handleButtonReloadClick={loadCostumers}
-            loading={loadingCostumers}
-            intent={Intent.DANGER}
-            required
-            allowCreate
-            activeItem={payload?.costumer_id}
-            onChange={(option) =>
-              setPayload((prev) => ({
-                ...prev,
-                costumer_id: option.value as number,
-              }))
-            }
-            defaultButtonText='Escolha um profissional'
-            label='Cliente'
-            items={costumerOptions.options}
-            handleCreateButtonClick={(query) => {
-              openSubScreen(
-                {
-                  id: 'costumer-register',
-                  contentSize: '700px 350px',
-                },
-                screen.id,
-                {
-                  defaultCostumer: {
-                    name: query,
-                    personType: PersonType.PHYSICAL,
+      <Body>
+        <Render renderIf={screenStatus !== ScreenStatus.SEE_REGISTERS}>
+          <Box className='flex flex-justify-end'>
+            <Button
+              intent='primary'
+              title='Mostrar serviços'
+              rightIcon='wrench'
+              onClick={openOrderDetailsScreen}
+              disabled={isStatusVisualize}
+            >
+            Serviços
+            </Button>
+            <Button
+              intent='primary'
+              title='Mostrar produtos'
+              rightIcon='barcode'
+              disabled={isStatusVisualize}
+              onClick={openOrderPartScreen}
+            >
+            Produtos
+            </Button>
+          </Box>
+          <Box className='flex align-center flex-wrap'>
+            <Render renderIf={Boolean(payload.id)}>
+              <InputText
+                label='Número da ordem'
+                id={`${screen.id}-order-id`}
+                value={payload.id ?? ''}
+                disabled={isStatusVisualize}
+                readOnly
+              />
+            </Render>
+
+            <InputText
+              label='Referência'
+              id={`${screen.id}-reference`}
+              value={payload.reference ?? ''}
+              onChange={(event) => changePayload('reference', event.target.value)}
+              disabled={isStatusVisualize}
+            />
+            <InputDate
+              label='Data'
+              id={`${screen.id}-order-date`}
+              value={payload.date}
+              onChange={(selectedDate) => changePayload('date', selectedDate)}
+              disabled={isStatusVisualize}
+            />
+            <InputDate
+              intent={payload?.validity ? isBefore(payload.validity, new Date()) ? Intent.WARNING: Intent.NONE : Intent.NONE }
+              label='Validade da nota'
+              id={`${screen.id}-order-date`}
+              value={payload.validity}
+              onChange={(selectedDate) => changePayload('validity', selectedDate)}
+              disabled={isStatusVisualize}
+            />
+            <Select
+              onChange={(item) => changePayload('status', item.value)}
+              label='Status da ordem'
+              activeItem={payload?.status}
+              items={orderStatusOptions}
+              disabled={isStatusVisualize}
+            />
+            <Select
+              handleButtonReloadClick={loadCostumers}
+              loading={loadingCostumers}
+              required
+              allowCreate
+              activeItem={payload?.costumerId}
+              onChange={(option) =>
+                changePayload('costumerId', option.value)
+              }
+              defaultButtonText='Escolha um profissional'
+              label='Cliente'
+              items={costumerOptions.options}
+              handleCreateButtonClick={(query) => {
+                openSubScreen(
+                  {
+                    id: 'costumer-register',
+                    contentSize: '700px 350px',
                   },
-                  defaultScreenStatus: ScreenStatus.NEW,
-                }
-              )
-            }}
-            buttonProps={
+                  screen.id,
+                  {
+                    defaultCostumer: {
+                      name: query,
+                      personType: PersonType.PHYSICAL,
+                    },
+                    defaultScreenStatus: ScreenStatus.NEW,
+                  }
+                )
+              }}
+              buttonProps={
               {
                 id: `${screen.id}-select-costumer`,
                 style: {
@@ -430,77 +458,81 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
                   justifyContent: 'space-between',
                 },
               } as any
-            }
-            disabled={screenStatus === ScreenStatus.VISUALIZE}
-          />
-        </Box>
-        <Collapse
-          title={
-            <Row
-              style={{
-                flex: 1,
-                justifyContent: 'space-between',
-              }}
-            >
-              <span> Detalhes da ordem </span>
-              <span>R$ 123.45</span>
-            </Row>
-          }
-          isCollapsed={isDetailsCollapsed}
-          onChange={() => setIsDetailsCollapsed((prev) => !prev)}
-        >
-          <Box>
-            <Row>
-              <InputDate
-                label='Validade do orçamento'
-                id={`${screen.id}-order-estimated-date`}
-                value={payload.estimated_date}
-                onChange={(selectedDate) =>
-                  changePayload('estimated_date', selectedDate)
-                }
-                disabled={isStatusVisualize}
-              />
-              <InputDate
-                label='Prazo de execução'
-                id={`${screen.id}-order-estimated-date`}
-                value={payload.estimated_date}
-                onChange={(selectedDate) =>
-                  changePayload('estimated_date', selectedDate)
-                }
-                disabled={isStatusVisualize}
-              />
-              <InputText id={screen.id + 'vehicle'} label='Marca' />
-              <InputText id={screen.id + 'vehicle'} label='Model' />
-              <InputText id={screen.id + 'vehicle'} label='Placa' />
-              <InputText id={screen.id + 'vehicle'} label='Cor' />
-              <InputText id={screen.id + 'vehicle'} label='Ano' />
-              <InputText id={screen.id + 'vehicle'} label='Combustível' />
-              <InputText id={screen.id + 'vehicle'} label='Quilometragem' />
-              <InputText id={screen.id + 'vehicle'} label='Defeito' />
-            </Row>
-
-            <Row>
-              <TextArea
-                value={payload?.description || ''}
-                onChange={(e) =>
-                  setPayload((prev) => ({
-                    ...prev,
-                    description: e.currentTarget.value,
-                  }))
-                }
-                placeholder='Digite a observação'
-                disabled={screenStatus === ScreenStatus.VISUALIZE}
-                growVertically={false}
-                style={{ flex: 1 }}
-              />
-            </Row>
+              }
+              disabled={screenStatus === ScreenStatus.VISUALIZE}
+            />
           </Box>
-        </Collapse>
-        <Collapse
-          isCollapsed={isTableCollapsed}
-          title='Mostrar ordens cadastradas'
-          onChange={() => setIsTableCollapsed((prev) => !prev)}
-        >
+          <Collapse
+            title={
+              <Box>
+                <Row
+                  style={{
+                    flex: 1,
+                    justifyContent: 'space-between',
+                  }}
+                >
+                  <span> Informações básicas </span>
+
+                </Row>
+              </Box>
+            
+            }
+            isCollapsed={isDetailsCollapsed}
+            onChange={() => setIsDetailsCollapsed((prev) => !prev)}
+          >
+            <Box>
+              <Row>
+
+                <InputGroup
+                  id='' 
+                  disabled={isStatusVisualize} 
+                  label='Desconto nos produtos'
+                  leftIcon={payload.productDiscountType ? payload.productDiscountType  === DiscountType.PERCENT ? 'percentage': 'dollar' : undefined}
+                  value={payload?.productDiscount ? String(payload?.productDiscount) : ''}
+                  onChange={(e: any) => changePayload('productDiscount', +e.target.value)}
+                  selectProps={
+                    {
+                      activeItem: payload.productDiscountType,
+                      onChange: (item) => changePayload('productDiscountType', item.value),
+                      intent: Intent.PRIMARY,
+                      items: discountTypeOptions
+                    }
+                  }
+                />
+                <InputGroup
+                  id='' 
+                  disabled={isStatusVisualize} 
+                  leftIcon={payload.serviceDiscountType ? payload.serviceDiscountType  === DiscountType.PERCENT ? 'percentage': 'dollar' : undefined}
+                  label='Desconto nos serviços'
+                  value={payload?.serviceDiscount ? String(payload?.serviceDiscount) : ''}
+                  onChange={(e: any) => changePayload('serviceDiscount', +e.target.value)}
+                  selectProps={
+                    {
+                      intent: Intent.PRIMARY,
+                      activeItem: payload.serviceDiscountType,
+                      onChange: (item) => changePayload('serviceDiscountType', item.value),
+                      items: discountTypeOptions
+                    }
+                  } 
+                />
+              </Row>
+
+              <Row>
+                <TextArea
+                  value={payload?.description || ''}
+                  onChange={(e) =>{
+                    changePayload('description', e.currentTarget.value)
+                  }}
+                  placeholder='Digite a observação'
+                  disabled={screenStatus === ScreenStatus.VISUALIZE}
+                  growVertically={false}
+                  style={{ flex: 1 }}
+                />
+              </Row>
+            </Box>
+          </Collapse>
+        </Render>
+        <Render renderIf={screenStatus === ScreenStatus.SEE_REGISTERS}>
           <Box>
             <Row>
               <PaginatedTable
@@ -538,7 +570,7 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
                   },
                   {
                     id: 1,
-                    name: 'Criado em',
+                    name: 'Criado e',
                     cellRenderer: (cell) => (
                       <Cell>
                         {cell.date ? new Date(cell.date).toLocaleDateString('pt-BR') : '-'}
@@ -548,19 +580,21 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
                 ]}
                 request={OrderService.getAll as any}
                 onRowSelect={(row) => {
-                  if(!isStatusVisualize) {
-                    setScreenStatus(ScreenStatus.VISUALIZE)
-                  }
-
+                  const cameledObject = keysToCamel(
+                    {
+                      ...row,
+                
+                    })
                   setPayload({
-                    ...row,
-                    date: row.date ? new Date(row.date) : undefined
+                    ...cameledObject, 
+                    validity: row.validty ? new Date(row.validity) : undefined,
+                    date: row.date ? new Date(row.date) : undefined,
                   })
                 }}
               />
             </Row>
           </Box>
-        </Collapse>
+        </Render>
       </Body>
     </Container>
   )

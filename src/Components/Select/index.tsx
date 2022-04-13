@@ -21,10 +21,10 @@ import { Option } from '../../Contracts/Components/Suggest'
 import { useMemo } from 'react'
 import Render from '../Render'
 
-interface SelectProps
+export interface SelectProps
   extends Partial<Omit<BluePrintSelectProps<Option>, 'activeItem'>> {
   allowCreate?: boolean
-  onChange: (
+  onChange?: (
     item: Option,
     event?: React.SyntheticEvent<HTMLElement, Event> | undefined
   ) => void
@@ -127,9 +127,10 @@ export default function Select({
     return (
       <MenuItem
         intent={option.intent}
-        active={modifiers.active}
+        active={activeOption?.value === option.value}
         disabled={modifiers.disabled}
         key={option.value}
+        icon={option?.icon}
         onClick={handleClick}
         text={highlightText(text, query)}
       />
@@ -142,8 +143,7 @@ export default function Select({
       <Menu ulRef={itemsParentRef} style={{
         maxHeight: 100,
         overflowY: 'scroll'
-      }}
-
+      }} className="styled-scroll"
       >
         <Render renderIf={Boolean(query)}>
           <MenuItem
@@ -178,20 +178,25 @@ export default function Select({
           items={props.items || []}
           itemListRenderer={renderMenu}
           itemRenderer={renderOption}
+          inputProps={{
+            placeholder: 'Pesquisar...'
+          }}
           createNewItemFromQuery={(() => {}) as any}
           createNewItemRenderer={maybeCreateNewItemRenderer}
           itemsEqual={areOptionsEqual}
           noResults={<MenuItem disabled={true} text='Sem resultados' />}
-          onItemSelect={props.onChange}
+          onItemSelect={props?.onChange as any  }
+          scrollToActiveItem
           {...props}
         >
           <Button
+            icon={activeOption?.icon}
             loading={props.loading}
             rightIcon='caret-down'
             text={
               activeOption?.label || props.defaultButtonText || 'Escolha um item'
             }
-            intent={activeOption?.intent}
+            intent={props.intent ?? activeOption?.intent}
             disabled={props.disabled}
             {...props?.buttonProps}
           />

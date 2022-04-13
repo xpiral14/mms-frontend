@@ -1,4 +1,4 @@
-import { Intent } from '@blueprintjs/core'
+import { IconName, Intent } from '@blueprintjs/core'
 
 export interface SuggestProps {
   allowCreate?: boolean
@@ -28,4 +28,5 @@ export interface Option {
   label: string
   value: string | number,
   intent?: Intent
+  icon?: IconName
 }

@@ -3,7 +3,7 @@ import {
   ButtonProps as BluePrintButtonProps,
   Button as BluePrintButton,
 } from '@blueprintjs/core'
-import React, { FC } from 'react'
+import { FC } from 'react'
 
 interface ButtonProps extends BluePrintButtonProps {
   title?: string

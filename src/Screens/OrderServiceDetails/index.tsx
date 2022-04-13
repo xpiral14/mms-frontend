@@ -313,6 +313,7 @@ const OrderServiceDetails: FunctionComponent<OrderServiceDetailScreenProps> = (p
           }
         } as any
       }
+      fill
       onChange={handleServiceSelect}
       id=""
       items={serviceOptions}

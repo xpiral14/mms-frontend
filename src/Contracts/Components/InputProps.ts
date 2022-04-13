@@ -11,4 +11,5 @@ export interface InputProps extends React.DetailedHTMLProps<React.InputHTMLAttri
   itent?: Intent
   defaultValue?: string,
   style?: CSSProperties
+  inputStyle?: CSSProperties
 }

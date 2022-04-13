@@ -90,7 +90,7 @@ const OrderServiceDetails: FunctionComponent<OrderServiceDetailScreenProps> = (p
     const orderServicesByKey = {} as any
 
     orderServicesResponse.data.data.forEach(orderService => {
-      orderServicesByKey[orderService.id!] = orderService
+      orderServicesByKey[orderService.service.id!] = orderService
     })
 
     setOrderServices(orderServicesByKey)

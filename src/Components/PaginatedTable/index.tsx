@@ -1,7 +1,4 @@
-import {
-  ColumnProps,
-  PaginatedTableProps,
-} from '../../Contracts/Components/PaginatadeTable'
+import { PaginatedTableProps } from '../../Contracts/Components/PaginatadeTable'
 import Paginate, { ReactPaginateProps } from 'react-paginate'
 
 import { Body, Container, Footer, PaginateContainer } from './style'
@@ -13,6 +10,7 @@ import Select from '../Select'
 import { Option } from '../../Contracts/Components/Suggest'
 import { CSSProperties } from 'styled-components'
 import React from 'react'
+import Table from '../Table'
 const pageOptions: Option[] = [
   {
     label: '5',
@@ -72,21 +70,6 @@ const PaginatedTable: React.FC<PaginatedTableProps> = ({
     }
   }, [reloadGrid, limit, page])
 
-  const getWithoutValueDefaultText = (column: ColumnProps) => {
-    return column.withoutValueText || '-'
-  }
-
-  const getColumnText = (column: ColumnProps, row?: Record<string, any>) => {
-    const text = row?.[column.keyName!]
-    if (column.keyName && !row?.[column.keyName!]) {
-      return getWithoutValueDefaultText(column)
-    }
-    return column?.formatText?.(text, row) || text
-  }
-  const defaultCellRenderer = (column: ColumnProps, row: Record<any, any>) => (
-    <div>{getColumnText(column, row)}</div>
-  )
-
   const paginateOptions = useMemo(
     () =>
       ({
@@ -113,7 +96,7 @@ const PaginatedTable: React.FC<PaginatedTableProps> = ({
         }`,
         initialPage: page,
         onPageChange: ({ selected }) => {
-          if(reloadGrid) return
+          if (reloadGrid) return
           setPage(selected)
           setReloadGrid(true)
         },
@@ -146,29 +129,13 @@ const PaginatedTable: React.FC<PaginatedTableProps> = ({
   return (
     <Container style={{ width: '100%' }} {...rest?.containerProps}>
       <Body height={rest?.height}>
-        <table className='w-100 bp4-html-table bp4-html-table-bordered bp4-html-table-striped bp4-interactive'>
-          <thead>
-            <tr>
-              {columns?.map((column) => (
-                <th key={column.name}>{column.name}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {gridResponse?.data.map((row) => (
-              <tr
-                key={rest.rowKey?.(row) || row?.id}
-                className={rest?.isSelected?.(row) ? 'active' : ''}
-              >
-                {columns?.map((column) => (
-                  <td key={column.name} onClick={() => rest.onRowSelect?.(row)}>
-                    {(column?.cellRenderer ?? defaultCellRenderer)(column, row)}
-                  </td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <Table
+          rows={gridResponse?.data ?? []}
+          columns={columns}
+          onRowSelect={rest.onRowSelect}
+          isSelected={rest.isSelected}
+          rowKey={rest.rowKey}
+        />
       </Body>
       {Boolean(gridResponse?.meta) && (
         <Footer>

@@ -12,6 +12,7 @@ const InputText: React.FC<InputProps> = (props) => {
       disabled={props.disabled}
       intent={props.itent}
       labelFor={props.id}
+      style={props.style}
     >
       {props.mask ? (
         <InputMask
@@ -43,6 +44,7 @@ const InputText: React.FC<InputProps> = (props) => {
               : ''
           )}
           {...(props as any)}
+          style={props.inputStyle}
         />
       )}
     </FormGroup>

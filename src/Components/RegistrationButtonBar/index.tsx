@@ -183,7 +183,7 @@ const RegistrationButtonBar: React.FC<RegistrationButtonBarProps> = (
         <ButtonGroup>
           {props.handleReloadScreenOnClick && (
             <Button
-              icon='log-in'
+              icon='refresh'
               outlined
               onClick={props.handleReloadScreenOnClick}
             >

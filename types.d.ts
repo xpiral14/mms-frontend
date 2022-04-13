@@ -622,6 +622,8 @@ declare module 'jspanel4/es6module/jspanel' {
     normalize: (
       callback?: (panel: Panel, status: PanelStatus) => undefined
     ) => Panel
+
+    setTheme(theme: Theme): Panel
   }
 
   type PanelStatus = 'normalized' | 'minimized' | 'maximized' | 'smallified' | 'smallifiedmax'
@@ -969,6 +971,25 @@ declare module 'jspanel4/es6module/jspanel' {
      */
     strToHtml(string: string): DocumentFragment
   }
+
+  type Theme =
+    | 'default'
+    | 'primary'
+    | 'secondary'
+    | 'info'
+    | 'success'
+    | 'warning'
+    | 'danger'
+    | 'light'
+    | 'dark'
+    | 'none'
+    | {
+        bgPanel: string
+        bgContent: string
+        colorHeader: string
+        colorContent: string
+        border: string
+      }
 
   type Rtl = {
     rtl?: boolean

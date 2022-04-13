@@ -1,6 +1,7 @@
 import { ColumnProps as BlueprintColumnProps } from '@blueprintjs/table'
 import { AxiosResponse } from 'axios'
 import Paginated from '../Models/Paginated'
+import { TableProps } from './Table'
 // import { ReactPaginateProps } from 'react-paginate'
 
 export type Row = Record<string, any>
@@ -10,9 +11,8 @@ export interface ColumnProps extends BlueprintColumnProps {
   formatText?: (text: string, row?: Row) => React.ReactNode
   withoutValueText?: string
 }
-export interface PaginatedTableProps {
+export interface PaginatedTableProps extends Omit<TableProps, 'rows'> {
   containerProps?: any
-  columns: ColumnProps[]
   request: (
     page: number,
     limit: number,

@@ -9,4 +9,9 @@ export default {
     name: 'Produtos da ordem',
     path: 'OrderPartDetails',
   },
+  'order-resume': {
+    id: 'order-resume',
+    name: 'Detalhes da ordem',
+    path: 'OrderResume'
+  }
 }

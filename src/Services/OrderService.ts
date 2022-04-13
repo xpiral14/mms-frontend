@@ -5,8 +5,19 @@ import Response from '../Contracts/Models/Response'
 import OrderServiceModel from '../Contracts/Models/OrderService'
 import OrderPart from '../Contracts/Models/OrderPart'
 import Part from '../Contracts/Models/Part'
+import Service from '../Contracts/Models/Service'
+import User from '../Contracts/Models/User'
 
 const DEFAULT_PATH = '/orders'
+export type OrderServicePaginatedResponse = {
+  order_service: OrderServiceModel
+  service: Service
+}
+
+export type OrderPartResponse = {
+  part: Part
+  order_part: OrderPart
+}
 export default class OrderService {
   static async getAll(page: number, limit: number, query: object) {
     return api.get<Paginated<Order>>(`${DEFAULT_PATH}/paginated`, {
@@ -61,7 +72,7 @@ export default class OrderService {
   }
 
   static async getOrderServices(orderId: number) {
-    return api.get<Paginated<OrderServiceModel>>(
+    return api.get<Paginated<OrderServicePaginatedResponse>>(
       `${DEFAULT_PATH}/${orderId}/orderServices`
     )
   }
@@ -89,17 +100,16 @@ export default class OrderService {
   }
 
   static async getOrderParts(orderId: number) {
-    return api.get<
-      Response<
-        {
-          part: Part
-          order_part: OrderPart
-        }[]
-      >
-    >(`${DEFAULT_PATH}/${orderId}/orderParts`)
+    return api.get<Response<OrderPartResponse[]>>(
+      `${DEFAULT_PATH}/${orderId}/orderParts`
+    )
   }
 
   static async deleteOrderPart(orderId: number, orderServiceId: number) {
     return api.delete(`${DEFAULT_PATH}/${orderId}/orderParts/${orderServiceId}`)
+  }
+
+  static async getOrderCostumer(orderId: number) {
+    return api.get<Response<User>>(`${DEFAULT_PATH}/${orderId}/costumer`)
   }
 }

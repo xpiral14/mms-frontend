@@ -299,22 +299,18 @@ const CostumerRegister: React.FC<CostumerRegisterScreenProps> = ({
             height='350px'
             columns={[
               {
-                id: 1,
                 name: 'Nome',
                 keyName: 'name',
               },
               {
-                id: 1,
                 name: 'CPF',
                 keyName: 'identification',
               },
               {
-                id: 1,
                 name: 'Telefone',
                 keyName: 'phone',
               },
               {
-                id: 1,
                 name: 'Email',
                 keyName: 'email',
               },

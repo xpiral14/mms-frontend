@@ -84,7 +84,7 @@ export default function ScreenProvider({ children }: any) {
         })
       },
     } as any
-    const screen = (modal
+    const screen = ((modal ?? screenOptions.isSubScreen)
       ? jsPanel.modal.create(options)
       : jsPanel.create(options)) as any as Screen
 

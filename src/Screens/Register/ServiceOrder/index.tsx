@@ -44,6 +44,8 @@ import { format, isBefore } from 'date-fns'
 import InputGroup from '../../../Components/InputGroup'
 import keysToCamel from '../../../Util/keysToKamel'
 import TextArea from '../../../Components/TextArea'
+import { Column, Row as TableRow } from '../../../Contracts/Components/Table'
+import { OrderResumeProps } from '../../../Contracts/Screen/OrderResume'
 
 const orderStatusOptions: Option[] = [
   {
@@ -365,6 +367,22 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
     )
   }
 
+  const openOrderResumeScreen = () => {
+    const orderResumeProps: OrderResumeProps = {
+      onClose(screen) {
+        screen.close()
+      },
+      order: toOrderModel(payload)
+    }
+    openSubScreen<OrderServiceDetailsProps>(
+      {
+        id: 'order-resume',
+      },
+      screen.id,
+      orderResumeProps
+    )
+  }
+
   const openOrderPartScreen = () => {
     const orderPartDetailsProps: OrderPartDetailsProps = {
       onSave(orderParts, screen) {
@@ -397,6 +415,42 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
 
   const isServiceDiscountTypePercent =
     payload.serviceDiscountType === DiscountType.PERCENT
+  const columns: Column[] = [
+    {
+      name: 'Status',
+      keyName: 'status',
+      formatText: (row) => OrderStatusByValue[row!.status as number],
+    },
+    {
+      name: 'Observação',
+      keyName: 'description',
+    },
+    {
+      name: 'Criado em',
+      keyName: 'date',
+      formatText: (row) => {
+        return row?.date
+          ? new Date(row.date).toLocaleDateString('pt-BR')
+          : '-'
+      },
+    },
+  ]
+  const onRowSelect = (row: TableRow): void => {
+    const cameledObject = keysToCamel({
+      ...row,
+    })
+    setPayload({
+      ...cameledObject,
+      validity: row.validity ? new Date(row.validity) : undefined,
+      date: row.date ? new Date(row.date) : undefined,
+      productDiscount: row.product_discount_type === DiscountType.PERCENT
+        ? +(row.product_discount ?? 0) * 100
+        : row.product_discount,
+      serviceDiscount: row.service_discount_type === DiscountType.PERCENT
+        ? +(row.service_discount ?? 0) * 100
+        : row.service_discount,
+    })
+  }
   return (
     <Container>
       <Header>
@@ -406,6 +460,17 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
       <Body>
         <Render renderIf={screenStatus !== ScreenStatus.SEE_REGISTERS}>
           <Box className='flex flex-justify-end'>
+            <Render renderIf={Boolean(payload.id)}>
+              <Button
+                intent='primary'
+                title='Mostrar resumo da ordem'
+                rightIcon='th-list'
+                onClick={openOrderResumeScreen}
+                disabled={isStatusVisualize}
+              >
+              Mostrar resumo
+              </Button>
+            </Render>
             <Button
               intent='primary'
               title='Mostrar serviços'
@@ -415,6 +480,7 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
             >
               Serviços
             </Button>
+
             <Button
               intent='primary'
               title='Mostrar produtos'
@@ -670,51 +736,10 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
                   },
                 }}
                 rowKey={(row) => row.id + row.created_at}
-                columns={[
-                  {
-                    id: 1,
-                    name: 'Status',
-                    keyName: 'status',
-
-                    formatText: (text) => OrderStatusByValue[+text],
-                  },
-                  {
-                    id: 1,
-                    name: 'Observação',
-                    keyName: 'description',
-                    withoutValueText: 'Não possui observação',
-                  },
-                  {
-                    id: 1,
-                    name: 'Criado em',
-                    keyName: 'date',
-                    formatText: (date) => {
-                      return date
-                        ? new Date(date).toLocaleDateString('pt-BR')
-                        : '-'
-                    },
-                  },
-                ]}
+                columns={columns}
                 isSelected={(row) => row.id === payload?.id}
                 request={OrderService.getAll as any}
-                onRowSelect={(row) => {
-                  const cameledObject = keysToCamel({
-                    ...row,
-                  })
-                  setPayload({
-                    ...cameledObject,
-                    validity: row.validity ? new Date(row.validity) : undefined,
-                    date: row.date ? new Date(row.date) : undefined,
-                    productDiscount:
-                      row.product_discount_type === DiscountType.PERCENT
-                        ? row.product_discount * 100
-                        : row.product_discount,
-                    serviceDiscount:
-                      row.service_discount_type === DiscountType.PERCENT
-                        ? row.service_discount * 100
-                        : row.service_discount,
-                  })
-                }}
+                onRowSelect={onRowSelect}
                 height='calc(100% - 50px)'
               />
             </Row>

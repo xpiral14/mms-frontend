@@ -1,6 +1,6 @@
 type User = {
   id: number
-  companyId: number
+  company_id: number
   name: string
   email: string
 }

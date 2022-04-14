@@ -49,7 +49,7 @@ export default class OrderService {
     orderId: number,
     orderService: Partial<OrderServiceModel>
   ) {
-    return api.post(`${DEFAULT_PATH}/${orderId}/orderServices`, orderService)
+    return api.post<Response<OrderServiceModel>>(`${DEFAULT_PATH}/${orderId}/orderServices`, orderService)
   }
 
   static async addPart(orderId: number, orderService: Partial<OrderPart>) {
@@ -87,8 +87,8 @@ export default class OrderService {
     orderId: number,
     orderService: Partial<OrderServiceModel>
   ) {
-    return api.put(
-      `${DEFAULT_PATH}/${orderId}/orderServices/${orderService.id}`
+    return api.put<Response<OrderService>>(
+      `${DEFAULT_PATH}/${orderId}/orderServices/${orderService.id}`, orderService
     )
   }
 

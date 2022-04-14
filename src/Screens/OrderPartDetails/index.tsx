@@ -28,11 +28,8 @@ const OrderPartDetails: FunctionComponent<OrderPartDetailsScreenProps> = (props)
   const [orderParts, setOrderParts] = useState<SelectedOrderPart>({})
   const [loadingParts, loadParts] = useAsync(async () => {
     try {
-      const partsResponse = await PartPart.getAll(0, 20)
-      setParts(partsResponse.data.data.map(s => ({
-        ...s,
-        price: 20
-      })))
+      const partsResponse = await PartPart.getAll(0, 1000)
+      setParts(partsResponse.data.data)
     } catch (err) {
       showErrorToast({
         message: 'Não foi possível obter a lista de produtos'

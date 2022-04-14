@@ -183,8 +183,8 @@ export default function ScreenProvider({ children }: any) {
     const screen = allScreens[panelOptions.id]
     openScreen(
       {
-        ...screen,
         headerTitle: screen.name,
+        ...screen,
         parentScreenId: parentPanelId,
         ...panelOptions,
       },

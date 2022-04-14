@@ -372,11 +372,12 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
       onClose(screen) {
         screen.close()
       },
-      order: toOrderModel(payload)
+      order: toOrderModel(payload),
     }
     openSubScreen<OrderServiceDetailsProps>(
       {
         id: 'order-resume',
+        contentSize: '770 430',
       },
       screen.id,
       orderResumeProps
@@ -429,9 +430,7 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
       name: 'Criado em',
       keyName: 'date',
       formatText: (row) => {
-        return row?.date
-          ? new Date(row.date).toLocaleDateString('pt-BR')
-          : '-'
+        return row?.date ? new Date(row.date).toLocaleDateString('pt-BR') : '-'
       },
     },
   ]
@@ -443,12 +442,14 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
       ...cameledObject,
       validity: row.validity ? new Date(row.validity) : undefined,
       date: row.date ? new Date(row.date) : undefined,
-      productDiscount: row.product_discount_type === DiscountType.PERCENT
-        ? +(row.product_discount ?? 0) * 100
-        : row.product_discount,
-      serviceDiscount: row.service_discount_type === DiscountType.PERCENT
-        ? +(row.service_discount ?? 0) * 100
-        : row.service_discount,
+      productDiscount:
+        row.product_discount_type === DiscountType.PERCENT
+          ? +(row.product_discount ?? 0) * 100
+          : row.product_discount,
+      serviceDiscount:
+        row.service_discount_type === DiscountType.PERCENT
+          ? +(row.service_discount ?? 0) * 100
+          : row.service_discount,
     })
   }
   return (
@@ -466,9 +467,8 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
                 title='Mostrar resumo da ordem'
                 rightIcon='th-list'
                 onClick={openOrderResumeScreen}
-                disabled={isStatusVisualize}
               >
-              Mostrar resumo
+                Mostrar resumo
               </Button>
             </Render>
             <Button
@@ -476,7 +476,7 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
               title='Mostrar serviços'
               rightIcon='wrench'
               onClick={openOrderDetailsScreen}
-              disabled={isStatusVisualize}
+              disabled={Boolean(!payload.id && isStatusVisualize)}
             >
               Serviços
             </Button>
@@ -485,7 +485,7 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
               intent='primary'
               title='Mostrar produtos'
               rightIcon='barcode'
-              disabled={isStatusVisualize}
+              disabled={!payload.id && isStatusVisualize}
               onClick={openOrderPartScreen}
             >
               Produtos

@@ -78,7 +78,7 @@ const OrderResume: FunctionComponent<OrderResumeScreenProps> = (props) => {
       prefix = '% '
     }
 
-    return prefix + value.toFixed(2)
+    return prefix + (value?.toFixed(2) ?? 0)
   }
 
   const calcValueWithDiscount = (value: any, discount: any, type: any) => {
@@ -148,8 +148,8 @@ const OrderResume: FunctionComponent<OrderResumeScreenProps> = (props) => {
             }}
           >
             <strong>
-              R$ $
-              {calcValueWithDiscount(
+              {'R$ ' +
+              calcValueWithDiscount(
                 totalValue,
                 props.order?.service_discount,
                 props.order?.service_discount_type
@@ -211,12 +211,12 @@ const OrderResume: FunctionComponent<OrderResumeScreenProps> = (props) => {
               }}
             >
               <strong>
-                R$ $
-                {calcValueWithDiscount(
-                  totalValue,
-                  props.order?.product_discount,
-                  props.order?.product_discount_type
-                )}
+                {'R$ ' +
+                  calcValueWithDiscount(
+                    totalValue,
+                    props.order?.product_discount,
+                    props.order?.product_discount_type
+                  )}
               </strong>
             </td>
           </tr>
@@ -232,6 +232,10 @@ const OrderResume: FunctionComponent<OrderResumeScreenProps> = (props) => {
     loadCostumer()
   }
 
+  const generateOrderResumeReport = () => {
+    OrderService.downloadOrderResumeReport(props.order)
+  }
+
   return (
     <Container
       style={{
@@ -240,7 +244,9 @@ const OrderResume: FunctionComponent<OrderResumeScreenProps> = (props) => {
     >
       <Row>
         <Bar>
-          <Button icon='download'>Gerar documento</Button>
+          <Button onClick={generateOrderResumeReport} icon='download'>
+            Gerar documento
+          </Button>
           <Button
             icon='refresh'
             onClick={reloadAll}
@@ -269,13 +275,19 @@ const OrderResume: FunctionComponent<OrderResumeScreenProps> = (props) => {
               <Row className='flex align-center w-100'>
                 <InputText
                   id=''
+                  style={{
+                    flex: 0.4,
+                  }}
+                  inputStyle={{
+                    width: '100%',
+                  }}
                   label='Nome do cliente'
                   readOnly
                   value={costumer?.name}
                 />
                 <InputText
                   style={{
-                    flex: 1,
+                    flex: 0.4,
                   }}
                   inputStyle={{
                     width: '100%',
@@ -284,6 +296,18 @@ const OrderResume: FunctionComponent<OrderResumeScreenProps> = (props) => {
                   label='Email'
                   readOnly
                   value={costumer?.email}
+                />
+                <InputText
+                  style={{
+                    flex: 0.2,
+                  }}
+                  inputStyle={{
+                    width: '100%',
+                  }}
+                  id=''
+                  label='Telefone'
+                  readOnly
+                  value={'(61) 98159-8138'}
                 />
               </Row>
             </Render>

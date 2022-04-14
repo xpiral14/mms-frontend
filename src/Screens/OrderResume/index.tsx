@@ -150,10 +150,10 @@ const OrderResume: FunctionComponent<OrderResumeScreenProps> = (props) => {
             <strong>
               {'R$ ' +
               calcValueWithDiscount(
-                  totalValue,
-                  props.order?.service_discount,
-                  props.order?.service_discount_type
-                )}
+                totalValue,
+                props.order?.service_discount,
+                props.order?.service_discount_type
+              )}
             </strong>
           </td>
         </tr>

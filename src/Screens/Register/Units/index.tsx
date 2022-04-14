@@ -272,7 +272,6 @@ const UnitsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
     []
   )
 
-
   return (
     <Container>
       <Header>
@@ -292,8 +291,9 @@ const UnitsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
                     value={payload?.name || ''}
                     disabled={isStatusVizualize()}
                     style={{ width: '100%' }}
+                    inputStyle={{ width: '100%' }}
                     onChange={createOnChange('name')}
-                    maxLength={6}
+                    maxLength={15}
                     required
                   />
                 </div>
@@ -305,6 +305,7 @@ const UnitsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
                     disabled={isStatusVizualize()}
                     itent='primary'
                     style={{ width: '100%' }}
+                    inputStyle={{ width: '100%' }}
                     value={payload?.description || ''}
                     onChange={createOnChange('description')}
                     maxLength={120}

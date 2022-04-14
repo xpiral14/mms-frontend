@@ -12,19 +12,8 @@ const menus = {
         icon: 'wrench',
         screen: {
           ...screens['part-register'],
-          headerTitle: 'Peças',
+          headerTitle: 'Produtos',
           contentSize: '750px 500px',
-        },
-        items: {
-          Produtos: {
-            name: 'Peças',
-            icon: 'wrench',
-            screen: {
-              ...screens['part-register'],
-              headerTitle: 'Peças',
-              contentSize: '750px 500px',
-            },
-          },
         },
       },
       Unidades: {
@@ -54,7 +43,7 @@ const menus = {
     icon: 'dollar',
     items: {
       Clientes: {
-        name: 'clientes',
+        name: 'Clientes',
         icon: 'person',
         screen: {
           ...screens['costumer-register'],

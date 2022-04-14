@@ -48,6 +48,7 @@ const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
       })
     }
   }, [])
+
   const createValidation = (keyName: any) => () =>
     Boolean((payload as any)[keyName])
 
@@ -99,7 +100,7 @@ const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
 
     try {
       const createPayload = {
-        ...payload
+        ...payload,
       }
 
       const response = await PartsService.create(createPayload as any)
@@ -139,7 +140,7 @@ const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
       return
     }
     const requestPayload = {
-      ...payload
+      ...payload,
     }
     try {
       const response = await PartsService.update(
@@ -277,10 +278,12 @@ const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
         [attributeName]: evt.target.value || undefined,
       }))
     }
+
   const onRowSelect = useCallback(
     (row: { [key: string]: any }) => setPayload(row),
     []
   )
+
   return (
     <Container>
       <Header>
@@ -313,7 +316,7 @@ const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
                   }}
                   activeItem={payload.unit_id}
                   id='partId'
-                  label='Unidade'
+                  label='Unidade:'
                   disabled={screenStatus === ScreenStatus.VISUALIZE}
                   loading={loadingUnits}
                   handleButtonReloadClick={loadUnits}
@@ -330,7 +333,9 @@ const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
                   style={{ width: '100%' }}
                   value={payload?.reference || ''}
                   onChange={createOnChange('reference')}
+                  placeholder='XXXXXXXX'
                   required
+                  maxLength={90}
                 />
               </div>
 
@@ -340,32 +345,40 @@ const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
                   label='Nome:'
                   disabled={isStatusVizualize()}
                   style={{ width: '100%' }}
+                  inputStyle={{ minWidth: '260px' }}
                   value={payload.name || ''}
-                  placeholder='Vela de ignição'
+                  placeholder='Chave de seta'
+                  maxLength={90}
                   onChange={createOnChange('name')}
                 />
               </div>
             </div>
+
             <div className='flexRow'>
-              <div style={{ width: '80%' }}>
+              <div style={{ width: '85%' }}>
                 <InputText
                   id='partDescription'
                   label='Descrição:'
                   disabled={isStatusVizualize()}
                   style={{ width: '100%' }}
+                  inputStyle={{ width: '100%', minWidth: '300ptx' }}
                   value={payload?.description || ''}
+                  maxLength={255}
                   onChange={createOnChange('description')}
                 />
               </div>
 
-              <div style={{ width: '20%' }}>
+              <div style={{ width: '15%' }}>
                 <InputText
                   id='partPrice'
                   label='Preço:'
                   disabled={isStatusVizualize()}
                   placeholder='R$'
                   style={{ width: '100%' }}
+                  inputStyle={{ width: '100%', minWidth: '300ptx' }}
                   value={payload?.price || ''}
+                  maxLength={50}
+                  type='number'
                   onChange={createOnChange('price')}
                 />
               </div>

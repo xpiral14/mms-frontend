@@ -14,7 +14,7 @@ export enum orderStatus {
 }
 
 export const OrderStatusByValue =  [
-  'Pendente', 'Executando', 'Executada', 'Cancelada', 'Deletada'
+  '', 'Pendente', 'Executando', 'Executada', 'Cancelada', 'Deletada'
 ]
 
 export enum ScreenStatus {
@@ -32,6 +32,16 @@ export enum PersonType {
 export enum DiscountType {
   PERCENT = 'percent',
   VALUE = 'value'
+}
+
+export const DiscountTypeTranslated = {
+  percent: 'Porcentagem',
+  value: 'Valor1',
+}
+
+export const DiscountTypeSymbol: Record<string, string> = {
+  percent: '%',
+  value: 'R$',
 }
 
 export const getEnumValues = (enumType: any): string[] => {

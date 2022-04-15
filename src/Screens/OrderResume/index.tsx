@@ -1,4 +1,4 @@
-import { Spinner } from '@blueprintjs/core'
+import { Intent, Spinner } from '@blueprintjs/core'
 import React, {
   FunctionComponent,
   useCallback,
@@ -14,27 +14,60 @@ import Container from '../../Components/Layout/Container'
 import Row from '../../Components/Layout/Row'
 import Render from '../../Components/Render'
 import Table from '../../Components/Table'
-import { DiscountType } from '../../Constants/Enums'
+import {
+  DiscountType,
+  DiscountTypeSymbol,
+  OrderStatusByValue,
+} from '../../Constants/Enums'
 import { Column, Row as TableRow } from '../../Contracts/Components/Table'
 import User from '../../Contracts/Models/User'
 import OrderResumeScreenProps from '../../Contracts/Screen/OrderResume'
+import { useAlert } from '../../Hooks/useAlert'
 import useAsync from '../../Hooks/useAsync'
+import { useToast } from '../../Hooks/useToast'
 import OrderService, {
   OrderPartResponse,
   OrderServicePaginatedResponse,
 } from '../../Services/OrderService'
 
 const OrderResume: FunctionComponent<OrderResumeScreenProps> = (props) => {
-  useEffect(() => {
-    props.screen.setTheme('danger')
-  }, [])
+  const { openAlert } = useAlert()
 
+  useEffect(() => {
+    if (!props.order.id) {
+      openAlert({
+        intent: Intent.WARNING,
+        text: 'Você precisa selecionar uma ordem de serviço para acessar essa tela',
+      })
+      props.screen.close()
+    }
+  },[])
+  const [order, setOrder] = useState(() => ({
+    ...props.order,
+    product_discount: (props?.order.product_discount ?? 0) * 100,
+    service_discount: (props?.order.service_discount ?? 0) * 100,
+  }))
+  const [loadingOrder, loadOrder] = useAsync(async () => {
+    try {
+      const response = await OrderService.getOne(order.id!)
+      setOrder({
+        ...response.data.data,
+        product_discount: (response.data.data?.product_discount ?? 0) * 100,
+        service_discount: (response.data.data?.service_discount ?? 0) * 100,
+      })
+    } catch (error) {
+      showErrorToast({
+        message: 'Não foi possível recarregar a ordem de serviço',
+      })
+    }
+  }, [props.order])
+  const { showErrorToast } = useToast()
   const [costumer, setCostumer] = useState<User | null>(null)
   const [isCostumerCollapsed, setIsCostumerCollapsed] = useState(false)
   const [loadingCostumers, loadCostumer] = useAsync(async () => {
-    if (!props.order?.id) return
+    if (!order?.id) return
 
-    const response = await OrderService.getOrderCostumer(props.order.id)
+    const response = await OrderService.getOrderCostumer(order.id)
 
     setCostumer(response.data.data)
   }, [])
@@ -47,15 +80,13 @@ const OrderResume: FunctionComponent<OrderResumeScreenProps> = (props) => {
   const [orderParts, setOrderParts] = useState<OrderPartResponse[]>([])
   const [loadingOrderServices, loadOrderServices] = useAsync(async () => {
     if (!props?.order?.id) return
-    const orderServicesResponse = await OrderService.getOrderServices(
-      props.order.id
-    )
+    const orderServicesResponse = await OrderService.getOrderServices(order.id!)
     setOrderServices(orderServicesResponse.data.data)
   }, [])
 
   const [loadingOrderParts, loadOrderParts] = useAsync(async () => {
     if (!props?.order?.id) return
-    const orderPartsResponse = await OrderService.getOrderParts(props.order.id)
+    const orderPartsResponse = await OrderService.getOrderParts(order.id!)
 
     setOrderParts(orderPartsResponse.data.data)
   }, [])
@@ -72,11 +103,8 @@ const OrderResume: FunctionComponent<OrderResumeScreenProps> = (props) => {
       } as Record<string, any>)
   )
 
-  const formatValue = (value: any, type: any) => {
-    let prefix = 'R$ '
-    if (type === DiscountType.PERCENT) {
-      prefix = '% '
-    }
+  const formatValue = (value: any, type?: DiscountType) => {
+    const prefix = DiscountTypeSymbol[type!]
 
     return prefix + (value?.toFixed(2) ?? 0)
   }
@@ -108,7 +136,7 @@ const OrderResume: FunctionComponent<OrderResumeScreenProps> = (props) => {
 
     return (
       <>
-        <Render renderIf={Boolean(props.order?.service_discount_type)}>
+        <Render renderIf={Boolean(order?.service_discount_type)}>
           <tr>
             <td
               colSpan={3}
@@ -116,8 +144,7 @@ const OrderResume: FunctionComponent<OrderResumeScreenProps> = (props) => {
                 boxShadow: 'inset 0 1px 1px rgb(17 20 24 / 15%)',
               }}
             >
-              <strong>Tipo de desconto: </strong>{' '}
-              {props.order?.service_discount_type}
+              <strong>Tipo de desconto: </strong> {order?.service_discount_type}
             </td>
             <td
               style={{
@@ -126,8 +153,8 @@ const OrderResume: FunctionComponent<OrderResumeScreenProps> = (props) => {
             >
               <strong>
                 {formatValue(
-                  props.order?.service_discount,
-                  props.order?.service_discount_type
+                  order?.service_discount,
+                  order?.service_discount_type
                 )}
               </strong>
             </td>
@@ -149,11 +176,11 @@ const OrderResume: FunctionComponent<OrderResumeScreenProps> = (props) => {
           >
             <strong>
               {'R$ ' +
-              calcValueWithDiscount(
-                totalValue,
-                props.order?.service_discount,
-                props.order?.service_discount_type
-              )}
+                calcValueWithDiscount(
+                  totalValue,
+                  order?.service_discount,
+                  order?.service_discount_type
+                )}
             </strong>
           </td>
         </tr>
@@ -171,7 +198,7 @@ const OrderResume: FunctionComponent<OrderResumeScreenProps> = (props) => {
 
       return (
         <>
-          <Render renderIf={Boolean(props.order?.product_discount_type)}>
+          <Render renderIf={Boolean(order?.product_discount_type)}>
             <tr>
               <td
                 colSpan={3}
@@ -180,7 +207,7 @@ const OrderResume: FunctionComponent<OrderResumeScreenProps> = (props) => {
                 }}
               >
                 <strong>Tipo de desconto: </strong>{' '}
-                {props.order?.product_discount_type}
+                {order?.product_discount_type}
               </td>
               <td
                 style={{
@@ -189,8 +216,8 @@ const OrderResume: FunctionComponent<OrderResumeScreenProps> = (props) => {
               >
                 <strong>
                   {formatValue(
-                    props.order?.product_discount,
-                    props.order?.product_discount_type
+                    order?.product_discount,
+                    order?.product_discount_type
                   )}
                 </strong>
               </td>
@@ -214,8 +241,8 @@ const OrderResume: FunctionComponent<OrderResumeScreenProps> = (props) => {
                 {'R$ ' +
                   calcValueWithDiscount(
                     totalValue,
-                    props.order?.product_discount,
-                    props.order?.product_discount_type
+                    order?.product_discount,
+                    order?.product_discount_type
                   )}
               </strong>
             </td>
@@ -230,10 +257,11 @@ const OrderResume: FunctionComponent<OrderResumeScreenProps> = (props) => {
     loadOrderServices()
     loadOrderParts()
     loadCostumer()
+    loadOrder()
   }
 
   const generateOrderResumeReport = () => {
-    OrderService.downloadOrderResumeReport(props.order)
+    OrderService.downloadOrderResumeReport(order)
   }
 
   return (
@@ -311,6 +339,57 @@ const OrderResume: FunctionComponent<OrderResumeScreenProps> = (props) => {
                 />
               </Row>
             </Render>
+          </Collapse>
+        </Box>
+      </Row>
+      <Row className='w-100 mb-3'>
+        <Box className='w-100'>
+          <Collapse
+            isCollapsed={loadingOrder}
+            title={
+              <Row>
+                Ordem
+                <Render renderIf={loadingOrder}>
+                  <Spinner size={10} />
+                </Render>
+              </Row>
+            }
+          >
+            <Row>
+              <InputText label='Código' readOnly value={order.id} id='' />
+              <InputText
+                label='Referência'
+                readOnly
+                value={order?.reference}
+                id=''
+              />
+              <InputText
+                label='Desconto em produtos'
+                readOnly
+                value={
+                  DiscountTypeSymbol[order.service_discount_type!] +
+                  ' ' +
+                  order.product_discount?.toFixed(2)
+                }
+                id=''
+              />
+              <InputText
+                label='Desconto em serviços'
+                readOnly
+                value={
+                  DiscountTypeSymbol[order.product_discount_type!] +
+                  ' ' +
+                  order.service_discount?.toFixed(2)
+                }
+                id=''
+              />
+              <InputText
+                label='Status'
+                readOnly
+                value={OrderStatusByValue[+order.status!]}
+                id=''
+              />
+            </Row>
           </Collapse>
         </Box>
       </Row>

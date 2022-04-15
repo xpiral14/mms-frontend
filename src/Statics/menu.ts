@@ -67,7 +67,7 @@ const menus = {
         icon: 'clipboard',
         screen: {
           ...screens['order-register'],
-          contentSize: '990 500',
+          contentSize: '1100 500',
           headerTitle: 'Registrar ordem de serviço',
         },
       },

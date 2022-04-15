@@ -1,5 +1,5 @@
 import {createContext, lazy, Suspense, useContext, useEffect, useState,} from 'react'
-import {jsPanel, Panel} from 'jspanel4/es6module/jspanel'
+import {jsPanel, Panel, PanelOptions} from 'jspanel4/es6module/jspanel'
 import CreatePortal from '../Components/createPortal'
 import jsPanelDefaultOptions from '../Config/jsPanelDefaultOptions'
 import {useAlert} from './useAlert'
@@ -25,7 +25,7 @@ export const useScreen = () => {
 jsPanel.ziBase = 4
 
 export default function ScreenProvider({ children }: any) {
-  const [screens, setPanels] = useState<{
+  const [screens, setScreens] = useState<{
     [x: string]: ScreenObject
   }>({})
 
@@ -67,7 +67,7 @@ export default function ScreenProvider({ children }: any) {
     if (screens[screenOptions.id]) {
       return screens[screenOptions.id].screen.front()
     }
-
+  
     const options = {
       ...jsPanelDefaultOptions,
       ...screenOptions,
@@ -75,7 +75,7 @@ export default function ScreenProvider({ children }: any) {
       id: screenOptions.id.replace(/ /g, '-'),
       headerTitle: screenOptions.headerTitle,
       onclosed: () => {
-        setPanels((prev) => {
+        setScreens((prev) => {
           const appPanels = {...prev}
           if (appPanels[screenOptions.id]) {
             delete appPanels[screenOptions.id]
@@ -83,7 +83,8 @@ export default function ScreenProvider({ children }: any) {
           return appPanels
         })
       },
-    } as any
+    } as PanelOptions
+
     const screen = ((modal ?? screenOptions.isSubScreen)
       ? jsPanel.modal.create(options)
       : jsPanel.create(options)) as any as Screen
@@ -101,7 +102,8 @@ export default function ScreenProvider({ children }: any) {
           })
       })
     })
-    setPanels((prev) => ({
+
+    setScreens((prev) => ({
       ...prev,
       [screenOptions.id]: {
         screen: screen,
@@ -196,7 +198,7 @@ export default function ScreenProvider({ children }: any) {
     <screenContext.Provider
       value={{
         screens: screens,
-        setScreens: setPanels,
+        setScreens: setScreens,
         openScreen: openScreen,
         openSubScreen: openSubPanel,
       }}

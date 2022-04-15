@@ -7,6 +7,7 @@ import OrderPart from '../Contracts/Models/OrderPart'
 import Part from '../Contracts/Models/Part'
 import Service from '../Contracts/Models/Service'
 import User from '../Contracts/Models/User'
+import saveFile from '../Util/saveFile'
 
 const DEFAULT_PATH = '/orders'
 export type OrderServicePaginatedResponse = {
@@ -49,7 +50,10 @@ export default class OrderService {
     orderId: number,
     orderService: Partial<OrderServiceModel>
   ) {
-    return api.post<Response<OrderServiceModel>>(`${DEFAULT_PATH}/${orderId}/orderServices`, orderService)
+    return api.post<Response<OrderServiceModel>>(
+      `${DEFAULT_PATH}/${orderId}/orderServices`,
+      orderService
+    )
   }
 
   static async addPart(orderId: number, orderService: Partial<OrderPart>) {
@@ -88,7 +92,8 @@ export default class OrderService {
     orderService: Partial<OrderServiceModel>
   ) {
     return api.put<Response<OrderService>>(
-      `${DEFAULT_PATH}/${orderId}/orderServices/${orderService.id}`, orderService
+      `${DEFAULT_PATH}/${orderId}/orderServices/${orderService.id}`,
+      orderService
     )
   }
 
@@ -111,5 +116,19 @@ export default class OrderService {
 
   static async getOrderCostumer(orderId: number) {
     return api.get<Response<User>>(`${DEFAULT_PATH}/${orderId}/costumer`)
+  }
+
+  static async downloadOrderResumeReport(order: Partial<Order>) {
+    const response = await api.get(
+      `${DEFAULT_PATH}/${order.id}/reports/resume`,
+      {
+        responseType: 'blob',
+      }
+    )
+
+    saveFile(
+      new Blob([response.data], { type: 'application/pdf' }),
+      `resumo_ordem_${order.reference ?? order.id}.pdf`
+    )
   }
 }

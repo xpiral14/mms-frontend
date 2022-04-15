@@ -232,6 +232,10 @@ const OrderResume: FunctionComponent<OrderResumeScreenProps> = (props) => {
     loadCostumer()
   }
 
+  const generateOrderResumeReport = () => {
+    OrderService.downloadOrderResumeReport(props.order)
+  }
+
   return (
     <Container
       style={{
@@ -240,7 +244,9 @@ const OrderResume: FunctionComponent<OrderResumeScreenProps> = (props) => {
     >
       <Row>
         <Bar>
-          <Button icon='download'>Gerar documento</Button>
+          <Button onClick={generateOrderResumeReport} icon='download'>
+            Gerar documento
+          </Button>
           <Button
             icon='refresh'
             onClick={reloadAll}

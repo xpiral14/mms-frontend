@@ -297,6 +297,7 @@ const CostumerRegister: React.FC<CostumerRegisterScreenProps> = ({
         <TableContainer>
           <PaginatedTable
             height='350px'
+            isSelected={(row) => row.id === payload.id}
             columns={[
               {
                 name: 'Nome',
@@ -304,7 +305,7 @@ const CostumerRegister: React.FC<CostumerRegisterScreenProps> = ({
               },
               {
                 name: 'CPF',
-                keyName: 'identification',
+                keyName: 'identification'
               },
               {
                 name: 'Telefone',

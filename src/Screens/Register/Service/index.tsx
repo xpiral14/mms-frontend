@@ -1,10 +1,9 @@
 import React, { useCallback, useMemo, useState } from 'react'
 import RegistrationButtonBar from '../../../Components/RegistrationButtonBar'
 import InputText from '../../../Components/InputText'
-import { Container, Header, Body } from './style'
+import { Header, Body } from './style'
 import PaginatedTable from '../../../Components/PaginatedTable'
-import 
-ServicesService from '../../../Services/ServicesService'
+import ServicesService from '../../../Services/ServicesService'
 import ScreenProps from '../../../Contracts/Components/ScreenProps'
 import {
   RegistrationButtonBarProps,
@@ -23,6 +22,9 @@ import Unit from '../../../Contracts/Models/Unit'
 import useAsync from '../../../Hooks/useAsync'
 import UnitService from '../../../Services/UnitService'
 import Select from '../../../Components/Select'
+import Render from '../../../Components/Render'
+import Container from '../../../Components/Layout/Container'
+import NumericInput from '../../../Components/NumericInput'
 
 const ServiceScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
   const { payload, setPayload, screenStatus, setScreenStatus } =
@@ -38,11 +40,6 @@ const ServiceScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
       inputId: 'serviceReference',
     },
     {
-      check: createValidation('unit_id'),
-      errorMessage: 'A unidade é obrigatória',
-      inputId: 'serviceUnit',
-    },
-    {
       check: createValidation('name'),
       errorMessage: 'O nome é obrigatório',
       inputId: 'serviceName',
@@ -54,8 +51,6 @@ const ServiceScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
     },
   ]
 
-  console.log(payload)
-
   const { validate } = useValidation(validations)
   const { setReloadGrid } = useGrid()
   const { showSuccessToast, showErrorToast } = useToast()
@@ -64,11 +59,13 @@ const ServiceScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
   const [units, setUnits] = useState<Unit[]>([])
 
   const unitsOptions = useMemo(
-    () =>
-      units.map((unit) => ({
+    () => [
+      { label: 'Escolha uma unidade', value: undefined },
+      ...units.map((unit) => ({
         label: unit.name,
         value: unit.id,
       })),
+    ],
     [units]
   )
 
@@ -85,20 +82,6 @@ const ServiceScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
 
   const isStatusVizualize = () =>
     Boolean(screenStatus === ScreenStatus.VISUALIZE)
-
-  const getErrorMessages = (errors?: any[], defaultMessage?: string) => {
-    const errorMessages = errors?.map((error: any) => ({
-      message: error.message,
-    })) || [{ message: defaultMessage }]
-
-    return (
-      <ul>
-        {errorMessages?.map(({ message }) => (
-          <li key={message}>{message}</li>
-        ))}
-      </ul>
-    )
-  }
 
   const handleButtonCreateServiceOnClick = async (stopLoad: StopLoadFunc) => {
     if (!validate()) {
@@ -132,17 +115,12 @@ const ServiceScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
           intent: Intent.DANGER,
         })
       }
+
       setScreenStatus(ScreenStatus.VISUALIZE)
       setPayload({})
     } catch (error: any) {
-      const errorMessages = getErrorMessages(
-        error.response?.data?.errors,
-        'Não foi possível cadastrar o serviço'
-      )
-
-      openAlert({
-        text: errorMessages,
-        intent: Intent.DANGER,
+      showErrorToast({
+        message: error.response.data.data.messages,
       })
     } finally {
       stopLoad()
@@ -173,20 +151,13 @@ const ServiceScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
       }
 
       if (!response) {
-        openAlert({
-          text: 'Não foi possível atualizar o serviço',
-          intent: Intent.DANGER,
+        showErrorToast({
+          message: 'Não foi possível atualizar o serviço',
         })
       }
     } catch (error: any) {
-      const ErrorMessages = getErrorMessages(
-        error.response?.data?.errors,
-        'Não foi possível atualizar o serviço'
-      )
-
-      openAlert({
-        text: ErrorMessages,
-        intent: Intent.DANGER,
+      showErrorToast({
+        message: 'Não foi possível atualizar o serviço',
       })
     } finally {
       stopLoad()
@@ -199,7 +170,6 @@ const ServiceScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
 
       showSuccessToast({
         message: 'Item deletado com sucesso',
-        intent: Intent.SUCCESS,
       })
 
       setPayload({})
@@ -209,19 +179,15 @@ const ServiceScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
       if (!response) {
         showErrorToast({
           message: 'Não foi possível deletar o item selecionado',
-          intent: Intent.DANGER,
         })
       }
-      setReloadGrid(true)
-    } catch (error: any) {
-      const ErrorMessages = getErrorMessages(
-        error.response?.data?.errors,
-        'Não foi possível deletar o serviço'
-      )
 
-      openAlert({
-        text: ErrorMessages,
-        intent: Intent.DANGER,
+      setReloadGrid(true)
+
+      decreaseWindowSize?.()
+    } catch (error: any) {
+      showErrorToast({
+        message: 'Não foi possível deletar o serviço',
       })
     }
   }
@@ -252,21 +218,37 @@ const ServiceScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
     []
   )
 
-  const containerProps = useMemo(
-    () => ({
-      style: {
-        height: '100%',
-      },
-    }),
-    []
-  )
+  const focusReferenceInput = () => {
+    const referenceInput = document.getElementById('serviceReference')
+    referenceInput?.focus()
+  }
 
   const handleButtonNewOnClick = () => {
     setPayload({})
     setScreenStatus(ScreenStatus.NEW)
 
-    const referenceInput = document.getElementById('serviceReference')
-    referenceInput?.focus()
+    focusReferenceInput()
+    decreaseWindowSize?.()
+  }
+
+  const increaseWindowSize = screen.increaseScreenSize
+
+  const decreaseWindowSize = screen.decreaseScreenSize
+
+  const handleVisualizeButtonOnClick = () => {
+    setScreenStatus(ScreenStatus.SEE_REGISTERS)
+    increaseWindowSize?.()
+    increaseWindowSize?.()
+  }
+
+  const handleCancelButtonOnClick = () => {
+    if (screenStatus === ScreenStatus.EDIT) {
+      increaseWindowSize?.()
+      setScreenStatus(ScreenStatus.SEE_REGISTERS)
+      return
+    }
+
+    setScreenStatus(ScreenStatus.VISUALIZE)
   }
 
   const registrationButtonBarProps: RegistrationButtonBarProps = {
@@ -276,6 +258,8 @@ const ServiceScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
       screenStatus === ScreenStatus.NEW
         ? handleButtonCreateServiceOnClick
         : handleButtonUpdateServiceOnClick,
+    handleCancelButtonOnClick: handleCancelButtonOnClick,
+    handleButtonVisualizeOnClick: handleVisualizeButtonOnClick,
     handleDeleteButtonOnClick: () => {
       openAlert({
         text: 'Deletar o item selecionado?',
@@ -294,125 +278,135 @@ const ServiceScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
       }))
     }
 
+  const changePayload = (key: keyof Service, value: any) => {
+    setPayload((prev: any) => ({
+      ...prev,
+      [key]: value || undefined,
+    }))
+  }
+
   const onRowSelect = useCallback(
     (row: { [key: string]: any }) => setPayload(row),
     []
   )
 
   return (
-    <Container>
+    <Container style={{ height: 'calc(100% - 50px)' }}>
       <Header>
         <RegistrationButtonBar {...registrationButtonBarProps} />
       </Header>
 
-      <Body>
-        <div>
-          <form>
-            <div className='flexRow'>
-              <div style={{ width: '10%' }}>
-                <InputText
-                  id='serviceId'
-                  label='Id:'
-                  value={payload?.id || ''}
-                  disabled
-                  style={{ width: '100%' }}
-                />
+      <Body className='h-100'>
+        <Render renderIf={screenStatus !== ScreenStatus.SEE_REGISTERS}>
+          <div>
+            <form>
+              <div className='flexRow'>
+                <div style={{ width: '10%' }}>
+                  <InputText
+                    id='serviceId'
+                    label='Id:'
+                    value={payload?.id || ''}
+                    inputStyle={{ width: '100%' }}
+                    disabled
+                    style={{ width: '100%' }}
+                  />
+                </div>
+
+                <div>
+                  <Select
+                    defaultButtonText='Escolha uma unidade'
+                    items={unitsOptions}
+                    onChange={(o) => {
+                      setPayload((prev) => ({
+                        ...prev,
+                        unit_id: o.value as number,
+                        unit_name: o.label,
+                      }))
+                    }}
+                    activeItem={payload.unit_id}
+                    id='serviceUnit'
+                    label='Unidade:'
+                    disabled={screenStatus === ScreenStatus.VISUALIZE}
+                    loading={loadingUnits}
+                    handleButtonReloadClick={loadUnits}
+                  />
+                </div>
               </div>
 
-              <div>
-                <Select
-                  defaultButtonText='Escolha uma unidade'
-                  items={unitsOptions}
-                  onChange={(o) => {
-                    setPayload((prev) => ({
-                      ...prev,
-                      unit_id: o.value as number,
-                      unit_name: o.label,
-                    }))
-                  }}
-                  activeItem={payload.unit_id}
-                  id='serviceUnit'
-                  label='Unidade:'
-                  disabled={screenStatus === ScreenStatus.VISUALIZE}
-                  loading={loadingUnits}
-                  handleButtonReloadClick={loadUnits}
-                  required
-                />
-              </div>
-            </div>
+              <div className='flexRow'>
+                <div>
+                  <InputText
+                    id='serviceReference'
+                    label='Referência:'
+                    required
+                    disabled={isStatusVizualize()}
+                    style={{ width: '100%' }}
+                    value={payload.reference || ''}
+                    placeholder='XXXXXXXX'
+                    onChange={createOnChange('reference')}
+                    maxLength={90}
+                  />
+                </div>
 
-            <div className='flexRow'>
-              <div>
-                <InputText
-                  id='serviceReference'
-                  label='Referência:'
-                  required
-                  disabled={isStatusVizualize()}
-                  style={{ width: '100%' }}
-                  value={payload.reference || ''}
-                  placeholder='XXXXXXXX'
-                  onChange={createOnChange('reference')}
-                  maxLength={90}
-                />
+                <div>
+                  <InputText
+                    id='serviceName'
+                    label='Nome:'
+                    required
+                    disabled={isStatusVizualize()}
+                    style={{ width: '100%' }}
+                    inputStyle={{ width: '100%', minWidth: '260px' }}
+                    value={payload.name || ''}
+                    placeholder='Troca de vela'
+                    maxLength={90}
+                    onChange={createOnChange('name')}
+                  />
+                </div>
               </div>
 
-              <div>
-                <InputText
-                  id='serviceName'
-                  label='Nome:'
-                  required
-                  disabled={isStatusVizualize()}
-                  style={{ width: '100%' }}
-                  inputStyle={{ width: '100%', minWidth: '260px' }}
-                  value={payload.name || ''}
-                  placeholder='Troca de vela'
-                  maxLength={90}
-                  onChange={createOnChange('name')}
-                />
-              </div>
-            </div>
+              <div className='flexRow'>
+                <div style={{ flex: 0.85 }}>
+                  <InputText
+                    id='serviceDescription'
+                    label='Descrição:'
+                    disabled={isStatusVizualize()}
+                    inputStyle={{ width: '100%' }}
+                    value={payload?.description || ''}
+                    maxLength={255}
+                    onChange={createOnChange('description')}
+                  />
+                </div>
 
-            <div className='flexRow'>
-              <div style={{ width: '85%' }}>
-                <InputText
-                  id='serviceDescription'
-                  label='Descrição:'
-                  disabled={isStatusVizualize()}
-                  style={{ width: '100%' }}
-                  inputStyle={{ width: '100%', minWidth: '300ptx' }}
-                  value={payload?.description || ''}
-                  maxLength={255}
-                  onChange={createOnChange('description')}
-                />
+                <div style={{ flex: 0.15 }}>
+                  <NumericInput
+                    id='servicePrice'
+                    label='Preço:'
+                    fill
+                    disabled={isStatusVizualize()}
+                    value={payload?.price || ''}
+                    placeholder='R$'
+                    min={0}
+                    max={1000000}
+                    maxLength={8}
+                    defaultValue={0.0}
+                    onValueChange={(value) => changePayload('price', value)}
+                  />
+                </div>
               </div>
+            </form>
+          </div>
+        </Render>
 
-              <div style={{ width: '15%' }}>
-                <InputText
-                  id='servicePrice'
-                  label='Preço:'
-                  disabled={isStatusVizualize()}
-                  style={{ width: '100%' }}
-                  inputStyle={{ width: '100%', minWidth: '300ptx' }}
-                  value={payload?.price || ''}
-                  type='number'
-                  placeholder='R$'
-                  maxLength={50}
-                  required
-                  onChange={createOnChange('price')}
-                />
-              </div>
-            </div>
-          </form>
-        </div>
-
-        <div className='tableRow'>
+        <Render renderIf={screenStatus === ScreenStatus.SEE_REGISTERS}>
           <PaginatedTable
             onRowSelect={onRowSelect}
             request={ServicesService.getAll}
-            containerProps={containerProps}
             columns={columns}
+            height='100%'
+            rowKey={(row) => row.id + row.created_at}
+            isSelected={(row) => row.id === payload?.id}
           />
-        </div>
+        </Render>
       </Body>
     </Container>
   )

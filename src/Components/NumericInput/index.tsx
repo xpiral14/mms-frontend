@@ -1,4 +1,4 @@
-import React, {CSSProperties} from 'react'
+import React, { CSSProperties } from 'react'
 import {
   NumericInput as BluePrintNumericInput,
   NumericInputProps as BluePrintNumericInputProps,
@@ -10,19 +10,25 @@ interface NumericInputProps extends BluePrintNumericInputProps {
   id: string
   label?: string
   width?: string
-  labelPosition?: 'vertical' | 'horizontal',
+  labelPosition?: 'vertical' | 'horizontal'
   style?: CSSProperties
+  maxLength?: number
 }
 
-const NumericInput: FC<NumericInputProps> = ({ label, ...props }) => {
+const NumericInput: FC<NumericInputProps> = ({ label, maxLength, ...props }) => {
   return (
-    <Container width={props.width} labelPosition={props.labelPosition} style={props?.style}>
+    <Container
+      width={props.width}
+      labelPosition={props.labelPosition}
+      style={props?.style}
+    >
       {label && (
         <div>
           <label htmlFor={props.id}>{label}</label>
         </div>
       )}
-      <BluePrintNumericInput {...props}/>
+
+      <BluePrintNumericInput {...props} maxLength={maxLength} />
     </Container>
   )
 }

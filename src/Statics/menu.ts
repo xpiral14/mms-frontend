@@ -11,9 +11,11 @@ const menus = {
         name: 'Produtos',
         icon: 'wrench',
         screen: {
+          minHeight: 290,
+          maxHeight: 500,
           ...screens['part-register'],
           headerTitle: 'Produtos',
-          contentSize: '750px 500px',
+          contentSize: '750px 246px',
         },
       },
       Unidades: {
@@ -64,8 +66,10 @@ const menus = {
         name: 'Serviços',
         icon: 'build',
         screen: {
+          minHeight: 290,
+          maxHeight: 500,
           ...screens['service-register'],
-          contentSize: '900 500',
+          contentSize: '900px 256px',
           headerTitle: 'Criação de Serviços',
         },
       },

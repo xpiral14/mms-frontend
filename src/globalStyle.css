@@ -54,6 +54,14 @@ body {
   gap: 10px;
 }
 
+.flex-1 {
+  flex: 1
+}
+
+.flex-column {
+  flex-direction: column;
+}
+
 .flex-justify-end{
   justify-content: flex-end;
 }

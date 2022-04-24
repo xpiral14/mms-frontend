@@ -22,6 +22,7 @@ import useAsync from '../../../Hooks/useAsync'
 import Unit from '../../../Contracts/Models/Unit'
 import Select from '../../../Components/Select'
 import UnitService from '../../../Services/UnitService'
+import Render from '../../../Components/Render'
 
 const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
   const { payload, setPayload, screenStatus, setScreenStatus } =
@@ -48,6 +49,7 @@ const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
       })
     }
   }, [])
+
   const createValidation = (keyName: any) => () =>
     Boolean((payload as any)[keyName])
 
@@ -99,7 +101,7 @@ const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
 
     try {
       const createPayload = {
-        ...payload
+        ...payload,
       }
 
       const response = await PartsService.create(createPayload as any)
@@ -139,7 +141,7 @@ const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
       return
     }
     const requestPayload = {
-      ...payload
+      ...payload,
     }
     try {
       const response = await PartsService.update(
@@ -245,12 +247,38 @@ const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
     }),
     []
   )
+
+  const focusReferenceInput = () => {
+    const referenceInput = document.getElementById('partReference')
+    referenceInput?.focus()
+  }
+
   const handleButtonNewOnClick = () => {
     setPayload({})
     setScreenStatus(ScreenStatus.NEW)
 
-    const referenceInput = document.getElementById('partReference')
-    referenceInput?.focus()
+    focusReferenceInput()
+    decreaseWindowSize?.()
+  }
+
+  const increaseWindowSize = screen.increaseScreenSize
+
+  const decreaseWindowSize = screen.decreaseScreenSize
+
+  const handleVisualizeButtonOnClick = () => {
+    setScreenStatus(ScreenStatus.SEE_REGISTERS)
+
+    increaseWindowSize?.()
+  }
+
+  const handleCancelButtonOnClick = () => {
+    if (screenStatus === ScreenStatus.EDIT) {
+      increaseWindowSize?.()
+      setScreenStatus(ScreenStatus.SEE_REGISTERS)
+      return
+    }
+
+    setScreenStatus(ScreenStatus.VISUALIZE)
   }
 
   const registrationButtonBarProps: RegistrationButtonBarProps = {
@@ -268,6 +296,8 @@ const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
         cancelButtonText: 'Cancelar',
       })
     },
+    handleButtonVisualizeOnClick: handleVisualizeButtonOnClick,
+    handleCancelButtonOnClick: handleCancelButtonOnClick,
   }
 
   const createOnChange =
@@ -277,10 +307,12 @@ const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
         [attributeName]: evt.target.value || undefined,
       }))
     }
+
   const onRowSelect = useCallback(
     (row: { [key: string]: any }) => setPayload(row),
     []
   )
+
   return (
     <Container>
       <Header>
@@ -288,99 +320,114 @@ const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
       </Header>
 
       <Body>
-        <div>
-          <form>
-            <div className='flexRow'>
-              <div style={{ width: '10%' }}>
-                <InputText
-                  id='partId'
-                  label='Id:'
-                  value={payload?.id || ''}
-                  disabled
-                  style={{ width: '100%' }}
-                />
+        <Render renderIf={screenStatus !== ScreenStatus.SEE_REGISTERS}>
+          <div>
+            <form>
+              <div className='flexRow'>
+                <div style={{ width: '10%' }}>
+                  <InputText
+                    id='partId'
+                    label='Id:'
+                    value={payload?.id || ''}
+                    disabled
+                    style={{ width: '100%' }}
+                    inputStyle={{ width: '100%' }}
+                  />
+                </div>
+
+                <div>
+                  <Select
+                    defaultButtonText='Escolha uma unidade'
+                    items={unitsOptions}
+                    onChange={(o) => {
+                      setPayload((prev) => ({
+                        ...prev,
+                        unit_id: o.value as number,
+                      }))
+                    }}
+                    activeItem={payload.unit_id}
+                    id='partId'
+                    label='Unidade:'
+                    disabled={screenStatus === ScreenStatus.VISUALIZE}
+                    loading={loadingUnits}
+                    handleButtonReloadClick={loadUnits}
+                  />
+                </div>
+              </div>
+              <div className='flexRow'>
+                <div>
+                  <InputText
+                    id='partReference'
+                    label='Referência:'
+                    disabled={isStatusVizualize()}
+                    itent='primary'
+                    style={{ width: '100%' }}
+                    value={payload?.reference || ''}
+                    onChange={createOnChange('reference')}
+                    placeholder='XXXXXXXX'
+                    required
+                    maxLength={90}
+                  />
+                </div>
+
+                <div style={{ width: '90%' }}>
+                  <InputText
+                    id='partName'
+                    label='Nome:'
+                    disabled={isStatusVizualize()}
+                    style={{ width: '100%' }}
+                    inputStyle={{ minWidth: '260px' }}
+                    value={payload.name || ''}
+                    placeholder='Chave de seta'
+                    maxLength={90}
+                    onChange={createOnChange('name')}
+                  />
+                </div>
               </div>
 
-              <div>
-                <Select
-                  defaultButtonText='Escolha uma unidade'
-                  items={unitsOptions}
-                  onChange={(o) => {
-                    setPayload((prev) => ({
-                      ...prev,
-                      unit_id: o.value as number,
-                    }))
-                  }}
-                  activeItem={payload.unit_id}
-                  id='partId'
-                  label='Unidade'
-                  disabled={screenStatus === ScreenStatus.VISUALIZE}
-                  loading={loadingUnits}
-                  handleButtonReloadClick={loadUnits}
-                />
-              </div>
-            </div>
-            <div className='flexRow'>
-              <div>
-                <InputText
-                  id='partReference'
-                  label='Referência:'
-                  disabled={isStatusVizualize()}
-                  itent='primary'
-                  style={{ width: '100%' }}
-                  value={payload?.reference || ''}
-                  onChange={createOnChange('reference')}
-                  required
-                />
-              </div>
+              <div className='flexRow'>
+                <div style={{ width: '85%' }}>
+                  <InputText
+                    id='partDescription'
+                    label='Descrição:'
+                    disabled={isStatusVizualize()}
+                    style={{ width: '100%' }}
+                    inputStyle={{ width: '100%', minWidth: '300ptx' }}
+                    value={payload?.description || ''}
+                    maxLength={255}
+                    onChange={createOnChange('description')}
+                  />
+                </div>
 
-              <div style={{ width: '90%' }}>
-                <InputText
-                  id='partName'
-                  label='Nome:'
-                  disabled={isStatusVizualize()}
-                  style={{ width: '100%' }}
-                  value={payload.name || ''}
-                  placeholder='Vela de ignição'
-                  onChange={createOnChange('name')}
-                />
+                <div style={{ width: '15%' }}>
+                  <InputText
+                    id='partPrice'
+                    label='Preço:'
+                    disabled={isStatusVizualize()}
+                    placeholder='R$'
+                    style={{ width: '100%' }}
+                    inputStyle={{ width: '100%', minWidth: '300ptx' }}
+                    value={payload?.price || ''}
+                    maxLength={50}
+                    type='number'
+                    onChange={createOnChange('price')}
+                  />
+                </div>
               </div>
-            </div>
-            <div className='flexRow'>
-              <div style={{ width: '80%' }}>
-                <InputText
-                  id='partDescription'
-                  label='Descrição:'
-                  disabled={isStatusVizualize()}
-                  style={{ width: '100%' }}
-                  value={payload?.description || ''}
-                  onChange={createOnChange('description')}
-                />
-              </div>
+            </form>
+          </div>
+        </Render>
 
-              <div style={{ width: '20%' }}>
-                <InputText
-                  id='partPrice'
-                  label='Preço:'
-                  disabled={isStatusVizualize()}
-                  placeholder='R$'
-                  style={{ width: '100%' }}
-                  value={payload?.price || ''}
-                  onChange={createOnChange('price')}
-                />
-              </div>
-            </div>
-          </form>
-        </div>
-
-        <div className='tableRow'>
-          <PaginatedTable
-            onRowSelect={onRowSelect}
-            request={PartsService.getAll}
-            containerProps={containerProps}
-            columns={columns}
-          />
-        </div>
+        <Render renderIf={screenStatus === ScreenStatus.SEE_REGISTERS}>
+          <div className='tableRow'>
+            <PaginatedTable
+              onRowSelect={onRowSelect}
+              request={PartsService.getAll}
+              containerProps={containerProps}
+              columns={columns}
+            />
+          </div>
+        </Render>
       </Body>
     </Container>
   )

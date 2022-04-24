@@ -11,20 +11,11 @@ const menus = {
         name: 'Produtos',
         icon: 'wrench',
         screen: {
+          minHeight: 290,
+          maxHeight: 500,
           ...screens['part-register'],
-          headerTitle: 'Peças',
-          contentSize: '750px 500px',
-        },
-        items: {
-          Produtos: {
-            name: 'Peças',
-            icon: 'wrench',
-            screen: {
-              ...screens['part-register'],
-              headerTitle: 'Peças',
-              contentSize: '750px 500px',
-            },
-          },
+          headerTitle: 'Produtos',
+          contentSize: '750px 246px',
         },
       },
       Unidades: {
@@ -54,7 +45,7 @@ const menus = {
     icon: 'dollar',
     items: {
       Clientes: {
-        name: 'clientes',
+        name: 'Clientes',
         icon: 'person',
         screen: {
           ...screens['costumer-register'],
@@ -75,8 +66,10 @@ const menus = {
         name: 'Serviços',
         icon: 'build',
         screen: {
+          minHeight: 290,
+          maxHeight: 500,
           ...screens['service-register'],
-          contentSize: '900 500',
+          contentSize: '900px 256px',
           headerTitle: 'Criação de Serviços',
         },
       },

@@ -5,6 +5,7 @@ export const Container = styled.div<{ maxWidth?: string | number }>`
   align-items: center;
   gap: 5px;
   .bp4-multi-select {
+    position: relative ;
     width: ${(p) => p.maxWidth || '100%'};
     height: 30px;
     overflow-y: scroll;

@@ -16,10 +16,11 @@ export interface PaginatedTableProps extends Omit<TableProps, 'rows'> {
   request: (
     page: number,
     limit: number,
-    parPage?: number
+    filters?: Record<string, string | number | undefined>
   ) => Promise<AxiosResponse<Paginated<any>>>
   height?: string
   isSelected?: (row: Row) => boolean
   onRowSelect?: (row: Row) => void
   rowKey?: (row: Row) => string
+  filters?:Record<string, string | number | undefined>
 }

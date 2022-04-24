@@ -55,7 +55,7 @@ const PaginatedTable: React.FC<PaginatedTableProps> = ({
   useEffect(() => {
     const loadRequestData = async () => {
       try {
-        const response = await request(page + 1, limit)
+        const response = await request(page + 1, limit, rest?.filters || {})
         setGridResponse(response.data)
       } catch (error) {
         showErrorToast({
@@ -68,7 +68,7 @@ const PaginatedTable: React.FC<PaginatedTableProps> = ({
     if (reloadGrid && limit) {
       loadRequestData()
     }
-  }, [reloadGrid, limit, page])
+  }, [reloadGrid, limit, page,  rest?.filters])
 
   const paginateOptions = useMemo(
     () =>

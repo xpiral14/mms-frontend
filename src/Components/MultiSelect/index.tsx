@@ -46,6 +46,7 @@ interface MultiSelectProps
   handleButtonReloadClick?: () => void
   loading?: boolean
   id: string
+  maxTagsOnInput?: number
 }
 
 function highlightText(text: string, query: string) {
@@ -106,7 +107,7 @@ export default function MultiSelect(props: MultiSelectProps) {
     const isSelected = Boolean(option?.value && props.selectedItems?.includes(option?.value))
     return (
       <MenuItem
-        active={isSelected}
+        selected={isSelected}
         icon={isSelected ? 'tick' : 'blank'}
         key={option.value}
         label={option.value as any}
@@ -163,9 +164,10 @@ export default function MultiSelect(props: MultiSelectProps) {
           onItemSelect={props.onChange}
           tagRenderer={renderTag}
           tagInputProps={{
+    
             ...props.tagInputProps,
             disabled: isDisabled,
-            separator: ' ',
+            separator: ',',
             onRemove: props.onTagRemove as any,
             rightElement: clearButton,
             fill: true,
@@ -174,6 +176,7 @@ export default function MultiSelect(props: MultiSelectProps) {
             },
             tagProps: (v, i) => ({
               intent: props.items[i]?.intent || 'none',
+              
             }),
           }}
         />

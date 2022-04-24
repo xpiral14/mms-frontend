@@ -44,8 +44,8 @@ const OrderResume: FunctionComponent<OrderResumeScreenProps> = (props) => {
   },[])
   const [order, setOrder] = useState(() => ({
     ...props.order,
-    product_discount: (props?.order.product_discount ?? 0) * 100,
-    service_discount: (props?.order.service_discount ?? 0) * 100,
+    product_discount: (props?.order.product_discount ?? 0) ,
+    service_discount: (props?.order.service_discount ?? 0),
   }))
   const [loadingOrder, loadOrder] = useAsync(async () => {
     try {

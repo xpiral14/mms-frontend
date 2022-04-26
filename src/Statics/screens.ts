@@ -30,6 +30,11 @@ const screens = {
     id: 'order-register',
     name: 'Cadastro de produtos',
     path: 'Register/ServiceOrder',
+  },
+  'cost-posting': {
+    id: 'cost-posting',
+    name: 'Lançamento de custos',
+    path: 'CostsPosting',
   }
 }
 export const allScreens = {

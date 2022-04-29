@@ -12,7 +12,7 @@ export default class AuthService {
       email,
       password,
     })
-    
+
     localStorage.setItem('@auth', JSON.stringify(response.data.data))
 
     return response.data
@@ -20,5 +20,18 @@ export default class AuthService {
 
   public static async logout() {
     await api.post('/logout')
+  }
+
+  public static async changePassword(data: {
+    password: string,
+    password_confirmation: string,
+    token: string,
+    email: string
+  }) {
+    await api.post<void>('/auth/change-password', data)
+  }
+
+  public static async sendPasswordEmail(data: {email: string}){
+    return api.post('auth/send-password-email', data)
   }
 }

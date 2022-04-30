@@ -469,6 +469,9 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({screen}) => {
       name: 'Status',
       keyName: 'status',
       formatText: (row) => OrderStatusByValue[row!.status as number],
+      style:{
+        width: '100%'
+      }
     },
     {
       name: 'Observação',

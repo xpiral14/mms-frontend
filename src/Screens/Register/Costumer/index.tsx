@@ -302,6 +302,9 @@ const CostumerRegister: React.FC<CostumerRegisterScreenProps> = ({
               {
                 name: 'Nome',
                 keyName: 'name',
+                style: {
+                  'width': '100%'
+                }
               },
               {
                 name: 'CPF',

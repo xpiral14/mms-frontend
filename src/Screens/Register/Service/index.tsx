@@ -208,11 +208,17 @@ const ServiceScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
         id: 2,
         name: 'Nome',
         keyName: 'name',
+        style: {
+          width: '50%'
+        }
       },
       {
         id: 3,
         name: 'Descrição',
         keyName: 'description',
+        style: {
+          width: '100%'
+        }
       },
     ],
     []

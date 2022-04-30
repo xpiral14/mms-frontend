@@ -1,7 +1,11 @@
 type Company = {
   id: number;
   name: string;
-  email: string;
+  mail?: string;
+  identification: string;
+  phone?: string;
+  cep?: string
+  complement?: string
 }
 
 export default Company

@@ -28,7 +28,7 @@ const Table: FC<TableProps> = (props) => {
       <thead>
         <tr>
           {props.columns?.map((column) => (
-            <th key={column.keyName}>{column.name}</th>
+            <th key={column.keyName} style={column.style}>{column.name}</th>
           ))}
         </tr>
       </thead>

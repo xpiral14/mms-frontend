@@ -141,8 +141,8 @@ const PaginatedTable: React.FC<PaginatedTableProps> = ({
         <Footer>
           <Card style={cardStyle}>
             <div>
-              Mostrando {gridResponse?.data.length} de
-              {gridResponse?.meta.total}
+              
+              Mostrando {gridResponse?.data.length} de {gridResponse?.meta.total}
             </div>
 
             <PaginateContainer>

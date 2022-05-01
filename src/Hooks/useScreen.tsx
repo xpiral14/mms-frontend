@@ -64,7 +64,7 @@ export default function ScreenProvider({ children }: any) {
     props = {} as any,
     modal = false
   ) => {
-    if (screens[screenOptions.id]) {
+    if (screens[screenOptions?.id]) {
       return screens[screenOptions.id].screen.front()
     }
   

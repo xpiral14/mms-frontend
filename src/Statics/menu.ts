@@ -97,7 +97,16 @@ const menus = {
     name: 'Configurações',
     icon: 'cog',
     isMain: true,
-    items: {},
+    items: {
+      CompanyData: {
+        name: 'Dados da empresa',
+        screen: {
+          ...screens['company-data'],
+          contentSize: '900px 335px',
+          headerTitle: 'Dados da empresa',
+        }
+      }
+    },
   },
 } as MenuType
 

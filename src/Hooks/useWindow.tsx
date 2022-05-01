@@ -10,6 +10,10 @@ type WindowContext<P = any> = {
   setTabs?: React.Dispatch<React.SetStateAction<{ [x: string]: string }>>
   activeTab?: string
   setActiveTab?: React.Dispatch<React.SetStateAction<string>>
+  isScreenStatusVizualize: boolean
+  isScreenStatusEdit: boolean
+  isScreenStatusNew: boolean
+  isScreenStatusSeeRegisters: boolean
 }
 
 const windowContext = createContext<WindowContext>(null as any)
@@ -30,9 +34,23 @@ const WindowContextProvider: React.FC = ({ children }) => {
   const [screenStatus, setScreenStatus] = useState<ScreenStatus>(
     ScreenStatus.VISUALIZE
   )
+
+  const isScreenStatusVizualize = screenStatus === ScreenStatus.VISUALIZE
+  const isScreenStatusEdit = screenStatus === ScreenStatus.EDIT
+  const isScreenStatusNew = screenStatus === ScreenStatus.NEW
+  const isScreenStatusSeeRegisters = screenStatus === ScreenStatus.SEE_REGISTERS
   return (
     <windowContext.Provider
-      value={{ payload: payload, setPayload, screenStatus, setScreenStatus }}
+      value={{
+        payload,
+        setPayload,
+        screenStatus,
+        setScreenStatus,
+        isScreenStatusVizualize,
+        isScreenStatusEdit,
+        isScreenStatusNew,
+        isScreenStatusSeeRegisters,
+      }}
     >
       {children}
     </windowContext.Provider>

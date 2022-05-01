@@ -9,7 +9,7 @@ export interface InputProps extends React.DetailedHTMLProps<React.InputHTMLAttri
   placeholder?: string
   disabled?: boolean
   itent?: Intent
-  defaultValue?: string,
+  defaultValue?: string
   style?: CSSProperties
   inputStyle?: CSSProperties
 }

@@ -224,11 +224,17 @@ const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
         id: 2,
         name: 'Nome',
         keyName: 'name',
+        style: {
+          width: '40%',
+        },
       },
       {
         id: 3,
         name: 'Descrição',
         keyName: 'description',
+        style: {
+          width: '40%',
+        },
       },
       {
         id: 4,
@@ -425,6 +431,7 @@ const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
               request={PartsService.getAll}
               containerProps={containerProps}
               columns={columns}
+              isSelected={row => row.id === payload?.id}
             />
           </div>
         </Render>

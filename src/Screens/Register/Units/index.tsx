@@ -190,6 +190,9 @@ const UnitsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
         id: 2,
         name: 'Descrição',
         keyName: 'description',
+        style: {
+          width: '100%'
+        }
       },
     ],
     []

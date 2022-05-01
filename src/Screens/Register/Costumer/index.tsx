@@ -15,6 +15,9 @@ import { useToast } from '../../../Hooks/useToast'
 import useValidation from '../../../Hooks/useValidation'
 import { useWindow } from '../../../Hooks/useWindow'
 import CostumerService from '../../../Services/CostumerService'
+import cleanNumericInput from '../../../Util/cleanNumericInput'
+import formatIdentification from '../../../Util/formatIdentification'
+import formatPhone from '../../../Util/formatPhone'
 import { Container, Header, Body, FormContainer, TableContainer } from './style'
 
 const personTypesOptions = [
@@ -52,9 +55,17 @@ const CostumerRegister: React.FC<CostumerRegisterScreenProps> = ({
 
   const validations: Validation[] = [
     {
-      check: createValidation('personType'),
-      errorMessage: 'O tipo de pessoa é obrigatório',
-      inputId:  String(PersonType.PHYSICAL),
+      check: () => {
+        const cleaned = cleanNumericInput(payload.identification)
+
+        return (
+          !payload.personType ||
+          cleaned?.length === 11 ||
+          cleaned?.length === 14
+        )
+      },
+      errorMessage: 'CPF ou CNPJ inválido',
+      inputId: String(PersonType.PHYSICAL),
     },
     {
       check: createValidation('name'),
@@ -62,13 +73,9 @@ const CostumerRegister: React.FC<CostumerRegisterScreenProps> = ({
       inputId: 'name',
     },
     {
-      check: createValidation('identification'),
-      errorMessage: `O ${payload.personType === PersonType.LEGAL ? 'cpf' : 'cnpj'} é obrigatório`,
-      inputId: 'name',
-    },
-    {
-      check: createValidation('phone'),
-      errorMessage: 'O telefone é obrigatório',
+      check: () =>
+        !payload?.phone || cleanNumericInput(payload?.phone).length === 11,
+      errorMessage: 'O telefone apresenta um padrão incorreto',
       inputId: 'costumer-register-phone',
     },
   ]
@@ -101,9 +108,8 @@ const CostumerRegister: React.FC<CostumerRegisterScreenProps> = ({
     try {
       const createPayload = {
         ...payload,
-        roleId: 1, // TODO change this after
-        identification: payload.identification?.replace(/[^0-9]/g,  ''),
-        phone: payload.phone?.replace(/[^0-9]/g, ''),
+        identification: cleanNumericInput(payload?.identification ?? ''),
+        phone: cleanNumericInput(payload?.phone ?? ''),
       }
       const response = await CostumerService.create(createPayload)
       if (response.status) {
@@ -129,20 +135,27 @@ const CostumerRegister: React.FC<CostumerRegisterScreenProps> = ({
         text: ErrorMessages,
         intent: Intent.DANGER,
       })
-    } finally{
+    } finally {
       stopLoad()
     }
   }
 
   const saveCostumer = async (stopLoad: () => void) => {
-    if(!validate()){
+    if (!validate()) {
       stopLoad()
       return
     }
     try {
-      payload.roleId = 1
-      payload.identification = payload?.identification?.replace(/^[0-9]/g, '')
-      const response = await CostumerService.edit(payload)
+      const requestPayload = {
+        ...payload,
+        identification: cleanNumericInput(payload?.identification ?? ''),
+        phone: cleanNumericInput(payload?.phone ?? ''),
+      }
+
+      if (!validate()) {
+        return
+      }
+      const response = await CostumerService.edit(requestPayload)
       if (response.status) {
         showSuccessToast({
           message: 'Cliente atualizado com sucesso',
@@ -168,9 +181,8 @@ const CostumerRegister: React.FC<CostumerRegisterScreenProps> = ({
         text: ErrorMessages,
         intent: Intent.DANGER,
       })
-    }
-    finally{
-      stopLoad() 
+    } finally {
+      stopLoad()
     }
   }
 
@@ -231,13 +243,24 @@ const CostumerRegister: React.FC<CostumerRegisterScreenProps> = ({
               inline
               disabled={isStatusVizualize()}
               radios={personTypesOptions}
-              onChange={(evt) =>
+              onClick={(v) => {
+                if (v !== payload.personType) return
+                setPayload((prev) => ({
+                  ...prev,
+                  personType: undefined,
+                  identification: undefined,
+                }))
+              }}
+              onChange={(evt) => {
                 setPayload((prev) => ({
                   ...prev,
                   identification: '',
-                  personType: evt.currentTarget.value as any,
+                  personType:
+                    evt.currentTarget.value === prev.personType
+                      ? null
+                      : (evt.currentTarget.value as any),
                 }))
-              }
+              }}
             />
           </div>
           <div>
@@ -303,16 +326,25 @@ const CostumerRegister: React.FC<CostumerRegisterScreenProps> = ({
                 name: 'Nome',
                 keyName: 'name',
                 style: {
-                  'width': '100%'
-                }
+                  width: '33%',
+                },
               },
               {
-                name: 'CPF',
-                keyName: 'identification'
+                name: 'CPF ou CNPJ',
+                // keyName: 'identification',
+                formatText: (row) =>
+                  formatIdentification(row?.identification as string),
+                style: {
+                  width: '33%',
+                },
               },
               {
                 name: 'Telefone',
                 keyName: 'phone',
+                formatText: (row) => formatPhone(row?.phone as string),
+                style: {
+                  width: '33%',
+                },
               },
               {
                 name: 'Email',
@@ -322,7 +354,13 @@ const CostumerRegister: React.FC<CostumerRegisterScreenProps> = ({
             request={CostumerService.getAll as any}
             onRowSelect={(row) => {
               setScreenStatus(ScreenStatus.VISUALIZE)
-              setPayload(row)
+              setPayload({
+                ...row,
+                personType:
+                  row.identification?.length > 11
+                    ? PersonType.LEGAL
+                    : PersonType.PHYSICAL,
+              })
             }}
           />
         </TableContainer>

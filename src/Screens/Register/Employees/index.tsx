@@ -7,6 +7,7 @@ import RegistrationButtonBar from '../../../Components/RegistrationButtonBar'
 import Render from '../../../Components/Render'
 import { PersonType, ScreenStatus } from '../../../Constants/Enums'
 import { RegistrationButtonBarProps } from '../../../Contracts/Components/RegistrationButtonBarProps'
+import { Column } from '../../../Contracts/Components/Table'
 import { Validation } from '../../../Contracts/Hooks/useValidation'
 import Employee from '../../../Contracts/Models/Employee'
 import { EmployeeRegisterScreenProps } from '../../../Contracts/Screen/Register/Employee'
@@ -16,6 +17,7 @@ import { useToast } from '../../../Hooks/useToast'
 import useValidation from '../../../Hooks/useValidation'
 import { useWindow } from '../../../Hooks/useWindow'
 import EmployeeService from '../../../Services/EmployeeService'
+import cleanNumericInput from '../../../Util/cleanNumericInput'
 import { Container, Header, Body, FormContainer, TableContainer } from './style'
 
 const personTypesOptions = [
@@ -135,9 +137,8 @@ const EmployeeRegister: React.FC<EmployeeRegisterScreenProps> = ({
     try {
       const createPayload = {
         ...payload,
-        roleId: 1,
-        identification: payload.identification?.replace(/[^0-9]/g, ''),
-        phone: payload.phone?.replace(/[^0-9]/g, ''),
+        identification: cleanNumericInput(payload?.identification ?? ''),
+        phone: cleanNumericInput(payload?.phone ?? ''),
       }
       const response = await EmployeeService.create(createPayload)
       if (response.status) {
@@ -176,10 +177,12 @@ const EmployeeRegister: React.FC<EmployeeRegisterScreenProps> = ({
     }
 
     try {
-      payload.roleId = 1
-      payload.identification = payload?.identification?.replace(/^[0-9]/g, '')
-
-      const response = await EmployeeService.edit(payload)
+      const requestPayload = {
+        ...payload,
+        identification: cleanNumericInput(payload?.identification ?? ''),
+        phone: cleanNumericInput(payload?.phone ?? ''),
+      }
+      const response = await EmployeeService.edit(requestPayload)
 
       if (response.status) {
         showSuccessToast({
@@ -309,7 +312,7 @@ const EmployeeRegister: React.FC<EmployeeRegisterScreenProps> = ({
       }))
     }
 
-  const tableColumns = [
+  const tableColumns: Column[] = [
     {
       name: 'Nome',
       keyName: 'name',
@@ -321,11 +324,20 @@ const EmployeeRegister: React.FC<EmployeeRegisterScreenProps> = ({
     {
       name: 'Telefone',
       keyName: 'phone',
+      formatText: (row) =>
+        (row?.phone as string).replace(/(\d{2})(\d{5})(\d{4})/g, '($1) $2-$3'),
     },
   ]
 
   const onRowSelect = useCallback(
-    (row: { [key: string]: any }) => setPayload(row),
+    (row: Record<string, any>) =>
+      setPayload({
+        ...row,
+        personType:
+          row.identification?.length > 11
+            ? PersonType.LEGAL
+            : PersonType.PHYSICAL,
+      }),
     []
   )
 

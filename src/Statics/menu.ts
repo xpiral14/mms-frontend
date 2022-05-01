@@ -28,15 +28,7 @@ const menus = {
           headerTitle: 'Unidades',
           contentSize: '710px 150px',
         },
-      },
-      Clientes: {
-        name: 'Clientes',
-        screen: {
-          ...screens['part-register'],
-          headerTitle: 'Peças',
-          contentSize: '750px 500px',
-        },
-      },
+      }
     },
   },
   Vendas: {

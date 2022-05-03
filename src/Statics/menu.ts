@@ -79,7 +79,7 @@ const menus = {
           minHeight: 290,
           maxHeight: 500,
           ...screens['receipt-posting'],
-          contentSize: '690px 195px',
+          contentSize: '980px 400px',
           headerTitle: screens['receipt-posting']?.name,
         },
       },

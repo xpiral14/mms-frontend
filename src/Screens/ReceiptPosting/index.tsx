@@ -1,5 +1,6 @@
 import { format } from 'date-fns'
 import React, { FC, useEffect, useMemo, useState } from 'react'
+import Collapse from '../../Components/Collapse'
 import InputDate from '../../Components/InputDate'
 import Box from '../../Components/Layout/Box'
 import Container from '../../Components/Layout/Container'
@@ -44,9 +45,9 @@ const ReceiptPosting: FC<ScreenProps & { receipt: Receipt }> = ({
     setScreenStatus,
     isScreenStatusVizualize,
     isScreenStatusSeeRegisters,
-    isScreenStatusEdit
+    isScreenStatusEdit,
   } = useWindow<Payload>()
-
+  const [isDetailCollapsed, setIsDetailCollapsed] = useState(true)
   useEffect(() => {
     setPayload({
       ...(props.receipt ?? {}),
@@ -158,7 +159,7 @@ const ReceiptPosting: FC<ScreenProps & { receipt: Receipt }> = ({
   }
 
   const updateReceipt = async (stopLoad: StopLoadFunc) => {
-    if(!validate()) return
+    if (!validate()) return
 
     try {
       await ReceiptService.update({
@@ -178,7 +179,11 @@ const ReceiptPosting: FC<ScreenProps & { receipt: Receipt }> = ({
 
   return (
     <Container style={{ height: 'calc(100% - 50px)' }}>
-      <RegistrationButtonBar handleSaveButtonOnClick={isScreenStatusEdit ? updateReceipt : createReceipt} />
+      <RegistrationButtonBar
+        handleSaveButtonOnClick={
+          isScreenStatusEdit ? updateReceipt : createReceipt
+        }
+      />
       <Render renderIf={!isScreenStatusSeeRegisters}>
         <Box className='w-100'>
           <Row>
@@ -232,6 +237,11 @@ const ReceiptPosting: FC<ScreenProps & { receipt: Receipt }> = ({
                 setPayload((prev) => ({
                   ...prev,
                   status: o.value as ReceiptStatus,
+                  date:
+                    o.value === ReceiptStatus.RECEIVABLE &&
+                    prev.date! > new Date()
+                      ? prev.date
+                      : new Date(),
                 }))
               }
               activeItem={payload?.status}
@@ -251,20 +261,49 @@ const ReceiptPosting: FC<ScreenProps & { receipt: Receipt }> = ({
               label='Data do lançamento'
               value={payload.date as Date}
               onChange={(d) => setPayload((p) => ({ ...p, date: d }))}
-              maxDate={new Date()}
+              maxDate={
+                payload.status !== ReceiptStatus.RECEIVABLE
+                  ? new Date()
+                  : undefined
+              }
             />
           </Row>
           <Row>
             <TextArea
               disabled={isScreenStatusVizualize}
-              label='Anotações'
+              label='Descrição'
               style={{ flex: 1 }}
               id={screen.id + 'receipt_description'}
-              value={payload.annotations ?? ''}
+              value={payload.description ?? ''}
               onChange={(e) =>
-                setPayload((prev) => ({ ...prev, annotations: e.target.value }))
+                setPayload((prev) => ({ ...prev, description: e.target.value }))
               }
             />
+          </Row>
+        </Box>
+        <Box>
+          <Row>
+            <Collapse
+              title='Detalhes'
+              isCollapsed={isDetailCollapsed}
+              onChange={() => setIsDetailCollapsed((prev) => !prev)}
+            >
+              <Row>
+                <TextArea
+                  disabled={isScreenStatusVizualize}
+                  label='Anotações'
+                  style={{ flex: 1 }}
+                  id={screen.id + 'receipt_description'}
+                  value={payload.annotations ?? ''}
+                  onChange={(e) =>
+                    setPayload((prev) => ({
+                      ...prev,
+                      annotations: e.target.value,
+                    }))
+                  }
+                />
+              </Row>
+            </Collapse>
           </Row>
         </Box>
       </Render>
@@ -276,7 +315,8 @@ const ReceiptPosting: FC<ScreenProps & { receipt: Receipt }> = ({
             columns={[
               {
                 name: 'Status',
-                formatText: (r) => statuses.find(s => s.id === r?.status)?.name
+                formatText: (r) =>
+                  statuses.find((s) => s.id === r?.status)?.name,
               },
               {
                 name: 'Valor',
@@ -296,11 +336,11 @@ const ReceiptPosting: FC<ScreenProps & { receipt: Receipt }> = ({
                   ),
               },
               {
-                name: 'Anotações',
+                name: 'Descrição',
                 formatText: (r) => {
-                  const text = r?.annotations?.toString().slice(0, 50)
+                  const text = r?.description?.toString().slice(0, 50)
 
-                  if ((r?.annotations as string)?.length > 50)
+                  if ((r?.description as string)?.length > 50)
                     return text + '...'
 
                   return text

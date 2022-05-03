@@ -28,7 +28,7 @@ const menus = {
           headerTitle: 'Unidades',
           contentSize: '710px 150px',
         },
-      }
+      },
     },
   },
   Vendas: {
@@ -67,6 +67,24 @@ const menus = {
       },
     },
   },
+  Financeiro: {
+    name: 'Financeiro',
+    isMain: true,
+    icon: 'grouped-bar-chart',
+    items: {
+      ReceiptPosting: {
+        name: screens['receipt-posting']?.name,
+        icon: 'dollar',
+        screen: {
+          minHeight: 290,
+          maxHeight: 500,
+          ...screens['receipt-posting'],
+          contentSize: '690px 195px',
+          headerTitle: screens['receipt-posting']?.name,
+        },
+      },
+    },
+  },
   Empresa: {
     name: 'Empresa',
     isMain: true,
@@ -96,8 +114,8 @@ const menus = {
           ...screens['company-data'],
           contentSize: '900px 335px',
           headerTitle: 'Dados da empresa',
-        }
-      }
+        },
+      },
     },
   },
 } as MenuType

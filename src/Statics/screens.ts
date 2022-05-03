@@ -40,6 +40,11 @@ const screens = {
     id: 'company-data',
     name: 'Dados da empresa',
     path: 'CompanyData'
+  },
+  'receipt-posting': {
+    id: 'receipt-posting',
+    name: 'Lançamento de recebimentos',
+    path: 'ReceiptPosting'
   }
 }
 export const allScreens = {

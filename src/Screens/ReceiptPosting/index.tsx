@@ -11,6 +11,7 @@ import Render from '../../Components/Render'
 import Select from '../../Components/Select'
 import TextArea from '../../Components/TextArea'
 import { ScreenStatus } from '../../Constants/Enums'
+import ReceiptStatus from '../../Constants/ReceiptStatus'
 import { StopLoadFunc } from '../../Contracts/Components/RegistrationButtonBarProps'
 import ScreenProps from '../../Contracts/Components/ScreenProps'
 import { Option } from '../../Contracts/Components/Suggest'
@@ -18,6 +19,7 @@ import { Validation } from '../../Contracts/Hooks/useValidation'
 import Costumer from '../../Contracts/Models/Costumer'
 import Order from '../../Contracts/Models/Order'
 import Receipt from '../../Contracts/Models/Receipt'
+import Valuable from '../../Contracts/Models/Valuable'
 import useAsync from '../../Hooks/useAsync'
 import { useToast } from '../../Hooks/useToast'
 import useValidation from '../../Hooks/useValidation'
@@ -42,6 +44,7 @@ const ReceiptPosting: FC<ScreenProps & { receipt: Receipt }> = ({
     setScreenStatus,
     isScreenStatusVizualize,
     isScreenStatusSeeRegisters,
+    isScreenStatusEdit
   } = useWindow<Payload>()
 
   useEffect(() => {
@@ -53,6 +56,7 @@ const ReceiptPosting: FC<ScreenProps & { receipt: Receipt }> = ({
   }, [])
   const [orders, setOrders] = useState<Order[]>([])
   const [customers, setCustomers] = useState<Costumer[]>([])
+  const [statuses, setStatuses] = useState<Valuable[]>([])
   const { showErrorToast, showSuccessToast } = useToast()
 
   const [loadingCustomers, loadCustomers] = useAsync(async () => {
@@ -72,6 +76,11 @@ const ReceiptPosting: FC<ScreenProps & { receipt: Receipt }> = ({
       errorMessage: 'O valor da receita é obrigatório',
       inputId: screen.id + 'receipt_value',
     },
+    {
+      check: () => !isScreenStatusEdit || Boolean(payload.id),
+      errorMessage: 'Selecione uma receita para editar',
+      inputId: screen.id + 'receipt_value',
+    },
   ]
 
   const { validate } = useValidation(validations)
@@ -82,6 +91,18 @@ const ReceiptPosting: FC<ScreenProps & { receipt: Receipt }> = ({
     } catch (error) {
       showErrorToast(
         'Não foi possível carregar as ordens de serviço. Por favor, tente novamente.'
+      )
+    }
+  }, [])
+
+  const [loadingStatuses, loadStatuses] = useAsync(async () => {
+    try {
+      const response = await ReceiptService.getReceiptStatuses()
+      setStatuses(response.data.data)
+      setPayload((prev) => ({ ...prev, status: ReceiptStatus.RECEIVED }))
+    } catch (error) {
+      showErrorToast(
+        'Não foi possível listar os tipos de status, por favor tente novamente.'
       )
     }
   }, [])
@@ -136,9 +157,28 @@ const ReceiptPosting: FC<ScreenProps & { receipt: Receipt }> = ({
     }
   }
 
+  const updateReceipt = async (stopLoad: StopLoadFunc) => {
+    if(!validate()) return
+
+    try {
+      await ReceiptService.update({
+        ...payload,
+        date: format(payload.date ?? new Date(), 'yyyy-MM-dd'),
+      })
+      showSuccessToast('Receita atualizada com sucesso!')
+      setScreenStatus(ScreenStatus.VISUALIZE)
+    } catch (error) {
+      showErrorToast(
+        'Não foi possível salvar a receita. Por favor, tente novamente.'
+      )
+    } finally {
+      stopLoad()
+    }
+  }
+
   return (
     <Container style={{ height: 'calc(100% - 50px)' }}>
-      <RegistrationButtonBar handleSaveButtonOnClick={createReceipt} />
+      <RegistrationButtonBar handleSaveButtonOnClick={isScreenStatusEdit ? updateReceipt : createReceipt} />
       <Render renderIf={!isScreenStatusSeeRegisters}>
         <Box className='w-100'>
           <Row>
@@ -182,6 +222,20 @@ const ReceiptPosting: FC<ScreenProps & { receipt: Receipt }> = ({
               }
               activeItem={payload?.orderId}
             />
+            <Select
+              label='Status do lançamento'
+              items={statuses.map((v) => ({ value: v.id, label: v.name }))}
+              loading={loadingStatuses}
+              handleButtonReloadClick={loadStatuses}
+              disabled={isScreenStatusVizualize}
+              onChange={(o) =>
+                setPayload((prev) => ({
+                  ...prev,
+                  status: o.value as ReceiptStatus,
+                }))
+              }
+              activeItem={payload?.status}
+            />
             <NumericInput
               required
               disabled={isScreenStatusVizualize}
@@ -197,6 +251,7 @@ const ReceiptPosting: FC<ScreenProps & { receipt: Receipt }> = ({
               label='Data do lançamento'
               value={payload.date as Date}
               onChange={(d) => setPayload((p) => ({ ...p, date: d }))}
+              maxDate={new Date()}
             />
           </Row>
           <Row>
@@ -219,6 +274,10 @@ const ReceiptPosting: FC<ScreenProps & { receipt: Receipt }> = ({
             height='100%'
             request={ReceiptService.getAll}
             columns={[
+              {
+                name: 'Status',
+                formatText: (r) => statuses.find(s => s.id === r?.status)?.name
+              },
               {
                 name: 'Valor',
                 keyName: 'value',

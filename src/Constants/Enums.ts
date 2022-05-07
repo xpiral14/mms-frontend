@@ -7,15 +7,13 @@ export enum fuelType {
 
 export enum orderStatus {
   PENDING = '1',
-  EXECUTING = '2',
-  EXECUTED = '3',
-  CANCELED = '4',
-  DELETED = '5',
+  WAITING_APPROVAL = '2',
+  APPROVED = '3',
+  IN_PROGRESS = '4',
+  WAITING_PAYMENT = '5',
+  DONE = '6',
+  CLOSED = '7',
 }
-
-export const OrderStatusByValue =  [
-  '', 'Pendente', 'Executando', 'Executada', 'Cancelada', 'Deletada'
-]
 
 export enum ScreenStatus {
   VISUALIZE = 'visualize',

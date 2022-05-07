@@ -4,7 +4,7 @@ import { Intent, Position, Toaster, ToastProps } from '@blueprintjs/core'
 export interface ToastContextProps {
   showToast: (toastProps: ToastProps) => void
   showErrorToast: (toastProps: ToastProps | string) => void
-  showSuccessToast: (toastProps: ToastProps) => void
+  showSuccessToast: (toastProps: ToastProps | string) => void
   showWarningToast: (toastProps: ToastProps) => void
   showPrimaryToast: (toastProps: ToastProps) => void
 }
@@ -25,31 +25,35 @@ const ToastContextProvider: React.FC<any> = ({ children }) => {
 
   const showErrorToast = (toastProps: ToastProps | string) => {
     showToast({
-      ...(typeof toastProps === 'string' ? {message: toastProps}: toastProps),
-      intent: Intent.DANGER
+      ...(typeof toastProps === 'string'
+        ? { message: toastProps }
+        : toastProps),
+      intent: Intent.DANGER,
     })
-  } 
+  }
 
-  const showSuccessToast = (toastProps: ToastProps) => {
+  const showSuccessToast = (toastProps: ToastProps | string) => {
     showToast({
-      ...toastProps,
-      intent: Intent.SUCCESS
+      ...(typeof toastProps === 'string'
+        ? { message: toastProps }
+        : toastProps),
+      intent: Intent.SUCCESS,
     })
-  } 
+  }
 
   const showWarningToast = (toastProps: ToastProps) => {
     showToast({
       ...toastProps,
-      intent: Intent.WARNING
+      intent: Intent.WARNING,
     })
-  } 
+  }
 
   const showPrimaryToast = (toastProps: ToastProps) => {
     showToast({
       ...toastProps,
-      intent: Intent.PRIMARY
+      intent: Intent.PRIMARY,
     })
-  } 
+  }
 
   return (
     <toastContext.Provider
@@ -58,7 +62,7 @@ const ToastContextProvider: React.FC<any> = ({ children }) => {
         showErrorToast,
         showSuccessToast,
         showWarningToast,
-        showPrimaryToast
+        showPrimaryToast,
       }}
     >
       {children}

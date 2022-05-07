@@ -8,6 +8,7 @@ import Part from '../Contracts/Models/Part'
 import Service from '../Contracts/Models/Service'
 import User from '../Contracts/Models/User'
 import saveFile from '../Util/saveFile'
+import OrderStatus from '../Contracts/Models/OrderStatus'
 
 const DEFAULT_PATH = '/orders'
 export type OrderServicePaginatedResponse = {
@@ -130,5 +131,9 @@ export default class OrderService {
       new Blob([response.data], { type: 'application/pdf' }),
       `resumo_ordem_${order.reference ?? order.id}.pdf`
     )
+  }
+
+  static  async  getOrderStatuses(){
+    return api.get<Response<OrderStatus[]>>(DEFAULT_PATH + '/statuses')
   }
 }

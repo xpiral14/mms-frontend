@@ -65,6 +65,16 @@ const menus = {
           headerTitle: 'Criação de Serviços',
         },
       },
+      CostPosting: {
+        name: 'Lançamento de custos',
+        screen: {
+          minHeight: 290,
+          maxHeight: 500,
+          ...screens['cost-posting'],
+          contentSize: '900px 256px',
+          headerTitle: 'Lançamento de custos',
+        },
+      },
     },
   },
   Empresa: {

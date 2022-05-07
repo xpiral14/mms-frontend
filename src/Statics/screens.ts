@@ -36,6 +36,11 @@ const screens = {
     name: 'Cadastro de produtos',
     path: 'Register/ServiceOrder',
   },
+  'cost-posting': {
+    id: 'cost-posting',
+    name: 'Lançamento de custos',
+    path: 'CostsPosting',
+  },
   'company-data': {
     id: 'company-data',
     name: 'Dados da empresa',

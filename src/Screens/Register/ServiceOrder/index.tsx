@@ -6,7 +6,6 @@ import Select from '../../../Components/Select'
 import {
   DiscountType,
   orderStatus,
-  OrderStatusByValue,
   PersonType,
   ScreenStatus,
 } from '../../../Constants/Enums'
@@ -48,29 +47,9 @@ import keysToCamel from '../../../Util/keysToKamel'
 import TextArea from '../../../Components/TextArea'
 import { Column, Row as TableRow } from '../../../Contracts/Components/Table'
 import { OrderResumeProps } from '../../../Contracts/Screen/OrderResume'
-
-const orderStatusOptions: Option[] = [
-  {
-    value: orderStatus.PENDING,
-    label: 'Pendente',
-    intent: Intent.NONE,
-  },
-  {
-    value: orderStatus.EXECUTING,
-    label: 'Executando',
-    intent: Intent.PRIMARY,
-  },
-  {
-    value: orderStatus.EXECUTED,
-    label: 'Executada',
-    intent: Intent.SUCCESS,
-  },
-  {
-    value: orderStatus.CANCELED,
-    label: 'Cancelada',
-    intent: Intent.DANGER,
-  },
-]
+import getDateWithTz from '../../../Util/getDateWithTz'
+import OrderStatus from '../../../Contracts/Models/OrderStatus'
+import capitalize from '../../../Util/capitalize'
 
 const discountTypeOptions: Option[] = [
   {
@@ -117,6 +96,7 @@ type OrderFilter = {
 const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
   const [costumers, setCostumer] = useState<Costumer[]>([])
   const [employees, setEmployees] = useState<Employee[]>([])
+  const [orderStatuses, setOrderStatuses] = useState<OrderStatus[]>([])
   const [isDetailsCollapsed, setIsDetailsCollapsed] = useState(true)
   const [filter, setFilter] = useState<OrderFilter>({
     customerName: '',
@@ -169,6 +149,17 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
     try {
       const response = await CostumerService.getAll(1, 100)
       setCostumer(response.data.data as Costumer[])
+    } catch (error) {
+      showErrorToast({
+        message: 'Erro ao obter lista de clientes',
+      })
+    }
+  }, [])
+
+  const [loadingOrderStatuses, loadOrderStatuses] = useAsync(async () => {
+    try {
+      const response = await OrderService.getOrderStatuses()
+      setOrderStatuses(response.data.data.map((o) => ({...o, name: capitalize(o.name)})))
     } catch (error) {
       showErrorToast({
         message: 'Erro ao obter lista de clientes',
@@ -473,9 +464,9 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
     {
       name: 'Status',
       keyName: 'status',
-      formatText: (row) => OrderStatusByValue[row!.status as number],
+      formatText: (row) => orderStatuses.find(o => o.id === row?.status)?.name,
       style: {
-        width: '100%',
+        width: '30%',
       },
     },
     {
@@ -486,7 +477,7 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
       name: 'Criado em',
       keyName: 'date',
       formatText: (row) => {
-        return row?.date ? new Date(row.date).toLocaleDateString('pt-BR') : '-'
+        return row?.date ? getDateWithTz(new Date(row.date)).toLocaleDateString('pt-BR') : '-'
       },
     },
   ]
@@ -509,6 +500,8 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
       employeeId: row.executing_by,
     })
   }
+
+  const orderStatusOptions = useMemo(() => orderStatuses.map(o => ({value: o.id, label: o.name})), [orderStatuses])
   return (
     <Container>
       <Header>
@@ -597,6 +590,8 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
               activeItem={payload?.status}
               items={orderStatusOptions}
               disabled={isStatusVisualize}
+              loading={loadingOrderStatuses}
+              handleButtonReloadClick={loadOrderStatuses}
             />
             <Select
               handleButtonReloadClick={loadCostumers}

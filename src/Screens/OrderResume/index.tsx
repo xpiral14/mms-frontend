@@ -17,7 +17,6 @@ import Table from '../../Components/Table'
 import {
   DiscountType,
   DiscountTypeSymbol,
-  OrderStatusByValue,
 } from '../../Constants/Enums'
 import { Column, Row as TableRow } from '../../Contracts/Components/Table'
 import User from '../../Contracts/Models/User'
@@ -29,10 +28,11 @@ import OrderService, {
   OrderPartResponse,
   OrderServicePaginatedResponse,
 } from '../../Services/OrderService'
+import OrderStatus from '../../Contracts/Models/OrderStatus'
 
 const OrderResume: FunctionComponent<OrderResumeScreenProps> = (props) => {
   const { openAlert } = useAlert()
-
+  const [orderStatuses, setOrderStatuses] = useState<OrderStatus[]>([])
   useEffect(() => {
     if (!props.order.id) {
       openAlert({
@@ -61,6 +61,18 @@ const OrderResume: FunctionComponent<OrderResumeScreenProps> = (props) => {
       })
     }
   }, [props.order])
+
+  const [loadingOrderStatuses, loadOrderStatuses] = useAsync(async () => {
+    try {
+      const response = await OrderService.getOrderStatuses()
+      setOrderStatuses(response.data.data)
+    } catch (error) {
+      showErrorToast({
+        message: 'Erro ao obter lista de clientes',
+      })
+    }
+  }, [])
+
   const { showErrorToast } = useToast()
   const [costumer, setCostumer] = useState<User | null>(null)
   const [isCostumerCollapsed, setIsCostumerCollapsed] = useState(false)
@@ -258,6 +270,7 @@ const OrderResume: FunctionComponent<OrderResumeScreenProps> = (props) => {
     loadOrderParts()
     loadCostumer()
     loadOrder()
+    loadOrderStatuses()
   }
 
   const generateOrderResumeReport = () => {
@@ -278,7 +291,7 @@ const OrderResume: FunctionComponent<OrderResumeScreenProps> = (props) => {
           <Button
             icon='refresh'
             onClick={reloadAll}
-            loading={loadingOrderParts && loadingOrderServices}
+            loading={loadingOrderParts && loadingOrderServices && loadingOrderStatuses}
           >
             Recarregar dados da tela
           </Button>
@@ -386,7 +399,7 @@ const OrderResume: FunctionComponent<OrderResumeScreenProps> = (props) => {
               <InputText
                 label='Status'
                 readOnly
-                value={OrderStatusByValue[+order.status!]}
+                value={orderStatuses.find(o => o.id === order.status)?.name}
                 id=''
               />
             </Row>

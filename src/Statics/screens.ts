@@ -11,6 +11,11 @@ const screens = {
     name: 'Cadastro de clientes',
     path: 'Register/Costumer'
   },
+  'employees-register': {
+    id: 'employees-register',
+    name: 'Cadastro de funcionários',
+    path: 'Register/Employees'
+  },
   'part-register': {
     id: 'part-register',
     name: 'Cadastro de produtos',
@@ -35,6 +40,11 @@ const screens = {
     id: 'cost-posting',
     name: 'Lançamento de custos',
     path: 'CostsPosting',
+  },
+  'company-data': {
+    id: 'company-data',
+    name: 'Dados da empresa',
+    path: 'CompanyData'
   }
 }
 export const allScreens = {

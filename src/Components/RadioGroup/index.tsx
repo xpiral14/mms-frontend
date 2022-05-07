@@ -7,7 +7,7 @@ const RadioGroup = React.forwardRef<any, RadioGroupProps>((props, ref) => {
     <Container>
       <BluePrintRadioGroup {...props} ref={ref}>
         {props.radios?.map((radio) => (
-          <Radio key={radio.id} {...radio} />
+          <Radio key={radio.id} {...radio} onClick={(evt) => props.onClick?.(radio.value!, evt as any)} />
         ))}
       </BluePrintRadioGroup>
     </Container>

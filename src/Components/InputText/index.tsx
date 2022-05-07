@@ -1,10 +1,18 @@
 import { Classes, FormGroup } from '@blueprintjs/core'
 import InputMask from 'react-input-mask'
-import React from 'react'
+import React, { useMemo } from 'react'
 import { InputProps } from '../../Contracts/Components/InputProps'
 import joinClasses from '../../Util/joinClasses'
 
 const InputText: React.FC<InputProps> = (props) => {
+
+  const className = useMemo(() => joinClasses(
+    Classes.INPUT,
+    props.itent
+      ? (Classes as any)[('INTENT_' + props.itent.toUpperCase()) as any]
+      : '',
+    props.className ?? ''
+  ), [props.itent, props.className])
   return (
     <FormGroup
       label={props.label}
@@ -26,9 +34,10 @@ const InputText: React.FC<InputProps> = (props) => {
           {(inputProps: any) => (
             <input
               {...inputProps}
+              className={className}
               id={props.id}
-              className={Classes.INPUT}
               disabled={props.disabled}
+              style={props.inputStyle}
             />
           )}
         </InputMask>
@@ -37,13 +46,8 @@ const InputText: React.FC<InputProps> = (props) => {
           value={props.value || ''}
           disabled={props.disabled}
           placeholder={props.placeholder}
-          className={joinClasses(
-            Classes.INPUT,
-            props.itent
-              ? (Classes as any)[('INTENT_' + props.itent.toUpperCase()) as any]
-              : ''
-          )}
           {...(props as any)}
+          className={className}
           style={props.inputStyle}
         />
       )}

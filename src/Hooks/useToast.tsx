@@ -3,7 +3,7 @@ import { Intent, Position, Toaster, ToastProps } from '@blueprintjs/core'
 
 export interface ToastContextProps {
   showToast: (toastProps: ToastProps) => void
-  showErrorToast: (toastProps: ToastProps) => void
+  showErrorToast: (toastProps: ToastProps | string) => void
   showSuccessToast: (toastProps: ToastProps) => void
   showWarningToast: (toastProps: ToastProps) => void
   showPrimaryToast: (toastProps: ToastProps) => void
@@ -23,9 +23,9 @@ const ToastContextProvider: React.FC<any> = ({ children }) => {
     })
   }
 
-  const showErrorToast = (toastProps: ToastProps) => {
+  const showErrorToast = (toastProps: ToastProps | string) => {
     showToast({
-      ...toastProps,
+      ...(typeof toastProps === 'string' ? {message: toastProps}: toastProps),
       intent: Intent.DANGER
     })
   } 

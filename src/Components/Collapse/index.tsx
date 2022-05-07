@@ -21,7 +21,7 @@ const Collapse: FunctionComponent<Props> = (props) => {
       </Render>
       {props.title}
     </CollapseTitle>
-    <BluePrintCollapse isOpen={!props.isCollapsed}>
+    <BluePrintCollapse className='w-100' isOpen={!props.isCollapsed}>
       {props.children}
     </BluePrintCollapse>
     <Render renderIf={props.bordered && props.isCollapsed}>

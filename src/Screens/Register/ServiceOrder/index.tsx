@@ -1,5 +1,5 @@
-import {Icon, Intent} from '@blueprintjs/core'
-import React, {useEffect, useMemo, useState} from 'react'
+import { Icon, Intent } from '@blueprintjs/core'
+import React, { useEffect, useMemo, useState } from 'react'
 import PaginatedTable from '../../../Components/PaginatedTable'
 import RegistrationButtonBar from '../../../Components/RegistrationButtonBar'
 import Select from '../../../Components/Select'
@@ -15,39 +15,39 @@ import {
   StopLoadFunc,
 } from '../../../Contracts/Components/RegistrationButtonBarProps'
 import ScreenProps from '../../../Contracts/Components/ScreenProps'
-import {Option} from '../../../Contracts/Components/Suggest'
-import {Validation} from '../../../Contracts/Hooks/useValidation'
+import { Option } from '../../../Contracts/Components/Suggest'
+import { Validation } from '../../../Contracts/Hooks/useValidation'
 import Costumer from '../../../Contracts/Models/Costumer'
 import Employee from '../../../Contracts/Models/Employee'
 import Order from '../../../Contracts/Models/Order'
 import OrderServiceModel from '../../../Contracts/Models/OrderService'
-import {useAlert} from '../../../Hooks/useAlert'
+import { useAlert } from '../../../Hooks/useAlert'
 import useAsync from '../../../Hooks/useAsync'
-import {useGrid} from '../../../Hooks/useGrid'
-import {useScreen} from '../../../Hooks/useScreen'
-import {useToast} from '../../../Hooks/useToast'
+import { useGrid } from '../../../Hooks/useGrid'
+import { useScreen } from '../../../Hooks/useScreen'
+import { useToast } from '../../../Hooks/useToast'
 import useValidation from '../../../Hooks/useValidation'
-import {useWindow} from '../../../Hooks/useWindow'
+import { useWindow } from '../../../Hooks/useWindow'
 import CostumerService from '../../../Services/CostumerService'
 import OrderService from '../../../Services/OrderService'
 import EmployeeService from '../../../Services/EmployeeService'
-import {Body, Container, Header} from './style'
+import { Body, Container, Header } from './style'
 import Button from '../../../Components/Button'
 import InputText from '../../../Components/InputText'
 import Render from '../../../Components/Render'
 import InputDate from '../../../Components/InputDate'
 import Collapse from '../../../Components/Collapse'
 import Row from '../../../Components/Layout/Row'
-import {OrderServiceDetailsProps} from '../../../Contracts/Screen/OrderServiceDetails/OrderServiceDetailsProps'
-import {OrderPartDetailsProps} from '../../../Contracts/Screen/OrderPartDetails'
+import { OrderServiceDetailsProps } from '../../../Contracts/Screen/OrderServiceDetails/OrderServiceDetailsProps'
+import { OrderPartDetailsProps } from '../../../Contracts/Screen/OrderPartDetails'
 import OrderPart from '../../../Contracts/Models/OrderPart'
 import Box from '../../../Components/Layout/Box'
-import {format, isBefore} from 'date-fns'
+import { format, isBefore } from 'date-fns'
 import InputGroup from '../../../Components/InputGroup'
 import keysToCamel from '../../../Util/keysToKamel'
 import TextArea from '../../../Components/TextArea'
-import {Column, Row as TableRow} from '../../../Contracts/Components/Table'
-import {OrderResumeProps} from '../../../Contracts/Screen/OrderResume'
+import { Column, Row as TableRow } from '../../../Contracts/Components/Table'
+import { OrderResumeProps } from '../../../Contracts/Screen/OrderResume'
 
 const orderStatusOptions: Option[] = [
   {
@@ -114,7 +114,7 @@ type OrderFilter = {
   status?: string
   validity?: Date
 }
-const OrderServiceCostumer: React.FC<ScreenProps> = ({screen}) => {
+const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
   const [costumers, setCostumer] = useState<Costumer[]>([])
   const [employees, setEmployees] = useState<Employee[]>([])
   const [isDetailsCollapsed, setIsDetailsCollapsed] = useState(true)
@@ -156,10 +156,14 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({screen}) => {
     })
     return normalized
   }, [costumers])
-  const employeeOptions = useMemo(() => employees.map(employee => ({
-    label: employee.name,
-    value: employee.id
-  })), [employees])
+  const employeeOptions = useMemo(
+    () =>
+      employees.map((employee) => ({
+        label: employee.name,
+        value: employee.id,
+      })),
+    [employees]
+  )
 
   const [loadingCostumers, loadCostumers] = useAsync(async () => {
     try {
@@ -183,7 +187,7 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({screen}) => {
     }
   }, [])
 
-  const {payload, setPayload, screenStatus, setScreenStatus} =
+  const { payload, setPayload, screenStatus, setScreenStatus } =
     useWindow<OrderPayload>()
   const isStatusVisualize = Boolean(screenStatus === ScreenStatus.VISUALIZE)
   useEffect(() => {
@@ -217,12 +221,12 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({screen}) => {
       inputId: `${screen.id}-select-costumer`,
     },
   ]
-  const {validate} = useValidation(validations)
+  const { validate } = useValidation(validations)
 
-  const {setReloadGrid} = useGrid()
-  const {showSuccessToast, showErrorToast} = useToast()
-  const {openAlert} = useAlert()
-  const {openSubScreen} = useScreen()
+  const { setReloadGrid } = useGrid()
+  const { showSuccessToast, showErrorToast } = useToast()
+  const { openAlert } = useAlert()
+  const { openSubScreen } = useScreen()
 
   const reloadAllScreenData = () => {
     loadCostumers()
@@ -251,6 +255,7 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({screen}) => {
         serviceDiscount: payload.serviceDiscount,
         productDiscount: payload.productDiscount,
         productDiscountType: payload.productDiscountType,
+        employeeId: payload?.employeeId,
       }
       const response = await OrderService.create(requestPayload)
       const orderId = response.data.data.id
@@ -318,7 +323,7 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({screen}) => {
             : null
           : payload.productDiscount ?? null,
       productDiscountType: payload.productDiscountType,
-      employeeId: payload.employeeId
+      employeeId: payload.employeeId,
     }
 
     try {
@@ -469,6 +474,9 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({screen}) => {
       name: 'Status',
       keyName: 'status',
       formatText: (row) => OrderStatusByValue[row!.status as number],
+      style: {
+        width: '100%',
+      },
     },
     {
       name: 'Observação',
@@ -498,6 +506,7 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({screen}) => {
         row.service_discount_type === DiscountType.PERCENT
           ? +(row.service_discount ?? 0) * 100
           : row.service_discount,
+      employeeId: row.executing_by,
     })
   }
   return (
@@ -620,6 +629,7 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({screen}) => {
                   id: `${screen.id}-select-costumer`,
                   style: {
                     width: '100%',
+                    minWidth: '150px',
                     display: 'flex',
                     justifyContent: 'space-between',
                   },
@@ -640,7 +650,7 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({screen}) => {
               handleCreateButtonClick={(query) => {
                 openSubScreen(
                   {
-                    id: 'costumer-register',
+                    id: 'employees-register',
                     contentSize: '700px 350px',
                   },
                   screen.id,
@@ -658,8 +668,13 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({screen}) => {
                   id: `${screen.id}-select-costumer`,
                   style: {
                     width: '100%',
+                    minWidth: '150px',
                     display: 'flex',
                     justifyContent: 'space-between',
+                    maxWidth: 250,
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
                   },
                 } as any
               }
@@ -804,21 +819,23 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({screen}) => {
                   placeholder='Digite a observação'
                   disabled={screenStatus === ScreenStatus.VISUALIZE}
                   growVertically={false}
-                  style={{flex: 1}}
+                  style={{ flex: 1 }}
                 />
               </Row>
             </Box>
           </Collapse>
         </Render>
         <Render renderIf={screenStatus === ScreenStatus.SEE_REGISTERS}>
-          <Row style={{flex: 1}}>
+          <Row style={{ flex: 1 }}>
             <Box>
               <Row className='align-center d-flex flex-between'>
                 <div>
-                  <Icon icon='filter'/>
+                  <Icon icon='filter' />
                   Filtros
                 </div>
-                <Button icon='search' onClick={() => setReloadGrid(true)}>Filtrar</Button>
+                <Button icon='search' onClick={() => setReloadGrid(true)}>
+                  Filtrar
+                </Button>
               </Row>
               <Row
                 className='mt-3'
@@ -841,7 +858,7 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({screen}) => {
                   label='Validade da nota'
                   id={screen.id + 'filter-date-validatiom'}
                   value={filter?.validity}
-                  onChange={(validity) => changeFilter({validity: validity})}
+                  onChange={(validity) => changeFilter({ validity: validity })}
                 />
                 <Select
                   label='Status da ordem'
@@ -855,7 +872,7 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({screen}) => {
                 />
               </Row>
             </Box>
-            <Box style={{flex: 1}}>
+            <Box style={{ flex: 1 }}>
               <Row>
                 <PaginatedTable
                   containerProps={{

@@ -13,9 +13,6 @@ import './globalStyle.css'
 import Routes from './Routes'
 import AuthProvider from './Hooks/useAuth'
 import ToastContextProvider from './Hooks/useToast'
-import axios from 'axios'
-
-axios.defaults.baseURL = 'http://localhost/api'
 
 const App = () => {
   return (

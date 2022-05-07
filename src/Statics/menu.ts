@@ -28,15 +28,7 @@ const menus = {
           headerTitle: 'Unidades',
           contentSize: '710px 150px',
         },
-      },
-      Clientes: {
-        name: 'Clientes',
-        screen: {
-          ...screens['part-register'],
-          headerTitle: 'Peças',
-          contentSize: '750px 500px',
-        },
-      },
+      }
     },
   },
   Vendas: {
@@ -85,11 +77,38 @@ const menus = {
       },
     },
   },
+  Empresa: {
+    name: 'Empresa',
+    isMain: true,
+    icon: 'office',
+    items: {
+      Funcionarios: {
+        name: 'Funcionários',
+        icon: 'people',
+        screen: {
+          minHeight: 224, // This has to be the contentSize height + 34px that's the height of the bar
+          maxHeight: 500,
+          ...screens['employees-register'],
+          headerTitle: 'Funcionários',
+          contentSize: '710px 190px',
+        },
+      },
+    },
+  },
   Configuracoes: {
     name: 'Configurações',
     icon: 'cog',
     isMain: true,
-    items: {},
+    items: {
+      CompanyData: {
+        name: 'Dados da empresa',
+        screen: {
+          ...screens['company-data'],
+          contentSize: '900px 335px',
+          headerTitle: 'Dados da empresa',
+        }
+      }
+    },
   },
 } as MenuType
 

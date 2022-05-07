@@ -13,9 +13,14 @@ interface NumericInputProps extends BluePrintNumericInputProps {
   labelPosition?: 'vertical' | 'horizontal'
   style?: CSSProperties
   maxLength?: number
+  required?: boolean
 }
 
-const NumericInput: FC<NumericInputProps> = ({ label, maxLength, ...props }) => {
+const NumericInput: FC<NumericInputProps> = ({
+  label,
+  maxLength,
+  ...props
+}) => {
   return (
     <Container
       width={props.width}
@@ -24,7 +29,9 @@ const NumericInput: FC<NumericInputProps> = ({ label, maxLength, ...props }) => 
     >
       {label && (
         <div>
-          <label htmlFor={props.id}>{label}</label>
+          <label htmlFor={props.id}>
+            {label} {props.required && '*'}
+          </label>
         </div>
       )}
 

@@ -9,6 +9,8 @@ import Service from '../Contracts/Models/Service'
 import User from '../Contracts/Models/User'
 import saveFile from '../Util/saveFile'
 import OrderStatus from '../Contracts/Models/OrderStatus'
+import makeURL from '../Util/makeURL'
+import Receipt from '../Contracts/Models/Receipt'
 
 const DEFAULT_PATH = '/orders'
 export type OrderServicePaginatedResponse = {
@@ -135,5 +137,15 @@ export default class OrderService {
 
   static  async  getOrderStatuses(){
     return api.get<Response<OrderStatus[]>>(DEFAULT_PATH + '/statuses')
+  }
+
+  static async getTotalPriceOfOrder(orderId: number){
+    const response = await api.get<Response<number>>(makeURL(DEFAULT_PATH, orderId, 'total-price'))
+
+    return response.data.data
+  }
+
+  static async getOrderReceipts(orderId: number){
+    return api.get<Response<Receipt[]>>(makeURL(DEFAULT_PATH, orderId, 'receipts'))
   }
 }

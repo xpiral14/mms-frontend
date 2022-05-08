@@ -6,7 +6,6 @@ import Select from '../../../Components/Select'
 import {
   DiscountType,
   orderStatus,
-  OrderStatusByValue,
   PersonType,
   ScreenStatus,
 } from '../../../Constants/Enums'
@@ -20,6 +19,7 @@ import { Validation } from '../../../Contracts/Hooks/useValidation'
 import Costumer from '../../../Contracts/Models/Costumer'
 import Employee from '../../../Contracts/Models/Employee'
 import Order from '../../../Contracts/Models/Order'
+import { ReceiptPostProps } from '../../../Contracts/Screen/ReceiptPosting'
 import OrderServiceModel from '../../../Contracts/Models/OrderService'
 import { useAlert } from '../../../Hooks/useAlert'
 import useAsync from '../../../Hooks/useAsync'
@@ -48,29 +48,10 @@ import keysToCamel from '../../../Util/keysToKamel'
 import TextArea from '../../../Components/TextArea'
 import { Column, Row as TableRow } from '../../../Contracts/Components/Table'
 import { OrderResumeProps } from '../../../Contracts/Screen/OrderResume'
-
-const orderStatusOptions: Option[] = [
-  {
-    value: orderStatus.PENDING,
-    label: 'Pendente',
-    intent: Intent.NONE,
-  },
-  {
-    value: orderStatus.EXECUTING,
-    label: 'Executando',
-    intent: Intent.PRIMARY,
-  },
-  {
-    value: orderStatus.EXECUTED,
-    label: 'Executada',
-    intent: Intent.SUCCESS,
-  },
-  {
-    value: orderStatus.CANCELED,
-    label: 'Cancelada',
-    intent: Intent.DANGER,
-  },
-]
+import getDateWithTz from '../../../Util/getDateWithTz'
+import OrderStatus from '../../../Contracts/Models/OrderStatus'
+import capitalize from '../../../Util/capitalize'
+import ReceiptStatus from '../../../Constants/ReceiptStatus'
 
 const discountTypeOptions: Option[] = [
   {
@@ -107,6 +88,7 @@ type OrderPayload = {
   productDiscountType?: DiscountType
   productDiscount?: number
   employeeId?: number
+  totalPrice: number
 }
 
 type OrderFilter = {
@@ -117,6 +99,7 @@ type OrderFilter = {
 const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
   const [costumers, setCostumer] = useState<Costumer[]>([])
   const [employees, setEmployees] = useState<Employee[]>([])
+  const [orderStatuses, setOrderStatuses] = useState<OrderStatus[]>([])
   const [isDetailsCollapsed, setIsDetailsCollapsed] = useState(true)
   const [filter, setFilter] = useState<OrderFilter>({
     customerName: '',
@@ -176,6 +159,20 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
     }
   }, [])
 
+  const [loadingOrderStatuses, loadOrderStatuses] = useAsync(async () => {
+    try {
+      const response = await OrderService.getOrderStatuses()
+      setOrderStatuses(
+        response.data.data.map((o) => ({ ...o, name: capitalize(o.name) }))
+      )
+    } catch (error) {
+      showErrorToast({
+        message:
+          'Erro ao obter lista de status de ordem de serviço. Por favor, tente novamente',
+      })
+    }
+  }, [])
+
   const [loadingEmployees, loadEmployees] = useAsync(async () => {
     try {
       const response = await EmployeeService.getAll(1, 100)
@@ -191,7 +188,9 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
     useWindow<OrderPayload>()
   const isStatusVisualize = Boolean(screenStatus === ScreenStatus.VISUALIZE)
   useEffect(() => {
-    changePayload('date', new Date())
+    setPayload({
+      date: new Date(),
+    })
   }, [])
   const changePayload = (key: keyof typeof payload, value: any) => {
     setPayload((prev) => ({
@@ -234,6 +233,52 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
     setReloadGrid(true)
   }
 
+  const showReceiptPostingScreen = async (orderId: number) => {
+
+    const totalPrice = await OrderService.getTotalPriceOfOrder(orderId)
+    const receiptsTotal = (
+      await OrderService.getOrderReceipts(orderId)
+    ).data.data.reduce((carry, receipt) => carry + receipt.value, 0)
+    if (totalPrice === 0) {
+
+      openAlert({
+        text: 'A ordem de serviço não possui serviços nem produtos com valor',
+        intent: Intent.WARNING,
+        icon: 'warning-sign',
+        confirmButtonText: 'Entendi',
+      })
+      return
+    }
+    if (receiptsTotal >= totalPrice) {
+      return
+    }
+
+    const onConfirm = async () => {
+      openSubScreen<ReceiptPostProps>(
+        {
+          id: 'receipt-posting',
+        },
+        screen.id,
+        {
+          receipt: {
+            status: ReceiptStatus.RECEIVED,
+            value: totalPrice - receiptsTotal,
+            date: new Date(),
+            orderId: payload.id,
+            customerId: payload.costumerId,
+            description: payload?.reference
+              ? 'Lançamento para a ordem ' + payload?.reference
+              : undefined,
+          },
+        }
+      )
+    }
+    openAlert({
+      text: 'A ordem está no status aprovado, você deseja lançar o recebimento?',
+      onConfirm: onConfirm,
+    })
+  }
+
   const saveAction = async (stopLoad: StopLoadFunc) => {
     if (!validate()) {
       stopLoad()
@@ -262,7 +307,7 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
       setReloadGrid(true)
       changePayload('id', orderId)
       if (payload.services) {
-        Promise.all(
+        await Promise.all(
           payload.services?.map((orderService) =>
             OrderService.addService(orderId, orderService)
           )
@@ -270,7 +315,7 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
       }
 
       if (payload.parts) {
-        Promise.all(
+        await Promise.all(
           payload.parts?.map((orderPart) =>
             OrderService.addPart(orderId, orderPart)
           )
@@ -279,6 +324,11 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
       showSuccessToast({
         message: 'Ordem de serviço criada com sucesso!',
       })
+
+      if (payload.status === orderStatus.DONE) {
+        showReceiptPostingScreen(orderId)
+      }
+
       setScreenStatus(ScreenStatus.VISUALIZE)
       setPayload({})
     } catch (error: any) {
@@ -329,9 +379,11 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
     try {
       await OrderService.edit(order)
 
-      showSuccessToast({
-        message: 'Ordem editada com sucesso.',
-      })
+      showSuccessToast('Ordem editada com sucesso.')
+
+      if (payload.status === orderStatus.DONE) {
+        showReceiptPostingScreen(payload.id!)
+      }
       setReloadGrid(true)
       setScreenStatus(ScreenStatus.VISUALIZE)
     } catch (error: any) {
@@ -473,9 +525,10 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
     {
       name: 'Status',
       keyName: 'status',
-      formatText: (row) => OrderStatusByValue[row!.status as number],
+      formatText: (row) =>
+        orderStatuses.find((o) => o.id === row?.status)?.name,
       style: {
-        width: '100%',
+        width: '30%',
       },
     },
     {
@@ -486,7 +539,9 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
       name: 'Criado em',
       keyName: 'date',
       formatText: (row) => {
-        return row?.date ? new Date(row.date).toLocaleDateString('pt-BR') : '-'
+        return row?.date
+          ? getDateWithTz(new Date(row.date)).toLocaleDateString('pt-BR')
+          : '-'
       },
     },
   ]
@@ -509,6 +564,11 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
       employeeId: row.executing_by,
     })
   }
+
+  const orderStatusOptions = useMemo(
+    () => orderStatuses.map((o) => ({ value: o.id, label: o.name })),
+    [orderStatuses]
+  )
   return (
     <Container>
       <Header>
@@ -597,6 +657,8 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
               activeItem={payload?.status}
               items={orderStatusOptions}
               disabled={isStatusVisualize}
+              loading={loadingOrderStatuses}
+              handleButtonReloadClick={loadOrderStatuses}
             />
             <Select
               handleButtonReloadClick={loadCostumers}

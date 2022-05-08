@@ -35,29 +35,31 @@ const AuthProvider: FC = ({ children }) => {
 
   const { showErrorToast } = useToast()
   const logout = () => {
-    setAuth(null)
     localStorage.removeItem(AUTH_LOCAL_STORAGE_KEY)
+    setAuth(null)
   }
 
 
   useEffect(() => {
-    if (auth) {
-      api.defaults.headers.authorization = `Bearer ${auth.token}`
-      api.interceptors.response.use(
-        (response) => {
-          return response
-        },
-        (error) => {
-          if (error?.response?.data?.messages?.includes('Unauthenticated') && error.response.status === 500) {
-            showErrorToast({
-              message: 'A sua sessão encerrou. Por favor, loge-se novamente',
-            })
-            logout()
-          }
-          throw error
+    if (!auth) return
+    api.defaults.headers.authorization = `Bearer ${auth.token}`
+    api.interceptors.response.use(
+      (response) => {
+        return response
+      },
+      (error) => {
+        if (
+          error?.response?.data?.messages?.includes('Unauthenticated') &&
+            error.response.status === 500
+        ) {
+          showErrorToast({
+            message: 'A sua sessão encerrou. Por favor, loge-se novamente',
+          })
+          logout()
         }
-      )
-    }
+        throw error
+      }
+    )
   }, [auth])
 
   return (

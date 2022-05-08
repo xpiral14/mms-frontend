@@ -14,13 +14,13 @@ import TextArea from '../../Components/TextArea'
 import { ScreenStatus } from '../../Constants/Enums'
 import ReceiptStatus from '../../Constants/ReceiptStatus'
 import { StopLoadFunc } from '../../Contracts/Components/RegistrationButtonBarProps'
-import ScreenProps from '../../Contracts/Components/ScreenProps'
 import { Option } from '../../Contracts/Components/Suggest'
 import { Validation } from '../../Contracts/Hooks/useValidation'
 import Costumer from '../../Contracts/Models/Costumer'
 import Order from '../../Contracts/Models/Order'
 import Receipt from '../../Contracts/Models/Receipt'
 import Valuable from '../../Contracts/Models/Valuable'
+import { ReceiptPostScreenProps } from '../../Contracts/Screen/ReceiptPosting'
 import useAsync from '../../Hooks/useAsync'
 import { useToast } from '../../Hooks/useToast'
 import useValidation from '../../Hooks/useValidation'
@@ -30,12 +30,13 @@ import OrderService from '../../Services/OrderService'
 import ReceiptService from '../../Services/ReceiptService'
 import currencyFormat from '../../Util/currencyFormat'
 import dateFromJSON from '../../Util/dateFromJSON'
+import getDateWithTz from '../../Util/getDateWithTz'
 import keysToCamel from '../../Util/keysToKamel'
 
 interface Payload extends Omit<Receipt, 'date'> {
   date: Date
 }
-const ReceiptPosting: FC<ScreenProps & { receipt: Receipt }> = ({
+const ReceiptPosting: FC<ReceiptPostScreenProps> = ({
   screen,
   ...props
 }) => {
@@ -54,7 +55,7 @@ const ReceiptPosting: FC<ScreenProps & { receipt: Receipt }> = ({
       date: props.receipt?.date ? new Date(props.receipt?.date) : new Date(),
     })
     setScreenStatus(ScreenStatus.NEW)
-  }, [])
+  }, [props.receipt])
   const [orders, setOrders] = useState<Order[]>([])
   const [customers, setCustomers] = useState<Costumer[]>([])
   const [statuses, setStatuses] = useState<Valuable[]>([])
@@ -117,8 +118,8 @@ const ReceiptPosting: FC<ScreenProps & { receipt: Receipt }> = ({
     }
 
     return formattedOrders.map((o) => ({
-      label: `${o.reference}-${
-        o.date ? format(new Date(o.date), 'dd/MM/yyy') : ''
+      label: `${o.reference} ${
+        o.date ? `(${getDateWithTz(o.date).toLocaleDateString()})`  : ''
       }`,
       value: o.id,
     }))

@@ -51,7 +51,6 @@ export default function Select({
 }: SelectProps) {
   const activeOption = useMemo(() => {
     if (activeItem === null || activeItem === undefined) return null
-    console.log(props.label)
     return props.items?.find((o) => o.value === activeItem)
   }, [activeItem, props.items])
   const renderCreateOptionOption = (query: string, active: boolean) => (

@@ -85,8 +85,8 @@ const menus = {
       },
       CostPosting: {
         name: 'Lançamento de custos',
+        icon: 'dollar',
         screen: {
-          icon: 'dollar',
           minHeight: 290,
           maxHeight: 500,
           ...screens['cost-posting'],

@@ -234,7 +234,6 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
   }
 
   const showReceiptPostingScreen = async (orderId: number) => {
-
     const totalPrice = await OrderService.getTotalPriceOfOrder(orderId)
     const receiptsTotal = (
       await OrderService.getOrderReceipts(orderId)
@@ -257,6 +256,8 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
       openSubScreen<ReceiptPostProps>(
         {
           id: 'receipt-posting',
+          forceOpen:  true,
+          contentSize: '900px 256px'
         },
         screen.id,
         {

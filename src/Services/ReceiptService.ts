@@ -3,6 +3,7 @@ import Paginated from '../Contracts/Models/Paginated'
 import Receipt from '../Contracts/Models/Receipt'
 import Valuable from '../Contracts/Models/Valuable'
 import Response from '../Contracts/Types/Response'
+import makeURL from '../Util/makeURL'
 
 export default class ReceiptService {
   public static save(receipt: Partial<Receipt>) {
@@ -21,5 +22,9 @@ export default class ReceiptService {
 
   public static async getReceiptStatuses(){
     return api.get<Response<Valuable[]>>('/receipts/statuses')
+  }
+
+  public static async delete(receiptId: number){
+    return api.delete<void>(makeURL('receipts', receiptId))
   }
 }

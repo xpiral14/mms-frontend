@@ -39,7 +39,7 @@ const screens = {
   'cost-posting': {
     id: 'cost-posting',
     name: 'Lançamento de custos',
-    path: 'CostsPosting',
+    path: 'CostPosting',
   },
   'company-data': {
     id: 'company-data',

@@ -15,7 +15,7 @@ export default class UnitService {
   }
 
   static async create(payload: Omit<Unit, 'id'>) {
-    return api.post<Response<Unit>>(`${DEFAULT_PATH}/`, {
+    return api.post<Response<Unit>>(`${DEFAULT_PATH}`, {
       name: payload.name,
       description: payload.description,
     })

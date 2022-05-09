@@ -7,7 +7,7 @@ import {useAuth} from './useAuth'
 import GridProvider from './useGrid'
 import WindowContextProvider from './useWindow'
 import {ContextPanelOptions, ScreenContext, ScreenIds, ScreenObject,} from '../Contracts/Hooks/useScreen'
-import {Intent} from '@blueprintjs/core'
+import { Intent, ProgressBar } from '@blueprintjs/core'
 import {allScreens} from '../Statics/screens'
 import {Screen} from '../Contracts/Components/ScreenProps'
 
@@ -58,16 +58,29 @@ export default function ScreenProvider({ children }: any) {
       height: size,
     })
   }
+  const removeScreen = (screenOptions: ContextPanelOptions) => {
+    setScreens((prev) => {
+      const appPanels = { ...prev }
+      if (appPanels[screenOptions.id]) {
+        delete appPanels[screenOptions.id]
+      }
+      return appPanels
+    })
+  }
 
   const openScreen = (
-    screenOptions: ContextPanelOptions,
+    { forceOpen, ...screenOptions }: ContextPanelOptions,
     props = {} as any,
     modal = false
   ) => {
     if (screens[screenOptions?.id]) {
-      return screens[screenOptions.id].screen.front()
+      if (forceOpen) {
+        screens[screenOptions.id].screen.close()
+        setTimeout(() => openScreen(screenOptions, props, modal), 0)
+        return
+      } else screens[screenOptions.id].screen.front()
     }
-  
+
     const options = {
       ...jsPanelDefaultOptions,
       ...screenOptions,
@@ -75,22 +88,20 @@ export default function ScreenProvider({ children }: any) {
       id: screenOptions.id.replace(/ /g, '-'),
       headerTitle: screenOptions.headerTitle,
       onclosed: () => {
-        setScreens((prev) => {
-          const appPanels = {...prev}
-          if (appPanels[screenOptions.id]) {
-            delete appPanels[screenOptions.id]
-          }
-          return appPanels
-        })
+        removeScreen(screenOptions)
       },
     } as PanelOptions
 
-    const screen = ((modal ?? screenOptions.isSubScreen)
+    const screen = (modal ?? screenOptions.isSubScreen
       ? jsPanel.modal.create(options)
       : jsPanel.create(options)) as any as Screen
 
-    screen.decreaseScreenSize = screenOptions.minHeight ? changeScreenHeight(screen, screenOptions.minHeight) : undefined
-    screen.increaseScreenSize = screenOptions.minHeight ? changeScreenHeight(screen, screenOptions.maxHeight as any) : undefined
+    screen.decreaseScreenSize = screenOptions.minHeight
+      ? changeScreenHeight(screen, screenOptions.minHeight)
+      : undefined
+    screen.increaseScreenSize = screenOptions.minHeight
+      ? changeScreenHeight(screen, screenOptions.maxHeight as any)
+      : undefined
     screen.id = screenOptions.id
 
     const Component = lazy(() => {
@@ -102,7 +113,7 @@ export default function ScreenProvider({ children }: any) {
           })
       })
     })
-
+    console.log(props, Component)
     setScreens((prev) => ({
       ...prev,
       [screenOptions.id]: {
@@ -137,7 +148,9 @@ export default function ScreenProvider({ children }: any) {
                   <Suspense
                     key={screen.id as string}
                     fallback={
-                      <div className='alert alert-info'>Loading...</div>
+                      <div className='alert alert-info'>
+                        <ProgressBar intent={Intent.PRIMARY} />
+                      </div>
                     }
                   >
                     <C

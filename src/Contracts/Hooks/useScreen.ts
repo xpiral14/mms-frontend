@@ -11,6 +11,7 @@ export interface ContextPanelOptions extends PanelOptions {
   isSubScreen?: boolean
   minHeight?: string | number
   maxHeight?: string | number
+  forceOpen?: boolean
 }
 
 export type ScreenObject = {

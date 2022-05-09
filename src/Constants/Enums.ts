@@ -45,3 +45,12 @@ export const DiscountTypeSymbol: Record<string, string> = {
 export const getEnumValues = (enumType: any): string[] => {
   return Object.values(enumType)
 }
+
+export enum CostType {
+  HELPERS = 1,
+  FOOD = 2,
+  TOOLS = 3,
+  TRANSPORT = 4,
+  TAX = 5,
+  OTHERS = 6,
+} 

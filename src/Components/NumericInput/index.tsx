@@ -18,7 +18,6 @@ interface NumericInputProps extends BluePrintNumericInputProps {
 
 const NumericInput: FC<NumericInputProps> = ({
   label,
-  maxLength,
   ...props
 }) => {
   return (
@@ -35,7 +34,9 @@ const NumericInput: FC<NumericInputProps> = ({
         </div>
       )}
 
-      <BluePrintNumericInput {...props} maxLength={maxLength} />
+      <BluePrintNumericInput
+        {...props}
+      />
     </Container>
   )
 }

@@ -1,3 +1,4 @@
+import { Intent } from '@blueprintjs/core'
 import { format } from 'date-fns'
 import React, { FC, useEffect, useMemo, useState } from 'react'
 import Collapse from '../../Components/Collapse'
@@ -21,7 +22,9 @@ import Order from '../../Contracts/Models/Order'
 import Receipt from '../../Contracts/Models/Receipt'
 import Valuable from '../../Contracts/Models/Valuable'
 import { ReceiptPostScreenProps } from '../../Contracts/Screen/ReceiptPosting'
+import { useAlert } from '../../Hooks/useAlert'
 import useAsync from '../../Hooks/useAsync'
+import { useGrid } from '../../Hooks/useGrid'
 import { useToast } from '../../Hooks/useToast'
 import useValidation from '../../Hooks/useValidation'
 import { useWindow } from '../../Hooks/useWindow'
@@ -36,10 +39,7 @@ import keysToCamel from '../../Util/keysToKamel'
 interface Payload extends Omit<Receipt, 'date'> {
   date: Date
 }
-const ReceiptPosting: FC<ReceiptPostScreenProps> = ({
-  screen,
-  ...props
-}) => {
+const ReceiptPosting: FC<ReceiptPostScreenProps> = ({ screen, ...props }) => {
   const {
     payload,
     setPayload,
@@ -48,6 +48,8 @@ const ReceiptPosting: FC<ReceiptPostScreenProps> = ({
     isScreenStatusSeeRegisters,
     isScreenStatusEdit,
   } = useWindow<Payload>()
+
+  const {setReloadGrid} = useGrid()
   const [isDetailCollapsed, setIsDetailCollapsed] = useState(true)
   useEffect(() => {
     setPayload({
@@ -60,6 +62,8 @@ const ReceiptPosting: FC<ReceiptPostScreenProps> = ({
   const [customers, setCustomers] = useState<Costumer[]>([])
   const [statuses, setStatuses] = useState<Valuable[]>([])
   const { showErrorToast, showSuccessToast } = useToast()
+
+  const { openAlert } = useAlert()
 
   const [loadingCustomers, loadCustomers] = useAsync(async () => {
     try {
@@ -119,7 +123,7 @@ const ReceiptPosting: FC<ReceiptPostScreenProps> = ({
 
     return formattedOrders.map((o) => ({
       label: `${o.reference} ${
-        o.date ? `(${getDateWithTz(o.date).toLocaleDateString()})`  : ''
+        o.date ? `(${getDateWithTz(o.date).toLocaleDateString()})` : ''
       }`,
       value: o.id,
     }))
@@ -184,6 +188,29 @@ const ReceiptPosting: FC<ReceiptPostScreenProps> = ({
         handleSaveButtonOnClick={
           isScreenStatusEdit ? updateReceipt : createReceipt
         }
+        handleDeleteButtonOnClick={async () => {
+          const onConfirm = async () => {
+            try {
+              await ReceiptService.delete(payload.id!)
+              showSuccessToast('Receita removida com sucesso!')
+              cleanPayload()
+              setReloadGrid(true)
+              if (isScreenStatusEdit) {
+                setScreenStatus(ScreenStatus.SEE_REGISTERS)
+              }
+            } catch (error) {
+              showErrorToast(
+                'Não foi possível remover a receita. Por favor, tente novamente.'
+              )
+            }
+          }
+          openAlert({
+            text: 'Tem certeza que deseja deletetar esta receita?',
+            intent: Intent.DANGER,
+            icon: 'warning-sign',
+            onConfirm,
+          })
+        }}
       />
       <Render renderIf={!isScreenStatusSeeRegisters}>
         <Box className='w-100'>

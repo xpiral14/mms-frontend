@@ -32,7 +32,7 @@ export type ScreenContext = {
     }>
   >
   openScreen: (
-    panelOptions: ContextPanelOptions,
+    panelOptions: Omit<ContextPanelOptions, 'path'>,
     isModal?: boolean | undefined
   ) => void
 

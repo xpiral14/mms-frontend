@@ -54,3 +54,138 @@ export enum CostType {
   TAX = 5,
   OTHERS = 6,
 } 
+
+
+export enum Permissions {
+  
+    /**
+     * Can read companies
+     */
+     READ_COMPANY = 1,
+
+     /**
+      * Can do write operations in company
+      */
+     WRITE_COMPANY = 2,
+ 
+     /**
+      * Can read roles
+      */
+     READ_ROLE = 3,
+ 
+     /**
+      * Can do write operations in roles
+      */
+     WRITE_ROLE = 4,
+ 
+     /**
+      * Can read users
+      */
+     READ_USER = 5,
+ 
+     /**
+      * Can do write operations in users
+      */
+     WRITE_USER = 6,
+ 
+     /**
+      * Can read users
+      */
+     READ_VEHICLE = 7,
+ 
+     /**
+      * Can do write operations in users
+      */
+     WRITE_VEHICLE = 8,
+ 
+     /**
+      * Can do write operations in users
+      */
+     READ_PIECE = 9,
+ 
+     /**
+      * Can do write operations in users
+      */
+     WRITE_PIECE = 10,
+ 
+     /**
+      * Can do write operations in users
+      */
+     READ_ORDER = 11,
+ 
+     /**
+      * Can do write operations in users
+      */
+     WRITE_ORDER = 12,
+ 
+     /**
+      * Can do write operations in services'
+      */
+     READ_SERVICE = 13,
+ 
+     /**
+      * Can do write operations in services
+      */
+     WRITE_SERVICE = 14,
+ 
+ 
+     /**
+      * Can do read operations in units
+      */
+     READ_UNIT = 15,
+ 
+     /**
+      * Can do write operations in units
+      */
+     WRITE_UNIT = 16,
+ 
+     /**
+      * Can do read operations in parts
+      */
+     READ_PART = 17,
+ 
+     /**
+      * Can do write operations in parts
+      */
+     WRITE_PART = 18,
+ 
+     /**
+      * Can do read operations in customers
+      */
+     READ_CUSTOMER = 19,
+ 
+     /**
+      * Can do write operations in customers
+      */
+     WRITE_CUSTOMER = 20,
+ 
+     /**
+      * Can do read operations in employees
+      */
+     READ_EMPLOYEE = 21,
+ 
+     /**
+      * Can do write operations in employees
+      */
+     WRITE_EMPLOYEE = 22,
+ 
+     /**
+      * Can do read operations in costs
+      */
+     READ_COST = 23,
+ 
+     /**
+      * Can do write operations in costs
+      */
+     WRITE_COST = 24,
+ 
+     /**
+      * Can do read operations in receipts
+      */
+     READ_RECEIPT = 25,
+ 
+     /**
+      * Can do write operations in receipts
+      */
+     WRITE_RECEIPT = 26,
+}

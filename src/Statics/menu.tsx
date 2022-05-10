@@ -1,6 +1,6 @@
 import { MenuType } from '../Contracts/Containers/NavBar'
 import screens from './screens'
-
+import { GiExpense } from 'react-icons/gi'
 const menus = {
   Estoque: {
     name: 'Estoque',
@@ -85,7 +85,7 @@ const menus = {
       },
       CostPosting: {
         name: 'Lançamento de custos',
-        icon: 'dollar',
+        icon: <GiExpense size={16} />,
         screen: {
           minHeight: 290,
           maxHeight: 500,
@@ -110,21 +110,6 @@ const menus = {
           ...screens['employees-register'],
           headerTitle: 'Funcionários',
           contentSize: '710px 190px',
-        },
-      },
-    },
-  },
-  Configuracoes: {
-    name: 'Configurações',
-    icon: 'cog',
-    isMain: true,
-    items: {
-      CompanyData: {
-        name: 'Dados da empresa',
-        screen: {
-          ...screens['company-data'],
-          contentSize: '900px 335px',
-          headerTitle: 'Dados da empresa',
         },
       },
     },

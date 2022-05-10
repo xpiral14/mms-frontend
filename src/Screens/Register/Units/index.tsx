@@ -1,7 +1,6 @@
 import React, { useCallback, useMemo } from 'react'
 import RegistrationButtonBar from '../../../Components/RegistrationButtonBar'
 import InputText from '../../../Components/InputText'
-import { Container, Header, Body } from './style'
 import PaginatedTable from '../../../Components/PaginatedTable'
 import UnitService from '../../../Services/UnitService'
 import ScreenProps from '../../../Contracts/Components/ScreenProps'
@@ -19,6 +18,8 @@ import useValidation from '../../../Hooks/useValidation'
 import { Validation } from '../../../Contracts/Hooks/useValidation'
 import Unit from '../../../Contracts/Models/Unit'
 import Render from '../../../Components/Render'
+import Container from '../../../Components/Layout/Container'
+import Row from '../../../Components/Layout/Row'
 
 const UnitsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
   const { payload, setPayload, screenStatus, setScreenStatus } =
@@ -191,8 +192,8 @@ const UnitsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
         name: 'Descrição',
         keyName: 'description',
         style: {
-          width: '100%'
-        }
+          width: '100%',
+        },
       },
     ],
     []
@@ -201,7 +202,7 @@ const UnitsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
   const containerProps = useMemo(
     () => ({
       style: {
-        height: '100%',
+        flex: 1
       },
     }),
     []
@@ -276,50 +277,37 @@ const UnitsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
   )
 
   return (
-    <Container>
-      <Header>
+    <Container style={{ height: 'calc(100% - 40px)' }}>
+      <Row>
         <RegistrationButtonBar {...registrationButtonBarProps} />
-      </Header>
+      </Row>
 
-      <Body className='h-100'>
+      <Row>
         <Render renderIf={screenStatus !== ScreenStatus.SEE_REGISTERS}>
-          <div>
-            <form>
-              <div className='flexRow'>
-                <div style={{ width: '20%' }}>
-                  <InputText
-                    id='unitName'
-                    label='Nome:'
-                    itent='primary'
-                    value={payload?.name || ''}
-                    disabled={isStatusVizualize()}
-                    style={{ width: '100%' }}
-                    inputStyle={{ width: '100%' }}
-                    onChange={createOnChange('name')}
-                    maxLength={15}
-                    required
-                  />
-                </div>
+          <InputText
+            id='unitName'
+            label='Nome:'
+            value={payload?.name || ''}
+            disabled={isStatusVizualize()}
+            onChange={createOnChange('name')}
+            maxLength={15}
+            required
+          />
 
-                <div style={{ width: '80%' }}>
-                  <InputText
-                    id='unitDescription'
-                    label='Descrição:'
-                    disabled={isStatusVizualize()}
-                    itent='primary'
-                    style={{ width: '100%' }}
-                    inputStyle={{ width: '100%' }}
-                    value={payload?.description || ''}
-                    onChange={createOnChange('description')}
-                    maxLength={120}
-                  />
-                </div>
-              </div>
-            </form>
-          </div>
+          <InputText
+            id='unitDescription'
+            label='Descrição:'
+            disabled={isStatusVizualize()}
+            style={{ flex: 1 }}
+            inputStyle={{ width: '100%' }}
+            value={payload?.description || ''}
+            onChange={createOnChange('description')}
+            maxLength={120}
+          />
         </Render>
-
-        <Render renderIf={screenStatus === ScreenStatus.SEE_REGISTERS}>
+      </Row>
+      <Render renderIf={screenStatus === ScreenStatus.SEE_REGISTERS}>
+        <Row className='h-100'>
           <PaginatedTable
             height='100%'
             onRowSelect={onRowSelect}
@@ -328,8 +316,8 @@ const UnitsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
             columns={columns}
             isSelected={(row) => row.id === payload?.id}
           />
-        </Render>
-      </Body>
+        </Row>
+      </Render>
     </Container>
   )
 }

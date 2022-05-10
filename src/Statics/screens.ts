@@ -1,10 +1,12 @@
+import { Permissions } from '../Constants/Enums'
 import subScreens from './subScreens'
 
 const screens = {
   'user-register': {
     id: 'user-register',
     name: 'Cadastro de usuários',
-    path: 'Register/User'
+    path: 'Register/User',
+    permissions: [Permissions.READ_USER, Permissions.WRITE_USER]
   },
   'costumer-register': {
     id: 'costumer-register',
@@ -50,6 +52,12 @@ const screens = {
     id: 'receipt-posting',
     name: 'Lançamento de recebimentos',
     path: 'ReceiptPosting'
+  },
+  'user-data': {
+    id: 'receipt-posting',
+    name: 'Dados do usuário',
+    path: 'UserData',
+    contentSize: '900 300'
   }
 }
 export const allScreens = {

@@ -1,13 +1,24 @@
-import {Button, ButtonGroup, Menu, MenuItem, Navbar, NavbarGroup, Popover, Position,} from '@blueprintjs/core'
-import React, {useMemo} from 'react'
-import {MenuType, NavBarProps} from '../../Contracts/Containers/NavBar'
-import {useAlert} from '../../Hooks/useAlert'
-import {useAuth} from '../../Hooks/useAuth'
-import {useScreen} from '../../Hooks/useScreen'
-
-
-const NavBar: React.FC<NavBarProps> = ({menuItems}) => {
-  const {openScreen, screens: screens} = useScreen()
+import {
+  Button,
+  ButtonGroup,
+  Menu,
+  MenuItem,
+  Navbar,
+  NavbarDivider,
+  NavbarGroup,
+  NavbarHeading,
+  // Popover,
+  Position,
+} from '@blueprintjs/core'
+import { Popover2, Popover2InteractionKind } from '@blueprintjs/popover2'
+import React, { useMemo } from 'react'
+import { MenuType, NavBarProps } from '../../Contracts/Containers/NavBar'
+import { useAlert } from '../../Hooks/useAlert'
+import { useAuth } from '../../Hooks/useAuth'
+import { useScreen } from '../../Hooks/useScreen'
+import { IoMdBusiness } from 'react-icons/io'
+const NavBar: React.FC<NavBarProps> = ({ menuItems }) => {
+  const { openScreen, screens: screens } = useScreen()
   const buildMenu = (m: MenuType) => {
     const menuItemsArray = Object.values(m)
     const menuArray: any[] = []
@@ -19,9 +30,10 @@ const NavBar: React.FC<NavBarProps> = ({menuItems}) => {
         if (menu.isMain) {
           Component = () =>
             menuItems.length ? (
-              <Popover
+              <Popover2
                 hasBackdrop={false}
                 position={Position.BOTTOM}
+                interactionKind={Popover2InteractionKind.HOVER}
                 content={
                   <Menu>
                     <MenuItems />
@@ -29,7 +41,7 @@ const NavBar: React.FC<NavBarProps> = ({menuItems}) => {
                 }
               >
                 <Button icon={menu.icon} text={menu.name} />
-              </Popover>
+              </Popover2>
             ) : (
               <Button icon={menu.icon} text={menu.name} />
             )
@@ -38,7 +50,7 @@ const NavBar: React.FC<NavBarProps> = ({menuItems}) => {
         return menuArray.push(
           <MenuItem
             tagName='button'
-            key={menu.icon}
+            key={menu.name}
             icon={menu?.icon}
             text={menu.name}
             onClick={() => {
@@ -53,7 +65,7 @@ const NavBar: React.FC<NavBarProps> = ({menuItems}) => {
       menuArray.push(
         <MenuItem
           key={menu.name}
-          tagName="button"
+          tagName='button'
           text={menu?.name}
           icon={menu?.icon}
           onClick={() => {
@@ -71,16 +83,52 @@ const NavBar: React.FC<NavBarProps> = ({menuItems}) => {
   const { logout } = useAuth()
   const { openAlert } = useAlert()
 
+  const { company, auth } = useAuth()
   return (
     <Navbar style={{ display: 'flex', justifyContent: 'space-between' }}>
       <NavbarGroup>
         <ButtonGroup>
-          <BuiltMenu/>
+          <BuiltMenu />
         </ButtonGroup>
       </NavbarGroup>
       <NavbarGroup>
+        <Popover2
+          fill
+          placement='bottom-start'
+          interactionKind={Popover2InteractionKind.HOVER}
+          content={
+            <Menu style={{ width: 250 }}>
+              <MenuItem
+                text='Meus dados'
+                icon='people'
+                onClick={() =>
+                  openScreen({
+                    id: 'user-data',
+                    contentSize: '900 110',
+                  })
+                }
+              />
+              <MenuItem
+                text='Dados da empresa'
+                icon={<IoMdBusiness size={16} />}
+                onClick={() =>
+                  openScreen({
+                    id: 'company-data',
+                    contentSize: '900 335',
+                  })
+                }
+              />
+            </Menu>
+          }
+        >
+          <NavbarHeading>
+            {auth?.user.name} | {company?.name}{' '}
+          </NavbarHeading>
+        </Popover2>
+        <NavbarDivider />
         <Button
           text='Logout'
+          icon='log-out'
           onClick={() => {
             openAlert({
               text: 'Você quer mesmo sair do sistema?',

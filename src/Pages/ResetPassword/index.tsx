@@ -4,16 +4,15 @@ import {Container} from './style'
 import {useForm} from 'react-hook-form'
 import AuthService from '../../Services/AuthService'
 import {useHistory} from 'react-router-dom'
-import {useToast} from '../../Hooks/useToast'
 import {useLocation} from 'react-router-dom'
+import useMessageError from '../../Hooks/useMessageError'
 
 const ResetPasswordPage = () => {
   const history = useHistory()
   const [loading, setLoading] = useState(false)
   const {handleSubmit, register} = useForm()
-  const {showToast, showErrorToast} = useToast()
   const {search} = useLocation()
-
+  const { showErrormessage } = useMessageError()
   if (!search?.includes('token=') || !search?.includes('email=')) {
     history.push('/login')
   }
@@ -32,21 +31,10 @@ const ResetPasswordPage = () => {
       history.push('/login')
 
     } catch (error: any) {
-      if (error.response) {
-        showToast({
-          message: error?.response?.data?.data?.messages === 'object' ? <ul>
-            {Object.values(error?.response?.data?.data?.messages ?? {}).map((error: any) => <li
-              key={error}>{error}</li>)}
-          </ul>
-            : error?.response?.data?.data?.messages,
-          intent: Intent.DANGER,
-        })
-      } else {
-        showErrorToast({
-          message:
-            'Houve um problema ao tentar trocar sua senha, por favor tente novamente.',
-        })
-      }
+      showErrormessage(
+        error,
+        'Houve um problema ao tentar trocar sua senha, por favor tente novamente.'
+      )
     } finally {
       setLoading(false)
     }

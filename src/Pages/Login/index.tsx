@@ -55,75 +55,86 @@ const LoginPage = () => {
 
   return (
     <Container>
-      <Card style={{
-        width: '100%',
-        maxWidth: '400px',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center'
-      }}>
+      <Card
+        style={{
+          width: '100%',
+          maxWidth: '400px',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+        }}
+      >
         <Render renderIf={pageMode === PageMode.RESET_PASSWORD}>
-          <Button icon='arrow-left' style={
-            {
-              alignSelf: 'flex-start'
-            }
-          }
-          onClick={() => {
-            setPageMode(PageMode.LOGIN)
-            setSentEmail(false)
-          }}
-          aria-label="voltar"
+          <Button
+            icon='arrow-left'
+            style={{
+              alignSelf: 'flex-start',
+            }}
+            onClick={() => {
+              setPageMode(PageMode.LOGIN)
+              setSentEmail(false)
+            }}
+            aria-label='voltar'
           />
         </Render>
 
         <Render renderIf={!sentEmail}>
           <Render renderIf={pageMode === PageMode.RESET_PASSWORD}>
             <p className='mt-3'>
-              Um email de recuperação de senha será enviado para o email digitado abaixo caso esteja cadastrado no
-              sistema
+              Um email de recuperação de senha será enviado para o email
+              digitado abaixo caso esteja cadastrado no sistema
             </p>
           </Render>
           <form onSubmit={handleSubmit(onSubmit)} className='mt-1 w-100'>
             <FormGroup label='Email' labelFor='login-input' labelInfo='*'>
               <input
-                style={{width: '100%'}}
+                style={{ width: '100%' }}
                 className={Classes.INPUT}
                 type='email'
                 placeholder='Digite seu email'
                 dir='auto'
-                {...register('email', {required: true})}
+                {...register('email', { required: true })}
               />
             </FormGroup>
             <Render renderIf={pageMode === PageMode.LOGIN}>
-
               <FormGroup label='Senha' labelFor='login-input' labelInfo='*'>
                 <input
-                  style={{width: '100%'}}
+                  style={{ width: '100%' }}
                   className={Classes.INPUT}
                   type='password'
                   placeholder='Digite a sua senha'
                   dir='auto'
-                  {...register('password', {required: true})}
+                  {...register('password', { required: true })}
                 />
               </FormGroup>
             </Render>
 
             <Button
               style={{
-                width: '100%'
+                width: '100%',
               }}
+              icon={PageMode.LOGIN ? 'log-in' : undefined}
               loading={loading}
               intent={Intent.SUCCESS}
-              text={pageMode === PageMode.LOGIN ? 'Entrar' : 'Enviar email de recuperação de senha'}
+              text={
+                pageMode === PageMode.LOGIN
+                  ? 'Entrar'
+                  : 'Enviar email de recuperação de senha'
+              }
               type='submit'
             />
           </form>
         </Render>
-        <Render renderIf={sentEmail}>
-          O email foi enviado com sucesso!
-        </Render>
+        <Render renderIf={sentEmail}>O email foi enviado com sucesso!</Render>
         <Render renderIf={pageMode === PageMode.LOGIN}>
-          <Button className="mt-3" small onClick={() => setPageMode(PageMode.RESET_PASSWORD)}> Recuperar senha</Button>
+          <Button
+            className='mt-3'
+            small
+            onClick={() => setPageMode(PageMode.RESET_PASSWORD)}
+          >
+            {' '}
+            Recuperar senha
+          </Button>
         </Render>
       </Card>
     </Container>

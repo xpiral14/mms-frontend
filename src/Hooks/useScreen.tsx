@@ -58,27 +58,31 @@ export default function ScreenProvider({ children }: any) {
       height: size,
     })
   }
-  const removeScreen = (screenOptions: ContextPanelOptions) => {
+  const removeScreen = (screenId: ScreenIds) => {
     setScreens((prev) => {
       const appPanels = { ...prev }
-      if (appPanels[screenOptions.id]) {
-        delete appPanels[screenOptions.id]
+      if (appPanels[screenId]) {
+        delete appPanels[screenId]
       }
       return appPanels
     })
   }
 
   const openScreen = (
-    { forceOpen, ...screenOptions }: ContextPanelOptions,
+    { forceOpen, ...screenOptions }: Omit<ContextPanelOptions, 'path'>,
     props = {} as any,
     modal = false
   ) => {
+    const screenData = allScreens[screenOptions.id]
+
     if (screens[screenOptions?.id]) {
       if (forceOpen) {
         screens[screenOptions.id].screen.close()
         setTimeout(() => openScreen(screenOptions, props, modal), 0)
         return
-      } else screens[screenOptions.id].screen.front()
+      }
+      screens[screenOptions.id].screen.front()
+      return
     }
 
     const options = {
@@ -86,9 +90,10 @@ export default function ScreenProvider({ children }: any) {
       ...screenOptions,
       ziBase: 4,
       id: screenOptions.id.replace(/ /g, '-'),
-      headerTitle: screenOptions.headerTitle,
+      headerTitle: screenOptions.headerTitle ?? screenData.name,
+      contentSize: screenOptions.contentSize ?? '900 300',
       onclosed: () => {
-        removeScreen(screenOptions)
+        removeScreen(screenOptions.id)
       },
     } as PanelOptions
 
@@ -106,21 +111,23 @@ export default function ScreenProvider({ children }: any) {
 
     const Component = lazy(() => {
       return new Promise((resolve) => {
-        return import(`../Screens/${screenOptions.path}`)
+        return import(`../Screens/${screenData.path}`)
           .then(resolve)
           .catch(() => {
             setScreenError(screenOptions.id)
           })
       })
     })
-    console.log(props, Component)
     setScreens((prev) => ({
       ...prev,
       [screenOptions.id]: {
         screen: screen,
         component: Component,
         componentProps: props || {},
-        screenOptions: screenOptions,
+        screenOptions: {
+          ...screenOptions,
+          path: screenData.path
+        },
         parentScreen: (screenOptions?.parentScreenId &&
           prev?.[screenOptions.parentScreenId as string]?.screen) as
           | Panel

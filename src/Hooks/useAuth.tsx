@@ -10,11 +10,15 @@ import {
 import api from '../Config/api'
 import { AUTH_LOCAL_STORAGE_KEY } from '../Constants'
 import Auth from '../Contracts/Models/Auth'
+import Company from '../Contracts/Models/Company'
+import CompanyService from '../Services/CompanyService'
+import useMessageError from './useMessageError'
 import { useToast } from './useToast'
 
 const authContext = createContext<{
   auth: Auth | null
   setAuth: Dispatch<SetStateAction<Auth | null>>
+  company: Company | null
   logout: () => void
     }>(null as any)
 
@@ -30,9 +34,11 @@ export const useAuth = () => {
 const AuthProvider: FC = ({ children }) => {
   const [auth, setAuth] = useState<Auth | null>(() => {
     const authStorage = localStorage.getItem('@auth')
-    return authStorage ?  JSON.parse(authStorage) as Auth : null
+    return authStorage ? (JSON.parse(authStorage) as Auth) : null
   })
 
+
+  const [company, setCompany] = useState<Company | null>(null)
   const { showErrorToast } = useToast()
   const logout = () => {
     localStorage.removeItem(AUTH_LOCAL_STORAGE_KEY)
@@ -50,7 +56,7 @@ const AuthProvider: FC = ({ children }) => {
       (error) => {
         if (
           error?.response?.data?.messages?.includes('Unauthenticated') &&
-            error.response.status === 500
+          error.response.status === 500
         ) {
           showErrorToast({
             message: 'A sua sessão encerrou. Por favor, loge-se novamente',
@@ -60,10 +66,32 @@ const AuthProvider: FC = ({ children }) => {
         throw error
       }
     )
+
+    localStorage.setItem('@auth', JSON.stringify(auth))
+
   }, [auth])
+  const { showErrormessage } = useMessageError()
+  useEffect(() => {
+    if (!auth?.user?.id) return
+
+    const getCompany = async () => {
+      try {
+        const response = await CompanyService.get()
+        setCompany(response.data.data)
+      } catch (error) {
+        showErrormessage(
+          error,
+          'Não foi possível obter os dados da empresa. Por favor, tente novamente.'
+        )
+      }
+    }
+    getCompany()
+  }, [auth?.user.id])
 
   return (
-    <authContext.Provider value={{ auth: auth, setAuth: setAuth, logout }}>
+    <authContext.Provider
+      value={{ auth: auth, setAuth: setAuth, logout, company }}
+    >
       {children}
     </authContext.Provider>
   )

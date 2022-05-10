@@ -1,10 +1,11 @@
 {
   "name": "mms-frontend",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
   "dependencies": {
     "@blueprintjs/core": "^4.1.2",
     "@blueprintjs/datetime": "^4.1.2",
+    "@blueprintjs/popover2": "^1.2.0",
     "@blueprintjs/select": "^4.1.2",
     "@blueprintjs/table": "^4.1.2",
     "@testing-library/jest-dom": "^5.11.4",
@@ -26,6 +27,7 @@
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
     "react-hook-form": "^7.8.4",
+    "react-icons": "^4.3.1",
     "react-input-mask": "^2.0.4",
     "react-number-format": "^4.4.3",
     "react-paginate": "^7.1.3",

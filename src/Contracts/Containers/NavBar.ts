@@ -10,7 +10,7 @@ export type NavBarProps = {
 export type MenuItemType = {
   name: string
   screen?: NavBarPanelOption
-  icon?: IconName
+  icon?: IconName | JSX.Element
   isMain?: boolean
   items?: MenuType
 }

@@ -11,6 +11,7 @@ import Costumer from '../../../Contracts/Models/Costumer'
 import { CostumerRegisterScreenProps } from '../../../Contracts/Screen/Register/Costumer'
 import { useAlert } from '../../../Hooks/useAlert'
 import { useGrid } from '../../../Hooks/useGrid'
+import useMessageError from '../../../Hooks/useMessageError'
 import { useToast } from '../../../Hooks/useToast'
 import useValidation from '../../../Hooks/useValidation'
 import { useWindow } from '../../../Hooks/useWindow'
@@ -18,7 +19,9 @@ import CostumerService from '../../../Services/CostumerService'
 import cleanNumericInput from '../../../Util/cleanNumericInput'
 import formatIdentification from '../../../Util/formatIdentification'
 import formatPhone from '../../../Util/formatPhone'
-import { Container, Header, Body, FormContainer, TableContainer } from './style'
+import Render from '../../../Components/Render'
+import Row from '../../../Components/Layout/Row'
+import Container from '../../../Components/Layout/Container'
 
 const personTypesOptions = [
   {
@@ -85,20 +88,7 @@ const CostumerRegister: React.FC<CostumerRegisterScreenProps> = ({
   const { openAlert } = useAlert()
 
   const isStatusVizualize = () => screenStatus === ScreenStatus.VISUALIZE
-
-  const getErrorMessages = (errors?: any[], defaultMessage?: string) => {
-    const errorMessages = errors?.map((error) => ({
-      message: error.message,
-    })) || [{ message: defaultMessage }]
-
-    return (
-      <ul>
-        {errorMessages?.map(({ message }) => (
-          <li key={message}>{message}</li>
-        ))}
-      </ul>
-    )
-  }
+  const {showErrormessage} = useMessageError()
 
   const createCostumer = async (stopLoad: () => void) => {
     if (!validate()) {
@@ -126,15 +116,10 @@ const CostumerRegister: React.FC<CostumerRegisterScreenProps> = ({
         })
       }
     } catch (error: any) {
-      const ErrorMessages = getErrorMessages(
-        error.response?.data?.errors,
+      showErrormessage(
+        error,
         'Não foi possível criar o cliente'
       )
-
-      openAlert({
-        text: ErrorMessages,
-        intent: Intent.DANGER,
-      })
     } finally {
       stopLoad()
     }
@@ -172,15 +157,11 @@ const CostumerRegister: React.FC<CostumerRegisterScreenProps> = ({
         })
       }
     } catch (error: any) {
-      const ErrorMessages = getErrorMessages(
-        error.response?.data?.errors,
+      showErrormessage(
+        error,
         'Não foi possível atualizar o cliente'
       )
 
-      openAlert({
-        text: ErrorMessages,
-        intent: Intent.DANGER,
-      })
     } finally {
       stopLoad()
     }
@@ -194,15 +175,10 @@ const CostumerRegister: React.FC<CostumerRegisterScreenProps> = ({
         setScreenStatus(ScreenStatus.VISUALIZE)
         setPayload({})
       } catch (error: any) {
-        const ErrorMessages = getErrorMessages(
-          error.response?.data?.errors,
+        showErrormessage(
+          error,
           'Não foi possível criar o cliente'
         )
-
-        openAlert({
-          text: ErrorMessages,
-          intent: Intent.DANGER,
-        })
       }
     }
     openAlert({
@@ -221,50 +197,50 @@ const CostumerRegister: React.FC<CostumerRegisterScreenProps> = ({
   }
 
   const createOnChange =
-    (attributeName: string) => (evt: React.FormEvent<HTMLInputElement>) => {
+    (attributeName: string) => (evt: any) => {
       setPayload((prev: any) => ({
         ...prev,
-        [attributeName]: evt.currentTarget.value,
+        [attributeName]: evt.target.value,
       }))
     }
 
   return (
-    <Container>
-      <Header>
+    <Container style={{height: 'calc(100% - 40px)'}}>
+      <Row>
         <RegistrationButtonBar {...registratioButtonBarProps} />
-      </Header>
-      <Body>
-        <FormContainer>
-          <div>
-            <RadioGroup
-              id='personTypes'
-              selectedValue={payload.personType}
-              label='Tipo de pessoa'
-              inline
-              disabled={isStatusVizualize()}
-              radios={personTypesOptions}
-              onClick={(v) => {
-                if (v !== payload.personType) return
-                setPayload((prev) => ({
-                  ...prev,
-                  personType: undefined,
-                  identification: undefined,
-                }))
-              }}
-              onChange={(evt) => {
-                setPayload((prev) => ({
-                  ...prev,
-                  identification: '',
-                  personType:
-                    evt.currentTarget.value === prev.personType
+      </Row>
+      <Render renderIf={screenStatus !== ScreenStatus.SEE_REGISTERS}>
+        <Row>
+          <RadioGroup
+            id='personTypes'
+            selectedValue={payload.personType}
+            label='Tipo de pessoa'
+            inline
+            disabled={isStatusVizualize()}
+            radios={personTypesOptions}
+            onClick={(v) => {
+              if (v !== payload.personType) return
+              setPayload((prev) => ({
+                ...prev,
+                personType: undefined,
+                identification: undefined,
+              }))
+            }}
+            onChange={async (evt: any) => {
+              evt.persist()
+              setPayload((prev) => ({
+                ...prev,
+                identification: '',
+                personType:
+                    evt.target.value === prev.personType
                       ? null
-                      : (evt.currentTarget.value as any),
-                }))
-              }}
-            />
-          </div>
-          <div>
-            {Boolean(payload.personType) &&
+                      : (evt.target.value as any),
+              }))
+            }}
+          />
+        </Row>
+        <Row>
+          {Boolean(payload.personType) &&
               (payload.personType === PersonType.PHYSICAL ? (
                 <InputText
                   value={payload?.identification}
@@ -286,85 +262,83 @@ const CostumerRegister: React.FC<CostumerRegisterScreenProps> = ({
                   onChange={createOnChange('identification')}
                 />
               ))}
-            <InputText
-              value={payload?.name || ''}
-              id='name'
-              label='Nome do cliente'
-              placeholder='Digite o nome do cliente'
-              disabled={isStatusVizualize()}
-              onChange={createOnChange('name')}
-              required
-            />
+          <InputText
+            value={payload?.name || ''}
+            id='name'
+            label='Nome do cliente'
+            placeholder='Digite o nome do cliente'
+            disabled={isStatusVizualize()}
+            onChange={createOnChange('name')}
+            required
+          />
 
-            <InputText
-              value={payload?.email || ''}
-              id='Email'
-              label='Email do cliente'
-              placeholder='Digite o email do cliente'
-              disabled={isStatusVizualize()}
-              onChange={createOnChange('email')}
-            />
-            <InputText
-              value={payload?.phone || ''}
-              id='costumer-register-phone'
-              required
-              mask='(99) 99999-9999'
-              label='Telefone'
-              placeholder='Digite o Telefone do cliente'
-              disabled={isStatusVizualize()}
-              onChange={createOnChange('phone')}
-            />
-          </div>
-        </FormContainer>
-
-        <TableContainer>
-          <PaginatedTable
-            height='350px'
-            isSelected={(row) => row.id === payload.id}
-            columns={[
-              {
-                name: 'Nome',
-                keyName: 'name',
-                style: {
-                  width: '33%',
-                },
+          <InputText
+            value={payload?.email || ''}
+            id='Email'
+            label='Email do cliente'
+            placeholder='Digite o email do cliente'
+            disabled={isStatusVizualize()}
+            onChange={createOnChange('email')}
+          />
+          <InputText
+            value={payload?.phone || ''}
+            id='costumer-register-phone'
+            required
+            mask='(99) 99999-9999'
+            label='Telefone'
+            placeholder='Digite o Telefone do cliente'
+            disabled={isStatusVizualize()}
+            onChange={createOnChange('phone')}
+          />
+        </Row>
+      </Render>
+      <Render renderIf={screenStatus === ScreenStatus.SEE_REGISTERS}>
+        <PaginatedTable
+          height='350px'
+          isSelected={(row) => row.id === payload.id}
+          columns={[
+            {
+              name: 'Nome',
+              keyName: 'name',
+              style: {
+                width: '33%',
               },
-              {
-                name: 'CPF ou CNPJ',
-                // keyName: 'identification',
-                formatText: (row) =>
-                  formatIdentification(row?.identification as string),
-                style: {
-                  width: '33%',
-                },
+            },
+            {
+              name: 'CPF ou CNPJ',
+              // keyName: 'identification',
+              formatText: (row) =>
+                formatIdentification(row?.identification as string),
+              style: {
+                width: '33%',
               },
-              {
-                name: 'Telefone',
-                keyName: 'phone',
-                formatText: (row) => formatPhone(row?.phone as string),
-                style: {
-                  width: '33%',
-                },
+            },
+            {
+              name: 'Telefone',
+              keyName: 'phone',
+              formatText: (row) => formatPhone(row?.phone as string),
+              style: {
+                width: '33%',
               },
-              {
-                name: 'Email',
-                keyName: 'email',
-              },
-            ]}
-            request={CostumerService.getAll as any}
-            onRowSelect={(row) => {
-              setScreenStatus(ScreenStatus.VISUALIZE)
-              setPayload({
-                ...row,
-                personType:
+            },
+            {
+              name: 'Email',
+              keyName: 'email',
+            },
+          ]}
+          request={CostumerService.getAll as any}
+          onRowSelect={(row) => {
+            setScreenStatus(ScreenStatus.VISUALIZE)
+            setPayload({
+              ...row,
+              personType:
                   row.identification?.length > 11
                     ? PersonType.LEGAL
                     : PersonType.PHYSICAL,
-              })
-            }}
-          />
-        </TableContainer>
-      </Body>
+            })
+          }}
+        />
+      </Render>
     </Container>
   )
 }

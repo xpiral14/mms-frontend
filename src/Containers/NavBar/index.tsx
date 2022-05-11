@@ -17,73 +17,87 @@ import { useAlert } from '../../Hooks/useAlert'
 import { useAuth } from '../../Hooks/useAuth'
 import { useScreen } from '../../Hooks/useScreen'
 import { IoMdBusiness } from 'react-icons/io'
+import { useCallback } from 'react'
 const NavBar: React.FC<NavBarProps> = ({ menuItems }) => {
-  const { openScreen, screens: screens } = useScreen()
-  const buildMenu = (m: MenuType) => {
-    const menuItemsArray = Object.values(m)
-    const menuArray: any[] = []
-    menuItemsArray.forEach((menu) => {
-      let Component
-      if (menu?.items) {
-        const menuItems = buildMenu(menu.items!)
-        const MenuItems = () => <>{menuItems}</>
-        if (menu.isMain) {
-          Component = () =>
-            menuItems.length ? (
-              <Popover2
-                hasBackdrop={false}
-                position={Position.BOTTOM}
-                interactionKind={Popover2InteractionKind.HOVER}
-                content={
-                  <Menu>
-                    <MenuItems />
-                  </Menu>
-                }
-              >
+  const { company, auth, hasSomeOfPermissions } = useAuth()
+
+  const { openScreen } = useScreen()
+  const buildMenu = useCallback(
+    (m: MenuType) => {
+      const menuItemsArray = Object.values(m)
+      const menuArray: any[] = []
+      menuItemsArray.forEach((menu) => {
+        if (menu?.items) {
+          let Component
+          const menuItems = buildMenu(menu.items!)
+          const MenuItems = () => <>{menuItems}</>
+          if (menu.permissions && !hasSomeOfPermissions(menu.permissions)) {
+            return <></>
+          }
+          if (menu.isMain) {
+            Component = () =>
+              menuItems.length ? (
+                <Popover2
+                  hasBackdrop={false}
+                  position={Position.BOTTOM}
+                  interactionKind={Popover2InteractionKind.HOVER}
+                  content={
+                    <Menu>
+                      <MenuItems />
+                    </Menu>
+                  }
+                >
+                  <Button icon={menu.icon} text={menu.name} />
+                </Popover2>
+              ) : (
                 <Button icon={menu.icon} text={menu.name} />
-              </Popover2>
-            ) : (
-              <Button icon={menu.icon} text={menu.name} />
-            )
-          return menuArray.push(<Component key={menu.name} />)
+              )
+            return menuArray.push(<Component key={menu.name} />)
+          }
+          return menuArray.push(
+            <MenuItem
+              tagName='button'
+              key={menu.name}
+              icon={menu?.icon}
+              text={menu.name}
+              onClick={() => {
+                if (!menu?.screen) return
+                openScreen(menu.screen)
+              }}
+            >
+              <MenuItems />
+            </MenuItem>
+          )
         }
-        return menuArray.push(
+        if (
+          menu.screen?.permissions &&
+          !hasSomeOfPermissions(menu.screen.permissions)
+        ) {
+          return
+        }
+        menuArray.push(
           <MenuItem
-            tagName='button'
             key={menu.name}
+            tagName='button'
+            text={menu?.name}
             icon={menu?.icon}
-            text={menu.name}
             onClick={() => {
-              if (!menu?.screen) return
-              openScreen(menu.screen)
+              openScreen(menu.screen as any)
             }}
-          >
-            <MenuItems />
-          </MenuItem>
+          />
         )
-      }
-      menuArray.push(
-        <MenuItem
-          key={menu.name}
-          tagName='button'
-          text={menu?.name}
-          icon={menu?.icon}
-          onClick={() => {
-            openScreen(menu.screen as any)
-          }}
-        />
-      )
-    })
-    return menuArray
-  }
+      })
+      return menuArray
+    },
+    [hasSomeOfPermissions, openScreen]
+  )
   const BuiltMenu = useMemo(
     () => () => <>{buildMenu(menuItems)}</>,
-    [menuItems, screens]
+    [buildMenu]
   )
   const { logout } = useAuth()
   const { openAlert } = useAlert()
 
-  const { company, auth } = useAuth()
   return (
     <Navbar style={{ display: 'flex', justifyContent: 'space-between' }}>
       <NavbarGroup>

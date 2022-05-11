@@ -1,11 +1,18 @@
 import { MenuType } from '../Contracts/Containers/NavBar'
 import screens from './screens'
 import { GiExpense } from 'react-icons/gi'
+import { Permissions } from '../Constants/Enums'
 const menus = {
   Estoque: {
     name: 'Estoque',
     isMain: true,
     icon: 'box',
+    permissions: [
+      Permissions.READ_PART,
+      Permissions.WRITE_PART,
+      Permissions.READ_UNIT,
+      Permissions.WRITE_UNIT,
+    ],
     items: {
       Produtos: {
         name: 'Produtos',
@@ -35,6 +42,14 @@ const menus = {
     name: 'Vendas',
     isMain: true,
     icon: 'dollar',
+    permissions: [
+      Permissions.READ_CUSTOMER,
+      Permissions.WRITE_CUSTOMER,
+      Permissions.READ_ORDER,
+      Permissions.WRITE_ORDER,
+      Permissions.READ_SERVICE,
+      Permissions.WRITE_SERVICE,
+    ],
     items: {
       Clientes: {
         name: 'Clientes',
@@ -71,6 +86,12 @@ const menus = {
     name: 'Financeiro',
     isMain: true,
     icon: 'grouped-bar-chart',
+    permissions: [
+      Permissions.READ_RECEIPT,
+      Permissions.WRITE_RECEIPT,
+      Permissions.READ_COST,
+      Permissions.WRITE_COST,
+    ],
     items: {
       ReceiptPosting: {
         name: screens['receipt-posting']?.name,
@@ -100,6 +121,10 @@ const menus = {
     name: 'Empresa',
     isMain: true,
     icon: 'office',
+    permissions: [
+      Permissions.READ_EMPLOYEE,
+      Permissions.WRITE_EMPLOYEE,
+    ],
     items: {
       Funcionarios: {
         name: 'Funcionários',

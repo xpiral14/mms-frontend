@@ -10,6 +10,7 @@ import { ScreenStatus } from '../../Constants/Enums'
 import ScreenProps from '../../Contracts/Components/ScreenProps'
 import Company from '../../Contracts/Models/Company'
 import useAsync from '../../Hooks/useAsync'
+import useMessageError from '../../Hooks/useMessageError'
 import { useToast } from '../../Hooks/useToast'
 import { useWindow } from '../../Hooks/useWindow'
 import AddressService from '../../Services/AddressService'
@@ -23,7 +24,7 @@ const CompanyData: FC<ScreenProps> = ({ screen }) => {
   const [company, setCompany] = useState<Partial<Company>>({})
   const [address, setAddress] = useState<Record<string, string>>({})
   const { showErrorToast } = useToast()
-
+  const [loadingSave, setLoadingSave] = useState(false)
   const [loadingCompany, loadCompany] = useAsync(async () => {
     try {
       const response = await CompanyService.get()
@@ -35,10 +36,12 @@ const CompanyData: FC<ScreenProps> = ({ screen }) => {
     }
   }, [])
 
+  const { showErrormessage } = useMessageError()
   const onSave = async () => {
+    setLoadingSave(true)
     try {
       if (!company) return
-      CompanyService.update({
+      await CompanyService.update({
         ...company,
         identification: company?.identification
           ? cleanNumericInput(company.identification!)
@@ -48,10 +51,12 @@ const CompanyData: FC<ScreenProps> = ({ screen }) => {
       })
       setScreenStatus(ScreenStatus.VISUALIZE)
     } catch (error) {
-      showErrorToast({
-        message:
-          'Não foi possível  salvar a empresa. Por favor, tente novamente!',
-      })
+      showErrormessage(
+        error,
+        'Não foi possível  salvar a empresa. Por favor, tente novamente.'
+      )
+    } finally {
+      setLoadingSave(false)
     }
   }
 
@@ -74,7 +79,7 @@ const CompanyData: FC<ScreenProps> = ({ screen }) => {
         showErrorToast('CEP inválido, por favor digite um CEP correto')
         return
       }
-      if(!company.complement){
+      if (!company.complement) {
         updateCompanyAttribute('complement', response.data.complemento)
       }
       setAddress(response.data)
@@ -89,8 +94,9 @@ const CompanyData: FC<ScreenProps> = ({ screen }) => {
           <Button
             intent={Intent.SUCCESS}
             icon='floppy-disk'
-            disabled={isScreenStatusVizualize}
+            disabled={isScreenStatusVizualize || loadingSave}
             onClick={onSave}
+            loading={loadingSave}
           >
             Salvar
           </Button>

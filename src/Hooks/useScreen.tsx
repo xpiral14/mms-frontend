@@ -8,8 +8,9 @@ import GridProvider from './useGrid'
 import WindowContextProvider from './useWindow'
 import {ContextPanelOptions, ScreenContext, ScreenIds, ScreenObject,} from '../Contracts/Hooks/useScreen'
 import { Intent, ProgressBar } from '@blueprintjs/core'
-import {allScreens} from '../Statics/screens'
-import {Screen} from '../Contracts/Components/ScreenProps'
+import allScreens from '../Statics/screens'
+import { Screen } from '../Contracts/Components/ScreenProps'
+import { useCallback } from 'react'
 
 export const screenContext = createContext<ScreenContext>(null as any)
 
@@ -28,20 +29,21 @@ export default function ScreenProvider({ children }: any) {
   const [screens, setScreens] = useState<{
     [x: string]: ScreenObject
   }>({})
-
-  const [screenError, setScreenError] = useState(null as any)
+  const { auth, hasSomeOfPermissions } = useAuth()
+  const [screenError, setScreenError] = useState<{
+    screenId?: ScreenIds
+    error?: string
+  }>({})
   useEffect(() => {
-    if (screenError && screens[screenError]) {
-      screens[screenError]?.screen?.close()
+    if (screenError.screenId) {
+      screens[screenError.screenId]?.screen?.close()
       openAlert({
-        text: 'A tela não existe no sistema',
+        text: screenError.error ?? 'A tela não existe no sistema',
         intent: Intent.DANGER,
       })
-      setScreenError(null)
+      setScreenError({})
     }
   }, [screenError, screens])
-
-  const { auth } = useAuth()
 
   useEffect(() => {
     if (!auth) {
@@ -49,7 +51,7 @@ export default function ScreenProvider({ children }: any) {
         screen.screen.close()
       })
     }
-  }, [auth])
+  }, [auth, screens])
 
   const { openAlert } = useAlert()
 
@@ -68,73 +70,90 @@ export default function ScreenProvider({ children }: any) {
     })
   }
 
-  const openScreen = (
-    { forceOpen, ...screenOptions }: Omit<ContextPanelOptions, 'path'>,
-    props = {} as any,
-    modal = false
-  ) => {
-    const screenData = allScreens[screenOptions.id]
+  const openScreen = useCallback(
+    (
+      { forceOpen, ...screenOptions }: Omit<ContextPanelOptions, 'path'>,
+      props = {} as any,
+      modal = false
+    ) => {
+      const screenData = allScreens[screenOptions.id]
 
-    if (screens[screenOptions?.id]) {
-      if (forceOpen) {
-        screens[screenOptions.id].screen.close()
-        setTimeout(() => openScreen(screenOptions, props, modal), 0)
+      if (screens[screenOptions?.id]) {
+        if (forceOpen) {
+          screens[screenOptions.id].screen.close()
+          openScreen(screenOptions, props, modal)
+          return
+        }
+        screens[screenOptions.id].screen.front()
         return
       }
-      screens[screenOptions.id].screen.front()
-      return
-    }
 
-    const options = {
-      ...jsPanelDefaultOptions,
-      ...screenOptions,
-      ziBase: 4,
-      id: screenOptions.id.replace(/ /g, '-'),
-      headerTitle: screenOptions.headerTitle ?? screenData.name,
-      contentSize: screenOptions.contentSize ?? '900 300',
-      onclosed: () => {
-        removeScreen(screenOptions.id)
-      },
-    } as PanelOptions
+      if (
+        screenData.permissions?.length &&
+        !hasSomeOfPermissions(screenData.permissions)
+      ) {
+        setScreenError({
+          screenId: screenData.id,
+          error:
+            'Você nâo possui permissão para acessar esta tela. Fale com seu superior para entender mais.',
+        })
+      }
 
-    const screen = (modal ?? screenOptions.isSubScreen
-      ? jsPanel.modal.create(options)
-      : jsPanel.create(options)) as any as Screen
-
-    screen.decreaseScreenSize = screenOptions.minHeight
-      ? changeScreenHeight(screen, screenOptions.minHeight)
-      : undefined
-    screen.increaseScreenSize = screenOptions.minHeight
-      ? changeScreenHeight(screen, screenOptions.maxHeight as any)
-      : undefined
-    screen.id = screenOptions.id
-
-    const Component = lazy(() => {
-      return new Promise((resolve) => {
-        return import(`../Screens/${screenData.path}`)
-          .then(resolve)
-          .catch(() => {
-            setScreenError(screenOptions.id)
-          })
-      })
-    })
-    setScreens((prev) => ({
-      ...prev,
-      [screenOptions.id]: {
-        screen: screen,
-        component: Component,
-        componentProps: props || {},
-        screenOptions: {
-          ...screenOptions,
-          path: screenData.path
+      const options = {
+        ...jsPanelDefaultOptions,
+        ...screenOptions,
+        ziBase: 4,
+        id: screenOptions.id.replace(/ /g, '-'),
+        headerTitle: screenOptions.headerTitle ?? screenData.name,
+        contentSize: screenOptions.contentSize ?? '900300',
+        onclosed: () => {
+          removeScreen(screenOptions.id)
         },
-        parentScreen: (screenOptions?.parentScreenId &&
-          prev?.[screenOptions.parentScreenId as string]?.screen) as
-          | Panel
-          | undefined,
-      },
-    }))
-  }
+      } as PanelOptions
+
+      const screen = (modal ?? screenOptions.isSubScreen
+        ? jsPanel.modal.create(options)
+        : jsPanel.create(options)) as any as Screen
+
+      screen.decreaseScreenSize = screenOptions.minHeight
+        ? changeScreenHeight(screen, screenOptions.minHeight)
+        : undefined
+      screen.increaseScreenSize = screenOptions.minHeight
+        ? changeScreenHeight(screen, screenOptions.maxHeight as any)
+        : undefined
+      screen.id = screenOptions.id
+
+      const Component = lazy(() => {
+        return new Promise((resolve) => {
+          return import(`../Screens/${screenData.path}`)
+            .then(resolve)
+            .catch(() => {
+              setScreenError({
+                screenId: screenOptions.id,
+              })
+            })
+        })
+      })
+
+      setScreens((prev) => ({
+        ...prev,
+        [screenOptions.id]: {
+          screen: screen,
+          component: Component,
+          componentProps: props || {},
+          screenOptions: {
+            ...screenOptions,
+            path: screenData.path,
+          },
+          parentScreen: (screenOptions?.parentScreenId &&
+            prev?.[screenOptions.parentScreenId as string]?.screen) as
+            | Panel
+            | undefined,
+        },
+      }))
+    },
+    [screens, auth]
+  )
 
   const renderJsPanelsInsidePortal = () => {
     return Object.keys(screens).map((panelId) => {
@@ -145,7 +164,7 @@ export default function ScreenProvider({ children }: any) {
       const node = document.getElementById(`${screen.id}-node`)
 
       if (!Comp) return null
-      
+
       return (
         <CreatePortal rootNode={node} key={screen.id as string}>
           <WindowContextProvider>
@@ -197,7 +216,7 @@ export default function ScreenProvider({ children }: any) {
     })
   }
 
-  function openSubPanel<T = any>(
+  function openSubScreen<T = any>(
     panelOptions: Omit<ContextPanelOptions, 'path'>,
     parentPanelId: ScreenIds,
     props?: T
@@ -217,10 +236,10 @@ export default function ScreenProvider({ children }: any) {
   return (
     <screenContext.Provider
       value={{
-        screens: screens,
-        setScreens: setScreens,
-        openScreen: openScreen,
-        openSubScreen: openSubPanel,
+        screens,
+        setScreens,
+        openScreen,
+        openSubScreen,
       }}
     >
       {Boolean(Object.keys(screens).length) && renderJsPanelsInsidePortal()}

@@ -11,6 +11,9 @@ export default function useMessageError(): UseMessageErrorReturn {
   const { openAlert } = useAlert()
   const formatObjectErrorToMessageError = (error: Record<string, any>) => {
     if (error.data?.messages) {
+      if(typeof error.data.messages === 'string') {
+        return error.data?.messages
+      }
       const messages = Object.values(error.data?.messages)
       if (messages.length > 1)
         return (

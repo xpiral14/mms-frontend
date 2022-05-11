@@ -6,6 +6,7 @@ import Select from '../../../Components/Select'
 import {
   DiscountType,
   orderStatus,
+  Permissions,
   PersonType,
   ScreenStatus,
 } from '../../../Constants/Enums'
@@ -52,6 +53,7 @@ import getDateWithTz from '../../../Util/getDateWithTz'
 import OrderStatus from '../../../Contracts/Models/OrderStatus'
 import capitalize from '../../../Util/capitalize'
 import ReceiptStatus from '../../../Constants/ReceiptStatus'
+import { useAuth } from '../../../Hooks/useAuth'
 
 const discountTypeOptions: Option[] = [
   {
@@ -97,6 +99,7 @@ type OrderFilter = {
   validity?: Date
 }
 const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
+  const { hasPermission, auth } = useAuth()
   const [costumers, setCostumer] = useState<Costumer[]>([])
   const [employees, setEmployees] = useState<Employee[]>([])
   const [orderStatuses, setOrderStatuses] = useState<OrderStatus[]>([])
@@ -175,6 +178,7 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
 
   const [loadingEmployees, loadEmployees] = useAsync(async () => {
     try {
+      if (!hasPermission(Permissions.READ_EMPLOYEE)) return
       const response = await EmployeeService.getAll(1, 100)
       setEmployees(response.data.data as Employee[])
     } catch (error) {
@@ -190,6 +194,9 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
   useEffect(() => {
     setPayload({
       date: new Date(),
+      employeeId: hasPermission(Permissions.READ_EMPLOYEE)
+        ? undefined
+        : auth?.user?.id,
     })
   }, [])
   const changePayload = (key: keyof typeof payload, value: any) => {
@@ -700,33 +707,35 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
               }
               disabled={screenStatus === ScreenStatus.VISUALIZE}
             />
-            <Select
-              handleButtonReloadClick={loadEmployees}
-              loading={loadingEmployees}
-              required
-              allowCreate
-              activeItem={payload?.employeeId}
-              onChange={(option) => changePayload('employeeId', option.value)}
-              defaultButtonText='Escolha um profissional'
-              label='Funcionário'
-              items={employeeOptions}
-              handleCreateButtonClick={(query) => {
-                openSubScreen(
-                  {
-                    id: 'employees-register',
-                    contentSize: '700px 350px',
-                  },
-                  screen.id,
-                  {
-                    defaultCostumer: {
-                      name: query,
-                      personType: PersonType.PHYSICAL,
+            <Render renderIf ={hasPermission(Permissions.READ_EMPLOYEE)}>
+
+              <Select
+                handleButtonReloadClick={loadEmployees}
+                loading={loadingEmployees}
+                required
+                allowCreate
+                activeItem={payload?.employeeId}
+                onChange={(option) => changePayload('employeeId', option.value)}
+                defaultButtonText='Escolha um profissional'
+                label='Funcionário'
+                items={employeeOptions}
+                handleCreateButtonClick={(query) => {
+                  openSubScreen(
+                    {
+                      id: 'employees-register',
+                      contentSize: '700px 350px',
                     },
-                    defaultScreenStatus: ScreenStatus.NEW,
-                  }
-                )
-              }}
-              buttonProps={
+                    screen.id,
+                    {
+                      defaultCostumer: {
+                        name: query,
+                        personType: PersonType.PHYSICAL,
+                      },
+                      defaultScreenStatus: ScreenStatus.NEW,
+                    }
+                  )
+                }}
+                buttonProps={
                 {
                   id: `${screen.id}-select-costumer`,
                   style: {
@@ -740,9 +749,10 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
                     overflow: 'hidden',
                   },
                 } as any
-              }
-              disabled={screenStatus === ScreenStatus.VISUALIZE}
-            />
+                }
+                disabled={screenStatus === ScreenStatus.VISUALIZE}
+              />
+            </Render>
           </Box>
           <Collapse
             title={<h6> Informações básicas </h6>}

@@ -1,9 +1,35 @@
 import { Panel, PanelOptions } from 'jspanel4/es6module/jspanel'
-import { allScreens } from '../../Statics/screens'
+import { Permissions } from '../../Constants/Enums'
 import { Screen } from '../Components/ScreenProps'
 
-export type ScreenIds = keyof typeof allScreens
+export type ScreenIds =
+  | 'user-register'
+  | 'costumer-register'
+  | 'employees-register'
+  | 'part-register'
+  | 'unit-register'
+  | 'service-register'
+  | 'order-register'
+  | 'cost-posting'
+  | 'company-data'
+  | 'receipt-posting'
+  | 'user-data'
+  | 'order-service-details'
+  | 'order-part-details'
+  | 'order-resume'
 
+export interface ScreenData {
+  id: ScreenIds
+  name: string
+  path: string
+  permissions?: Permissions[]
+  subScreenOnly?: boolean
+  canBeUsedAsSubScreen?: boolean
+}
+
+export type Screens = {
+  [x in ScreenIds]: ScreenData
+}
 export interface ContextPanelOptions extends PanelOptions {
   id: ScreenIds
   path: string

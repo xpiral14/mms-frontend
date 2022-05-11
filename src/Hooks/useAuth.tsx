@@ -3,12 +3,15 @@ import {
   Dispatch,
   FC,
   SetStateAction,
+  useCallback,
   useContext,
   useEffect,
+  useMemo,
   useState,
 } from 'react'
 import api from '../Config/api'
 import { AUTH_LOCAL_STORAGE_KEY } from '../Constants'
+import { Permissions } from '../Constants/Enums'
 import Auth from '../Contracts/Models/Auth'
 import Company from '../Contracts/Models/Company'
 import CompanyService from '../Services/CompanyService'
@@ -20,6 +23,9 @@ const authContext = createContext<{
   setAuth: Dispatch<SetStateAction<Auth | null>>
   company: Company | null
   logout: () => void
+  hasSomeOfPermissions: (permissions: Permissions[]) => boolean
+  hasAllPermissions: (permissions: Permissions[]) => boolean
+  hasPermission: (permission: Permissions) => boolean
     }>(null as any)
 
 export const useAuth = () => {
@@ -37,14 +43,12 @@ const AuthProvider: FC = ({ children }) => {
     return authStorage ? (JSON.parse(authStorage) as Auth) : null
   })
 
-
   const [company, setCompany] = useState<Company | null>(null)
   const { showErrorToast } = useToast()
   const logout = () => {
     localStorage.removeItem(AUTH_LOCAL_STORAGE_KEY)
     setAuth(null)
   }
-
 
   useEffect(() => {
     if (!auth) return
@@ -68,7 +72,6 @@ const AuthProvider: FC = ({ children }) => {
     )
 
     localStorage.setItem('@auth', JSON.stringify(auth))
-
   }, [auth])
   const { showErrormessage } = useMessageError()
   useEffect(() => {
@@ -88,13 +91,48 @@ const AuthProvider: FC = ({ children }) => {
     getCompany()
   }, [auth?.user.id])
 
-  return (
-    <authContext.Provider
-      value={{ auth: auth, setAuth: setAuth, logout, company }}
-    >
-      {children}
-    </authContext.Provider>
+  const hasAllPermissions = useCallback(
+    (permissions: Permissions[]) =>
+      permissions.every((permission) =>
+        auth?.user?.role?.permissions.some(
+          (userPermission) => userPermission.id === permission
+        )
+      ),
+    []
   )
+
+  const hasSomeOfPermissions = useCallback(
+    (permissions: Permissions[]) =>
+      permissions.some((permission) =>
+        auth?.user?.role?.permissions.some(
+          (userPermission) => userPermission.id === permission
+        )
+      ),
+    [auth?.user?.role?.permissions]
+  )
+
+  const hasPermission = useCallback(
+    (permission: Permissions) =>
+      auth?.user.role?.permissions.some(
+        (userPermission) => userPermission.id === permission
+      ) ?? false,
+    [auth?.user.role?.permissions]
+  )
+
+  const value = useMemo(
+    () => ({
+      auth: auth,
+      setAuth: setAuth,
+      logout,
+      company,
+      hasAllPermissions,
+      hasSomeOfPermissions,
+      hasPermission
+    }),
+    [auth, setAuth, logout, company, hasPermission]
+  )
+
+  return <authContext.Provider value={value}>{children}</authContext.Provider>
 }
 
 export default AuthProvider

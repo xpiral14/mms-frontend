@@ -1,7 +1,6 @@
 import React, { useCallback, useMemo, useState } from 'react'
 import RegistrationButtonBar from '../../../Components/RegistrationButtonBar'
 import InputText from '../../../Components/InputText'
-import { Container, Header, Body } from './style'
 import PaginatedTable from '../../../Components/PaginatedTable'
 import PartsService from '../../../Services/PartsService'
 import ScreenProps from '../../../Contracts/Components/ScreenProps'
@@ -23,6 +22,8 @@ import Unit from '../../../Contracts/Models/Unit'
 import Select from '../../../Components/Select'
 import UnitService from '../../../Services/UnitService'
 import Render from '../../../Components/Render'
+import Container from '../../../Components/Layout/Container'
+import Row from '../../../Components/Layout/Row'
 
 const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
   const { payload, setPayload, screenStatus, setScreenStatus } =
@@ -248,8 +249,8 @@ const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
   const containerProps = useMemo(
     () => ({
       style: {
-        height: '100%',
-      },
+        flex: 1
+      }
     }),
     []
   )
@@ -320,122 +321,106 @@ const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
   )
 
   return (
-    <Container>
-      <Header>
+    <Container style={{ height: 'calc(100% - 40px)' }}>
+      <Row>
         <RegistrationButtonBar {...registrationButtonBarProps} />
-      </Header>
+      </Row>
 
-      <Body>
-        <Render renderIf={screenStatus !== ScreenStatus.SEE_REGISTERS}>
-          <div>
-            <form>
-              <div className='flexRow'>
-                <div style={{ width: '10%' }}>
-                  <InputText
-                    id='partId'
-                    label='Id:'
-                    value={payload?.id || ''}
-                    disabled
-                    style={{ width: '100%' }}
-                    inputStyle={{ width: '100%' }}
-                  />
-                </div>
+      <Render renderIf={screenStatus !== ScreenStatus.SEE_REGISTERS}>
+         
+        <Row>
+          <InputText
+            id='partId'
+            label='Id:'
+            value={payload?.id || ''}
+            disabled
+            style={{ width: '10%' }}
+            inputStyle={{ width: '100%' }}
+          />
+          <Select
+            defaultButtonText='Escolha uma unidade'
+            items={unitsOptions}
+            onChange={(o) => {
+              setPayload((prev) => ({
+                ...prev,
+                unit_id: o.value as number,
+              }))
+            }}
+              
+            activeItem={payload.unit_id}
+            id='partId'
+            label='Unidade:'
+            disabled={screenStatus === ScreenStatus.VISUALIZE}
+            loading={loadingUnits}
+            handleButtonReloadClick={loadUnits}
+          />
+        </Row>
+        <Row>
+          <InputText
+            id='partReference'
+            label='Referência:'
+            disabled={isStatusVizualize()}
+            itent='primary'
+            style={{ width: '20%' }}
+            inputStyle={{ width: '100%' }}
+            value={payload?.reference || ''}
+            onChange={createOnChange('reference')}
+            placeholder='XXXXXXXX'
+            required
+            maxLength={90}
+          />
 
-                <div>
-                  <Select
-                    defaultButtonText='Escolha uma unidade'
-                    items={unitsOptions}
-                    onChange={(o) => {
-                      setPayload((prev) => ({
-                        ...prev,
-                        unit_id: o.value as number,
-                      }))
-                    }}
-                    activeItem={payload.unit_id}
-                    id='partId'
-                    label='Unidade:'
-                    disabled={screenStatus === ScreenStatus.VISUALIZE}
-                    loading={loadingUnits}
-                    handleButtonReloadClick={loadUnits}
-                  />
-                </div>
-              </div>
-              <div className='flexRow'>
-                <div>
-                  <InputText
-                    id='partReference'
-                    label='Referência:'
-                    disabled={isStatusVizualize()}
-                    itent='primary'
-                    style={{ width: '100%' }}
-                    value={payload?.reference || ''}
-                    onChange={createOnChange('reference')}
-                    placeholder='XXXXXXXX'
-                    required
-                    maxLength={90}
-                  />
-                </div>
+          <InputText
+            id='partName'
+            label='Nome:'
+            disabled={isStatusVizualize()}
+            inputStyle={{ minWidth: '260px' }}
+            value={payload.name || ''}
+            placeholder='Chave de seta'
+            maxLength={90}
+            onChange={createOnChange('name')}
+          />
+        </Row>
 
-                <div style={{ width: '90%' }}>
-                  <InputText
-                    id='partName'
-                    label='Nome:'
-                    disabled={isStatusVizualize()}
-                    style={{ width: '100%' }}
-                    inputStyle={{ minWidth: '260px' }}
-                    value={payload.name || ''}
-                    placeholder='Chave de seta'
-                    maxLength={90}
-                    onChange={createOnChange('name')}
-                  />
-                </div>
-              </div>
+        <Row>
+          <InputText
+            id='partDescription'
+            label='Descrição:'
+            disabled={isStatusVizualize()}
+            style={{flex: 8 }}
+            inputStyle={{ width: '100%', minWidth: '300ptx' }}
+            value={payload?.description || ''}
+            maxLength={255}
+            onChange={createOnChange('description')}
+          />
 
-              <div className='flexRow'>
-                <div style={{ width: '85%' }}>
-                  <InputText
-                    id='partDescription'
-                    label='Descrição:'
-                    disabled={isStatusVizualize()}
-                    style={{ width: '100%' }}
-                    inputStyle={{ width: '100%', minWidth: '300ptx' }}
-                    value={payload?.description || ''}
-                    maxLength={255}
-                    onChange={createOnChange('description')}
-                  />
-                </div>
+          <InputText
+            id='partPrice'
+            label='Preço:'
+            disabled={isStatusVizualize()}
+            placeholder='R$'
+            style={{ flex: 2 }}
+            inputStyle={{ width: '100%' }}
+            value={payload?.price || ''}
+            maxLength={50}
+            type='number'
+            onChange={createOnChange('price')}
+          />
+        </Row>
+      </Render>
 
-                <div style={{ width: '15%' }}>
-                  <InputText
-                    id='partPrice'
-                    label='Preço:'
-                    disabled={isStatusVizualize()}
-                    placeholder='R$'
-                    style={{ width: '100%' }}
-                    inputStyle={{ width: '100%', minWidth: '300ptx' }}
-                    value={payload?.price || ''}
-                    maxLength={50}
-                    type='number'
-                    onChange={createOnChange('price')}
-                  />
-                </div>
-              </div>
-            </form>
-          </div>
-        </Render>
-
-        <Render renderIf={screenStatus === ScreenStatus.SEE_REGISTERS}>
-          <div className='tableRow'>
-            <PaginatedTable
-              onRowSelect={onRowSelect}
-              request={PartsService.getAll}
-              containerProps={containerProps}
-              columns={columns}
-              isSelected={row => row.id === payload?.id}
-            />
-          </div>
-        </Render>
-      </Body>
+      <Render renderIf={screenStatus === ScreenStatus.SEE_REGISTERS}>
+        <Row className='h-100'>
+          <PaginatedTable
+            height='100%'
+            onRowSelect={onRowSelect}
+            request={PartsService.getAll}
+            containerProps={containerProps}
+            columns={columns}
+            isSelected={row => row.id === payload?.id}
+          />
+        </Row>
+      </Render>
     </Container>
   )
 }

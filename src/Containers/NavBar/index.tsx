@@ -6,11 +6,10 @@ import {
   NavbarDivider,
   NavbarGroup,
   NavbarHeading,
-  // Popover,
   Position,
 } from '@blueprintjs/core'
 import { Popover2, Popover2InteractionKind } from '@blueprintjs/popover2'
-import React, { useEffect, useMemo } from 'react'
+import React, { useMemo } from 'react'
 import { MenuType, NavBarProps } from '../../Contracts/Containers/NavBar'
 import { useAlert } from '../../Hooks/useAlert'
 import { useAuth } from '../../Hooks/useAuth'
@@ -19,8 +18,6 @@ import { IoMdBusiness } from 'react-icons/io'
 import { useCallback } from 'react'
 import Notification from '../Notification'
 import Button from '../../Components/Button'
-import { useToast } from '../../Hooks/useToast'
-import useSocket from '../../Hooks/useSocket'
 const NavBar: React.FC<NavBarProps> = ({ menuItems }) => {
   const { company, auth, hasSomeOfPermissions } = useAuth()
 
@@ -100,32 +97,6 @@ const NavBar: React.FC<NavBarProps> = ({ menuItems }) => {
   )
   const { logout } = useAuth()
   const { openAlert } = useAlert()
-  const { showPrimaryToast } = useToast()
-  const socket = useSocket()
-  useEffect(() => {
-    const channel = socket?.private('User.' + auth?.user.id)
-
-    channel.notification((notification: any) => {
-
-      showPrimaryToast({
-        message: notification.message,
-        action: {
-          icon: 'tick',
-          onClick: () => {
-            if(notification.type === 'employee-assigned-to-order') {
-              openScreen({
-                id: 'order-register'
-              })
-            }
-          },
-          text: '',
-        },
-      })
-    })
-    return () => {
-      socket.leave('User.' + auth?.user.id)
-    }
-  }, [])
 
   return (
     <Navbar style={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -137,6 +108,7 @@ const NavBar: React.FC<NavBarProps> = ({ menuItems }) => {
       <NavbarGroup>
         <Popover2
           fill
+
           placement='bottom-start'
           interactionKind={Popover2InteractionKind.HOVER}
           content={

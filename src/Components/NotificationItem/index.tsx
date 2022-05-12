@@ -2,8 +2,10 @@ import React from 'react'
 import { Menu, MenuItem } from '@blueprintjs/core'
 import Notification from '../../Contracts/Models/Notification'
 import Button from '../Button'
-import { Body } from './styles'
-
+import { Body, Time } from './styles'
+import NotificationService from '../../Services/NotificationService'
+import { formatDistance } from 'date-fns'
+import ptBR from 'date-fns/locale/pt-BR'
 const NotificationItem = ({
   notification,
   onClick,
@@ -12,20 +14,38 @@ const NotificationItem = ({
   onClick?: () => void
 }) => {
   return (
-    <Body  readed={notification.readed} onClick={onClick} className='d-flex p-2'>
+    <Body
+      readed={Boolean(notification.read_at)}
+      onClick={onClick}
+      className='d-flex px-2 pb-3'
+    >
       <span>{notification.message}</span>
       <Button
         icon='more'
         help={
           <Menu>
-            <MenuItem icon='tick' text='Marcar como lida' />
-            <MenuItem icon='trash' text='Remover notificação' />
+            <MenuItem
+              icon='tick'
+              text='Marcar como lida'
+              onClick={() => NotificationService.markAsRead(notification.id)}
+            />
+            <MenuItem
+              icon='trash'
+              text='Remover notificação'
+              onClick={() => NotificationService.delete(notification.id)}
+            />
           </Menu>
         }
         helpType='popover'
         small
         minimal
       />
+      <Time>
+        {formatDistance(new Date(notification.created_at), new Date(), {
+          locale: ptBR,
+          addSuffix: true 
+        })}
+      </Time>
     </Body>
   )
 }

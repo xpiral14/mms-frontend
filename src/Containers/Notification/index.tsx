@@ -1,93 +1,72 @@
 import { Colors, Intent } from '@blueprintjs/core'
+import { useEffect, useState } from 'react'
 import Button from '../../Components/Button'
 import Container from '../../Components/Layout/Container'
 import Row from '../../Components/Layout/Row'
 import NotificationItem from '../../Components/NotificationItem'
 import NotificationModel from '../../Contracts/Models/Notification'
+import useAsync from '../../Hooks/useAsync'
+import { useAuth } from '../../Hooks/useAuth'
+import useMessageError from '../../Hooks/useMessageError'
+import useSocket from '../../Hooks/useSocket'
+import NotificationService from '../../Services/NotificationService'
+import { RiEyeCloseLine } from 'react-icons/ri'
+import { Meta } from '../../Contracts/Models/Paginated'
+import Render from '../../Components/Render'
 
-const notifcations = [
-  {
-    id: 1,
-    message:
-      'Lorem ipsum dolor sit amet consectetur adipisicing elit. Tempora, porro.',
-    type: 'order-created',
-    readed: true,
-    payload: {
-      date: '2022-05-11T07:00:00',
-
-      order: 1,
-    } as any,
-  },
-  {
-    id: 2,
-    message:
-      'Lorem ipsum dolor sit amet consectetur adipisicing elit. Tempora, porro.',
-    type: 'order-created',
-    readed: false,
-    payload: {
-      date: '2022-05-11T07:00:00',
-
-      order: 1,
-    } as any,
-  },
-  {
-    id: 3,
-    message:
-      'Lorem ipsum dolor sit amet consectetur adipisicing elit. Tempora, porro.',
-    type: 'order-created',
-    readed: true,
-    payload: {
-      date: '2022-05-11T07:00:00',
-      order: 1,
-    } as any,
-  },
-  {
-    id: 4,
-    message:
-      'Lorem ipsum dolor sit amet consectetur adipisicing elit. Tempora, porro.',
-    type: 'order-created',
-    readed: true,
-    payload: {
-      date: '2022-05-11T07:00:00',
-
-      order: 1,
-    } as any,
-  },
-  {
-    id: 5,
-    message:
-      'Lorem ipsum dolor sit amet consectetur adipisicing elit. Tempora, porro.',
-    type: 'order-created',
-    readed: true,
-    date: '2022-05-11T07:00:00',
-    payload: {
-      order: 1,
-    } as any,
-  },
-  {
-    id: 6,
-    message:
-      'Lorem ipsum dolor sit amet consectetur adipisicing elit. Tempora, porro.',
-    type: 'order-created',
-    readed: true,
-    date: '2022-05-11T07:00:00',
-    payload: {
-      order: 1,
-    } as any,
-  },
-  {
-    id: 7,
-    message:
-      'Lorem ipsum dolor sit amet consectetur adipisicing elit. Tempora, porro.',
-    type: 'order-created',
-    readed: true,
-    date: '2022-05-11T07:00:00',
-    payload: {
-      order: 1,
-    } as any,
-  },
-] as NotificationModel[]
+enum NotificationFilterType {
+  UNREAD = 'UNREAD',
+  ALL = 'ALL',
+}
 const Notification = () => {
+  const [notifications, setNotifications] = useState<NotificationModel[]>([])
+  const [filterBy, setFilterBy] = useState(NotificationFilterType.ALL)
+  const [pagination, setPagination] = useState<Meta>({
+    currentPage: 1,
+    firstPage: 1,
+    lastPage: 1,
+    perPage: 15,
+    total: 1,
+  })
+  const { auth } = useAuth()
+  const { showErrormessage } = useMessageError()
+  const [loadingNotifications, loadNotifications] = useAsync(async () => {
+    try {
+      let notifications = [] as any
+      const response = await NotificationService.getAll(1, pagination.perPage)
+      setPagination(response.data.meta)
+      switch (filterBy) {
+      case NotificationFilterType.ALL: {
+        notifications = response.data.data
+        break
+      }
+      case NotificationFilterType.UNREAD: {
+        notifications = response.data.data.filter((n) => !n.read_at)
+
+        break
+      }
+      }
+
+      setNotifications(notifications)
+    } catch (error) {
+      showErrormessage(
+        error,
+        'Não foi possível listar suas notificaçõs. Por favor, tente novamente'
+      )
+    }
+  }, [filterBy, pagination.perPage])
+  const socket = useSocket()
+
+  useEffect(() => {
+    const channel = socket?.private('User.' + auth?.user.id)
+    channel.notification((notification: NotificationModel) => {
+      setNotifications((prev) => [notification, ...prev])
+    })
+
+    return () => {
+      socket.leave('User.' + auth?.user.id)
+    }
+  }, [])
 
   return (
     <Container
@@ -100,12 +79,13 @@ const Notification = () => {
       className='pt-1 pb-1 ps-1'
     >
       <Row
-        className='pt-1'
+        className='py-1'
         style={{
           position: 'fixed',
           background: Colors.WHITE,
           width: 236,
           top: 0,
+          zIndex: 99,
         }}
       >
         <Button
@@ -114,14 +94,61 @@ const Notification = () => {
           small
           help='Marcar todas como lidas'
           icon='tick'
+          loading={loadingNotifications}
+          intent={Intent.SUCCESS}
+        />
+        <Button
+          minimal
+          outlined
+          small
+          help='Recarregar'
+          icon='refresh'
+          loading={loadingNotifications}
+          onClick={loadNotifications}
+          intent={Intent.SUCCESS}
+        />
+        <Button
+          outlined={filterBy === NotificationFilterType.ALL}
+          small
+          help='Não lidas'
+          icon={<RiEyeCloseLine size={14} />}
+          loading={loadingNotifications}
+          onClick={() => {
+            setFilterBy((prev) =>
+              prev === NotificationFilterType.ALL
+                ? NotificationFilterType.UNREAD
+                : NotificationFilterType.ALL
+            )
+          }}
           intent={Intent.SUCCESS}
         />
       </Row>
-      <div style={{ marginTop: 24 }}>
-        {notifcations.map((n) => (
-          <NotificationItem notification={n} key={n.id} />
-        ))}
-      </div>
+      <Row>
+        <div style={{ marginTop: 32 }}>
+          {notifications.map((n) => (
+            <NotificationItem notification={n} key={n.id} />
+          ))}
+        </div>
+      </Row>
+      <Render renderIf={pagination.total > notifications.length}>
+        <Row className='flex-center py-2'>
+          <Button
+            small
+            outlined
+            loading={loadingNotifications}
+            onClick={() =>
+              setPagination((prev) => {
+                const copy = { ...prev }
+                copy.perPage = prev.perPage + 10
+                return copy
+              })
+            }
+          >
+            Carregar mais
+          </Button>
+        </Row>
+      </Render>
+     
     </Container>
   )
 }

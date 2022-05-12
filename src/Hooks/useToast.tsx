@@ -2,11 +2,11 @@ import React, { createContext, useContext } from 'react'
 import { Intent, Position, Toaster, ToastProps } from '@blueprintjs/core'
 
 export interface ToastContextProps {
-  showToast: (toastProps: ToastProps) => void
-  showErrorToast: (toastProps: ToastProps | string) => void
-  showSuccessToast: (toastProps: ToastProps | string) => void
-  showWarningToast: (toastProps: ToastProps) => void
-  showPrimaryToast: (toastProps: ToastProps) => void
+  showToast: (toastProps: ToastProps) => string
+  showErrorToast: (toastProps: ToastProps | string) => string
+  showSuccessToast: (toastProps: ToastProps | string) => string
+  showWarningToast: (toastProps: ToastProps) => string
+  showPrimaryToast: (toastProps: ToastProps) => string
 }
 const toastContext = createContext<ToastContextProps>(null as any)
 
@@ -17,14 +17,14 @@ export const useToast = () => {
 const toaster = Toaster.create({ maxToasts: 4, position: Position.BOTTOM_LEFT })
 const ToastContextProvider: React.FC<any> = ({ children }) => {
   const showToast = (toastProps: ToastProps) => {
-    toaster.show({
+    return toaster.show({
       intent: Intent.NONE,
       ...toastProps,
     })
   }
 
   const showErrorToast = (toastProps: ToastProps | string) => {
-    showToast({
+    return showToast({
       ...(typeof toastProps === 'string'
         ? { message: toastProps }
         : toastProps),
@@ -33,7 +33,7 @@ const ToastContextProvider: React.FC<any> = ({ children }) => {
   }
 
   const showSuccessToast = (toastProps: ToastProps | string) => {
-    showToast({
+    return showToast({
       ...(typeof toastProps === 'string'
         ? { message: toastProps }
         : toastProps),
@@ -42,14 +42,14 @@ const ToastContextProvider: React.FC<any> = ({ children }) => {
   }
 
   const showWarningToast = (toastProps: ToastProps) => {
-    showToast({
+    return showToast({
       ...toastProps,
       intent: Intent.WARNING,
     })
   }
 
   const showPrimaryToast = (toastProps: ToastProps) => {
-    showToast({
+    return showToast({
       ...toastProps,
       intent: Intent.PRIMARY,
     })

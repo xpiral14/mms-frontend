@@ -11,9 +11,17 @@ import '@blueprintjs/popover2/lib/css/blueprint-popover2.css'
 import AlertContextProvider from './Hooks/useAlert'
 import './globalStyle.css'
 
+
 import Routes from './Routes'
 import AuthProvider from './Hooks/useAuth'
 import ToastContextProvider from './Hooks/useToast'
+import Pusher from 'pusher-js'
+
+if (process.env.NODE_ENV !== 'production') {
+  Pusher.logToConsole = true
+}
+
+(window as any).Pusher = Pusher
 
 const App = () => {
   return (

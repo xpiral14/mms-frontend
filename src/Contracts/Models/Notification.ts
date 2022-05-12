@@ -1,8 +1,9 @@
-export default interface Notification {
-  id: number;
+export default interface Notification<D = Record<string, string | any>> {
+  id: string;
   message: string,
-  readed?: boolean
+  read_at?: string
   type?: string,
-  payload?: string;
+  data?: D
   date: string
+  created_at: string
 }

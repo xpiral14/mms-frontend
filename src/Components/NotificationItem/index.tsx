@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Menu, MenuItem } from '@blueprintjs/core'
 import Notification from '../../Contracts/Models/Notification'
 import Button from '../Button'
@@ -13,6 +13,19 @@ const NotificationItem = ({
   notification: Notification
   onClick?: () => void
 }) => {
+  const getDistance = () =>
+    formatDistance(new Date(notification.created_at), new Date(), {
+      locale: ptBR,
+      addSuffix: true,
+    })
+  const [distance, setDistance] = useState(getDistance())
+  useState(() => {
+    const intervalId = setInterval(() => setDistance(getDistance()), 5000)
+
+    return () => {
+      clearInterval(intervalId)
+    }
+  })
   return (
     <Body
       readed={Boolean(notification.read_at)}
@@ -40,12 +53,7 @@ const NotificationItem = ({
         small
         minimal
       />
-      <Time>
-        {formatDistance(new Date(notification.created_at), new Date(), {
-          locale: ptBR,
-          addSuffix: true 
-        })}
-      </Time>
+      <Time>{distance}</Time>
     </Body>
   )
 }

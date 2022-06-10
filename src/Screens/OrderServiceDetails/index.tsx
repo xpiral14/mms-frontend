@@ -65,7 +65,7 @@ const OrderServiceDetails: FunctionComponent<OrderServiceDetailScreenProps> = (
         service_name: service?.name,
         service_price: service?.price,
         service_unit_id: service?.unit_id,
-        service_unit_name: service?.unit_name,
+        service_unit_name: service?.unit?.name,
       }
     })
 
@@ -105,7 +105,7 @@ const OrderServiceDetails: FunctionComponent<OrderServiceDetailScreenProps> = (
         service_name: orderService.service.name,
         service_price: orderService.service.price,
         service_unit_id: orderService.service.unit_id,
-        service_unit_name: orderService.service.unit_name,
+        service_unit_name: orderService.service?.unit_name,
         description: orderService.order_service.description,
       }
     })
@@ -285,7 +285,7 @@ const OrderServiceDetails: FunctionComponent<OrderServiceDetailScreenProps> = (
       replaced_price: undefined,
       service_name: service.name,
       service_price: service.price,
-      service_unit_name: service?.unit_name,
+      service_unit_name: service?.unit?.name,
       service_unit_id: service.unit_id,
       isEditMode: true,
       isCollapsed: false,

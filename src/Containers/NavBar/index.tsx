@@ -1,5 +1,4 @@
 import {
-  Button,
   ButtonGroup,
   Menu,
   MenuItem,
@@ -7,7 +6,6 @@ import {
   NavbarDivider,
   NavbarGroup,
   NavbarHeading,
-  // Popover,
   Position,
 } from '@blueprintjs/core'
 import { Popover2, Popover2InteractionKind } from '@blueprintjs/popover2'
@@ -18,6 +16,8 @@ import { useAuth } from '../../Hooks/useAuth'
 import { useScreen } from '../../Hooks/useScreen'
 import { IoMdBusiness } from 'react-icons/io'
 import { useCallback } from 'react'
+import Notification from '../Notification'
+import Button from '../../Components/Button'
 const NavBar: React.FC<NavBarProps> = ({ menuItems }) => {
   const { company, auth, hasSomeOfPermissions } = useAuth()
 
@@ -108,6 +108,7 @@ const NavBar: React.FC<NavBarProps> = ({ menuItems }) => {
       <NavbarGroup>
         <Popover2
           fill
+
           placement='bottom-start'
           interactionKind={Popover2InteractionKind.HOVER}
           content={
@@ -138,6 +139,10 @@ const NavBar: React.FC<NavBarProps> = ({ menuItems }) => {
           <NavbarHeading>
             {auth?.user.name} | {company?.name}{' '}
           </NavbarHeading>
+        </Popover2>
+        <NavbarDivider />
+        <Popover2 content={<Notification />} placement='bottom-start'>
+          <Button icon='notifications' help='Notificações' />
         </Popover2>
         <NavbarDivider />
         <Button

@@ -1,8 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="79e2c5f6-2a38-41a8-86d5-8d43eb801e3b" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/Screens/CostsPosting/index.tsx" afterDir="false" />
+    <list default="true" id="79e2c5f6-2a38-41a8-86d5-8d43eb801e3b" name="Changes" comment="Merge pull request #43 from xpiral14/feat/Add-real-time&#10;&#10;Feat/add real time">
+      <changelist_data name="Samuel Araujo Reis" email="sa.reis1999@gmail.com" />
+      <change afterPath="$PROJECT_DIR$/src/Screens/Order/AssignEmployeeToOrder/index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Components/Layout/Bar/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/Components/Layout/Bar/index.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Components/Select/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/Components/Select/index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Contracts/Hooks/useScreen.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/Contracts/Hooks/useScreen.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Contracts/Models/Service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/Contracts/Models/Service.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Contracts/Screen/OrderServiceDetails/OrderServiceDetailsProps.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/Contracts/Screen/OrderServiceDetails/OrderServiceDetailsProps.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Screens/OrderPartDetails/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/Screens/OrderPartDetails/index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Screens/OrderResume/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/Screens/OrderResume/index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Screens/OrderServiceDetails/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/Screens/OrderServiceDetails/index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Screens/Register/ServiceOrder/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/Screens/Register/ServiceOrder/index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Services/EmployeeService.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/Services/EmployeeService.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Services/NotificationService.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/Services/NotificationService.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Services/OrderService.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/Services/OrderService.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Services/PartsService.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/Services/PartsService.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Statics/menu.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/Statics/menu.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Statics/screens.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/Statics/screens.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/globalStyle.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/globalStyle.css" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -20,17 +38,65 @@
     </option>
   </component>
   <component name="Git.Settings">
+    <option name="PREVIOUS_COMMIT_AUTHORS">
+      <list>
+        <option value="Samuel Araujo Reis &lt;sa.reis1999@gmail.com&gt;" />
+      </list>
+    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="GitToolBoxStore">
     <option name="projectConfigVersion" value="5" />
   </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProjectId" id="2AxSnQ0bHjF4VFAmaywLNeTV7nE" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
-    "ts.external.directory.path": "\\\\wsl$\\Ubuntu\\home\\samreis\\documents\\work\\mms\\mms-frontend\\node_modules\\typescript\\lib"
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "node.js.detected.package.eslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "nodejs_package_manager_path": "yarn",
+    "ts.external.directory.path": "\\\\wsl$\\Ubuntu\\home\\samreis\\documents\\work\\mms\\mms-frontend\\node_modules\\typescript\\lib",
+    "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="79e2c5f6-2a38-41a8-86d5-8d43eb801e3b" name="Changes" comment="" />
+      <created>1655949923911</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1655949923911</updated>
+      <workItem from="1655949925354" duration="2778000" />
+    </task>
     <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Added AssignEmployeeToOrderScreen" />
+    <MESSAGE value="Merge pull request #43 from xpiral14/feat/Add-real-time&#10;&#10;Feat/add real time" />
+    <option name="LAST_COMMIT_MESSAGE" value="Merge pull request #43 from xpiral14/feat/Add-real-time&#10;&#10;Feat/add real time" />
   </component>
 </project>

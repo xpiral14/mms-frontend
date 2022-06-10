@@ -1,4 +1,4 @@
-import React, { Context, createContext, useContext, useState } from 'react'
+import React, { Context, createContext, useCallback, useContext, useState } from 'react'
 import { ScreenStatus } from '../Constants/Enums'
 
 type WindowContext<P = any> = {
@@ -14,6 +14,7 @@ type WindowContext<P = any> = {
   isScreenStatusEdit: boolean
   isScreenStatusNew: boolean
   isScreenStatusSeeRegisters: boolean
+  changePayloadAttribute: (key: any, value: any) => void
 }
 
 const windowContext = createContext<WindowContext>(null as any)
@@ -35,6 +36,12 @@ const WindowContextProvider: React.FC = ({ children }) => {
     ScreenStatus.VISUALIZE
   )
 
+  const changePayloadAttribute = useCallback((key: keyof typeof payload, value: any) => {
+    setPayload((prev: any) => ({
+      ...prev,
+      [key]: value,
+    }))
+  }, [setPayload])
   const isScreenStatusVizualize = screenStatus === ScreenStatus.VISUALIZE
   const isScreenStatusEdit = screenStatus === ScreenStatus.EDIT
   const isScreenStatusNew = screenStatus === ScreenStatus.NEW
@@ -44,6 +51,7 @@ const WindowContextProvider: React.FC = ({ children }) => {
       value={{
         payload,
         setPayload,
+        changePayloadAttribute,
         screenStatus,
         setScreenStatus,
         isScreenStatusVizualize,

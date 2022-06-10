@@ -489,8 +489,7 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
     }
     openSubScreen<OrderServiceDetailsProps>(
       {
-        id: 'order-resume',
-        contentSize: '770 430',
+        id: 'order-resume'
       },
       screen.id,
       orderResumeProps
@@ -530,6 +529,10 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
   const isServiceDiscountTypePercent =
     payload.serviceDiscountType === DiscountType.PERCENT
   const columns: Column[] = [
+    {
+      name: 'Referência',
+      keyName: 'reference',
+    },
     {
       name: 'Status',
       keyName: 'status',
@@ -940,6 +943,7 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
                       status: i.value as string,
                     })
                   }}
+                  filterable={false}
                   activeItem={filter.status}
                   items={orderStatusOptions}
                 />

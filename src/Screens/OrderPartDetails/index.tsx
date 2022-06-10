@@ -169,7 +169,7 @@ const OrderPartDetails: FunctionComponent<OrderPartDetailsScreenProps> = (props)
 
   const alertThatHasUnsavedOrderPartItems = (onConfirm: () => void) => {
     openAlert({
-      text: 'Quando a tela fechar os produtos não salvos não serão modificados. Deseja prosseguir?',
+      text: 'Tem certeza que deseja salvar todos?',
       intent: 'warning',
       icon: 'warning-sign',
       onConfirm,
@@ -186,14 +186,51 @@ const OrderPartDetails: FunctionComponent<OrderPartDetailsScreenProps> = (props)
   )
 
   const handleButtonSave = () => {
-    const savedOrderParts = Object.values(orderParts)
-      .filter(s => !s.isEditMode)
-      .map(toOrderPartModel as any) as OrderPartModel[]
-
-    const onConfirm = () => props.onSave?.(
-      savedOrderParts,
-      props.screen
+    const savedOrderServices = Object.values(orderParts).filter(
+      (s) => !s.isEditMode
     )
+
+    const unSavedOrderServices = Object.values(orderPartValues).filter(
+      (s) => s.isEditMode
+    )
+
+    const onConfirm = async () => {
+      try {
+        await Promise.all(
+          unSavedOrderServices.map(async (osi) => {
+            const osModel = toOrderPartModel(osi)
+            if (osi.id) {
+              await OrderService.editPart(osi.order_id!, osModel)
+              return
+            }
+            osi = (await OrderService.addPart(osi.order_id!, osModel)).data.data
+
+            savedOrderServices.push({
+              ...osi,
+              isEditMode: false,
+            })
+          })
+        )
+
+        const items: SelectedOrderPart = {}
+
+        savedOrderServices.forEach((os) => {
+          items[os.part_id!] = os
+        })
+
+        setOrderParts(items)
+
+        props.onSave?.(
+          savedOrderServices.map(toOrderPartModel) as any,
+          props.screen
+        )
+      } catch (error: any) {
+        showErrorToast({
+          message:
+            'Não foi possível salvar todas os serviços da ordem ainda não salvos. Por favor, tente novamente!',
+        })
+      }
+    }
 
     if (hasUnsavedOrderPartItems) {
       alertThatHasUnsavedOrderPartItems(onConfirm)
@@ -312,7 +349,7 @@ const OrderPartDetails: FunctionComponent<OrderPartDetailsScreenProps> = (props)
           icon='floppy-disk'
           onClick={handleButtonSave}
         >
-          Salvar
+          Salvar todos
         </Button>
 
         <Button icon='log-out' intent={Intent.NONE} onClick={handleButtonExit}>

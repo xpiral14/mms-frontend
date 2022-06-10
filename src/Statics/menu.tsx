@@ -115,6 +115,17 @@ const menus = {
           headerTitle: 'Lançamento de custos',
         },
       },
+      ReceiptsXCosts: {
+        name: screens['receipts-x-costs'].name,
+        icon: <GiExpense size={16} />,
+        screen: {
+          minHeight: 290,
+          maxHeight: 500,
+          ...screens['receipts-x-costs'],
+          contentSize: '1065px 400px',
+          headerTitle: screens['receipts-x-costs'].name,
+        },
+      },
     },
   },
   Empresa: {

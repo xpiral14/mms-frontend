@@ -8,5 +8,5 @@ const formatter = new Intl.NumberFormat('pt-BR', {
 })
 export default function currencyFormat(value?: number | string) {
   if (!value) return value
-  return formatter.format(+value)
+  return formatter.format(+value) as string
 }

@@ -45,14 +45,14 @@ const AuthProvider: FC = ({ children }) => {
 
   const [company, setCompany] = useState<Company | null>(null)
   const { showErrorToast } = useToast()
-  const logout = () => {
+  const logout = useCallback(() => {
     localStorage.removeItem(AUTH_LOCAL_STORAGE_KEY)
     setAuth(null)
-  }
+  }, [])
 
   useEffect(() => {
     if (!auth) return
-    api.defaults.headers.authorization = `Bearer ${auth.token}`
+    api.defaults.headers.Authorization = `Bearer ${auth.token}`
     api.interceptors.response.use(
       (response) => {
         return response
@@ -127,7 +127,7 @@ const AuthProvider: FC = ({ children }) => {
       company,
       hasAllPermissions,
       hasSomeOfPermissions,
-      hasPermission
+      hasPermission,
     }),
     [auth, setAuth, logout, company, hasPermission]
   )

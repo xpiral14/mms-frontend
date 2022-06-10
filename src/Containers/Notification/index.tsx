@@ -1,5 +1,5 @@
 import { Colors, Intent } from '@blueprintjs/core'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import Button from '../../Components/Button'
 import Container from '../../Components/Layout/Container'
 import Row from '../../Components/Layout/Row'
@@ -32,22 +32,10 @@ const Notification = () => {
   const { showErrormessage } = useMessageError()
   const [loadingNotifications, loadNotifications] = useAsync(async () => {
     try {
-      let notifications = [] as any
       const response = await NotificationService.getAll(1, pagination.perPage)
       setPagination(response.data.meta)
-      switch (filterBy) {
-      case NotificationFilterType.ALL: {
-        notifications = response.data.data
-        break
-      }
-      case NotificationFilterType.UNREAD: {
-        notifications = response.data.data.filter((n) => !n.read_at)
 
-        break
-      }
-      }
-
-      setNotifications(notifications)
+      setNotifications(response.data.data)
     } catch (error) {
       showErrormessage(
         error,
@@ -56,6 +44,17 @@ const Notification = () => {
     }
   }, [filterBy, pagination.perPage])
   const socket = useSocket()
+
+  const filteredNotifications = useMemo(() => {
+    switch (filterBy) {
+    case NotificationFilterType.ALL: {
+      return notifications
+    }
+    case NotificationFilterType.UNREAD: {
+      return notifications.filter((n) => !n.read_at)
+    }
+    }
+  }, [notifications])
 
   useEffect(() => {
     const channel = socket?.private('User.' + auth?.user.id)
@@ -93,6 +92,22 @@ const Notification = () => {
           outlined
           small
           help='Marcar todas como lidas'
+          onClick={async () => {
+            try {
+              await NotificationService.markAllAsRead()
+              setNotifications((prev) =>
+                prev.map((n) => ({
+                  ...n,
+                  read_at: new Date().toJSON(),
+                }))
+              )
+            } catch (error) {
+              showErrormessage(
+                error,
+                'Não foi possível marcar todas as notificações como lidas. Por favor, tente novamente'
+              )
+            }
+          }}
           icon='tick'
           loading={loadingNotifications}
           intent={Intent.SUCCESS}
@@ -125,12 +140,16 @@ const Notification = () => {
       </Row>
       <Row>
         <div style={{ marginTop: 32 }}>
-          {notifications.map((n) => (
+          {filteredNotifications.map((n) => (
             <NotificationItem notification={n} key={n.id} />
           ))}
         </div>
       </Row>
-      <Render renderIf={pagination.total > notifications.length}>
+      <Render
+        renderIf={Boolean(
+          pagination.total && pagination.total > notifications.length
+        )}
+      >
         <Row className='flex-center py-2'>
           <Button
             small
@@ -148,7 +167,10 @@ const Notification = () => {
           </Button>
         </Row>
       </Render>
-     
+
+      <Render renderIf={!pagination.total && !loadingNotifications}>
+        Você não possui notificações no momento
+      </Render>
     </Container>
   )
 }

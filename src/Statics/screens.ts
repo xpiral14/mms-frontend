@@ -88,6 +88,13 @@ const screens = {
     subScreenOnly: true,
     permissions: [Permissions.READ_ORDER],
   },
+  'receipts-x-costs': {
+    id: 'receipts-x-costs',
+    name: 'Receitas x Custos',
+    path: 'Finance/ReceiptXCosts',
+    subScreenOnly: true,
+    permissions: [Permissions.READ_ORDER],
+  },
 } as Screens
 
 

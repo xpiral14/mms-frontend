@@ -12,8 +12,12 @@ export default class NotificationService {
   }
 
   public static getAll(page = 0, limit = 20) {
-    return api.get<Paginated<Notification>>('users/notifications/paginated', {
+    return api.get<Paginated<Notification>>(makeUrl('users','notifications','paginated'), {
       params: { limit, page: page  },
     })
+  }
+
+  public static markAllAsRead(){
+    return api.put(makeUrl('users', 'notifications', 'mark-all-as-read'))
   }
 }

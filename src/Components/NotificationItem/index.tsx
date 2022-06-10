@@ -37,11 +37,13 @@ const NotificationItem = ({
         icon='more'
         help={
           <Menu>
-            <MenuItem
-              icon='tick'
-              text='Marcar como lida'
-              onClick={() => NotificationService.markAsRead(notification.id)}
-            />
+            {!notification.read_at && (
+              <MenuItem
+                icon='tick'
+                text='Marcar como lida'
+                onClick={() => NotificationService.markAsRead(notification.id)}
+              />
+            )}
             <MenuItem
               icon='trash'
               text='Remover notificação'

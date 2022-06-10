@@ -3,7 +3,7 @@ import { Colors } from '@blueprintjs/core'
 
 export const Body = styled.div<{ readed?: boolean }>`
   position: relative;
-  background-color: ${(p) => (p.readed ? Colors.LIGHT_GRAY4 : Colors.WHITE)};
+  background-color: ${(p) => (!p.readed ? Colors.LIGHT_GRAY4 : Colors.WHITE)};
   cursor: pointer;
   :hover {
     background-color: ${(p) =>

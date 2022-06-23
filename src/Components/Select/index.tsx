@@ -20,6 +20,7 @@ import {
 import { Option } from '../../Contracts/Components/Suggest'
 import { useMemo } from 'react'
 import Render from '../Render'
+import { CSSProperties } from 'styled-components'
 
 export interface SelectProps
   extends Partial<Omit<BluePrintSelectProps<Option>, 'activeItem'>> {
@@ -34,7 +35,7 @@ export interface SelectProps
   required?: boolean
   disabled?: boolean
   intent?: Intent
-  buttonProps?: ButtonProps
+  buttonProps?: ButtonProps & { style?: CSSProperties }
   defaultButtonText?: string
   loading?: boolean
   handleButtonReloadClick?: () => Promise<void> | void
@@ -57,7 +58,7 @@ export default function Select({
     <MenuItem
       icon='add'
       text={`Criar "${query}"`}
-      active={active}
+      selected={active}
       onClick={() => props.handleCreateButtonClick?.(query)}
       shouldDismissPopover={false}
     />
@@ -126,7 +127,7 @@ export default function Select({
     return (
       <MenuItem
         intent={option.intent}
-        active={activeOption?.value === option.value}
+        selected={activeOption?.value === option.value}
         disabled={modifiers.disabled}
         key={option.value}
         icon={option?.icon}
@@ -162,12 +163,7 @@ export default function Select({
       intent={props.intent}
       labelFor={props.id}
     >
-      <div
-        style={{
-          display: 'flex',
-          gap: '5px',
-        }}
-      >
+      <div className='d-flex gap-2'>
         <OptionSelect
           filterable
           popoverProps={{
@@ -178,13 +174,13 @@ export default function Select({
           itemListRenderer={renderMenu}
           itemRenderer={renderOption}
           inputProps={{
-            placeholder: 'Pesquisar...'
+            placeholder: 'Pesquisar...',
           }}
           createNewItemFromQuery={(() => {}) as any}
           createNewItemRenderer={maybeCreateNewItemRenderer}
           itemsEqual={areOptionsEqual}
           noResults={<MenuItem disabled={true} text='Sem resultados' />}
-          onItemSelect={props?.onChange as any  }
+          onItemSelect={props?.onChange as any}
           scrollToActiveItem
           {...props}
         >
@@ -192,8 +188,11 @@ export default function Select({
             icon={activeOption?.icon}
             loading={props.loading}
             rightIcon='caret-down'
+            alignText='left'
             text={
-              activeOption?.label || props.defaultButtonText || 'Escolha um item'
+              activeOption?.label ||
+              props.defaultButtonText ||
+              'Escolha um item'
             }
             intent={props.intent ?? activeOption?.intent}
             disabled={props.disabled}

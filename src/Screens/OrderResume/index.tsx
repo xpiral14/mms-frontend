@@ -105,7 +105,7 @@ const OrderResume: FunctionComponent<OrderResumeScreenProps> = (props) => {
   const orderServiceTableRows = orderServices.map((orderService) => ({
     ...orderService.order_service,
     ...orderService.service,
-  }))
+  })) as any[]
 
   const orderPartTableRows = orderParts.map(
     (orderPart) =>

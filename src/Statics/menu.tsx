@@ -80,6 +80,15 @@ const menus = {
           headerTitle: 'Criação de Serviços',
         },
       },
+      AssignEmployeeOrder: {
+        name: 'Obter serviço',
+        icon: 'add-to-artifact',
+        screen: {
+          ...screens['assign-employee-order'],
+          contentSize: '560 90',
+        },
+        permissions: [Permissions.READ_ORDER, Permissions.WRITE_ORDER]
+      }
     },
   },
   Financeiro: {

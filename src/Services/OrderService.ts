@@ -23,7 +23,7 @@ export type OrderPartResponse = {
   order_part: OrderPart
 }
 export default class OrderService {
-  static async getAll(page: number, limit: number, query: object) {
+  static async getAll(page: number, limit: number, query?: object) {
     return api.get<Paginated<Order>>(`${DEFAULT_PATH}/paginated`, {
       params: {
         page,

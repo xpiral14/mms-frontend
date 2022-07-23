@@ -273,8 +273,14 @@ const OrderResume: FunctionComponent<OrderResumeScreenProps> = (props) => {
     loadOrderStatuses()
   }
 
-  const generateOrderResumeReport = () => {
-    OrderService.downloadOrderResumeReport(order)
+  const generateOrderResumeReport = async () => {
+    try {
+      await OrderService.downloadOrderResumeReport(order)
+    } catch (error) {
+      showErrorToast(
+        'Não foi possível emitir o relatório de resumo da ordem de serviço. Por favor, tente novamente!'
+      )
+    }
   }
 
   return (

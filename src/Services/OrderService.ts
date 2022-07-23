@@ -122,17 +122,8 @@ export default class OrderService {
   }
 
   static async downloadOrderResumeReport(order: Partial<Order>) {
-    const response = await api.get(
-      `${DEFAULT_PATH}/${order.id}/reports/resume`,
-      {
-        responseType: 'blob',
-      }
-    )
-
-    saveFile(
-      new Blob([response.data], { type: 'application/pdf' }),
-      `resumo_ordem_${order.reference ?? order.id}.pdf`
-    )
+    await api.get(`${DEFAULT_PATH}/${order.id}/reports/resume`)
+   
   }
 
   static  async  getOrderStatuses(){

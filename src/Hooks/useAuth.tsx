@@ -58,9 +58,10 @@ const AuthProvider: FC = ({ children }) => {
         return response
       },
       (error) => {
+        debugger
         if (
-          error?.response?.data?.messages?.includes('Unauthenticated') &&
-          error.response.status === 500
+          error?.response?.data?.data?.messages?.includes('Unauthenticated') &&
+          error.response.status === 401
         ) {
           showErrorToast({
             message: 'A sua sessão encerrou. Por favor, loge-se novamente',

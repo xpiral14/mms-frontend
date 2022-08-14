@@ -37,6 +37,7 @@ export default function useValidation(
 
     if (errorList.length) {
       openAlert({
+        canOutsideClickCancel: true,
         text: <ul>{errorList}</ul>,
         onClose: () => {
           setActiveTab?.(checkedErrors[0].tabId || '0')

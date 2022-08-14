@@ -19,6 +19,8 @@ export type ScreenIds =
   | 'order-resume'
   | 'receipts-x-costs'
   | 'assign-employee-order'
+  | 'stock-register'
+  | 'part-stock-management'
 
 export interface ScreenData {
   id: ScreenIds

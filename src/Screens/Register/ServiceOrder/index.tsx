@@ -229,7 +229,7 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
   ]
   const { validate } = useValidation(validations)
 
-  const { setReloadGrid } = useGrid()
+  const { setReloadGrid, setPage } = useGrid()
   const { showSuccessToast, showErrorToast } = useToast()
   const { openAlert } = useAlert()
   const { openSubScreen } = useScreen()
@@ -246,7 +246,6 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
       await OrderService.getOrderReceipts(orderId)
     ).data.data.reduce((carry, receipt) => carry + receipt.value, 0)
     if (totalPrice === 0) {
-
       openAlert({
         text: 'A ordem de serviço não possui serviços nem produtos com valor',
         intent: Intent.WARNING,
@@ -263,8 +262,8 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
       openSubScreen<ReceiptPostProps>(
         {
           id: 'receipt-posting',
-          forceOpen:  true,
-          contentSize: '900px 256px'
+          forceOpen: true,
+          contentSize: '900px 256px',
         },
         screen.id,
         {
@@ -710,8 +709,7 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
               }
               disabled={screenStatus === ScreenStatus.VISUALIZE}
             />
-            <Render renderIf ={hasPermission(Permissions.READ_EMPLOYEE)}>
-
+            <Render renderIf={hasPermission(Permissions.READ_EMPLOYEE)}>
               <Select
                 handleButtonReloadClick={loadEmployees}
                 loading={loadingEmployees}
@@ -739,19 +737,19 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
                   )
                 }}
                 buttonProps={
-                {
-                  id: `${screen.id}-select-costumer`,
-                  style: {
-                    width: '100%',
-                    minWidth: '150px',
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    maxWidth: 250,
-                    textOverflow: 'ellipsis',
-                    whiteSpace: 'nowrap',
-                    overflow: 'hidden',
-                  },
-                } as any
+                  {
+                    id: `${screen.id}-select-costumer`,
+                    style: {
+                      width: '100%',
+                      minWidth: '150px',
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      maxWidth: 250,
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                      overflow: 'hidden',
+                    },
+                  } as any
                 }
                 disabled={screenStatus === ScreenStatus.VISUALIZE}
               />
@@ -904,12 +902,21 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
         <Render renderIf={screenStatus === ScreenStatus.SEE_REGISTERS}>
           <Row style={{ flex: 1 }}>
             <Box>
-              <Row className='align-center d-flex flex-between'>
+              <Row
+                className='align-center d-flex flex-between'
+                style={{ width: 200 }}
+              >
                 <div>
                   <Icon icon='filter' />
                   Filtros
                 </div>
-                <Button icon='search' onClick={() => setReloadGrid(true)}>
+                <Button
+                  icon='search'
+                  onClick={() => {
+                    setPage(0)
+                    setReloadGrid(true)
+                  }}
+                >
                   Filtrar
                 </Button>
               </Row>
@@ -921,6 +928,12 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
                 }}
               >
                 <InputText
+                  style={{
+                    width: '100%',
+                  }}
+                  inputStyle={{
+                    width: '100%',
+                  }}
                   id={screen.id + 'costumer_filter'}
                   value={filter.customerName}
                   label='Nome do cliente'
@@ -931,6 +944,10 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
                   }
                 />
                 <InputDate
+                  fill
+                  inputProps={{
+                    style: { width: '100%' },
+                  }}
                   label='Validade da nota'
                   id={screen.id + 'filter-date-validatiom'}
                   value={filter?.validity}
@@ -942,6 +959,11 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
                     changeFilter({
                       status: i.value as string,
                     })
+                  }}
+                  buttonProps={{
+                    style: {
+                      width: '100%',
+                    },
                   }}
                   filterable={false}
                   activeItem={filter.status}

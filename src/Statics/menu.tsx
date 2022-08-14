@@ -2,6 +2,8 @@ import { MenuType } from '../Contracts/Containers/NavBar'
 import screens from './screens'
 import { GiExpense } from 'react-icons/gi'
 import { Permissions } from '../Constants/Enums'
+
+import {BiPackage} from 'react-icons/bi'
 const menus = {
   Estoque: {
     name: 'Estoque',
@@ -14,6 +16,16 @@ const menus = {
       Permissions.WRITE_UNIT,
     ],
     items: {
+      Estoques: {
+        name: 'Estoques',
+        icon: <BiPackage size={20}/>,
+        screen: {
+          minHeight: 290,
+          maxHeight: 500,
+          ...screens['stock-register'],
+          contentSize: '750px 246px',
+        },
+      },
       Produtos: {
         name: 'Produtos',
         icon: 'wrench',

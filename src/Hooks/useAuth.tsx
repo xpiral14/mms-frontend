@@ -58,7 +58,6 @@ const AuthProvider: FC = ({ children }) => {
         return response
       },
       (error) => {
-        debugger
         if (
           error?.response?.data?.data?.messages?.includes('Unauthenticated') &&
           error.response.status === 401

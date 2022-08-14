@@ -13,8 +13,13 @@ export interface ColumnProps extends BlueprintColumnProps {
 }
 export interface PaginatedTableProps extends Omit<TableProps, 'rows'> {
   containerProps?: any
-  request: (
-    page: number,
+  request?: (
+    page: number | any,
+    limit: number,
+    filters?: Record<string, string | number | undefined>
+  ) => Promise<AxiosResponse<Paginated<any>>>
+  customRequest?:(
+    page: number | any,
     limit: number,
     filters?: Record<string, string | number | undefined>
   ) => Promise<AxiosResponse<Paginated<any>>>

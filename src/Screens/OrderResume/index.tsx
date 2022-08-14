@@ -297,7 +297,9 @@ const OrderResume: FunctionComponent<OrderResumeScreenProps> = (props) => {
           <Button
             icon='refresh'
             onClick={reloadAll}
-            loading={loadingOrderParts && loadingOrderServices && loadingOrderStatuses}
+            loading={
+              loadingOrderParts && loadingOrderServices && loadingOrderStatuses
+            }
           >
             Recarregar dados da tela
           </Button>
@@ -386,9 +388,11 @@ const OrderResume: FunctionComponent<OrderResumeScreenProps> = (props) => {
                 label='Desconto em produtos'
                 readOnly
                 value={
-                  DiscountTypeSymbol[order.service_discount_type!] +
+                  order.product_discount ?
+                    (DiscountTypeSymbol[order.service_discount_type!] ?? '') +
                   ' ' +
-                  order.product_discount?.toFixed(2)
+                  order.product_discount?.toFixed(2) 
+                    : 'Sem desconto'
                 }
                 id=''
               />
@@ -396,16 +400,18 @@ const OrderResume: FunctionComponent<OrderResumeScreenProps> = (props) => {
                 label='Desconto em serviços'
                 readOnly
                 value={
-                  DiscountTypeSymbol[order.product_discount_type!] +
+                  order.service_discount ?
+                    (DiscountTypeSymbol[order.product_discount_type!]) +
                   ' ' +
                   order.service_discount?.toFixed(2)
+                    : 'Sem desconto'
                 }
                 id=''
               />
               <InputText
                 label='Status'
                 readOnly
-                value={orderStatuses.find(o => o.id === order.status)?.name}
+                value={orderStatuses.find((o) => o.id === order.status)?.name}
                 id=''
               />
             </Row>

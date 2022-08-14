@@ -103,6 +103,19 @@ const screens = {
     subScreenOnly: true,
     permissions: [Permissions.READ_ORDER],
   },
+  'stock-register': {
+    id: 'stock-register',
+    name: 'Estoques',
+    path: 'Register/Stock',
+    permission: [Permissions.READ_STOCK, Permissions.WRITE_STOCK],
+  },
+  'part-stock-management': {
+    id: 'part-stock-management',
+    name: 'Gerenciamento de produtos do estoque',
+    path: 'PartStockManagement',
+    subScreenOnly: true,
+    permission: [Permissions.READ_STOCK, Permissions.WRITE_STOCK],
+  },
 } as Screens
 
 

@@ -24,6 +24,7 @@ import Button from '../../../Components/Button'
 import Box from '../../../Components/Layout/Box'
 import { FaProductHunt } from 'react-icons/fa'
 import { useScreen } from '../../../Hooks/useScreen'
+import { PartStockProps } from '../../../Contracts/Screen/PartStockManagement'
 const StocksScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
   const { payload, setPayload, screenStatus, setScreenStatus } =
     useWindow<Stock>()
@@ -290,13 +291,17 @@ const StocksScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
         <Box className='mt-1'>
           <Row className='d-flex justify-content-end'>
             <Button icon={<FaProductHunt size={12} />} disabled={!payload.id} intent={Intent.PRIMARY} onClick={() => {
-              openSubScreen({
-                id: 'part-stock-management',
-                headerTitle: `Gerenciamento de produtos do estoque "${payload.name}"`,
-                contentSize: '750px 246px'
-              }, screen.id, {
-                stock: payload
-              })
+              openSubScreen<PartStockProps>(
+                {
+                  id: 'part-stock-management',
+                  headerTitle: `Gerenciamento de produtos do estoque "${payload.name}"`,
+                  contentSize: '750px 246px',
+                },
+                screen.id,
+                {
+                  stock: payload,
+                }
+              )
             }}>
             Gerenciar produtos
             </Button>

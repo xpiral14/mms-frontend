@@ -1,30 +1,30 @@
-import React, { useCallback, useMemo } from 'react'
-import RegistrationButtonBar from '../../../Components/RegistrationButtonBar'
-import InputText from '../../../Components/InputText'
-import PaginatedTable from '../../../Components/PaginatedTable'
-import StockService from '../../../Services/StockService'
-import ScreenProps from '../../../Contracts/Components/ScreenProps'
-import {
-  RegistrationButtonBarProps,
-  StopLoadFunc,
-} from '../../../Contracts/Components/RegistrationButtonBarProps'
-import { useGrid } from '../../../Hooks/useGrid'
-import { useWindow } from '../../../Hooks/useWindow'
-import { useAlert } from '../../../Hooks/useAlert'
-import { ScreenStatus } from '../../../Constants/Enums'
 import { Intent } from '@blueprintjs/core'
-import { useToast } from '../../../Hooks/useToast'
-import useValidation from '../../../Hooks/useValidation'
-import { Validation } from '../../../Contracts/Hooks/useValidation'
-import Stock from '../../../Contracts/Models/Stock'
-import Render from '../../../Components/Render'
+import React, { useCallback, useMemo } from 'react'
+import { FaProductHunt } from 'react-icons/fa'
+import Button from '../../../Components/Button'
+import InputText from '../../../Components/InputText'
+import Box from '../../../Components/Layout/Box'
 import Container from '../../../Components/Layout/Container'
 import Row from '../../../Components/Layout/Row'
-import Button from '../../../Components/Button'
-import Box from '../../../Components/Layout/Box'
-import { FaProductHunt } from 'react-icons/fa'
-import { useScreen } from '../../../Hooks/useScreen'
+import PaginatedTable from '../../../Components/PaginatedTable'
+import RegistrationButtonBar from '../../../Components/RegistrationButtonBar'
+import Render from '../../../Components/Render'
+import { ScreenStatus } from '../../../Constants/Enums'
+import {
+  RegistrationButtonBarProps,
+  StopLoadFunc
+} from '../../../Contracts/Components/RegistrationButtonBarProps'
+import ScreenProps from '../../../Contracts/Components/ScreenProps'
+import { Validation } from '../../../Contracts/Hooks/useValidation'
+import Stock from '../../../Contracts/Models/Stock'
 import { PartStockProps } from '../../../Contracts/Screen/PartStockManagement'
+import { useAlert } from '../../../Hooks/useAlert'
+import { useGrid } from '../../../Hooks/useGrid'
+import { useScreen } from '../../../Hooks/useScreen'
+import { useToast } from '../../../Hooks/useToast'
+import useValidation from '../../../Hooks/useValidation'
+import { useWindow } from '../../../Hooks/useWindow'
+import StockService from '../../../Services/StockService'
 const StocksScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
   const { payload, setPayload, screenStatus, setScreenStatus } =
     useWindow<Stock>()

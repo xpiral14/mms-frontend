@@ -533,24 +533,37 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
       keyName: 'reference',
     },
     {
+      name: 'Funcionário',
+      keyName: 'employee_name',
+    },
+    {
+      name: 'Cliente',
+      keyName: 'customer_name',
+    },
+    {
       name: 'Status',
       keyName: 'status',
       formatText: (row) =>
         orderStatuses.find((o) => o.id === row?.status)?.name,
       style: {
-        width: '30%',
+        width: '120px',
       },
     },
     {
-      name: 'Observação',
-      keyName: 'description',
-    },
-    {
-      name: 'Criado em',
+      name: 'Criação',
       keyName: 'date',
       formatText: (row) => {
         return row?.date
           ? getDateWithTz(new Date(row.date)).toLocaleDateString('pt-BR')
+          : '-'
+      },
+    },
+    {
+      name: 'Validade',
+      keyName: 'validity',
+      formatText: (row) => {
+        return row?.validity
+          ? getDateWithTz(new Date(row.validity)).toLocaleDateString('pt-BR')
           : '-'
       },
     },

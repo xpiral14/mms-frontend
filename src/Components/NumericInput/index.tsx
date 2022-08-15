@@ -23,11 +23,7 @@ const NumericInput: FC<NumericInputProps> = ({
   ...props
 }) => {
   return (
-    <Container
-      width={width}
-      labelPosition={props.labelPosition}
-      style={style}
-    >
+    <Container width={width} labelPosition={props.labelPosition} style={style}>
       {label && (
         <div>
           <label htmlFor={props.id}>
@@ -36,9 +32,7 @@ const NumericInput: FC<NumericInputProps> = ({
         </div>
       )}
 
-      <BluePrintNumericInput
-        {...props}
-      />
+      <BluePrintNumericInput {...props} />
     </Container>
   )
 }

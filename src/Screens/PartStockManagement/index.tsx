@@ -1,5 +1,7 @@
 import { Intent, Tag } from '@blueprintjs/core'
 import React, { useCallback, useMemo, useState } from 'react'
+import Button from '../../Components/Button'
+import Box from '../../Components/Layout/Box'
 import Container from '../../Components/Layout/Container'
 import Row from '../../Components/Layout/Row'
 import NumericInput from '../../Components/NumericInput'
@@ -88,7 +90,22 @@ const PartStockManagement: React.FC<PartStockManagementScreenProps> = ({
         const quantity = Number(payload.quantity)
         return !isNaN(quantity) && quantity > 0
       },
+      
       errorMessage: 'Quantidade deve ser um número maior que 0',
+      inputId: 'partStockName',
+    },
+    {
+      check: () => {
+        if(payload.minimum === undefined){
+          return true
+        }
+
+        console.log(payload.minimum,  Number(payload.minimum))
+        const minimum = Number(payload.minimum)
+        return !isNaN(minimum) && minimum > 0
+      },
+      
+      errorMessage: 'Quantidade mínima deve ser um número maior que 0',
       inputId: 'partStockName',
     },
   ]
@@ -166,6 +183,7 @@ const PartStockManagement: React.FC<PartStockManagementScreenProps> = ({
     decreaseWindowSize?.()
 
     if (!validate()) {
+      stopLoad()
       return
     }
 
@@ -265,7 +283,7 @@ const PartStockManagement: React.FC<PartStockManagementScreenProps> = ({
           },
         },
         {
-          name: 'Quantidade mínimia',
+          name: 'Quantidade mínima',
           keyName: 'minimum',
           style: {
             width: '30%',
@@ -374,9 +392,18 @@ const PartStockManagement: React.FC<PartStockManagementScreenProps> = ({
         <RegistrationButtonBar {...registrationButtonBarProps} />
       </Row>
 
-      <Row>
-        <Render renderIf={screenStatus !== ScreenStatus.SEE_REGISTERS}>
+
+      <Render renderIf={screenStatus !== ScreenStatus.SEE_REGISTERS}>
+        
+        <Box className='d-flex justify-content-end'>
+          <Button icon='warning-sign' disabled={!payload.id} intent={Intent.PRIMARY}>
+              Criar alerta de estoque
+          </Button>
+        </Box>
+
+        <Row className='mt-2'>
           <Select
+            required
             buttonProps={
               {
                 className: 'w-100',
@@ -397,19 +424,41 @@ const PartStockManagement: React.FC<PartStockManagementScreenProps> = ({
 
           <NumericInput
             id='partStockDescription'
-            label='Quantidade:'
+            label='Quantidade'
             disabled={isStatusVizualize()}
-            style={{ flex: 1 }}
             stepSize={0.1}
             min={0}
+            style={{
+              flex: 1
+            }}
+            fill
+            required
             value={payload?.quantity || 0}
             onValueChange={(_, stringValue) => {
               changePayloadAttribute('quantity', stringValue)
             }}
             maxLength={120}
+            // width='50%'
           />
-        </Render>
-      </Row>
+
+          <NumericInput
+            id='partStockDescription'
+            label='Quantidade mínima:'
+            disabled={isStatusVizualize()}
+            stepSize={0.1}
+            min={0}
+            fill
+            value={payload?.minimum || 0}
+            onValueChange={(_, stringValue) => {
+              changePayloadAttribute('minimum', stringValue)
+            }}
+            style={{
+              flex: 1
+            }}
+            maxLength={120}
+          />
+        </Row>
+      </Render>
       <Render renderIf={screenStatus === ScreenStatus.SEE_REGISTERS}>
         <Row className='h-100'>
           <PaginatedTable

@@ -116,6 +116,13 @@ const screens = {
     subScreenOnly: true,
     permission: [Permissions.READ_STOCK, Permissions.WRITE_STOCK],
   },
+  'part-stock-warning': {
+    id: 'part-stock-warning',
+    name: 'Gerenciamento de produtos do estoque',
+    path: 'PartStockWarning',
+    subScreenOnly: true,
+    permission: [Permissions.READ_STOCK, Permissions.WRITE_STOCK],
+  }
 } as Screens
 
 

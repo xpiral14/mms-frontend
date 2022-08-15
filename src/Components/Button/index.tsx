@@ -2,6 +2,7 @@
 import {
   ButtonProps as BluePrintButtonProps,
   Button as BluePrintButton,
+  Intent,
 } from '@blueprintjs/core'
 import { Popover2, Tooltip2 } from '@blueprintjs/popover2'
 import { FC, useCallback } from 'react'
@@ -17,19 +18,25 @@ const Button: FC<ButtonProps> = (props) => {
     () => <BluePrintButton {...props}>{props.children}</BluePrintButton>,
     [props]
   )
-  return props.help ? (
-    props.helpType == 'popover' ? (
-      <Popover2 content={props.help} position='right-top'>
-        <ButtonComponent />
-      </Popover2>
-    ) : (
-      <Tooltip2 content={props.help} position='right'>
-        <ButtonComponent />
-      </Tooltip2>
-    )
-  ) : (
-    <ButtonComponent />
+  return (
+    <>
+      <ButtonComponent />
+      {props.help && (
+        <>
+          {props.helpType == 'popover' ? (
+            <Popover2 content={props.help} position='right-top'>
+              <Button minimal icon='help' />
+            </Popover2>
+          ) : (
+            <Tooltip2 content={props.help} position='right'>
+              <Button minimal icon='help' intent={Intent.PRIMARY}/>
+            </Tooltip2>
+          )}
+        </>
+      )}
+    </>
   )
+
 }
 
 export default Button

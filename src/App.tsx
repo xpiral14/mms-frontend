@@ -16,6 +16,7 @@ import Routes from './Routes'
 import AuthProvider from './Hooks/useAuth'
 import ToastContextProvider from './Hooks/useToast'
 import Pusher from 'pusher-js'
+import DialogProvider from './Hooks/useDialog'
 
 if (process.env.NODE_ENV !== 'production') {
   Pusher.logToConsole = true
@@ -36,7 +37,9 @@ export default () => (
     <AlertContextProvider>
       <AuthProvider>
         <ScreenProvider>
-          <App />
+          <DialogProvider>
+            <App />
+          </DialogProvider>
         </ScreenProvider>
       </AuthProvider>
     </AlertContextProvider>

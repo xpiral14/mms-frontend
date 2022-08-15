@@ -21,6 +21,7 @@ export type ScreenIds =
   | 'assign-employee-order'
   | 'stock-register'
   | 'part-stock-management'
+  | 'part-stock-warning'
 
 export interface ScreenData {
   id: ScreenIds

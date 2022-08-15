@@ -9,29 +9,54 @@ import NotificationService from '../../../Services/NotificationService'
 import menu from '../../../Statics/menu'
 
 const PrivateLayout: React.FC = ({ children }) => {
-  const { showPrimaryToast } = useToast()
+  const { showPrimaryToast, showErrorToast, showWarningToast } = useToast()
   const { auth } = useAuth()
   const socket = useSocket()
   useEffect(() => {
-    const channel = socket?.private('User.' + auth?.user.id)
+    if (!auth) {
+      return
+    }
+    const channel = socket?.private('User.' + auth.user.id)
 
-    channel.notification((notification: Notification) => {
-      showPrimaryToast({
-        message: notification.message,
-        action: {
-          icon: 'tick',
+    channel
+      .notification((notification: Notification) => {
+        showPrimaryToast({
+          message: notification.message,
+          action: {
+            icon: 'tick',
 
-          onClick: () => {
-            NotificationService.markAsRead(notification.id)
+            onClick: () => {
+              NotificationService.markAsRead(notification.id)
+            },
+            text: '',
           },
-          text: '',
-        },
+        })
       })
-    })
+      .error((error: any) => {
+        if (error.type === 'AuthError') {
+          showErrorToast(
+            'Houve um problema ao tentar conectá-lo ao servidor em tempo real para receber notificções. Recarregue a página para tentar novamente se o problema persistir entre em contato com o suporte'
+          )
+        }
+      })
+
+    socket.private(`Company.${auth.user.company_id}.PartStock`)
+      .error((error: any) => {
+        if (error.type === 'AuthError') {
+          showErrorToast(
+            'Houve um problema ao tentar conectá-lo ao servidor em tempo real para receber alertas do estoque. Recarregue a página para tentar novamente se o problema persistir entre em contato com o suporte'
+          )
+        }
+      })
+      .listen('PartStockWarning', (ev: any) => {
+        showWarningToast(ev.message)
+      })
+
     return () => {
       socket.leave('User.' + auth?.user.id)
+      socket.leave(`Company.${auth.user.company_id}.PartStock`)
     }
-  }, [])
+  }, [auth])
 
   return (
     <div style={{ position: 'relative' }}>

@@ -14,31 +14,25 @@ import {
   RegistrationButtonBarProps,
   StopLoadFunc
 } from '../../Contracts/Components/RegistrationButtonBarProps'
-import ScreenProps from '../../Contracts/Components/ScreenProps'
 import { Option } from '../../Contracts/Components/Suggest'
 import { Column } from '../../Contracts/Components/Table'
 import { Validation } from '../../Contracts/Hooks/useValidation'
 import Part from '../../Contracts/Models/Part'
 import PartStock from '../../Contracts/Models/PartStock'
-import Stock from '../../Contracts/Models/Stock'
 import { useAlert } from '../../Hooks/useAlert'
 import useAsync from '../../Hooks/useAsync'
 import { useGrid } from '../../Hooks/useGrid'
 import useMessageError from '../../Hooks/useMessageError'
+import { useScreen } from '../../Hooks/useScreen'
 import { useToast } from '../../Hooks/useToast'
 import useValidation from '../../Hooks/useValidation'
 import { useWindow } from '../../Hooks/useWindow'
 import PartsService from '../../Services/PartsService'
 import PartStockService from '../../Services/PartStockService'
 
-interface PartStockManagementProps {
-  stock: Stock
-}
-
-interface PartStockManagementScreenProps
-  extends ScreenProps,
-    PartStockManagementProps {}
-const PartStockManagement: React.FC<PartStockManagementScreenProps> = ({
+import PartStockScreenProps from '../../Contracts/Screen/PartStockManagement'
+import { PartStockWarningProps } from '../../Contracts/Screen/PartStockWarning'
+const PartStockManagement: React.FC<PartStockScreenProps> = ({
   screen,
   stock,
 }): JSX.Element => {
@@ -100,7 +94,6 @@ const PartStockManagement: React.FC<PartStockManagementScreenProps> = ({
           return true
         }
 
-        console.log(payload.minimum,  Number(payload.minimum))
         const minimum = Number(payload.minimum)
         return !isNaN(minimum) && minimum > 0
       },
@@ -226,7 +219,7 @@ const PartStockManagement: React.FC<PartStockManagementScreenProps> = ({
   const handleButtonDeletePartStockOnClick = async () => {
     try {
       const response = await PartStockService.delete(
-        stock.id,
+        stock.id!,
         payload.id as number
       )
 
@@ -269,7 +262,6 @@ const PartStockManagement: React.FC<PartStockManagementScreenProps> = ({
           id: 1,
           name: 'Nome',
           keyName: 'part_name',
-
         },
         {
           id: 2,
@@ -386,18 +378,33 @@ const PartStockManagement: React.FC<PartStockManagementScreenProps> = ({
     changePayloadAttribute('part_id', option.value)
   }
 
+  const {openSubScreen} = useScreen()
+
+  const selectedProduct = useMemo(() => payload.part_id ?  parts.find(p => p.id === payload.part_id ) : undefined, [payload?.part_id, parts])
   return (
     <Container style={{ height: 'calc(100% - 40px)' }}>
       <Row>
         <RegistrationButtonBar {...registrationButtonBarProps} />
       </Row>
 
-
       <Render renderIf={screenStatus !== ScreenStatus.SEE_REGISTERS}>
-        
         <Box className='d-flex justify-content-end'>
-          <Button icon='warning-sign' disabled={!payload.id} intent={Intent.PRIMARY}>
-              Criar alerta de estoque
+          <Button
+            help="Alertas de estoque serve para avisar quando determinado item do estoque está abaixo ou dentro de um certo limite pré-definido"
+            icon='warning-sign'
+            disabled={!payload.id}
+            intent={Intent.PRIMARY}
+            onClick={() => {
+              openSubScreen<PartStockWarningProps>({
+                id: 'part-stock-warning',
+                headerTitle: `Alerta de estoque para "${selectedProduct?.name}"`,
+                contentSize: '420 110'
+              }, screen.id, {
+                partStock: payload
+              })
+            }}
+          >
+            Criar alerta de estoque
           </Button>
         </Box>
 
@@ -429,7 +436,7 @@ const PartStockManagement: React.FC<PartStockManagementScreenProps> = ({
             stepSize={0.1}
             min={0}
             style={{
-              flex: 1
+              flex: 1,
             }}
             fill
             required
@@ -438,7 +445,6 @@ const PartStockManagement: React.FC<PartStockManagementScreenProps> = ({
               changePayloadAttribute('quantity', stringValue)
             }}
             maxLength={120}
-            // width='50%'
           />
 
           <NumericInput
@@ -453,7 +459,7 @@ const PartStockManagement: React.FC<PartStockManagementScreenProps> = ({
               changePayloadAttribute('minimum', stringValue)
             }}
             style={{
-              flex: 1
+              flex: 1,
             }}
             maxLength={120}
           />
@@ -465,7 +471,7 @@ const PartStockManagement: React.FC<PartStockManagementScreenProps> = ({
             height='100%'
             onRowSelect={onRowSelect}
             customRequest={(page, limit) =>
-              PartStockService.getAll(stock.id, page, limit)
+              PartStockService.getAll(stock.id!, page, limit)
             }
             rowKey={(row) => row.id}
             containerProps={containerProps}

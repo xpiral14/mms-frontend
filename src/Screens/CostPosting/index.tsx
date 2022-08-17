@@ -65,7 +65,7 @@ const CostPosting: FC<CostPostScreenProps> = ({ screen, ...props }) => {
   const { showErrorToast, showSuccessToast } = useToast()
 
   const { openAlert } = useAlert()
-  const { showErrormessage } = useMessageError()
+  const { showErrorMessage: showErrormessage } = useMessageError()
   const [loadingCustomers, loadCustomers] = useAsync(async () => {
     try {
       const response = await CostumerService.getAll(0, 1000)

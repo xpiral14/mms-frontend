@@ -36,7 +36,7 @@ const CompanyData: FC<ScreenProps> = ({ screen }) => {
     }
   }, [])
 
-  const { showErrormessage } = useMessageError()
+  const { showErrorMessage: showErrormessage } = useMessageError()
   const onSave = async () => {
     setLoadingSave(true)
     try {

@@ -34,7 +34,7 @@ const AssignEmployeeToOrder = ({ screen }: ScreenProps) => {
       showErrorToast('Nâo foi possível obter as ordens')
     }
   }, [])
-  const { showErrormessage } = useMessageError()
+  const { showErrorMessage: showErrormessage } = useMessageError()
 
   const orderOptions: Option[] = useMemo(
     () => [

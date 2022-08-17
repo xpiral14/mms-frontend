@@ -73,7 +73,7 @@ const AuthProvider: FC = ({ children }) => {
 
     localStorage.setItem('@auth', JSON.stringify(auth))
   }, [auth])
-  const { showErrormessage } = useMessageError()
+  const { showErrorMessage: showErrormessage } = useMessageError()
   useEffect(() => {
     if (!auth?.user?.id) return
 

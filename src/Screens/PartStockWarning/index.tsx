@@ -30,7 +30,7 @@ const PartStockWaning: FC<PartStockWarningScreenProps> = ({
     setScreenStatus,
     screenStatus,
   } = useWindow<PartStockWarning>()
-  const { showErrormessage } = useMessageError()
+  const { showErrorMessage: showErrormessage } = useMessageError()
   const { openAlert } = useAlert()
   const {showSuccessToast} = useToast()
   const handleCreateWarning = async (stopLoad: StopLoadFunc) => {

@@ -88,7 +88,7 @@ const CostumerRegister: React.FC<CostumerRegisterScreenProps> = ({
   const { openAlert } = useAlert()
 
   const isStatusVizualize = () => screenStatus === ScreenStatus.VISUALIZE
-  const {showErrormessage} = useMessageError()
+  const {showErrorMessage: showErrormessage} = useMessageError()
 
   const createCostumer = async (stopLoad: () => void) => {
     if (!validate()) {

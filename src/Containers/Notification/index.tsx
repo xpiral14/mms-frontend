@@ -29,7 +29,7 @@ const Notification = () => {
     total: 1,
   })
   const { auth } = useAuth()
-  const { showErrormessage } = useMessageError()
+  const { showErrorMessage: showErrormessage } = useMessageError()
   const [loadingNotifications, loadNotifications] = useAsync(async () => {
     try {
       const response = await NotificationService.getAll(1, pagination.perPage)

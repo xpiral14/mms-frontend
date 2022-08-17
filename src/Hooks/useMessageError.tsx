@@ -30,7 +30,7 @@ export default function useMessageError(): UseMessageErrorReturn {
     return error.data?.message
   }
 
-  const showErrormessage = useCallback(
+  const showErrorMessage = useCallback(
     (
       error: any,
       defaultErrorMessage?: string,
@@ -67,5 +67,5 @@ export default function useMessageError(): UseMessageErrorReturn {
     []
   )
 
-  return { showErrormessage }
+  return { showErrorMessage: showErrorMessage }
 }

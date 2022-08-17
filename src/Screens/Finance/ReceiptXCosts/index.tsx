@@ -50,7 +50,7 @@ const ReceiptXCosts = () => {
       receipt_value: number
     }[]
   >([])
-  const { showErrormessage } = useMessageError()
+  const { showErrorMessage: showErrormessage } = useMessageError()
 
   const { payload, changePayloadAttribute } = useWindow<Payload>()
   const currentMonth = startOfMonth(new Date())

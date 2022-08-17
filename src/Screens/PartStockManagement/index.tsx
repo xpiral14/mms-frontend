@@ -126,7 +126,7 @@ const PartStockManagement: React.FC<PartStockScreenProps> = ({
   
   }
 
-  const {showErrormessage} = useMessageError()
+  const {showErrorMessage: showErrormessage} = useMessageError()
   const handleButtonCreatePartStockOnClick = async (stopLoad: Function) => {
     if (!validate()) {
       stopLoad()

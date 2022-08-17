@@ -8,7 +8,7 @@ export type ShowErrormessageOptions = {
 }
 
 export type UseMessageErrorReturn = {
-  showErrormessage: (
+  showErrorMessage: (
     error: any,
     defaultMessage: string,
     options?: ShowErrormessageOptions

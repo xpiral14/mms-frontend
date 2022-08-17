@@ -54,6 +54,7 @@ import OrderStatus from '../../../Contracts/Models/OrderStatus'
 import capitalize from '../../../Util/capitalize'
 import ReceiptStatus from '../../../Constants/ReceiptStatus'
 import { useAuth } from '../../../Hooks/useAuth'
+import useMessageError from '../../../Hooks/useMessageError'
 
 const discountTypeOptions: Option[] = [
   {
@@ -233,7 +234,7 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
   const { showSuccessToast, showErrorToast } = useToast()
   const { openAlert } = useAlert()
   const { openSubScreen } = useScreen()
-
+  const {showErrorMessage} = useMessageError()
   const reloadAllScreenData = () => {
     loadCostumers()
     loadEmployees()
@@ -313,21 +314,30 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
       const orderId = response.data.data.id
       setReloadGrid(true)
       changePayload('id', orderId)
-      if (payload.services) {
-        await Promise.all(
-          payload.services?.map((orderService) =>
-            OrderService.addService(orderId, orderService)
+      try {
+        if (payload.services) {
+          await Promise.all(
+            payload.services?.map((orderService) =>
+              OrderService.addService(orderId, orderService)
+            )
           )
-        )
+        }
+      } catch (error) {
+        showErrorMessage(error, 'Ocorreu um erro ao tentar salvar os produtos. Por favor, tente novamente.')
       }
 
-      if (payload.parts) {
-        await Promise.all(
-          payload.parts?.map((orderPart) =>
-            OrderService.addPart(orderId, orderPart)
+      try {
+        if (payload.parts) {
+          await Promise.all(
+            payload.parts?.map((orderPart) =>
+              OrderService.addPart(orderId, orderPart)
+            )
           )
-        )
+        }
+      } catch (error) {
+        showErrorMessage(error, 'Ocorreu um erro ao tentar salvar os serviços. Por favor, tente novamente.')
       }
+
       showSuccessToast({
         message: 'Ordem de serviço criada com sucesso!',
       })
@@ -498,8 +508,8 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
   const openOrderPartScreen = () => {
     const orderPartDetailsProps: OrderPartDetailsProps = {
       onSave(orderParts, screen) {
-        screen.close()
         changePayload('parts', orderParts)
+        screen.close()
       },
     }
 
@@ -507,7 +517,7 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
       orderPartDetailsProps.order = toOrderModel(payload)
     }
 
-    if (payload?.services?.length) {
+    if (payload?.parts?.length) {
       orderPartDetailsProps.selectedOrderParts = payload.parts
     }
 

@@ -24,12 +24,15 @@ const Button: FC<ButtonProps> = (props) => {
       {props.help && (
         <>
           {props.helpType == 'popover' ? (
-            <Popover2 content={props.help} position='right-top'>
+            <Popover2
+              content={<div className='p-2'>{props.help}</div>}
+              position='right-top'
+            >
               <Button minimal icon='help' />
             </Popover2>
           ) : (
             <Tooltip2 content={props.help} position='right'>
-              <Button minimal icon='help' intent={Intent.PRIMARY}/>
+              <Button minimal icon='help' intent={Intent.PRIMARY} />
             </Tooltip2>
           )}
         </>

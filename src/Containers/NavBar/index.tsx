@@ -75,6 +75,16 @@ const NavBar: React.FC<NavBarProps> = ({ menuItems }) => {
         ) {
           return
         }
+        
+        if (menu.isMain && menu.screen) {
+          return menuArray.push(
+            <Button
+              icon={menu.icon}
+              text={menu.name}
+              onClick={() => openScreen(menu.screen!)}
+            />
+          )
+        }
         menuArray.push(
           <MenuItem
             key={menu.name}

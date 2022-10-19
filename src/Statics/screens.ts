@@ -122,6 +122,13 @@ const screens = {
     path: 'PartStockWarning',
     subScreenOnly: true,
     permission: [Permissions.READ_STOCK, Permissions.WRITE_STOCK],
+  },
+  'reports': {
+    id: 'reports',
+    name: 'Relatórios emitidos',
+    path: 'Reports',
+    subScreenOnly: true,
+    permission: [Permissions.READ_STOCK, Permissions.WRITE_STOCK],
   }
 } as Screens
 

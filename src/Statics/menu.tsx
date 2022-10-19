@@ -171,6 +171,18 @@ const menus = {
       },
     },
   },
+  Reports: {
+    name: 'Relatórios',
+    isMain: true,
+    icon: 'paperclip',
+    screen: {
+      ... screens['reports'],
+      headerTitle: 'Relatórios emitidos',
+      contentSize: '710px 190px',
+      minHeight: 224, // This has to be the contentSize height + 34px that's the height of the bar
+      maxHeight: 500,
+    },
+  }
 } as MenuType
 
 export default menus

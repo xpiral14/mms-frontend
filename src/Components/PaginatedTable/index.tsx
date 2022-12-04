@@ -37,6 +37,7 @@ const pageOptions: Option[] = [
 const PaginatedTable: React.FC<PaginatedTableProps> = ({
   columns,
   request,
+  customRequest,
   ...rest
 }) => {
   const {
@@ -55,8 +56,10 @@ const PaginatedTable: React.FC<PaginatedTableProps> = ({
   useEffect(() => {
     const loadRequestData = async () => {
       try {
-        const response = await request(page + 1, limit, rest?.filters || {})
-        setGridResponse(response.data)
+        const apiRequest = customRequest ? customRequest : request
+        const response = await apiRequest?.(page + 1, limit, rest?.filters || {})
+        if(response?.data)
+          setGridResponse(response?.data)
       } catch (error) {
         showErrorToast({
           message: 'Erro ao obter dados',

@@ -1,7 +1,7 @@
 import { CSSProperties } from 'react'
 
 export type Column = {
-  cellRenderer?: (cell: any) => React.ReactNode
+  cellRenderer?: (column: Column, row: Row) => React.ReactNode
   keyName?: string
   formatText?: (row?: Row) => React.ReactNode
   withoutValueText?: React.ReactNode

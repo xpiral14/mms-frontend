@@ -36,7 +36,7 @@ const UnitsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
   const createValidation = (keyName: any) => () =>
     Boolean((payload as any)[keyName])
 
-  const { showErrormessage } = useMessageError()
+  const { showErrorMessage: showErrormessage } = useMessageError()
 
   const validations: Validation[] = [
     {

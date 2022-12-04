@@ -7,7 +7,6 @@ import OrderPart from '../Contracts/Models/OrderPart'
 import Part from '../Contracts/Models/Part'
 import Service from '../Contracts/Models/Service'
 import User from '../Contracts/Models/User'
-import saveFile from '../Util/saveFile'
 import OrderStatus from '../Contracts/Models/OrderStatus'
 import makeURL from '../Util/makeURL'
 import Receipt from '../Contracts/Models/Receipt'
@@ -122,17 +121,8 @@ export default class OrderService {
   }
 
   static async downloadOrderResumeReport(order: Partial<Order>) {
-    const response = await api.get(
-      `${DEFAULT_PATH}/${order.id}/reports/resume`,
-      {
-        responseType: 'blob',
-      }
-    )
-
-    saveFile(
-      new Blob([response.data], { type: 'application/pdf' }),
-      `resumo_ordem_${order.reference ?? order.id}.pdf`
-    )
+    await api.get(`${DEFAULT_PATH}/${order.id}/reports/resume`)
+   
   }
 
   static  async  getOrderStatuses(){

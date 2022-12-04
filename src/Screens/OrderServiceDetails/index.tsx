@@ -210,21 +210,24 @@ const OrderServiceDetails: FunctionComponent<OrderServiceDetailScreenProps> = (
 
     const onConfirm = async () => {
       try {
-        await Promise.all(
-          unSavedOrderServices.map(async (osi) => {
-            const osModel = toOrderServiceModel(osi)
-            if (osi.id) {
-              await OrderService.editService(osi.order_id!, osModel)
-              return
-            }
-            osi = (await OrderService.addService(osi.order_id!, osModel)).data.data
+        if (props.order?.id) {
+          await Promise.all(
+            unSavedOrderServices.map(async (osi) => {
+              const osModel = toOrderServiceModel(osi)
+              if (osi.id) {
+                await OrderService.editService(osi.order_id!, osModel)
+                return
+              }
+              osi = (await OrderService.addService(osi.order_id!, osModel)).data
+                .data
 
-            savedOrderServices.push({
-              ...osi,
-              isEditMode: false,
+              savedOrderServices.push({
+                ...osi,
+                isEditMode: false,
+              })
             })
-          })
-        )
+          )
+        }
 
         const items: SelectedOrderService = {}
 
@@ -234,8 +237,9 @@ const OrderServiceDetails: FunctionComponent<OrderServiceDetailScreenProps> = (
 
         setOrderServices(items)
 
+      
         props.onSave?.(
-          savedOrderServices.map(toOrderServiceModel) as any,
+          Object.values(orderServices).map(toOrderServiceModel) as any,
           props.screen
         ) 
       } catch (error: any) {

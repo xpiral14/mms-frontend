@@ -7,8 +7,10 @@ import ScreenProps, {Screen} from '../../Components/ScreenProps'
 export type OrderPartItem = Partial<OrderPartModel & {
   isCollapsed?: boolean,
   isEditMode?: boolean,
+  unique_key?: string,
   part_name?: string,
   part_id?: number,
+  part_stock_id?:number
   part_price?: number,
   part_unit_id?: number,
   part_unit_name?: string

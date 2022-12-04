@@ -2,6 +2,8 @@ import { MenuType } from '../Contracts/Containers/NavBar'
 import screens from './screens'
 import { GiExpense } from 'react-icons/gi'
 import { Permissions } from '../Constants/Enums'
+
+import {BiPackage} from 'react-icons/bi'
 const menus = {
   Estoque: {
     name: 'Estoque',
@@ -14,6 +16,16 @@ const menus = {
       Permissions.WRITE_UNIT,
     ],
     items: {
+      Estoques: {
+        name: 'Estoques',
+        icon: <BiPackage size={20}/>,
+        screen: {
+          minHeight: 290,
+          maxHeight: 500,
+          ...screens['stock-register'],
+          contentSize: '750px 246px',
+        },
+      },
       Produtos: {
         name: 'Produtos',
         icon: 'wrench',
@@ -159,6 +171,18 @@ const menus = {
       },
     },
   },
+  Reports: {
+    name: 'Relatórios',
+    isMain: true,
+    icon: 'paperclip',
+    screen: {
+      ... screens['reports'],
+      headerTitle: 'Relatórios emitidos',
+      contentSize: '710px 190px',
+      minHeight: 224, // This has to be the contentSize height + 34px that's the height of the bar
+      maxHeight: 500,
+    },
+  }
 } as MenuType
 
 export default menus

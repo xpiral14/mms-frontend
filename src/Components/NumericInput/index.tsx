@@ -18,14 +18,12 @@ interface NumericInputProps extends BluePrintNumericInputProps {
 
 const NumericInput: FC<NumericInputProps> = ({
   label,
+  width,
+  style,
   ...props
 }) => {
   return (
-    <Container
-      width={props.width}
-      labelPosition={props.labelPosition}
-      style={props?.style}
-    >
+    <Container width={width} labelPosition={props.labelPosition} style={style}>
       {label && (
         <div>
           <label htmlFor={props.id}>
@@ -34,9 +32,7 @@ const NumericInput: FC<NumericInputProps> = ({
         </div>
       )}
 
-      <BluePrintNumericInput
-        {...props}
-      />
+      <BluePrintNumericInput {...props} />
     </Container>
   )
 }

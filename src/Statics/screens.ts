@@ -103,6 +103,33 @@ const screens = {
     subScreenOnly: true,
     permissions: [Permissions.READ_ORDER],
   },
+  'stock-register': {
+    id: 'stock-register',
+    name: 'Estoques',
+    path: 'Register/Stock',
+    permission: [Permissions.READ_STOCK, Permissions.WRITE_STOCK],
+  },
+  'part-stock-management': {
+    id: 'part-stock-management',
+    name: 'Gerenciamento de produtos do estoque',
+    path: 'PartStockManagement',
+    subScreenOnly: true,
+    permission: [Permissions.READ_STOCK, Permissions.WRITE_STOCK],
+  },
+  'part-stock-warning': {
+    id: 'part-stock-warning',
+    name: 'Gerenciamento de produtos do estoque',
+    path: 'PartStockWarning',
+    subScreenOnly: true,
+    permission: [Permissions.READ_STOCK, Permissions.WRITE_STOCK],
+  },
+  'reports': {
+    id: 'reports',
+    name: 'Relatórios emitidos',
+    path: 'Reports',
+    subScreenOnly: true,
+    permission: [Permissions.READ_STOCK, Permissions.WRITE_STOCK],
+  }
 } as Screens
 
 

@@ -12,7 +12,7 @@ const ResetPasswordPage = () => {
   const [loading, setLoading] = useState(false)
   const {handleSubmit, register} = useForm()
   const {search} = useLocation()
-  const { showErrormessage } = useMessageError()
+  const { showErrorMessage: showErrormessage } = useMessageError()
   if (!search?.includes('token=') || !search?.includes('email=')) {
     history.push('/login')
   }

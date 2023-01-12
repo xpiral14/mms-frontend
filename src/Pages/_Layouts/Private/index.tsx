@@ -1,5 +1,8 @@
-import React, { useEffect } from 'react'
+/* eslint-disable @typescript-eslint/no-unused-vars */
+// import { addMonths, isBefore } from 'date-fns'
+import React, { useEffect, useMemo } from 'react'
 import AppVersion from '../../../Containers/AppVersion'
+import LicenseWarning from '../../../Containers/LicenseWarning'
 import NavBar from '../../../Containers/NavBar'
 import Notification from '../../../Contracts/Models/Notification'
 import { useAuth } from '../../../Hooks/useAuth'
@@ -10,6 +13,7 @@ import NotificationService from '../../../Services/NotificationService'
 import menu from '../../../Statics/menu'
 
 const PrivateLayout: React.FC = ({ children }) => {
+
   const { showPrimaryToast, showErrorToast } = useToast()
   const { auth } = useAuth()
   const socket = useSocket()
@@ -63,8 +67,7 @@ const PrivateLayout: React.FC = ({ children }) => {
         partStockWarning: data.part_stock_warning,
         partStock: data.part_stock,
       })
-    }
-    )
+    })
 
     return () => {
       socket.leave('User.' + auth?.user.id)
@@ -78,6 +81,16 @@ const PrivateLayout: React.FC = ({ children }) => {
       {children}
 
       <AppVersion />
+
+      <div
+        style={{
+          position: 'fixed',
+          bottom: 0,
+          width: '100%',
+        }}
+      >
+        <LicenseWarning />
+      </div>
     </div>
   )
 }

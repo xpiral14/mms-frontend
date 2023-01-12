@@ -9,7 +9,14 @@ export default class CompanyService{
 
 
   static async get(){
-    return api.get<Response<Company>>(`${this.defaultPath}`)
+    const response = await  api.get<Response<Company>>(`${this.defaultPath}`)
+    const { license } = response.data.data
+    response.data.data.license = {
+      ...license,
+      from_date: new Date(license.from_date),
+      to_date: new Date(license.to_date),
+    }
+    return response
   }
 
   static async update(companyData?: Partial<Company>){

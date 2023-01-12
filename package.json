@@ -8,6 +8,8 @@
     "@blueprintjs/popover2": "^1.2.0",
     "@blueprintjs/select": "^4.1.2",
     "@blueprintjs/table": "^4.1.2",
+    "@stripe/react-stripe-js": "^1.16.0",
+    "@stripe/stripe-js": "^1.46.0",
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",

@@ -58,7 +58,8 @@ const Route: FC<RouteProps> = ({
 
     const isDevelopment = process.env.NODE_ENV === 'development'  
     return <>
-      {isDevelopment && <Strip variation="warning">
+      {isDevelopment && <Strip variation="info">
+        Modo de desenvolvimento
       </Strip>}
 
       <Layout />

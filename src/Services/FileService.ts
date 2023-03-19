@@ -6,8 +6,8 @@ export default class FileService {
       responseType: 'blob'
     })
     const fileName = 'nome do arquivo'
-    if (window.navigator && window.navigator.msSaveOrOpenBlob) { // IE variant
-      window.navigator.msSaveOrOpenBlob(new Blob([response.data],
+    if (window.navigator && (window.navigator as any).msSaveOrOpenBlob) { // IE variant
+      (window.navigator as any).msSaveOrOpenBlob(new Blob([response.data],
         {type: 'application/pdf'}
       ),
       fileName

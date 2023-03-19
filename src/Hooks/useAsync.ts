@@ -8,7 +8,7 @@ export default function useAsync(asyncFunction: any, deps: any[]) {
     setTimeout(async () => {
       try {
         await asyncFunction()
-      } catch (err) {
+      } catch (err: any) {
         setError(err)
       } finally {
         setLoading(false)

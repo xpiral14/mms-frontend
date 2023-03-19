@@ -5,10 +5,13 @@ import React, { useCallback, useState } from 'react'
 import Button from '../../Components/Button'
 import Row from '../../Components/Layout/Row'
 import PaymentModal from '../PaymentModal'
-// import License from '../../Contracts/Models/License'
+import LicenseType from '../../Contracts/Models/License'
 import { WarningContainer } from './style'
 
-const LicenseWarning = () => {
+interface LicenseWarningProps {
+  license: LicenseType
+}
+const LicenseWarning = ({license} : LicenseWarningProps) => {
   const [showPaymentModal, setShowPaymentModal] = useState(false)
   const toggleShow = useCallback(() => setShowPaymentModal((prev) => !prev), [])
   return (
@@ -16,13 +19,12 @@ const LicenseWarning = () => {
       <Row middle justifyBetween>
         <span>
           A sua licensa irá se encerrar em
-          {/* <strong>
-            {licenseToDateFormatted} ({dayDistance} dias).
-          </strong>{' '} */}
+          <strong>
+            {license.to_date.toLocaleDateString()} ({license.toDatedistance(new Date())} dias).
+          </strong>
           Por favor, renove a licensa para continuar tendo acesso normalmente.
         </span>
         <Button intent={Intent.SUCCESS} onClick={toggleShow}>
-          {' '}
           Renovar licensa
         </Button>
 

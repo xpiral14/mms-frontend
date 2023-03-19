@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 // import { addMonths, isBefore } from 'date-fns'
-import React, { useEffect, useMemo } from 'react'
+import React, { useEffect } from 'react'
 import AppVersion from '../../../Containers/AppVersion'
 import LicenseWarning from '../../../Containers/LicenseWarning'
 import NavBar from '../../../Containers/NavBar'
@@ -15,7 +15,7 @@ import menu from '../../../Statics/menu'
 const PrivateLayout: React.FC = ({ children }) => {
 
   const { showPrimaryToast, showErrorToast } = useToast()
-  const { auth } = useAuth()
+  const { auth, company } = useAuth()
   const socket = useSocket()
 
   const { openDialog } = useDialog()
@@ -89,7 +89,7 @@ const PrivateLayout: React.FC = ({ children }) => {
           width: '100%',
         }}
       >
-        <LicenseWarning />
+        {company && <LicenseWarning license={company.active_license}/>}
       </div>
     </div>
   )

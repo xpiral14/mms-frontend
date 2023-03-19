@@ -31,7 +31,7 @@ const CompanyData: FC<ScreenProps> = ({ screen }) => {
       setCompany(response.data.data)
     } catch (error) {
       showErrorToast(
-        'Não foi possível obter os dados da empresa. Por favor, tente novamente'
+        'Não foi possível obter os dados da empresa. Por favor, tente novamente',
       )
     }
   }, [])
@@ -53,7 +53,7 @@ const CompanyData: FC<ScreenProps> = ({ screen }) => {
     } catch (error) {
       showErrormessage(
         error,
-        'Não foi possível  salvar a empresa. Por favor, tente novamente.'
+        'Não foi possível  salvar a empresa. Por favor, tente novamente.',
       )
     } finally {
       setLoadingSave(false)

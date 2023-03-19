@@ -1,3 +1,4 @@
+
 import License from './License'
 
 type Company = {
@@ -8,7 +9,7 @@ type Company = {
   phone?: string;
   cep?: string
   complement?: string
-  license: License
+  active_license: License
 }
 
 export default Company

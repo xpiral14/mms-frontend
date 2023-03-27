@@ -1,17 +1,14 @@
+import React, { FC, useCallback, useState } from 'react'
 import { Intent } from '@blueprintjs/core'
-// import { differenceInDays, format } from 'date-fns'
-// import { ptBR } from 'date-fns/locale'
-import React, { useCallback, useState } from 'react'
 import Button from '../../Components/Button'
 import Row from '../../Components/Layout/Row'
-import PaymentModal from '../PaymentModal'
-import LicenseType from '../../Contracts/Models/License'
 import { WarningContainer } from './style'
+import PaymentModal from '../PaymentModal'
 
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface LicenseWarningProps {
-  license: LicenseType
 }
-const LicenseWarning = ({license} : LicenseWarningProps) => {
+const LicenseWarning: FC<LicenseWarningProps> = () => {
   const [showPaymentModal, setShowPaymentModal] = useState(false)
   const toggleShow = useCallback(() => setShowPaymentModal((prev) => !prev), [])
   return (
@@ -20,7 +17,7 @@ const LicenseWarning = ({license} : LicenseWarningProps) => {
         <span>
           A sua licensa irá se encerrar em
           <strong>
-            {license.to_date.toLocaleDateString()} ({license.toDatedistance(new Date())} dias).
+            {' 13/06/2023 (25 dias)'}.
           </strong>
           Por favor, renove a licensa para continuar tendo acesso normalmente.
         </span>

@@ -1,26 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
   <component name="ChangeListManager">
-    <list default="true" id="79e2c5f6-2a38-41a8-86d5-8d43eb801e3b" name="Changes" comment="Merge pull request #43 from xpiral14/feat/Add-real-time&#10;&#10;Feat/add real time">
-      <changelist_data name="Samuel Araujo Reis" email="sa.reis1999@gmail.com" />
-      <change afterPath="$PROJECT_DIR$/src/Screens/Order/AssignEmployeeToOrder/index.tsx" afterDir="false" />
+    <list default="true" id="79e2c5f6-2a38-41a8-86d5-8d43eb801e3b" name="Changes" comment="feat: added stripe">
+      <change afterPath="$PROJECT_DIR$/src/Containers/PaymentModal/Tabs/ChooseLicenseTab.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/Containers/PaymentModal/Tabs/PaymentTab.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/Containers/PaymentModal/Tabs/styles.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/Services/LicenseService.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Components/Layout/Bar/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/Components/Layout/Bar/index.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Components/Select/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/Components/Select/index.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Contracts/Hooks/useScreen.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/Contracts/Hooks/useScreen.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Contracts/Models/Service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/Contracts/Models/Service.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Contracts/Screen/OrderServiceDetails/OrderServiceDetailsProps.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/Contracts/Screen/OrderServiceDetails/OrderServiceDetailsProps.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Screens/OrderPartDetails/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/Screens/OrderPartDetails/index.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Screens/OrderResume/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/Screens/OrderResume/index.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Screens/OrderServiceDetails/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/Screens/OrderServiceDetails/index.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Screens/Register/ServiceOrder/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/Screens/Register/ServiceOrder/index.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Services/EmployeeService.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/Services/EmployeeService.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Services/NotificationService.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/Services/NotificationService.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Services/OrderService.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/Services/OrderService.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Services/PartsService.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/Services/PartsService.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Statics/menu.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/Statics/menu.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Statics/screens.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/Statics/screens.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/globalStyle.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/globalStyle.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Components/Layout/Column/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/Components/Layout/Column/index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Components/Layout/Container/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/Components/Layout/Container/index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Components/Layout/Row/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/Components/Layout/Row/index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Components/StripeElement/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/Components/StripeElement/index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Containers/LicenseWarning/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/Containers/LicenseWarning/index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Containers/PaymentModal/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/Containers/PaymentModal/index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Contracts/Models/License.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/Contracts/Models/License.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Pages/_Layouts/Private/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/Pages/_Layouts/Private/index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Services/CompanyService.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/Services/CompanyService.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Services/PaymentService.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/Services/PaymentService.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/index.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -33,9 +35,13 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
+        <option value="TypeScript File" />
         <option value="TypeScript JSX File" />
       </list>
     </option>
+  </component>
+  <component name="Git.Merge.Settings">
+    <option name="BRANCH" value="main" />
   </component>
   <component name="Git.Settings">
     <option name="PREVIOUS_COMMIT_AUTHORS">
@@ -43,31 +49,68 @@
         <option value="Samuel Araujo Reis &lt;sa.reis1999@gmail.com&gt;" />
       </list>
     </option>
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="main" />
+      </map>
+    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="GitToolBoxStore">
     <option name="projectConfigVersion" value="5" />
+    <option name="recentBranches">
+      <RecentBranches>
+        <option name="branchesForRepo">
+          <list>
+            <RecentBranchesForRepo>
+              <option name="branches">
+                <list>
+                  <RecentBranch>
+                    <option name="branchName" value="feature/trial" />
+                    <option name="lastUsedInstant" value="1679233750" />
+                  </RecentBranch>
+                  <RecentBranch>
+                    <option name="branchName" value="main" />
+                    <option name="lastUsedInstant" value="1679233749" />
+                  </RecentBranch>
+                </list>
+              </option>
+              <option name="repositoryRootUrl" value="file://$PROJECT_DIR$" />
+            </RecentBranchesForRepo>
+          </list>
+        </option>
+      </RecentBranches>
+    </option>
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
   </component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="ProjectErrors" />
+  </component>
   <component name="ProjectId" id="2AxSnQ0bHjF4VFAmaywLNeTV7nE" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "WebServerToolWindowFactoryState": "false",
-    "node.js.detected.package.eslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "nodejs_package_manager_path": "yarn",
-    "ts.external.directory.path": "\\\\wsl$\\Ubuntu\\home\\samreis\\documents\\work\\mms\\mms-frontend\\node_modules\\typescript\\lib",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Git.Branch.Popup.ShowAllRemotes&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;last_opened_file_path&quot;: &quot;D:/Documents/projects/mms-frontend&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;yarn&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;editing.templates&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;D:\\Documents\\projects\\mms-frontend\\node_modules\\typescript\\lib&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
@@ -77,7 +120,59 @@
       <option name="presentableId" value="Default" />
       <updated>1655949923911</updated>
       <workItem from="1655949925354" duration="2778000" />
+      <workItem from="1679233359578" duration="7188000" />
+      <workItem from="1679242383230" duration="158000" />
+      <workItem from="1679242558433" duration="11039000" />
+      <workItem from="1679353788118" duration="165000" />
+      <workItem from="1679353978999" duration="4206000" />
+      <workItem from="1679425871273" duration="596000" />
+      <workItem from="1679445482629" duration="6464000" />
+      <workItem from="1679495237043" duration="30000" />
+      <workItem from="1679607013460" duration="3355000" />
     </task>
+    <task id="LOCAL-00001" summary="feat: added any">
+      <created>1679233568929</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1679233568929</updated>
+    </task>
+    <task id="LOCAL-00002" summary="feat: added rule">
+      <created>1679233654625</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1679233654625</updated>
+    </task>
+    <task id="LOCAL-00003" summary="feat: changed yarn to npm">
+      <created>1679233668211</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1679233668211</updated>
+    </task>
+    <task id="LOCAL-00004" summary="refactor: changed end of line style">
+      <created>1679233688973</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1679233688973</updated>
+    </task>
+    <task id="LOCAL-00005" summary="fix: adjusted layout">
+      <created>1679239939242</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1679239939242</updated>
+    </task>
+    <task id="LOCAL-00006" summary="feat: added stripe">
+      <created>1679239968233</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1679239968233</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -97,6 +192,13 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Added AssignEmployeeToOrderScreen" />
     <MESSAGE value="Merge pull request #43 from xpiral14/feat/Add-real-time&#10;&#10;Feat/add real time" />
-    <option name="LAST_COMMIT_MESSAGE" value="Merge pull request #43 from xpiral14/feat/Add-real-time&#10;&#10;Feat/add real time" />
+    <MESSAGE value="feat: added any" />
+    <MESSAGE value="feat: added rule" />
+    <MESSAGE value="feat: changed yarn to npm" />
+    <MESSAGE value="feat: changed end of line style" />
+    <MESSAGE value="refactor: changed end of line style" />
+    <MESSAGE value="fix: adjusted layout" />
+    <MESSAGE value="feat: added stripe" />
+    <option name="LAST_COMMIT_MESSAGE" value="feat: added stripe" />
   </component>
 </project>

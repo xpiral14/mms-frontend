@@ -44,7 +44,7 @@ const PrivateLayout: React.FC = ({ children }) => {
       .error((error: any) => {
         if (error.type === 'AuthError') {
           showErrorToast(
-            'Houve um problema ao tentar conectá-lo ao servidor em tempo real para receber notificções. Recarregue a página para tentar novamente se o problema persistir entre em contato com o suporte'
+            'Houve um problema ao tentar conectá-lo ao servidor em tempo real para receber notificções. Recarregue a página para tentar novamente se o problema persistir entre em contato com o suporte',
           )
         }
       })
@@ -54,7 +54,7 @@ const PrivateLayout: React.FC = ({ children }) => {
       .error((error: any) => {
         if (error.type === 'AuthError') {
           showErrorToast(
-            'Houve um problema ao tentar conectá-lo ao servidor em tempo real para receber alertas do estoque. Recarregue a página para tentar novamente se o problema persistir entre em contato com o suporte'
+            'Houve um problema ao tentar conectá-lo ao servidor em tempo real para receber alertas do estoque. Recarregue a página para tentar novamente se o problema persistir entre em contato com o suporte',
           )
         }
       })
@@ -89,7 +89,7 @@ const PrivateLayout: React.FC = ({ children }) => {
           width: '100%',
         }}
       >
-        {company && <LicenseWarning license={company.active_license}/>}
+        <LicenseWarning/>
       </div>
     </div>
   )

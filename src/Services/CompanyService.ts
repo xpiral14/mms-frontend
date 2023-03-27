@@ -1,7 +1,7 @@
 import api from '../Config/api'
 import Company from '../Contracts/Models/Company'
 import Response from '../Contracts/Types/Response'
-import License from '../Contracts/Models/License'
+import Paginated from '../Contracts/Models/Paginated'
 
 
 export default class CompanyService {
@@ -10,18 +10,15 @@ export default class CompanyService {
 
 
   static async get() {
-    const response = await api.get<Response<Company>>(`${this.defaultPath}`)
-    const { active_license } = response.data.data
-    response.data.data.active_license = new License({
-      ...active_license,
-      from_date: new Date(active_license.from_date),
-      to_date: new Date(active_license.to_date),
-    })
-    return response
+    return await api.get<Response<Company>>(`${this.defaultPath}`)
   }
 
   static async update(companyData?: Partial<Company>) {
     await api.put(`${this.defaultPath}`, companyData)
     return true
+  }
+
+  static async getClientSecret() {
+    return await api.get<Paginated<any>>('/company/client-secret')
   }
 }

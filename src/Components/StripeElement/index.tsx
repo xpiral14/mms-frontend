@@ -19,7 +19,7 @@ const StripeElement: FC = ({ children }) => {
     PaymentService.getSetupIntent().then((r) => {
       setSetupIntent(r.data)
     })
-  })
+  }, [])
 
   if(stripeOptions.clientSecret)
     return (

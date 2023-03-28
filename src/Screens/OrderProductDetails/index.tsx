@@ -1,12 +1,12 @@
 import React, { FunctionComponent, useMemo, useState } from 'react'
 import {
-  OrderPartDetailsScreenProps,
-  OrderPartItem,
-} from '../../Contracts/Screen/OrderPartDetails'
+  OrderProductDetailsScreenProps,
+  OrderProductItem,
+} from '../../Contracts/Screen/OrderProductDetails'
 import useAsync from '../../Hooks/useAsync'
 import Render from '../../Components/Render'
 import OrderService from '../../Services/OrderService'
-import OrderPartModel from '../../Contracts/Models/OrderPart'
+import OrderProductModel from '../../Contracts/Models/OrderProduct'
 import Container from '../../Components/Layout/Container'
 import {
   Button,
@@ -27,15 +27,15 @@ import NumericInput from '../../Components/NumericInput'
 import { useAlert } from '../../Hooks/useAlert'
 import Empty from '../../Components/Empty'
 import Stock from '../../Contracts/Models/Stock'
-import PartStock from '../../Contracts/Models/PartStock'
+import ProductStock from '../../Contracts/Models/ProductStock'
 import StockService from '../../Services/StockService'
 import useMessageError from '../../Hooks/useMessageError'
-import PartStockService from '../../Services/PartStockService'
+import ProductStockService from '../../Services/ProductStockService'
 import { useWindow } from '../../Hooks/useWindow'
 import { uniqueId } from '@blueprintjs/core/lib/esm/common/utils'
-import OrderPart from '../../Contracts/Models/OrderPart'
+import OrderProduct from '../../Contracts/Models/OrderProduct'
 
-const OrderPartDetails: FunctionComponent<OrderPartDetailsScreenProps> = (
+const OrderProductDetails: FunctionComponent<OrderProductDetailsScreenProps> = (
   props
 ) => {
   const { changePayloadAttribute, payload } = useWindow()
@@ -43,24 +43,24 @@ const OrderPartDetails: FunctionComponent<OrderPartDetailsScreenProps> = (
   const { showErrorMessage } = useMessageError()
   const { openAlert } = useAlert()
   const [stocks, setStocks] = useState<Stock[]>([])
-  const [partStocks, setPartStocks] = useState<PartStock[]>([])
-  const [orderParts, setOrderParts] = useState<OrderPartItem[]>(() =>
-    (props.selectedOrderParts || []).map((orderPart) => {
+  const [productStocks, setProductStocks] = useState<ProductStock[]>([])
+  const [orderProducts, setOrderProducts] = useState<OrderProductItem[]>(() =>
+    (props.selectedOrderProducts || []).map((orderProduct) => {
       return {
-        description: orderPart.description,
-        id: orderPart.id,
-        unique_key: uniqueId('orderParts'),
+        description: orderProduct.description,
+        id: orderProduct.id,
+        unique_key: uniqueId('orderProducts'),
         isCollapsed: true,
         isEditMode: false,
-        order_id: orderPart.order_id,
-        quantity: orderPart.quantity,
-        replaced_price: orderPart.replaced_price,
-        part_id: orderPart.part_id,
-        part_stock_id: orderPart.part_stock_id,
-        part_name: orderPart?.part_name,
-        part_price: orderPart?.part_price,
-        part_unit_id: orderPart?.part_unit_id,
-        part_unit_name: orderPart?.part_unit_name,
+        order_id: orderProduct.order_id,
+        quantity: orderProduct.quantity,
+        replaced_price: orderProduct.replaced_price,
+        product_id: orderProduct.product_id,
+        product_stock_id: orderProduct.product_stock_id,
+        product_name: orderProduct?.product_name,
+        product_price: orderProduct?.product_price,
+        product_unit_id: orderProduct?.product_unit_id,
+        product_unit_name: orderProduct?.product_unit_name,
       }
     })
   )
@@ -77,13 +77,13 @@ const OrderPartDetails: FunctionComponent<OrderPartDetailsScreenProps> = (
     }
   }, [])
 
-  const [loadingPartStocks, loadPartStocks] = useAsync(async () => {
+  const [loadingProductStocks, loadProductStocks] = useAsync(async () => {
     try {
       if (!payload.stockId) {
         return
       }
-      const response = await PartStockService.getAll(payload.stockId, 0, 1000)
-      setPartStocks(response.data.data)
+      const response = await ProductStockService.getAll(payload.stockId, 0, 1000)
+      setProductStocks(response.data.data)
     } catch (error) {
       showErrorMessage(
         error,
@@ -104,9 +104,9 @@ const OrderPartDetails: FunctionComponent<OrderPartDetailsScreenProps> = (
     return options.length ? [firstOption, ...options] : []
   }, [stocks])
 
-  const partStockOptions: Option[] = useMemo(() => {
-    const options = partStocks.map((s) => ({
-      label: s.part_name!,
+  const productStockOptions: Option[] = useMemo(() => {
+    const options = productStocks.map((s) => ({
+      label: s.product_name!,
       value: s.id,
     }))
     const firstOption = {
@@ -114,34 +114,34 @@ const OrderPartDetails: FunctionComponent<OrderPartDetailsScreenProps> = (
       value: 0,
     }
     return options.length ? [firstOption, ...options] : []
-  }, [partStocks])
+  }, [productStocks])
 
-  const [loadingOrderParts] = useAsync(async () => {
+  const [loadingOrderProducts] = useAsync(async () => {
     if (!props?.order?.id) return
-    const orderPartsResponse = await OrderService.getOrderParts(props.order.id)
-    const orderPartItems = orderPartsResponse.data.data.map((orderPart) => {
+    const orderProductsResponse = await OrderService.getOrderProducts(props.order.id)
+    const orderProductItems = orderProductsResponse.data.data.map((orderProduct) => {
       return {
-        unique_key: uniqueId('orderParts'),
-        description: orderPart.order_part.description,
-        id: orderPart.order_part.id,
+        unique_key: uniqueId('orderProducts'),
+        description: orderProduct.order_product.description,
+        id: orderProduct.order_product.id,
         isCollapsed: true,
         isEditMode: false,
-        order_id: orderPart.order_part.order_id,
-        quantity: orderPart.order_part.quantity,
-        replaced_price: orderPart.order_part.replaced_price,
-        part_id: orderPart.part.id,
-        part_name: orderPart.part?.name,
-        part_price: orderPart.part?.price,
-        part_unit_id: orderPart.part.unit_id,
-        part_unit_name: orderPart?.part?.unit_name,
-      } as OrderPartItem
+        order_id: orderProduct.order_product.order_id,
+        quantity: orderProduct.order_product.quantity,
+        replaced_price: orderProduct.order_product.replaced_price,
+        product_id: orderProduct.product.id,
+        product_name: orderProduct.product?.name,
+        product_price: orderProduct.product?.price,
+        product_unit_id: orderProduct.product.unit_id,
+        product_unit_name: orderProduct?.product?.unit_name,
+      } as OrderProductItem
     })
 
-    setOrderParts(orderPartItems)
+    setOrderProducts(orderProductItems)
   }, [])
 
-  const changeOrderPartItem = (index: number, attributes: OrderPartItem) => {
-    setOrderParts((prev) => {
+  const changeOrderProductItem = (index: number, attributes: OrderProductItem) => {
+    setOrderProducts((prev) => {
       const copy = [...prev]
       copy[index as number] = {
         ...prev[index as number],
@@ -152,64 +152,64 @@ const OrderPartDetails: FunctionComponent<OrderPartDetailsScreenProps> = (
     })
   }
 
-  const removeOrderPart = (partStock: OrderPartItem) => {
-    setOrderParts((prev) => {
+  const removeOrderProduct = (productStock: OrderProductItem) => {
+    setOrderProducts((prev) => {
       const copy = [...prev]
 
-      return copy.filter((p) => p.unique_key !== partStock.unique_key)
+      return copy.filter((p) => p.unique_key !== productStock.unique_key)
     })
   }
 
-  function restoreOrderPartAtState(orderPart: OrderPartItem) {
-    setOrderParts((prev) => [...prev, orderPart])
+  function restoreOrderProductAtState(orderProduct: OrderProductItem) {
+    setOrderProducts((prev) => [...prev, orderProduct])
   }
 
-  const handleDeleteOrderPart = (orderPart: OrderPartItem) => {
+  const handleDeleteOrderProduct = (orderProduct: OrderProductItem) => {
     const onError = () => {
       showErrorToast({
         message:
           'Não foi possível excluir o produto ' +
-          orderPart.part_name +
+          orderProduct.product_name +
           ' da ordem de serviço. Por favor, tente novamente',
       })
-      restoreOrderPartAtState(orderPart)
+      restoreOrderProductAtState(orderProduct)
     }
-    if (props?.order?.id && orderPart?.id) {
-      OrderService.deleteOrderPart(props!.order.id, orderPart.id).catch(onError)
+    if (props?.order?.id && orderProduct?.id) {
+      OrderService.deleteOrderProduct(props!.order.id, orderProduct.id).catch(onError)
     }
-    removeOrderPart(orderPart)
+    removeOrderProduct(orderProduct)
   }
 
   const handleDeleteButtonClick =
-    (orderPart: OrderPartItem) => (event: any) => {
+    (orderProduct: OrderProductItem) => (event: any) => {
       event.stopPropagation()
       openAlert({
         text: 'Tem certeza que deseja remover o produto?',
         icon: 'trash',
-        onConfirm: () => handleDeleteOrderPart(orderPart),
+        onConfirm: () => handleDeleteOrderProduct(orderProduct),
         cancelButtonText: 'Cancelar',
         confirmButtonText: 'Confirmar remoção do produto',
         intent: Intent.DANGER,
       })
     }
 
-  function toOrderPartModel(orderPartItem: OrderPartItem) {
+  function toOrderProductModel(orderProductItem: OrderProductItem) {
     return {
-      id: orderPartItem?.id,
+      id: orderProductItem?.id,
       order_id: props?.order?.id,
-      replaced_price: orderPartItem.replaced_price,
-      part_stock_id: orderPartItem.part_stock_id,
-      quantity: orderPartItem.quantity,
-      description: orderPartItem.description,
-      part_id: orderPartItem.part_id,
-      part_name: orderPartItem.part_name,
-      part_unit_name: orderPartItem.part_unit_name,
-      part_unit_id: orderPartItem.part_unit_id,
-      part_price: orderPartItem.part_price,
-    } as Partial<OrderPartModel>
+      replaced_price: orderProductItem.replaced_price,
+      product_stock_id: orderProductItem.product_stock_id,
+      quantity: orderProductItem.quantity,
+      description: orderProductItem.description,
+      product_id: orderProductItem.product_id,
+      product_name: orderProductItem.product_name,
+      product_unit_name: orderProductItem.product_unit_name,
+      product_unit_id: orderProductItem.product_unit_id,
+      product_price: orderProductItem.product_price,
+    } as Partial<OrderProductModel>
   }
 
-  const alertThatHasUnsavedOrderPartItems = (onConfirm: () => void) => {
+  const alertThatHasUnsavedOrderProductItems = (onConfirm: () => void) => {
     openAlert({
       text: 'Tem certeza que deseja salvar todos?',
       intent: 'warning',
@@ -218,59 +218,59 @@ const OrderPartDetails: FunctionComponent<OrderPartDetailsScreenProps> = (
     })
   }
 
-  const hasUnsavedOrderPartItems = useMemo(
-    () => orderParts.some((s) => s.isEditMode),
-    [orderParts]
+  const hasUnsavedOrderProductItems = useMemo(
+    () => orderProducts.some((s) => s.isEditMode),
+    [orderProducts]
   )
 
   const handleButtonSave = () => {
-    const savedOrderParts = Object.values(orderParts).filter(
+    const savedOrderProducts = Object.values(orderProducts).filter(
       (s) => !s.isEditMode
     )
 
     const onConfirm = async () => {
-      const unSavedOrderServices = Object.values(orderParts).filter(
+      const unSavedOrderServices = Object.values(orderProducts).filter(
         (s) => s.isEditMode
       )
       try {
         if (!props.order?.id) {
           props.onSave?.(
-            orderParts.map(toOrderPartModel) as OrderPart[],
+            orderProducts.map(toOrderProductModel) as OrderProduct[],
             props.screen
           )
           return
         }
         await Promise.all(
           unSavedOrderServices.map(async (osi) => {
-            const osModel = toOrderPartModel(osi)
+            const osModel = toOrderProductModel(osi)
             if (osi.id) {
-              await OrderService.editPart(props.order!.id!, osModel)
+              await OrderService.editProduct(props.order!.id!, osModel)
               return
             }
-            osi = (await OrderService.addPart(props.order!.id!, osModel)).data
+            osi = (await OrderService.addProduct(props.order!.id!, osModel)).data
               .data
 
-            savedOrderParts.push({
+            savedOrderProducts.push({
               ...osi,
               isEditMode: false,
             })
           })
         )
 
-        const items: Record<string, OrderPartItem> = {}
+        const items: Record<string, OrderProductItem> = {}
 
-        savedOrderParts.forEach((os) => {
+        savedOrderProducts.forEach((os) => {
           items[os.unique_key!] = os
         })
 
-        const newOrderPartItems = orderParts.map((orderPart) => {
-          return items[orderPart.unique_key!] ?? orderPart
+        const newOrderProductItems = orderProducts.map((orderProduct) => {
+          return items[orderProduct.unique_key!] ?? orderProduct
         })
 
-        setOrderParts(newOrderPartItems)
+        setOrderProducts(newOrderProductItems)
 
         props.onSave?.(
-            newOrderPartItems.map(toOrderPartModel) as OrderPart[],
+            newOrderProductItems.map(toOrderProductModel) as OrderProduct[],
             props.screen
         )
       } catch (error: any) {
@@ -281,8 +281,8 @@ const OrderPartDetails: FunctionComponent<OrderPartDetailsScreenProps> = (
       }
     }
 
-    if (hasUnsavedOrderPartItems) {
-      alertThatHasUnsavedOrderPartItems(onConfirm)
+    if (hasUnsavedOrderProductItems) {
+      alertThatHasUnsavedOrderProductItems(onConfirm)
       return
     }
 
@@ -291,8 +291,8 @@ const OrderPartDetails: FunctionComponent<OrderPartDetailsScreenProps> = (
 
   const handleButtonExit = () => {
     const onConfirm = () => props.screen.close()
-    if (hasUnsavedOrderPartItems) {
-      alertThatHasUnsavedOrderPartItems(onConfirm)
+    if (hasUnsavedOrderProductItems) {
+      alertThatHasUnsavedOrderProductItems(onConfirm)
       return
     }
     onConfirm()
@@ -301,80 +301,80 @@ const OrderPartDetails: FunctionComponent<OrderPartDetailsScreenProps> = (
   const handleSelectStock = (option: Option) => {
     changePayloadAttribute('stockId', option.value)
   }
-  const handlePartSelect = (option: Option) => {
+  const handleProductSelect = (option: Option) => {
     if (!option.value) return
-    const partStock = partStocks.find((s) => s.id === option.value)!
-    const orderPart: OrderPartItem = {
+    const productStock = productStocks.find((s) => s.id === option.value)!
+    const orderProduct: OrderProductItem = {
       id: undefined,
       order_id: props?.order?.id ?? undefined,
-      part_id: partStock.part_id as number,
+      product_id: productStock.product_id as number,
       description: undefined,
       quantity: 1,
-      part_stock_id: partStock.id,
+      product_stock_id: productStock.id,
       replaced_price: undefined,
-      part_name: partStock.part_name,
-      part_price: partStock.part_price,
-      part_unit_name: partStock?.unit_name,
-      part_unit_id: partStock.unit_id,
+      product_name: productStock.product_name,
+      product_price: productStock.product_price,
+      product_unit_name: productStock?.unit_name,
+      product_unit_id: productStock.unit_id,
       isEditMode: true,
       isCollapsed: false,
-      unique_key: uniqueId('orderParts'),
+      unique_key: uniqueId('orderProducts'),
     }
-    setOrderParts((prev) => [...prev, orderPart])
+    setOrderProducts((prev) => [...prev, orderProduct])
   }
 
-  const handleOrderPartSave = (orderPartKey: number) => (event: any) => {
+  const handleOrderProductSave = (orderProductKey: number) => (event: any) => {
     event.stopPropagation()
-    const orderPartItem = orderParts[orderPartKey]
+    const orderProductItem = orderProducts[orderProductKey]
 
     const orderId = props.order?.id
 
     const onErrorRequest = (error: any) => {
       showErrorMessage(error, 'Não foi possível salvar a produto')
-      changeOrderPartItem(orderPartKey, {
+      changeOrderProductItem(orderProductKey, {
         isEditMode: true,
       })
     }
-    const orderPart = toOrderPartModel(orderPartItem)
-    if (orderId && !orderPartItem.id) {
-      OrderService.addPart(orderId, orderPartItem)
+    const orderProduct = toOrderProductModel(orderProductItem)
+    if (orderId && !orderProductItem.id) {
+      OrderService.addProduct(orderId, orderProductItem)
         .then((response) => {
-          changeOrderPartItem(orderPartKey, {
+          changeOrderProductItem(orderProductKey, {
             id: response.data.data.id,
           })
         })
         .catch(onErrorRequest)
     }
 
-    if (orderId && orderPartItem.id) {
-      OrderService.editPart(orderId, orderPart).catch(onErrorRequest)
+    if (orderId && orderProductItem.id) {
+      OrderService.editProduct(orderId, orderProduct).catch(onErrorRequest)
     }
 
-    setOrderParts((prev) => {
+    setOrderProducts((prev) => {
       const copy = [...prev]
-      copy[orderPartKey] = {
-        ...copy[orderPartKey],
+      copy[orderProductKey] = {
+        ...copy[orderProductKey],
         isEditMode: false,
       }
       return copy
     })
   }
 
-  const handleOrderPartEdit = (orderPartKey: number) => (event: any) => {
+  const handleOrderProductEdit = (orderProductKey: number) => (event: any) => {
     event.stopPropagation()
-    changeOrderPartItem(orderPartKey, {
+    changeOrderProductItem(orderProductKey, {
       isCollapsed: false,
       isEditMode: true,
     })
   }
-  const handleQuantityChange = (partStockId: number) => (value: number) => {
-    changeOrderPartItem(+partStockId, {
+  const handleQuantityChange = (productStockId: number) => (value: number) => {
+    changeOrderProductItem(+productStockId, {
       replaced_price: value,
     })
   }
 
-  const handleDescriptionChange = (partStockId: number) => (event: any) => {
-    changeOrderPartItem(+partStockId, {
+  const handleDescriptionChange = (productStockId: number) => (event: any) => {
+    changeOrderProductItem(+productStockId, {
       description: event.target.value,
     })
   }
@@ -411,65 +411,65 @@ const OrderPartDetails: FunctionComponent<OrderPartDetailsScreenProps> = (
           handleButtonReloadClick={loadStocks}
         />
         <Select
-          onChange={handlePartSelect}
+          onChange={handleProductSelect}
           id=''
           disabled={!payload.stockId}
           label='Produtos no estoque'
-          items={partStockOptions}
-          loading={loadingPartStocks}
-          handleButtonReloadClick={loadPartStocks}
+          items={productStockOptions}
+          loading={loadingProductStocks}
+          handleButtonReloadClick={loadProductStocks}
         />
       </Row>
-      <Render renderIf={loadingOrderParts}>
+      <Render renderIf={loadingOrderProducts}>
         <ProgressBar intent={Intent.SUCCESS} />
       </Render>
-      <Render renderIf={!orderParts.length && !loadingOrderParts}>
+      <Render renderIf={!orderProducts.length && !loadingOrderProducts}>
         <Empty />
       </Render>
-      {orderParts.map((orderPart, orderPartKey) => {
-        const price = orderPart.replaced_price ?? orderPart.part_price
+      {orderProducts.map((orderProduct, orderProductKey) => {
+        const price = orderProduct.replaced_price ?? orderProduct.product_price
         const onCollapseChange = () =>
-          setOrderParts((prev) => {
+          setOrderProducts((prev) => {
             const copy = [...prev]
-            copy[orderPartKey] = {
-              ...copy[orderPartKey],
-              isCollapsed: !copy[orderPartKey].isCollapsed,
+            copy[orderProductKey] = {
+              ...copy[orderProductKey],
+              isCollapsed: !copy[orderProductKey].isCollapsed,
             }
             return copy
           })
         const onQuantityValueChange = (value: any) => {
-          changeOrderPartItem(orderPartKey, {
+          changeOrderProductItem(orderProductKey, {
             quantity: value,
           })
         }
         return (
-          <Box key={orderPartKey} style={{ marginBottom: 10 }}>
+          <Box key={orderProductKey} style={{ marginBottom: 10 }}>
             <Collapse
               bordered
-              isCollapsed={orderPart.isCollapsed}
+              isCollapsed={orderProduct.isCollapsed}
               onChange={onCollapseChange}
               title={
                 <Row className='flex-between w-100'>
-                  <span>{orderPart.part_name}</span>
+                  <span>{orderProduct.product_name}</span>
                   <ButtonGroup>
-                    <Render renderIf={!orderPart.isEditMode}>
+                    <Render renderIf={!orderProduct.isEditMode}>
                       <Button
                         icon='edit'
                         intent={Intent.NONE}
-                        onClick={handleOrderPartEdit(orderPartKey)}
+                        onClick={handleOrderProductEdit(orderProductKey)}
                       />
                     </Render>
-                    <Render renderIf={orderPart.isEditMode}>
+                    <Render renderIf={orderProduct.isEditMode}>
                       <Button
                         icon={'floppy-disk'}
                         intent={Intent.SUCCESS}
-                        onClick={handleOrderPartSave(orderPartKey)}
+                        onClick={handleOrderProductSave(orderProductKey)}
                       />
                     </Render>
                     <Button
                       icon='trash'
                       intent={Intent.DANGER}
-                      onClick={handleDeleteButtonClick(orderPart)}
+                      onClick={handleDeleteButtonClick(orderProduct)}
                     />
                   </ButtonGroup>
                 </Row>
@@ -478,17 +478,17 @@ const OrderPartDetails: FunctionComponent<OrderPartDetailsScreenProps> = (
               <Row className='w-100 align-center flex-between'>
                 <section className='flex flex-wrap'>
                   <NumericInput
-                    disabled={!orderPart.isEditMode}
+                    disabled={!orderProduct.isEditMode}
                     label='Quantidade'
                     id={props.screen.id + 'quantity'}
                     placeholder='Quantidade'
-                    value={orderPart.quantity}
+                    value={orderProduct.quantity}
                     min={1}
                     onValueChange={onQuantityValueChange}
                   />
                   <NumericInput
                     leftIcon='bank-account'
-                    disabled={!orderPart.isEditMode}
+                    disabled={!orderProduct.isEditMode}
                     label='Novo valor'
                     id={props.screen.id + 'quantity'}
                     placeholder='0.00'
@@ -497,7 +497,7 @@ const OrderPartDetails: FunctionComponent<OrderPartDetailsScreenProps> = (
                     value={price}
                     allowNumericCharactersOnly
                     clampValueOnBlur
-                    onValueChange={handleQuantityChange(orderPartKey)}
+                    onValueChange={handleQuantityChange(orderProductKey)}
                   />
                 </section>
 
@@ -505,7 +505,7 @@ const OrderPartDetails: FunctionComponent<OrderPartDetailsScreenProps> = (
                   <InputText
                     readOnly
                     label='Valor por unidade'
-                    value={`R$ ${price ?? 0} / ${orderPart?.part_unit_name}`}
+                    value={`R$ ${price ?? 0} / ${orderProduct?.product_unit_name}`}
                     id={props.screen.id + 'unit_name'}
                   />
                   <InputText
@@ -513,7 +513,7 @@ const OrderPartDetails: FunctionComponent<OrderPartDetailsScreenProps> = (
                     readOnly
                     label='Valor total (R$)'
                     value={
-                      (orderParts?.[orderPartKey]?.quantity ?? 0) * (price ?? 0)
+                      (orderProducts?.[orderProductKey]?.quantity ?? 0) * (price ?? 0)
                     }
                   />
                 </section>
@@ -521,13 +521,13 @@ const OrderPartDetails: FunctionComponent<OrderPartDetailsScreenProps> = (
 
               <Row className='w-100 flex-between'>
                 <TextArea
-                  value={orderPart.description}
-                  onChange={handleDescriptionChange(orderPartKey)}
-                  disabled={!orderPart.isEditMode}
+                  value={orderProduct.description}
+                  onChange={handleDescriptionChange(orderProductKey)}
+                  disabled={!orderProduct.isEditMode}
                   id={
                     props.screen.id +
-                    'order_part' +
-                    orderPartKey +
+                    'order_product' +
+                    orderProductKey +
                     '_description'
                   }
                   placeholder='Descrição'
@@ -542,4 +542,4 @@ const OrderPartDetails: FunctionComponent<OrderPartDetailsScreenProps> = (
   )
 }
 
-export default OrderPartDetails
+export default OrderProductDetails

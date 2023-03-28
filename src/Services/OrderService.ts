@@ -3,8 +3,8 @@ import Order from '../Contracts/Models/Order'
 import Paginated from '../Contracts/Models/Paginated'
 import Response from '../Contracts/Models/Response'
 import OrderServiceModel from '../Contracts/Models/OrderService'
-import OrderPart from '../Contracts/Models/OrderPart'
-import Part from '../Contracts/Models/Part'
+import OrderProduct from '../Contracts/Models/OrderProduct'
+import Product from '../Contracts/Models/Product'
 import Service from '../Contracts/Models/Service'
 import User from '../Contracts/Models/User'
 import OrderStatus from '../Contracts/Models/OrderStatus'
@@ -17,9 +17,9 @@ export type OrderServicePaginatedResponse = {
   service: Service
 }
 
-export type OrderPartResponse = {
-  part: Part
-  order_part: OrderPart
+export type OrderProductResponse = {
+  product: Product
+  order_product: OrderProduct
 }
 export default class OrderService {
   static async getAll(page: number, limit: number, query?: object) {
@@ -58,9 +58,9 @@ export default class OrderService {
     )
   }
 
-  static async addPart(orderId: number, orderService: Partial<OrderPart>) {
-    return api.post<Response<OrderPart>>(
-      `${DEFAULT_PATH}/${orderId}/orderParts`,
+  static async addProduct(orderId: number, orderService: Partial<OrderProduct>) {
+    return api.post<Response<OrderProduct>>(
+      `${DEFAULT_PATH}/${orderId}/orderProducts`,
       orderService
     )
   }
@@ -70,7 +70,7 @@ export default class OrderService {
     serviceId: number,
     payload: {
       estimatedTime: number
-      partIds: number[]
+      productIds: number[]
       description?: string
     }
   ) {
@@ -99,21 +99,21 @@ export default class OrderService {
     )
   }
 
-  static editPart(orderId: number, orderPart: Partial<OrderPart>) {
+  static editProduct(orderId: number, orderProduct: Partial<OrderProduct>) {
     return api.put(
-      `${DEFAULT_PATH}/${orderId}/orderParts/${orderPart.id}`,
-      orderPart
+      `${DEFAULT_PATH}/${orderId}/orderProducts/${orderProduct.id}`,
+      orderProduct
     )
   }
 
-  static async getOrderParts(orderId: number) {
-    return api.get<Response<OrderPartResponse[]>>(
-      `${DEFAULT_PATH}/${orderId}/orderParts`
+  static async getOrderProducts(orderId: number) {
+    return api.get<Response<OrderProductResponse[]>>(
+      `${DEFAULT_PATH}/${orderId}/orderProducts`
     )
   }
 
-  static async deleteOrderPart(orderId: number, orderServiceId: number) {
-    return api.delete(`${DEFAULT_PATH}/${orderId}/orderParts/${orderServiceId}`)
+  static async deleteOrderProduct(orderId: number, orderServiceId: number) {
+    return api.delete(`${DEFAULT_PATH}/${orderId}/orderProducts/${orderServiceId}`)
   }
 
   static async getOrderCostumer(orderId: number) {

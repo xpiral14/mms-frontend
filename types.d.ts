@@ -560,7 +560,7 @@ declare module 'jspanel4/es6module/jspanel' {
     close(callback?: (id: string, panel?: Panel) => string): string | false
 
     /**
-     * Closes childpanels. That means the panels which are part of the content
+     * Closes childpanels. That means the panels which are product of the content
      * of the panel the method is called on.
 
      * @param callback Callback function to execute after the closeChildpanels

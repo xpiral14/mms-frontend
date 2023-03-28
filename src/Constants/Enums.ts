@@ -138,12 +138,12 @@ export enum Permissions {
   WRITE_UNIT = 16,
 
   /**
-   * Can do read operations in parts
+   * Can do read operations in products
    */
   READ_PART = 17,
 
   /**
-   * Can do write operations in parts
+   * Can do write operations in products
    */
   WRITE_PART = 18,
 

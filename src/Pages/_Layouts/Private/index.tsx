@@ -45,7 +45,7 @@ const PrivateLayout: React.FC = ({ children }) => {
         }
       })
 
-    const partStockChannel = socket
+    const productStockChannel = socket
       .private(`Company.${auth.user.company_id}.Stock`)
       .error((error: any) => {
         if (error.type === 'AuthError') {
@@ -55,13 +55,13 @@ const PrivateLayout: React.FC = ({ children }) => {
         }
       })
 
-    partStockChannel.listen('.PartStockWarning', ({ data }: any) => {
+    productStockChannel.listen('.ProductStockWarning', ({ data }: any) => {
       openDialog({
-        id: 'part-stock-warn',
+        id: 'product-stock-warn',
         stock: data.stock,
-        part: data.part,
-        partStockWarning: data.part_stock_warning,
-        partStock: data.part_stock,
+        product: data.product,
+        productStockWarning: data.product_stock_warning,
+        productStock: data.product_stock,
       })
     }
     )

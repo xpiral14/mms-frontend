@@ -2,7 +2,7 @@ import React, { useCallback, useMemo, useState } from 'react'
 import RegistrationButtonBar from '../../../Components/RegistrationButtonBar'
 import InputText from '../../../Components/InputText'
 import PaginatedTable from '../../../Components/PaginatedTable'
-import PartsService from '../../../Services/PartsService'
+import ProductsService from '../../../Services/ProductsService'
 import ScreenProps from '../../../Contracts/Components/ScreenProps'
 import {
   RegistrationButtonBarProps,
@@ -14,7 +14,7 @@ import { useAlert } from '../../../Hooks/useAlert'
 import { ScreenStatus } from '../../../Constants/Enums'
 import { Intent } from '@blueprintjs/core'
 import { useToast } from '../../../Hooks/useToast'
-import Part from '../../../Contracts/Models/Part'
+import Product from '../../../Contracts/Models/Product'
 import useValidation from '../../../Hooks/useValidation'
 import { Validation } from '../../../Contracts/Hooks/useValidation'
 import useAsync from '../../../Hooks/useAsync'
@@ -25,9 +25,9 @@ import Render from '../../../Components/Render'
 import Container from '../../../Components/Layout/Container'
 import Row from '../../../Components/Layout/Row'
 
-const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
+const ProductsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
   const { payload, setPayload, screenStatus, setScreenStatus } =
-    useWindow<Part>()
+    useWindow<Product>()
 
   const [units, setUnits] = useState<Unit[]>([])
 
@@ -58,17 +58,17 @@ const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
     {
       check: createValidation('reference'),
       errorMessage: 'A referência é obrigatória',
-      inputId: 'partReference',
+      inputId: 'productReference',
     },
     {
       check: createValidation('name'),
       errorMessage: 'O nome é obrigatório',
-      inputId: 'partName',
+      inputId: 'productName',
     },
     {
       check: createValidation('price'),
       errorMessage: 'O preço é obrigatório',
-      inputId: 'partPrice',
+      inputId: 'productPrice',
     },
   ]
   const { validate } = useValidation(validations)
@@ -94,7 +94,7 @@ const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
     )
   }
 
-  const handleButtonCreatePartOnClick = async (stopLoad: Function) => {
+  const handleButtonCreateProductOnClick = async (stopLoad: Function) => {
     if (!validate()) {
       stopLoad()
       return
@@ -105,7 +105,7 @@ const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
         ...payload,
       }
 
-      const response = await PartsService.create(createPayload as any)
+      const response = await ProductsService.create(createPayload as any)
 
       if (response.status) {
         showSuccessToast({
@@ -137,7 +137,7 @@ const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
     }
   }
 
-  const handleButtonUpdatePartOnClick = async (stopLoad: StopLoadFunc) => {
+  const handleButtonUpdateProductOnClick = async (stopLoad: StopLoadFunc) => {
     if (!validate()) {
       return
     }
@@ -145,9 +145,9 @@ const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
       ...payload,
     }
     try {
-      const response = await PartsService.update(
+      const response = await ProductsService.update(
         requestPayload.id as number,
-        requestPayload as Part
+        requestPayload as Product
       )
 
       if (response.status) {
@@ -180,9 +180,9 @@ const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
     }
   }
 
-  const handleButtonDeletePartOnClick = async () => {
+  const handleButtonDeleteProductOnClick = async () => {
     try {
-      const response = await PartsService.delete(payload.id as number)
+      const response = await ProductsService.delete(payload.id as number)
 
       if (response.status) {
         showSuccessToast({
@@ -256,7 +256,7 @@ const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
   )
 
   const focusReferenceInput = () => {
-    const referenceInput = document.getElementById('partReference')
+    const referenceInput = document.getElementById('productReference')
     referenceInput?.focus()
   }
 
@@ -293,13 +293,13 @@ const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
     handleNewButtonOnClick: handleButtonNewOnClick,
     handleSaveButtonOnClick:
       screenStatus === ScreenStatus.NEW
-        ? handleButtonCreatePartOnClick
-        : handleButtonUpdatePartOnClick,
+        ? handleButtonCreateProductOnClick
+        : handleButtonUpdateProductOnClick,
     handleDeleteButtonOnClick: () => {
       openAlert({
         text: 'Deletar o item selecionado?',
         intent: Intent.DANGER,
-        onConfirm: handleButtonDeletePartOnClick,
+        onConfirm: handleButtonDeleteProductOnClick,
         cancelButtonText: 'Cancelar',
       })
     },
@@ -330,7 +330,7 @@ const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
          
         <Row>
           <InputText
-            id='partId'
+            id='productId'
             label='Id:'
             value={payload?.id || ''}
             disabled
@@ -348,7 +348,7 @@ const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
             }}
               
             activeItem={payload.unit_id}
-            id='partId'
+            id='productId'
             label='Unidade:'
             disabled={screenStatus === ScreenStatus.VISUALIZE}
             loading={loadingUnits}
@@ -357,7 +357,7 @@ const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
         </Row>
         <Row>
           <InputText
-            id='partReference'
+            id='productReference'
             label='Referência:'
             disabled={isStatusVizualize()}
             itent='primary'
@@ -371,7 +371,7 @@ const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
           />
 
           <InputText
-            id='partName'
+            id='productName'
             label='Nome:'
             disabled={isStatusVizualize()}
             inputStyle={{ minWidth: '260px' }}
@@ -384,7 +384,7 @@ const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
 
         <Row>
           <InputText
-            id='partDescription'
+            id='productDescription'
             label='Descrição:'
             disabled={isStatusVizualize()}
             style={{flex: 8 }}
@@ -395,7 +395,7 @@ const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
           />
 
           <InputText
-            id='partPrice'
+            id='productPrice'
             label='Preço:'
             disabled={isStatusVizualize()}
             placeholder='R$'
@@ -414,7 +414,7 @@ const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
           <PaginatedTable
             height='100%'
             onRowSelect={onRowSelect}
-            request={PartsService.getAll}
+            request={ProductsService.getAll}
             containerProps={containerProps}
             columns={columns}
             isSelected={row => row.id === payload?.id}
@@ -425,4 +425,4 @@ const PartsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
   )
 }
 
-export default PartsScreen
+export default ProductsScreen

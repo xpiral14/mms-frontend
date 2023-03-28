@@ -17,8 +17,8 @@ import {
 import { Option } from '../../Contracts/Components/Suggest'
 import { Column } from '../../Contracts/Components/Table'
 import { Validation } from '../../Contracts/Hooks/useValidation'
-import Part from '../../Contracts/Models/Part'
-import PartStock from '../../Contracts/Models/PartStock'
+import Product from '../../Contracts/Models/Product'
+import ProductStock from '../../Contracts/Models/ProductStock'
 import { useAlert } from '../../Hooks/useAlert'
 import useAsync from '../../Hooks/useAsync'
 import { useGrid } from '../../Hooks/useGrid'
@@ -27,12 +27,12 @@ import { useScreen } from '../../Hooks/useScreen'
 import { useToast } from '../../Hooks/useToast'
 import useValidation from '../../Hooks/useValidation'
 import { useWindow } from '../../Hooks/useWindow'
-import PartsService from '../../Services/PartsService'
-import PartStockService from '../../Services/PartStockService'
+import ProductsService from '../../Services/ProductsService'
+import ProductStockService from '../../Services/ProductStockService'
 
-import PartStockScreenProps from '../../Contracts/Screen/PartStockManagement'
-import { PartStockWarningProps } from '../../Contracts/Screen/PartStockWarning'
-const PartStockManagement: React.FC<PartStockScreenProps> = ({
+import ProductStockScreenProps from '../../Contracts/Screen/ProductStockManagement'
+import { ProductStockWarningProps } from '../../Contracts/Screen/ProductStockWarning'
+const ProductStockManagement: React.FC<ProductStockScreenProps> = ({
   screen,
   stock,
 }): JSX.Element => {
@@ -42,15 +42,15 @@ const PartStockManagement: React.FC<PartStockScreenProps> = ({
     changePayloadAttribute,
     screenStatus,
     setScreenStatus,
-  } = useWindow<PartStock>()
+  } = useWindow<ProductStock>()
   const { showErrorToast, showSuccessToast } = useToast()
 
-  const [parts, setParts] = useState<Part[]>([])
+  const [products, setProducts] = useState<Product[]>([])
 
-  const [loadingParts, loadParts] = useAsync(async () => {
+  const [loadingProducts, loadProducts] = useAsync(async () => {
     try {
-      const partsResponse = await PartsService.getAll(0, 1000)
-      setParts(partsResponse.data.data)
+      const productsResponse = await ProductsService.getAll(0, 1000)
+      setProducts(productsResponse.data.data)
     } catch (err) {
       showErrorToast({
         message: 'Não foi possível obter a lista de produtos',
@@ -58,8 +58,8 @@ const PartStockManagement: React.FC<PartStockScreenProps> = ({
     }
   }, [])
 
-  const partOptions: Option[] = useMemo(() => {
-    const options = parts.map((s) => ({
+  const productOptions: Option[] = useMemo(() => {
+    const options = products.map((s) => ({
       label: s.name,
       value: s.id,
     }))
@@ -68,16 +68,16 @@ const PartStockManagement: React.FC<PartStockScreenProps> = ({
       value: 0,
     }
     return options.length ? [firstOption, ...options] : []
-  }, [parts])
+  }, [products])
 
   const createValidation = (keyName: any) => () =>
     Boolean((payload as any)[keyName])
 
   const validations: Validation[] = [
     {
-      check: createValidation('part_id'),
+      check: createValidation('product_id'),
       errorMessage: 'O produto é obrigatório',
-      inputId: screen.id + 'partIdSelect',
+      inputId: screen.id + 'productIdSelect',
     },
     {
       check: () => {
@@ -86,7 +86,7 @@ const PartStockManagement: React.FC<PartStockScreenProps> = ({
       },
       
       errorMessage: 'Quantidade deve ser um número maior que 0',
-      inputId: 'partStockName',
+      inputId: 'productStockName',
     },
     {
       check: () => {
@@ -99,7 +99,7 @@ const PartStockManagement: React.FC<PartStockScreenProps> = ({
       },
       
       errorMessage: 'Quantidade mínima deve ser um número maior que 0',
-      inputId: 'partStockName',
+      inputId: 'productStockName',
     },
   ]
 
@@ -127,7 +127,7 @@ const PartStockManagement: React.FC<PartStockScreenProps> = ({
   }
 
   const {showErrorMessage: showErrormessage} = useMessageError()
-  const handleButtonCreatePartStockOnClick = async (stopLoad: Function) => {
+  const handleButtonCreateProductStockOnClick = async (stopLoad: Function) => {
     if (!validate()) {
       stopLoad()
       return
@@ -137,7 +137,7 @@ const PartStockManagement: React.FC<PartStockScreenProps> = ({
       stock_id: stock.id
     }
     try {
-      const response = await PartStockService.create(requestPayload as PartStock)
+      const response = await ProductStockService.create(requestPayload as ProductStock)
 
       if (response.status) {
         showSuccessToast({
@@ -172,7 +172,7 @@ const PartStockManagement: React.FC<PartStockScreenProps> = ({
     }
   }
 
-  const handleButtonUpdatePartStockOnClick = async (stopLoad: StopLoadFunc) => {
+  const handleButtonUpdateProductStockOnClick = async (stopLoad: StopLoadFunc) => {
     decreaseWindowSize?.()
 
     if (!validate()) {
@@ -181,7 +181,7 @@ const PartStockManagement: React.FC<PartStockScreenProps> = ({
     }
 
     try {
-      const response = await PartStockService.update(payload as PartStock)
+      const response = await ProductStockService.update(payload as ProductStock)
 
       if (response.status) {
         showSuccessToast({
@@ -216,9 +216,9 @@ const PartStockManagement: React.FC<PartStockScreenProps> = ({
     }
   }
 
-  const handleButtonDeletePartStockOnClick = async () => {
+  const handleButtonDeleteProductStockOnClick = async () => {
     try {
-      const response = await PartStockService.delete(
+      const response = await ProductStockService.delete(
         stock.id!,
         payload.id as number
       )
@@ -261,7 +261,7 @@ const PartStockManagement: React.FC<PartStockScreenProps> = ({
         {
           id: 1,
           name: 'Nome',
-          keyName: 'part_name',
+          keyName: 'product_name',
         },
         {
           id: 2,
@@ -319,7 +319,7 @@ const PartStockManagement: React.FC<PartStockScreenProps> = ({
   const decreaseWindowSize = screen.decreaseScreenSize
 
   const focusNameInput = () => {
-    const referenceInput = document.getElementById('partStockName')
+    const referenceInput = document.getElementById('productStockName')
     referenceInput?.focus()
   }
 
@@ -341,8 +341,8 @@ const PartStockManagement: React.FC<PartStockScreenProps> = ({
     handleNewButtonOnClick: handleButtonNewOnClick,
     handleSaveButtonOnClick:
       screenStatus === ScreenStatus.NEW
-        ? handleButtonCreatePartStockOnClick
-        : handleButtonUpdatePartStockOnClick,
+        ? handleButtonCreateProductStockOnClick
+        : handleButtonUpdateProductStockOnClick,
 
     handleEditButtonOnClick: () => {
       setScreenStatus(ScreenStatus.EDIT)
@@ -353,7 +353,7 @@ const PartStockManagement: React.FC<PartStockScreenProps> = ({
       openAlert({
         text: 'Deletar o item selecionado?',
         intent: Intent.DANGER,
-        onConfirm: handleButtonDeletePartStockOnClick,
+        onConfirm: handleButtonDeleteProductStockOnClick,
         cancelButtonText: 'Cancelar',
       })
     },
@@ -374,13 +374,13 @@ const PartStockManagement: React.FC<PartStockScreenProps> = ({
     []
   )
 
-  const handlePartSelect = (option: Option) => {
-    changePayloadAttribute('part_id', option.value)
+  const handleProductSelect = (option: Option) => {
+    changePayloadAttribute('product_id', option.value)
   }
 
   const {openSubScreen} = useScreen()
 
-  const selectedProduct = useMemo(() => payload.part_id ?  parts.find(p => p.id === payload.part_id ) : undefined, [payload?.part_id, parts])
+  const selectedProduct = useMemo(() => payload.product_id ?  products.find(p => p.id === payload.product_id ) : undefined, [payload?.product_id, products])
   return (
     <Container style={{ height: 'calc(100% - 40px)' }}>
       <Row>
@@ -395,12 +395,12 @@ const PartStockManagement: React.FC<PartStockScreenProps> = ({
             disabled={!payload.id}
             intent={Intent.PRIMARY}
             onClick={() => {
-              openSubScreen<PartStockWarningProps>({
-                id: 'part-stock-warning',
+              openSubScreen<ProductStockWarningProps>({
+                id: 'product-stock-warning',
                 headerTitle: `Alerta de estoque para "${selectedProduct?.name}"`,
                 contentSize: '420 110'
               }, screen.id, {
-                partStock: payload
+                productStock: payload
               })
             }}
           >
@@ -421,16 +421,16 @@ const PartStockManagement: React.FC<PartStockScreenProps> = ({
               } as any
             }
             label='Produto'
-            onChange={handlePartSelect}
-            id={screen.id + 'partIdSelect'}
-            items={partOptions}
-            activeItem={payload.part_id}
-            loading={loadingParts}
-            handleButtonReloadClick={loadParts}
+            onChange={handleProductSelect}
+            id={screen.id + 'productIdSelect'}
+            items={productOptions}
+            activeItem={payload.product_id}
+            loading={loadingProducts}
+            handleButtonReloadClick={loadProducts}
           />
 
           <NumericInput
-            id='partStockDescription'
+            id='productStockDescription'
             label='Quantidade'
             disabled={isStatusVizualize()}
             stepSize={0.1}
@@ -448,7 +448,7 @@ const PartStockManagement: React.FC<PartStockScreenProps> = ({
           />
 
           <NumericInput
-            id='partStockDescription'
+            id='productStockDescription'
             label='Quantidade mínima:'
             disabled={isStatusVizualize()}
             stepSize={0.1}
@@ -471,7 +471,7 @@ const PartStockManagement: React.FC<PartStockScreenProps> = ({
             height='100%'
             onRowSelect={onRowSelect}
             customRequest={(page, limit) =>
-              PartStockService.getAll(stock.id!, page, limit)
+              ProductStockService.getAll(stock.id!, page, limit)
             }
             rowKey={(row) => row.id}
             containerProps={containerProps}
@@ -484,4 +484,4 @@ const PartStockManagement: React.FC<PartStockScreenProps> = ({
   )
 }
 
-export default PartStockManagement
+export default ProductStockManagement

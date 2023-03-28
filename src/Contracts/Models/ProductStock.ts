@@ -1,12 +1,12 @@
-export default interface PartStock {
+export default interface ProductStock {
   id?: number;
   company_id: number;
   stock_id: number;
-  part_id: number;
+  product_id: number;
   quantity: number;
   minimum: number;
-  part_name?: string
-  part_price?: number;
+  product_name?: string
+  product_price?: number;
   unit_id?: number;
   unit_name?: string;
 }

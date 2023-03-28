@@ -2,7 +2,7 @@
 import { Panel, PanelOptions } from 'jspanel4/es6module/jspanel'
 import DialogProps, { Dialog } from '../Components/DialogProps'
 
-export type DialogIds = 'part-stock-warn'
+export type DialogIds = 'product-stock-warn'
 
 export type Dialogs = Record<DialogIds, Dialog>
 export interface ContextPanelOptions extends PanelOptions {

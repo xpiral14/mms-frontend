@@ -40,8 +40,8 @@ import InputDate from '../../../Components/InputDate'
 import Collapse from '../../../Components/Collapse'
 import Row from '../../../Components/Layout/Row'
 import { OrderServiceDetailsProps } from '../../../Contracts/Screen/OrderServiceDetails/OrderServiceDetailsProps'
-import { OrderPartDetailsProps } from '../../../Contracts/Screen/OrderPartDetails'
-import OrderPart from '../../../Contracts/Models/OrderPart'
+import { OrderProductDetailsProps } from '../../../Contracts/Screen/OrderProductDetails'
+import OrderProduct from '../../../Contracts/Models/OrderProduct'
 import Box from '../../../Components/Layout/Box'
 import { format, isBefore } from 'date-fns'
 import InputGroup from '../../../Components/InputGroup'
@@ -77,14 +77,14 @@ const discountTypeOptions: Option[] = [
 type OrderPayload = {
   id?: number
   serviceIds: number[]
-  partIds: number[]
+  productIds: number[]
   costumerId?: number
   description?: string
   date: Date
   status: orderStatus
   reference: string
   services?: OrderServiceModel[]
-  parts?: OrderPart[]
+  products?: OrderProduct[]
   validity?: Date
   serviceDiscountType?: DiscountType
   serviceDiscount?: number
@@ -298,7 +298,7 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
         reference: payload.reference,
         costumerId: payload.costumerId!,
         description: payload?.description,
-        partIds: [] as number[],
+        productIds: [] as number[],
         serviceIds: [] as number[],
         status: payload.status,
         validity: payload?.date
@@ -327,10 +327,10 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
       }
 
       try {
-        if (payload.parts) {
+        if (payload.products) {
           await Promise.all(
-            payload.parts?.map((orderPart) =>
-              OrderService.addPart(orderId, orderPart)
+            payload.products?.map((orderProduct) =>
+              OrderService.addProduct(orderId, orderProduct)
             )
           )
         }
@@ -505,30 +505,30 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
     )
   }
 
-  const openOrderPartScreen = () => {
-    const orderPartDetailsProps: OrderPartDetailsProps = {
-      onSave(orderParts, screen) {
-        changePayload('parts', orderParts)
+  const openOrderProductScreen = () => {
+    const orderProductDetailsProps: OrderProductDetailsProps = {
+      onSave(orderProducts, screen) {
+        changePayload('products', orderProducts)
         screen.close()
       },
     }
 
     if (payload.id) {
-      orderPartDetailsProps.order = toOrderModel(payload)
+      orderProductDetailsProps.order = toOrderModel(payload)
     }
 
-    if (payload?.parts?.length) {
-      orderPartDetailsProps.selectedOrderParts = payload.parts
+    if (payload?.products?.length) {
+      orderProductDetailsProps.selectedOrderProducts = payload.products
     }
 
-    openSubScreen<OrderPartDetailsProps>(
+    openSubScreen<OrderProductDetailsProps>(
       {
-        id: 'order-part-details',
+        id: 'order-product-details',
         contentSize: '770 430',
         headerTitle: 'Produtos da ordem',
       },
       screen.id,
-      orderPartDetailsProps
+      orderProductDetailsProps
     )
   }
 
@@ -636,7 +636,7 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
               title='Mostrar produtos'
               rightIcon='barcode'
               disabled={!payload.id && isStatusVisualize}
-              onClick={openOrderPartScreen}
+              onClick={openOrderProductScreen}
             >
               Produtos
             </Button>

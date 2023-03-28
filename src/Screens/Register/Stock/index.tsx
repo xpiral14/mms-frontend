@@ -17,7 +17,7 @@ import {
 import ScreenProps from '../../../Contracts/Components/ScreenProps'
 import { Validation } from '../../../Contracts/Hooks/useValidation'
 import Stock from '../../../Contracts/Models/Stock'
-import { PartStockProps } from '../../../Contracts/Screen/PartStockManagement'
+import { ProductStockProps } from '../../../Contracts/Screen/ProductStockManagement'
 import { useAlert } from '../../../Hooks/useAlert'
 import { useGrid } from '../../../Hooks/useGrid'
 import { useScreen } from '../../../Hooks/useScreen'
@@ -291,9 +291,9 @@ const StocksScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
         <Box className='mt-1'>
           <Row className='d-flex justify-content-end'>
             <Button icon={<FaProductHunt size={12} />} disabled={!payload.id} intent={Intent.PRIMARY} onClick={() => {
-              openSubScreen<PartStockProps>(
+              openSubScreen<ProductStockProps>(
                 {
-                  id: 'part-stock-management',
+                  id: 'product-stock-management',
                   headerTitle: `Gerenciamento de produtos do estoque "${payload.name}"`,
                   contentSize: '750px 246px',
                 },

@@ -1,7 +1,7 @@
 import api from '../Config/api'
 
 const DEFAULT_PATH = '/order'
-export default class OrderPartService {
+export default class OrderProductService {
   static async updatePiece(
     orderId: number,
     pieceId: number,
@@ -13,7 +13,7 @@ export default class OrderPartService {
     )
   }
 
-  static async deleteOrderPart(orderId: number, pieceId: number) {
+  static async deleteOrderProduct(orderId: number, pieceId: number) {
     return api.delete<null>(`${DEFAULT_PATH}/${orderId}/piece/${pieceId}`)
   }
 }

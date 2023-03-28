@@ -10,18 +10,18 @@ import {
   RegistrationButtons,
   StopLoadFunc,
 } from '../../Contracts/Components/RegistrationButtonBarProps'
-import PartStockWarning from '../../Contracts/Models/PartStockWarning'
-import PartStockWarningScreenProps from '../../Contracts/Screen/PartStockWarning'
+import ProductStockWarning from '../../Contracts/Models/ProductStockWarning'
+import ProductStockWarningScreenProps from '../../Contracts/Screen/ProductStockWarning'
 import { useAlert } from '../../Hooks/useAlert'
 import useMessageError from '../../Hooks/useMessageError'
 import { useToast } from '../../Hooks/useToast'
 // import { useToast } from '../../Hooks/useToast'
 import { useWindow } from '../../Hooks/useWindow'
-import PartStockWarningService from '../../Services/PartStockWarningService'
+import ProductStockWarningService from '../../Services/ProductStockWarningService'
 
-const PartStockWaning: FC<PartStockWarningScreenProps> = ({
+const ProductStockWaning: FC<ProductStockWarningScreenProps> = ({
   screen,
-  partStock,
+  productStock,
 }) => {
   const {
     payload,
@@ -29,24 +29,24 @@ const PartStockWaning: FC<PartStockWarningScreenProps> = ({
     setPayload,
     setScreenStatus,
     screenStatus,
-  } = useWindow<PartStockWarning>()
+  } = useWindow<ProductStockWarning>()
   const { showErrorMessage: showErrormessage } = useMessageError()
   const { openAlert } = useAlert()
   const {showSuccessToast} = useToast()
   const handleCreateWarning = async (stopLoad: StopLoadFunc) => {
     try {
-      if(!partStock.id ){
+      if(!productStock.id ){
         return
       }
-      const partStockWarning = {
+      const productStockWarning = {
         id: undefined,
-        part_stock_id: partStock.id,
+        product_stock_id: productStock.id,
         minimum: payload.minimum,
         warning_type: 'value',
       }!
-      await PartStockWarningService.create(
-        partStock.stock_id!,
-        partStockWarning
+      await ProductStockWarningService.create(
+        productStock.stock_id!,
+        productStockWarning
       )
 
       showSuccessToast('O alerta foi criado com sucesso. Você receberá notificações quando este produto estiver abaixo do valor mínimo estipulado no alerta')
@@ -71,9 +71,9 @@ const PartStockWaning: FC<PartStockWarningScreenProps> = ({
   }, [])
   const handleDelete = () => {
     try {
-      PartStockWarningService.create(
-        partStock.stock_id!,
-        payload as PartStockWarning
+      ProductStockWarningService.create(
+        productStock.stock_id!,
+        payload as ProductStockWarning
       )
     } catch (error) {
       showErrormessage(
@@ -137,4 +137,4 @@ const PartStockWaning: FC<PartStockWarningScreenProps> = ({
   )
 }
 
-export default PartStockWaning
+export default ProductStockWaning

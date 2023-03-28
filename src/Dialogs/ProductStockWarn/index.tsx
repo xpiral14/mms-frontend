@@ -3,24 +3,24 @@ import { Callout, Dialog, DialogProps, Intent } from '@blueprintjs/core'
 import React, { FC } from 'react'
 import Container from '../../Components/Layout/Container'
 import Row from '../../Components/Layout/Row'
-import Part from '../../Contracts/Models/Part'
-import PartStock from '../../Contracts/Models/PartStock'
-import PartStockWarning from '../../Contracts/Models/PartStockWarning'
+import Product from '../../Contracts/Models/Product'
+import ProductStock from '../../Contracts/Models/ProductStock'
+import ProductStockWarning from '../../Contracts/Models/ProductStockWarning'
 import Stock from '../../Contracts/Models/Stock'
 
-export interface PartStockWarnProps {
-  partStockWarning: PartStockWarning
-  partStock: PartStock
+export interface ProductStockWarnProps {
+  productStockWarning: ProductStockWarning
+  productStock: ProductStock
   stock: Stock
-  part: Part
+  product: Product
 }
 
-interface PartStockWarnDialogProps extends PartStockWarnProps, DialogProps {}
-const index: FC<PartStockWarnDialogProps> = ({
+interface ProductStockWarnDialogProps extends ProductStockWarnProps, DialogProps {}
+const index: FC<ProductStockWarnDialogProps> = ({
   stock,
-  part,
-  partStockWarning,
-  partStock,
+  product,
+  productStockWarning,
+  productStock,
   ...props
 }) => {
   return (
@@ -39,17 +39,17 @@ const index: FC<PartStockWarnDialogProps> = ({
         <Container className='px-1'>
           <Row>
             <strong>Produto:</strong>
-            {part.name}
+            {product.name}
           </Row>
           <Row>
             {' '}
             <strong>Quantidade definida no alerta:</strong>
-            {partStockWarning.minimum} {part.unit_name}
+            {productStockWarning.minimum} {product.unit_name}
           </Row>
           <Row>
             {' '}
             <strong>Quantidade atual:</strong>
-            {partStock.quantity} {part.unit_name}
+            {productStock.quantity} {product.unit_name}
           </Row>
         </Container>
       </Container>

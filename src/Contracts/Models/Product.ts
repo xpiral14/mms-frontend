@@ -1,4 +1,4 @@
-export default  interface Part {
+export default  interface Product {
   id: number;
   companyId: number;
   unit_id: number;

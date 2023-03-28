@@ -20,10 +20,10 @@ const screens = {
     path: 'Register/Employees',
     permissions: [Permissions.READ_EMPLOYEE, Permissions.WRITE_EMPLOYEE],
   },
-  'part-register': {
-    id: 'part-register',
+  'product-register': {
+    id: 'product-register',
     name: 'Cadastro de produtos',
-    path: 'Register/Parts',
+    path: 'Register/Products',
     permissions: [Permissions.READ_PART, Permissions.WRITE_PART],
   },
   'unit-register': {
@@ -74,10 +74,10 @@ const screens = {
     subScreenOnly: true,
     permissions: [Permissions.WRITE_ORDER],
   },
-  'order-part-details': {
-    id: 'order-part-details',
+  'order-product-details': {
+    id: 'order-product-details',
     name: 'Produtos da ordem',
-    path: 'OrderPartDetails',
+    path: 'OrderProductDetails',
     subScreenOnly: true,
     permissions: [Permissions.WRITE_ORDER],
   },
@@ -109,17 +109,17 @@ const screens = {
     path: 'Register/Stock',
     permission: [Permissions.READ_STOCK, Permissions.WRITE_STOCK],
   },
-  'part-stock-management': {
-    id: 'part-stock-management',
+  'product-stock-management': {
+    id: 'product-stock-management',
     name: 'Gerenciamento de produtos do estoque',
-    path: 'PartStockManagement',
+    path: 'ProductStockManagement',
     subScreenOnly: true,
     permission: [Permissions.READ_STOCK, Permissions.WRITE_STOCK],
   },
-  'part-stock-warning': {
-    id: 'part-stock-warning',
+  'product-stock-warning': {
+    id: 'product-stock-warning',
     name: 'Gerenciamento de produtos do estoque',
-    path: 'PartStockWarning',
+    path: 'ProductStockWarning',
     subScreenOnly: true,
     permission: [Permissions.READ_STOCK, Permissions.WRITE_STOCK],
   },

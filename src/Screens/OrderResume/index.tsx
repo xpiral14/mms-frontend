@@ -25,7 +25,7 @@ import { useAlert } from '../../Hooks/useAlert'
 import useAsync from '../../Hooks/useAsync'
 import { useToast } from '../../Hooks/useToast'
 import OrderService, {
-  OrderPartResponse,
+  OrderProductResponse,
   OrderServicePaginatedResponse,
 } from '../../Services/OrderService'
 import OrderStatus from '../../Contracts/Models/OrderStatus'
@@ -85,33 +85,33 @@ const OrderResume: FunctionComponent<OrderResumeScreenProps> = (props) => {
   }, [])
   const [isOrderServicesCollapsed, setIsOrderServicesCollapsed] =
     useState(false)
-  const [isOrderPartsCollapsed, setIsOrderPartsCollapsed] = useState(false)
+  const [isOrderProductsCollapsed, setIsOrderProductsCollapsed] = useState(false)
   const [orderServices, setOrderServices] = useState<
     OrderServicePaginatedResponse[]
   >([])
-  const [orderParts, setOrderParts] = useState<OrderPartResponse[]>([])
+  const [orderProducts, setOrderProducts] = useState<OrderProductResponse[]>([])
   const [loadingOrderServices, loadOrderServices] = useAsync(async () => {
     if (!props?.order?.id) return
     const orderServicesResponse = await OrderService.getOrderServices(order.id!)
     setOrderServices(orderServicesResponse.data.data)
   }, [])
 
-  const [loadingOrderParts, loadOrderParts] = useAsync(async () => {
+  const [loadingOrderProducts, loadOrderProducts] = useAsync(async () => {
     if (!props?.order?.id) return
-    const orderPartsResponse = await OrderService.getOrderParts(order.id!)
+    const orderProductsResponse = await OrderService.getOrderProducts(order.id!)
 
-    setOrderParts(orderPartsResponse.data.data)
+    setOrderProducts(orderProductsResponse.data.data)
   }, [])
   const orderServiceTableRows = orderServices.map((orderService) => ({
     ...orderService.order_service,
     ...orderService.service,
   })) as any[]
 
-  const orderPartTableRows = orderParts.map(
-    (orderPart) =>
+  const orderProductTableRows = orderProducts.map(
+    (orderProduct) =>
       ({
-        ...orderPart.order_part,
-        ...orderPart.part,
+        ...orderProduct.order_product,
+        ...orderProduct.product,
       } as Record<string, any>)
   )
 
@@ -267,7 +267,7 @@ const OrderResume: FunctionComponent<OrderResumeScreenProps> = (props) => {
 
   const reloadAll = () => {
     loadOrderServices()
-    loadOrderParts()
+    loadOrderProducts()
     loadCostumer()
     loadOrder()
     loadOrderStatuses()
@@ -298,7 +298,7 @@ const OrderResume: FunctionComponent<OrderResumeScreenProps> = (props) => {
             icon='refresh'
             onClick={reloadAll}
             loading={
-              loadingOrderParts && loadingOrderServices && loadingOrderStatuses
+              loadingOrderProducts && loadingOrderServices && loadingOrderStatuses
             }
           >
             Recarregar dados da tela
@@ -475,8 +475,8 @@ const OrderResume: FunctionComponent<OrderResumeScreenProps> = (props) => {
                 </Render>
               </Row>
             }
-            isCollapsed={isOrderPartsCollapsed || loadingCostumers}
-            onChange={() => setIsOrderPartsCollapsed((prev) => !prev)}
+            isCollapsed={isOrderProductsCollapsed || loadingCostumers}
+            onChange={() => setIsOrderProductsCollapsed((prev) => !prev)}
           >
             <Table
               columns={[
@@ -503,7 +503,7 @@ const OrderResume: FunctionComponent<OrderResumeScreenProps> = (props) => {
                   },
                 },
               ]}
-              rows={orderPartTableRows}
+              rows={orderProductTableRows}
               renderFooter={renderProductFooter}
             />
           </Collapse>

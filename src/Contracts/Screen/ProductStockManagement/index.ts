@@ -1,10 +1,10 @@
 import ScreenProps from '../../Components/ScreenProps'
 import Stock from '../../Models/Stock'
 
-export interface PartStockProps {
+export interface ProductStockProps {
   stock: Partial<Stock>
 }
 
-export default interface PartStockScreenProps
-  extends PartStockProps,
+export default interface ProductStockScreenProps
+  extends ProductStockProps,
     ScreenProps {}

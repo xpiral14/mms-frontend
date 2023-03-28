@@ -32,7 +32,7 @@ const menus = {
         screen: {
           minHeight: 290,
           maxHeight: 500,
-          ...screens['part-register'],
+          ...screens['product-register'],
           headerTitle: 'Produtos',
           contentSize: '750px 246px',
         },

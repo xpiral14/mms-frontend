@@ -300,6 +300,7 @@ const StocksScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
                 screen.id,
                 {
                   stock: payload,
+                  defaultScreenStatus: ScreenStatus.SEE_REGISTERS
                 }
               )
             }}>

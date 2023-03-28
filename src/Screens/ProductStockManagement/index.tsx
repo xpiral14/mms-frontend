@@ -1,5 +1,5 @@
 import { Intent, Tag } from '@blueprintjs/core'
-import React, { useCallback, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import Button from '../../Components/Button'
 import Box from '../../Components/Layout/Box'
 import Container from '../../Components/Layout/Container'
@@ -35,6 +35,7 @@ import { ProductStockWarningProps } from '../../Contracts/Screen/ProductStockWar
 const ProductStockManagement: React.FC<ProductStockScreenProps> = ({
   screen,
   stock,
+  defaultScreenStatus
 }): JSX.Element => {
   const {
     payload,
@@ -43,6 +44,14 @@ const ProductStockManagement: React.FC<ProductStockScreenProps> = ({
     screenStatus,
     setScreenStatus,
   } = useWindow<ProductStock>()
+
+  useEffect(() => {
+    if (defaultScreenStatus) {
+      setScreenStatus(defaultScreenStatus)
+    }  
+  }, [defaultScreenStatus])
+  
+
   const { showErrorToast, showSuccessToast } = useToast()
 
   const [products, setProducts] = useState<Product[]>([])

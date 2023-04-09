@@ -24,6 +24,7 @@ import Row from '../../../Components/Layout/Row'
 import Container from '../../../Components/Layout/Container'
 import Button from '../../../Components/Button'
 import { useScreen } from '../../../Hooks/useScreen'
+import Bar from '../../../Components/Layout/Bar'
 
 const SupplierRegister: React.FC<SupplierRegisterScreenProps> = ({
   screen,
@@ -181,7 +182,7 @@ const SupplierRegister: React.FC<SupplierRegisterScreenProps> = ({
   }
 
   return (
-    <Container style={{ height: 'calc(100% - 85px)' }}>
+    <Container style={{ height: 'calc(100% - 95px)' }}>
       <Row className='py-2'>
         <RegistrationButtonBar {...registratioButtonBarProps} />
       </Row>
@@ -227,25 +228,25 @@ const SupplierRegister: React.FC<SupplierRegisterScreenProps> = ({
         </Row>
       </Render>
       <Render renderIf={screenStatus === ScreenStatus.SEE_REGISTERS}>
-        <Row>
+        <Bar>
           <Button
+            icon='shopping-cart'
+            text='Gerenciar mercadorias'
+            intent={Intent.PRIMARY}
             disabled={!payload.id}
             onClick={() => {
               openSubScreen(
                 {
                   id: 'goods-register',
-                  contentSize: '400 300',
                 },
                 screen.id,
                 {
-                  supplierId: payload.id
+                  supplierId: payload.id,
                 }
               )
             }}
-          >
-          Adicionar registro de mercadoria
-          </Button>
-        </Row>
+          />
+        </Bar>
         <PaginatedTable
           height='350px'
           isSelected={(row) => row.id === payload.id}

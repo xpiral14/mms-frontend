@@ -1,6 +1,7 @@
 import api from '../Config/api'
 import Good from '../Contracts/Models/Good'
 import Paginated from '../Contracts/Models/Paginated'
+import Response from '../Contracts/Models/Response'
 
 export const DEFAULT_PATH = '/goods'
 
@@ -12,6 +13,21 @@ export default class GoodService {
         page,
         limit,
       },
+    })
+  }
+
+  static async create(payload: Omit<Good, 'id'>) {
+    return api.post<Response<Good>>(`suppliers/${payload.supplier_id}${DEFAULT_PATH}`, {
+      receivedAt: payload.received_at,
+      invoiceNumber: payload.invoice_number,
+      goodProducts:  payload.good_products
+    })
+  }
+
+  static async update(payload: Good) {
+    return api.put<Response<Good>>(`${DEFAULT_PATH}/${payload.id}`, {
+      receivedAt: payload.received_at,
+      goodProducts:  payload.good_products
     })
   }
 }

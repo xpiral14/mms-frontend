@@ -59,7 +59,7 @@ const AuthProvider: FC = ({ children }) => {
       },
       (error) => {
         if (
-          error?.response?.data?.data?.messages?.includes('Unauthenticated') &&
+          Object.values(error?.response?.data?.data?.messages ?? {}).includes('Unauthenticated') &&
           error.response.status === 401
         ) {
           showErrorToast({

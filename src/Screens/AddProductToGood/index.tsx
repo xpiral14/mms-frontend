@@ -14,6 +14,8 @@ import Bar from '../../Components/Layout/Bar'
 import Button from '../../Components/Button'
 import { Intent } from '@blueprintjs/core'
 import GoodProduct from '../../Contracts/Models/GoodProduct'
+import useValidation from '../../Hooks/useValidation'
+import { Validation } from '../../Contracts/Hooks/useValidation'
 
 const AddProductToGood: FC<AddProductToGoodScreenProps> = ({
   onAddProduct,
@@ -21,6 +23,24 @@ const AddProductToGood: FC<AddProductToGoodScreenProps> = ({
 }) => {
   const [products, setProducts] = useState<Product[]>([])
 
+  const validations = [
+    {
+      inputId: screen.id + '-product-select',
+      errorMessage: 'O código do produto é obrigatório',
+      check: () => Boolean(payload.product_id),
+    },
+    {
+      inputId: screen.id + 'product-quantity',
+      errorMessage: 'A quantidade do produto é obrigatória',
+      check: () => Boolean(payload.quantity),
+    },
+    {
+      inputId: screen.id + '-product-quantity-value',
+      errorMessage: 'O valor total é obrigatório',
+      check: () => Boolean(payload.value),
+    },
+  ] as Validation[]
+  const {validate} = useValidation(validations)
   const { changePayloadAttribute, payload, setPayload } = useWindow<GoodProduct>()
 
   const { showErrorToast } = useToast()
@@ -59,7 +79,13 @@ const AddProductToGood: FC<AddProductToGoodScreenProps> = ({
     <Container>
       <Row>
         <Bar>
-          <Button intent={Intent.PRIMARY} onClick={() => onAddProduct(payload)}>
+          <Button intent={Intent.PRIMARY} onClick={() => {
+            if (!validate()){
+              return
+            }
+            onAddProduct(payload)
+            setPayload({})
+          }}>
             Adicionar produto à mercadoria
           </Button>
         </Bar>
@@ -69,7 +95,7 @@ const AddProductToGood: FC<AddProductToGoodScreenProps> = ({
           required
           label='Produto'
           onChange={handleProductSelect}
-          id={screen.id + 'productIdSelect'}
+          id={screen.id + '-product-select'}
           items={productOptions}
           activeItem={payload.product?.id}
           loading={loadingProducts}
@@ -79,14 +105,16 @@ const AddProductToGood: FC<AddProductToGoodScreenProps> = ({
 
         <NumericInput
           label='Quantidade'
-          id={screen.id + 'product_quantity'}
+          value={payload.quantity ?? 0}
+          id={screen.id + 'product-quantity'}
           onValueChange={(v) => {
             changePayloadAttribute('quantity', v)
           }}
         />
         <NumericInput
           label='Valor total'
-          id={screen.id + 'product_quantity_value'}
+          value={payload.value ?? 0}
+          id={screen.id + '-product-quantity-value'}
           onValueChange={(v) => {
             changePayloadAttribute('value', v)
           }}

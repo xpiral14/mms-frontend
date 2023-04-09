@@ -33,29 +33,54 @@ import Bar from '../../../Components/Layout/Bar'
 import { useScreen } from '../../../Hooks/useScreen'
 import { AddProductToGoodProps } from '../../../Contracts/Screen/AddProductToGood'
 import currencyFormat from '../../../Util/currencyFormat'
+import useMessageError from '../../../Hooks/useMessageError'
 
-const GoodsScreen: React.FC<GoodRegisterScreenProps> = ({
-  screen,
-  supplierId,
-}): JSX.Element => {
-  const { screenStatus, payload, setPayload } = useWindow<Good>()
+const GoodsScreen: React.FC<GoodRegisterScreenProps> = (
+  {
+    screen,
+    supplierId,
+  },
+): JSX.Element => {
+  const { screenStatus, setScreenStatus, payload, setPayload, changePayloadAttribute } = useWindow<Good>()
   const { openSubScreen } = useScreen()
-  const [goodProducts, setGoodProducts] = useState<Partial<GoodProduct>[]>([])
+
+  const validations = [
+    {
+      errorMessage: 'O número da nota fiscal é obrigatória',
+      inputId: screen.createElementId('invoice-number'),
+      check: () => Boolean(payload.invoice_number)
+    },
+    {
+      check: () => Boolean(payload.received_at),
+      errorMessage: 'A data de recebimento é obrigatória',
+      inputId: screen.id + 'received_at',
+    }
+  ] as Validation[]
+  const { validate } = useValidation(validations)
   const paginatedColumns = useMemo(
     () =>
       [
         {
+          name: 'Número da nota fiscal',
+          keyName: 'invoice_number',
+          style: {
+            width: 50
+          }
+        },
+        {
           name: 'Data de recebimento',
-          keyName: 'received_at',
           formatText: (row) => new Date(row!.received_at!).toLocaleDateString(),
         },
         {
           name: 'Status de distribuição',
-          keyName: 'distributed_at',
           formatText: (row) => (row!.received_at ? 'Recebido' : 'Não recebido'),
         },
+        {
+          name: 'Valor total',
+          formatText: (row) => currencyFormat(row?.good_products?.reduce((t: number, c: GoodProduct) => t + c.value, 0) ?? 0),
+        },
       ] as Column[],
-    []
+    [],
   )
   const columns = useMemo(
     () =>
@@ -74,14 +99,15 @@ const GoodsScreen: React.FC<GoodRegisterScreenProps> = ({
         },
         {
           name: 'Valor unitário',
-          formatText: (row) => currencyFormat(row!.quantity / row!.value ?? 0),
+          formatText: (row) =>
+            currencyFormat((row!.value ?? 0) / (row!.quantity ?? 0)),
         },
         {
           name: 'Valor total',
           formatText: (row) => currencyFormat(row?.value ?? 0),
         },
       ] as Column[],
-    []
+    [],
   )
   const handleAddProduct = () => {
     openSubScreen<AddProductToGoodProps>(
@@ -90,38 +116,124 @@ const GoodsScreen: React.FC<GoodRegisterScreenProps> = ({
       },
       screen.id,
       {
-        onAddProduct: (p) => setGoodProducts((prev) => [...prev, p]),
-      }
+        onAddProduct: (p) =>
+          setPayload((prev) => ({
+            ...prev,
+            good_products: [...(prev?.good_products || []), p as any],
+          })),
+      },
     )
+  }
+
+  const { showSuccessToast } = useToast()
+  const { showErrorMessage } = useMessageError()
+  const { openAlert } = useAlert()
+  const createGood = async (stopLoad: StopLoadFunc) => {
+    try {
+      const response = await GoodService.create({
+        supplier_id: supplierId,
+        distributed_at: null,
+        received_at: format(payload.received_at as Date, 'yyyy-MM-dd'),
+        invoice_number: payload.invoice_number!,
+        good_products:
+          (payload.good_products?.map((gp) => ({
+            product_id: gp.product_id,
+            quantity: gp.quantity,
+            value: gp.value,
+          })) as any) || [],
+      })
+
+      showSuccessToast('Registro de mercadoria cadastrado com sucesso.')
+      setPayload({
+        ...response.data.data,
+        received_at: new Date(response.data.data.received_at)
+      })
+      setScreenStatus(ScreenStatus.SEE_REGISTERS)
+      openAlert({
+        text: 'Deseja distribuir suas mercadorias para seus estoques agora?',
+      })
+    } catch (error: any) {
+      showErrorMessage(
+        error,
+        'Não foi possível fazer o cadastro do registro de mercadoria. Por favor, tente novamente',
+      )
+    }
+
+    stopLoad()
+  }
+
+  const editGood = (stopLoad: StopLoadFunc) => {
+    stopLoad()
+    showSuccessToast('O registro de mercadoria foi atualizado com sucesso.')
+  }
+
+  const handleSaveButtonClick = (stopLoad: StopLoadFunc) => {
+    if (!validate()) {
+      stopLoad()
+      return
+    }
+
+    if (!payload.good_products?.length) {
+      openAlert({
+        text: 'Tem certeza que deseja cadastrar um registro de mercadorias que não possui mercadorias?',
+        icon: 'warning-sign',
+        intent: Intent.WARNING,
+        confirmButtonText: 'CADASTRAR SEM MERCADORIA',
+        onConfirm: doAction,
+        onCancel() {
+          stopLoad()
+        },
+        onClose() {
+          stopLoad()
+        },
+      })
+    } else {
+      doAction()
+    }
+
+    async function doAction() {
+      if (!payload.id) {
+        createGood(stopLoad)
+      } else {
+        editGood(stopLoad)
+      }
+    }
+
   }
 
   return (
     <Container style={{ height: 'calc(100% - 40px)' }}>
       <Row>
-        <RegistrationButtonBar />
+        <RegistrationButtonBar
+          handleSaveButtonOnClick={handleSaveButtonClick}
+        />
       </Row>
       <Render renderIf={screenStatus !== ScreenStatus.SEE_REGISTERS}>
         <Row>
+          <InputText
+            id={screen.createElementId('invoice-number')} value={payload.invoice_number ?? ''}
+            label='Número da nota fiscal'
+            onChange={(e) => changePayloadAttribute('invoice_number', e.target.value)} />
           <InputDate
             inputProps={{
               style: { width: '100%' },
             }}
             label='Data de recebimento'
             id={screen.id + 'received_at'}
+            onChange={d => changePayloadAttribute('received_at', d)}
             value={payload.received_at as Date}
-            onChange={(date) => setPayload({ received_at: date })}
           />
         </Row>
 
         <Row className='my-2'>
           <Bar>
-            <Button onClick={handleAddProduct} intent={Intent.PRIMARY}>
+            <Button icon='add' onClick={handleAddProduct} intent={Intent.PRIMARY}>
               Adicionar produto
             </Button>
           </Bar>
         </Row>
 
-        <Table rows={goodProducts as any} columns={columns} />
+        <Table rows={payload.good_products as any} columns={columns} />
       </Render>
 
       <Render renderIf={screenStatus === ScreenStatus.SEE_REGISTERS}>
@@ -138,6 +250,12 @@ const GoodsScreen: React.FC<GoodRegisterScreenProps> = ({
             }}
             columns={paginatedColumns}
             isSelected={(row: any) => row.id === payload?.id}
+            onRowSelect={(r) =>
+              setPayload({
+                ...r,
+                received_at: new Date(r.received_at),
+              })
+            }
           />
         </Row>
       </Render>

@@ -138,10 +138,11 @@ const screens = {
   },
   'goods-register': {
     id: 'goods-register',
-    name: 'Cadastro de mercadorias',
+    name: 'Gerenciamento de mercadorias',
     path: 'Register/Goods',
     subScreenOnly: true,
-    permissions: [Permissions.READ_EMPLOYEE, Permissions.WRITE_EMPLOYEE]
+    permissions: [Permissions.READ_EMPLOYEE, Permissions.WRITE_EMPLOYEE],
+    contentSize: '600 340'
   },
   'good-product-register': {
     id: 'good-product-register',

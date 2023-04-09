@@ -5,6 +5,7 @@ export interface Screen extends Panel {
   id: ScreenIds
   increaseScreenSize?: () => void
   decreaseScreenSize?: () => void
+  createElementId: (id: string) => string
 }
 
 export default interface ScreenProps {

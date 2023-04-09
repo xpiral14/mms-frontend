@@ -33,7 +33,7 @@ export function useWindow<P = Partial<any>>() {
 const WindowContextProvider: React.FC = ({ children }) => {
   const [payload, setPayload] = useState<any>({})
   const [screenStatus, setScreenStatus] = useState<ScreenStatus>(
-    ScreenStatus.VISUALIZE
+    ScreenStatus.SEE_REGISTERS
   )
 
   const changePayloadAttribute = useCallback((key: keyof typeof payload, value: any) => {

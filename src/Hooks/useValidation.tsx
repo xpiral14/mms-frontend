@@ -21,7 +21,7 @@ const getAllErrors = (errors: Validation[]) => {
 
 export default function useValidation(
   errors: Validation[],
-  options?: ValidationOptions
+  options?: ValidationOptions,
 ) {
   const { openAlert } = useAlert()
   const { setActiveTab } = useWindow()
@@ -35,22 +35,23 @@ export default function useValidation(
       <li key={error.inputId}>{error.errorMessage}</li>
     ))
 
+    function doAction() {
+      setActiveTab?.(checkedErrors[0].tabId || '0')
+      const element = document.getElementById(checkedErrors[0].inputId || '')
+      if (element?.tagName === 'BUTTON') {
+        element.click()
+      } else {
+        element?.focus()
+      }
+    }
+
     if (errorList.length) {
       openAlert({
         canOutsideClickCancel: true,
         text: <ul>{errorList}</ul>,
-        onClose: () => {
-          setActiveTab?.(checkedErrors[0].tabId || '0')
-          document.getElementById(checkedErrors[0].inputId || '')?.focus()
-        },
-        onCancel: () => {
-          setActiveTab?.(checkedErrors[0].tabId || '0')
-          document.getElementById(checkedErrors[0].inputId || '')?.focus()
-        },
-        onConfirm: () => {
-          setActiveTab?.(checkedErrors[0].tabId || '0')
-          document.getElementById(checkedErrors[0].inputId || '')?.focus()
-        },
+        onClose: doAction,
+        onCancel: doAction,
+        onConfirm: doAction,
       })
 
       return false

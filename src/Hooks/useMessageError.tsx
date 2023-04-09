@@ -36,6 +36,7 @@ export default function useMessageError(): UseMessageErrorReturn {
       defaultErrorMessage?: string,
       options: ShowErrormessageOptions = {showOn: 'toast' }
     ) => {
+      console.log(error)
       const errorData = error?.response?.data
       if (!errorData) return
 

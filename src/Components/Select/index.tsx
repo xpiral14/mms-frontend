@@ -194,6 +194,7 @@ export default function Select({
           {...props}
         >
           <Button
+            id={props.id}
             icon={activeOption?.icon}
             loading={props.loading}
             rightIcon='caret-down'

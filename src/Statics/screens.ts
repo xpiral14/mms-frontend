@@ -135,6 +135,21 @@ const screens = {
     name: 'Cadastro de fornecedores',
     path: 'Register/Suppliers',
     permissions: [Permissions.READ_EMPLOYEE, Permissions.WRITE_EMPLOYEE]
+  },
+  'goods-register': {
+    id: 'goods-register',
+    name: 'Cadastro de mercadorias',
+    path: 'Register/Goods',
+    subScreenOnly: true,
+    permissions: [Permissions.READ_EMPLOYEE, Permissions.WRITE_EMPLOYEE]
+  },
+  'good-product-register': {
+    id: 'good-product-register',
+    name: 'Cadastro de produto nas mercadorias',
+    path: 'AddProductToGood',
+    subScreenOnly: true,
+    permissions: [Permissions.READ_EMPLOYEE, Permissions.WRITE_EMPLOYEE],
+    contentSize: '600 200'
   }
 } as Screens
 

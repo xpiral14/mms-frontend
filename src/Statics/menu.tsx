@@ -57,7 +57,7 @@ const menus = {
           maxHeight: 500,
           ...screens['supplier-register'],
           headerTitle: 'Cadastro de fornecedores',
-          contentSize: '710px 150px',
+          contentSize: '900 500',
         },
       },
     },

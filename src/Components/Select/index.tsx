@@ -40,6 +40,7 @@ export interface SelectProps
   loading?: boolean
   handleButtonReloadClick?: () => Promise<void> | void
   activeItem?: number | string
+  buttonWidth?: number
 }
 const OptionSelect = CreateSelect.ofType<Option>()
 function areOptionsEqual(optionA: Option, optionB: Option) {
@@ -137,13 +138,21 @@ export default function Select({
     )
   }
 
-  const renderMenu: ItemListRenderer<Option> = ({ items, itemsParentRef, query, renderItem }) => {
-    const renderedItems = items.map(renderItem).filter(item => item != null)
+  const renderMenu: ItemListRenderer<Option> = ({
+    items,
+    itemsParentRef,
+    query,
+    renderItem,
+  }) => {
+    const renderedItems = items.map(renderItem).filter((item) => item != null)
     return (
-      <Menu ulRef={itemsParentRef} style={{
-        maxHeight: 100,
-        overflowY: 'scroll'
-      }} className="styled-scroll"
+      <Menu
+        ulRef={itemsParentRef}
+        style={{
+          maxHeight: 100,
+          overflowY: 'scroll',
+        }}
+        className='styled-scroll'
       >
         <Render renderIf={Boolean(query)}>
           <MenuItem
@@ -189,15 +198,28 @@ export default function Select({
             loading={props.loading}
             rightIcon='caret-down'
             alignText='left'
-            text={
-              activeOption?.label ||
-              props.defaultButtonText ||
-              'Escolha um item'
-            }
             intent={props.intent ?? activeOption?.intent}
             disabled={props.disabled}
             {...props?.buttonProps}
-          />
+          >
+            <span
+              style={
+                props.buttonWidth
+                  ? {
+                    display: 'block',
+                    width: props.buttonWidth,
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                  }
+                  : undefined
+              }
+            >
+              {activeOption?.label ||
+                props.defaultButtonText ||
+                'Escolha um item'}
+            </span>
+          </Button>
         </OptionSelect>
         {Boolean(props.handleButtonReloadClick) && (
           <Button

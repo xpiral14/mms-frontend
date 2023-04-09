@@ -24,6 +24,8 @@ export type ScreenIds =
   | 'product-stock-warning'
   | 'reports'
   | 'supplier-register'
+  | 'goods-register'
+  | 'good-product-register'
 
 export interface ScreenData {
   id: ScreenIds
@@ -32,6 +34,7 @@ export interface ScreenData {
   permissions?: Permissions[]
   subScreenOnly?: boolean
   canBeUsedAsSubScreen?: boolean
+  contentSize?: string
 }
 
 export type Screens = {

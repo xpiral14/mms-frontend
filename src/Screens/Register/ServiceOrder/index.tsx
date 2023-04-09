@@ -55,6 +55,7 @@ import capitalize from '../../../Util/capitalize'
 import ReceiptStatus from '../../../Constants/ReceiptStatus'
 import { useAuth } from '../../../Hooks/useAuth'
 import useMessageError from '../../../Hooks/useMessageError'
+import Bar from '../../../Components/Layout/Bar'
 
 const discountTypeOptions: Option[] = [
   {
@@ -610,7 +611,7 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
 
       <Body>
         <Render renderIf={screenStatus !== ScreenStatus.SEE_REGISTERS}>
-          <Box className='flex flex-justify-end'>
+          <Bar className='my-1 flex flex-justify-end'>
             <Render renderIf={Boolean(payload.id)}>
               <Button
                 intent='primary'
@@ -640,7 +641,7 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
             >
               Produtos
             </Button>
-          </Box>
+          </Bar>
           <Box className='flex align-center flex-wrap'>
             <Render renderIf={Boolean(payload.id)}>
               <InputText

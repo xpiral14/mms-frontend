@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Intent } from '@blueprintjs/core'
 import React, { useEffect } from 'react'
 import InputText from '../../../Components/InputText'
@@ -21,6 +22,8 @@ import formatPhone from '../../../Util/formatPhone'
 import Render from '../../../Components/Render'
 import Row from '../../../Components/Layout/Row'
 import Container from '../../../Components/Layout/Container'
+import Button from '../../../Components/Button'
+import { useScreen } from '../../../Hooks/useScreen'
 
 const SupplierRegister: React.FC<SupplierRegisterScreenProps> = ({
   screen,
@@ -68,6 +71,8 @@ const SupplierRegister: React.FC<SupplierRegisterScreenProps> = ({
   const { setReloadGrid } = useGrid()
   const { showSuccessToast } = useToast()
   const { openAlert } = useAlert()
+
+  const { openSubScreen } = useScreen()
 
   const isStatusVizualize = () => screenStatus === ScreenStatus.VISUALIZE
   const { showErrorMessage: showErrormessage } = useMessageError()
@@ -176,8 +181,8 @@ const SupplierRegister: React.FC<SupplierRegisterScreenProps> = ({
   }
 
   return (
-    <Container style={{ height: 'calc(100% - 40px)' }}>
-      <Row>
+    <Container style={{ height: 'calc(100% - 85px)' }}>
+      <Row className='py-2'>
         <RegistrationButtonBar {...registratioButtonBarProps} />
       </Row>
       <Render renderIf={screenStatus !== ScreenStatus.SEE_REGISTERS}>
@@ -222,6 +227,25 @@ const SupplierRegister: React.FC<SupplierRegisterScreenProps> = ({
         </Row>
       </Render>
       <Render renderIf={screenStatus === ScreenStatus.SEE_REGISTERS}>
+        <Row>
+          <Button
+            disabled={!payload.id}
+            onClick={() => {
+              openSubScreen(
+                {
+                  id: 'goods-register',
+                  contentSize: '400 300',
+                },
+                screen.id,
+                {
+                  supplierId: payload.id
+                }
+              )
+            }}
+          >
+          Adicionar registro de mercadoria
+          </Button>
+        </Row>
         <PaginatedTable
           height='350px'
           isSelected={(row) => row.id === payload.id}
@@ -252,12 +276,11 @@ const SupplierRegister: React.FC<SupplierRegisterScreenProps> = ({
             },
             {
               name: 'Email',
-              keyName: 'email',
+              keyName: 'mail',
             },
           ]}
           request={SupplierService.getAll as any}
           onRowSelect={(row) => {
-            setScreenStatus(ScreenStatus.VISUALIZE)
             setPayload({
               ...row,
             })

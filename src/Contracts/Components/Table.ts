@@ -9,7 +9,7 @@ export type Column = {
   style?: CSSProperties
 }
 
-export type Row = Record<string, string | number | undefined>
+export type Row = Record<string, any>
 
 export type TableProps = {
   height?: string

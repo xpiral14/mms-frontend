@@ -129,6 +129,12 @@ const screens = {
     path: 'Reports',
     subScreenOnly: true,
     permission: [Permissions.READ_STOCK, Permissions.WRITE_STOCK],
+  },
+  'supplier-register': {
+    id: 'supplier-register',
+    name: 'Cadastro de fornecedores',
+    path: 'Register/Suppliers',
+    permissions: [Permissions.READ_EMPLOYEE, Permissions.WRITE_EMPLOYEE]
   }
 } as Screens
 

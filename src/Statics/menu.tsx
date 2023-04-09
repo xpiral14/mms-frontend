@@ -1,6 +1,7 @@
 import { MenuType } from '../Contracts/Containers/NavBar'
 import screens from './screens'
 import { GiExpense } from 'react-icons/gi'
+import { MdOutlineAddBusiness } from 'react-icons/md'
 import { Permissions } from '../Constants/Enums'
 
 import {BiPackage} from 'react-icons/bi'
@@ -45,6 +46,17 @@ const menus = {
           maxHeight: 500,
           ...screens['unit-register'],
           headerTitle: 'Unidades',
+          contentSize: '710px 150px',
+        },
+      },
+      Fornecedores: {
+        name: 'Fornecedores',
+        icon: <MdOutlineAddBusiness size={16}/>,
+        screen: {
+          minHeight: 150,
+          maxHeight: 500,
+          ...screens['supplier-register'],
+          headerTitle: 'Cadastro de fornecedores',
           contentSize: '710px 150px',
         },
       },

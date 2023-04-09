@@ -23,6 +23,7 @@ export type ScreenIds =
   | 'product-stock-management'
   | 'product-stock-warning'
   | 'reports'
+  | 'supplier-register'
 
 export interface ScreenData {
   id: ScreenIds

@@ -113,7 +113,7 @@ const UnitsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
 
       if (response.status) {
         showSuccessToast({
-          message: 'Peça atualizada com sucesso',
+          message: 'Produto atualizada com sucesso',
           intent: Intent.SUCCESS,
         })
 
@@ -122,14 +122,14 @@ const UnitsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
 
       if (!response) {
         openAlert({
-          text: 'Não foi possível atualizar a peça',
+          text: 'Não foi possível atualizar o produto',
           intent: Intent.DANGER,
         })
       }
     } catch (error: any) {
       const ErrorMessages = getErrorMessages(
         error.response?.data?.errors,
-        'Não foi possível atualizar a peça'
+        'Não foi possível atualizar o produto'
       )
 
       openAlert({

@@ -109,7 +109,7 @@ const ProductsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
 
       if (response.status) {
         showSuccessToast({
-          message: 'Peça cadastrada com sucesso',
+          message: 'Produto cadastrada com sucesso',
           intent: Intent.SUCCESS,
         })
 
@@ -118,14 +118,14 @@ const ProductsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
 
       if (!response) {
         openAlert({
-          text: 'Não foi possível cadastrar a peça',
+          text: 'Não foi possível cadastrar o produto',
           intent: Intent.DANGER,
         })
       }
     } catch (error: any) {
       const errorMessages = getErrorMessages(
         error.response?.data?.errors,
-        'Não foi possível cadastrar a peça'
+        'Não foi possível cadastrar o produto'
       )
 
       openAlert({
@@ -152,7 +152,7 @@ const ProductsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
 
       if (response.status) {
         showSuccessToast({
-          message: 'Peça atualizada com sucesso',
+          message: 'Produto atualizada com sucesso',
           intent: Intent.SUCCESS,
         })
 
@@ -161,14 +161,14 @@ const ProductsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
 
       if (!response) {
         openAlert({
-          text: 'Não foi possível atualizar a peça',
+          text: 'Não foi possível atualizar o produto',
           intent: Intent.DANGER,
         })
       }
     } catch (error: any) {
       const ErrorMessages = getErrorMessages(
         error.response?.data?.errors,
-        'Não foi possível atualizar a peça'
+        'Não foi possível atualizar o produto'
       )
 
       openAlert({
@@ -204,7 +204,7 @@ const ProductsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
     } catch (error: any) {
       const ErrorMessages = getErrorMessages(
         error.response?.data?.errors,
-        'Não foi possível deletar a peça'
+        'Não foi possível deletar o produto'
       )
 
       openAlert({

@@ -32,16 +32,18 @@ const App = () => {
   )
 }
 
-export default () => (
-  <ToastContextProvider>
-    <AlertContextProvider>
-      <AuthProvider>
-        <ScreenProvider>
-          <DialogProvider>
-            <App />
-          </DialogProvider>
-        </ScreenProvider>
-      </AuthProvider>
-    </AlertContextProvider>
-  </ToastContextProvider>
-)
+export default () => {
+  return (
+    <ToastContextProvider>
+      <AlertContextProvider>
+        <AuthProvider>
+          <ScreenProvider>
+            <DialogProvider>
+              <App />
+            </DialogProvider>
+          </ScreenProvider>
+        </AuthProvider>
+      </AlertContextProvider>
+    </ToastContextProvider>
+  )
+}

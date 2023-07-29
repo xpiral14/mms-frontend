@@ -1,15 +1,10 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import React, { useCallback, useMemo, useState } from 'react'
+import React, { useMemo } from 'react'
 import RegistrationButtonBar from '../../../Components/RegistrationButtonBar'
 import InputText from '../../../Components/InputText'
 import PaginatedTable from '../../../Components/PaginatedTable'
 import GoodService from '../../../Services/GoodService'
-import ScreenProps from '../../../Contracts/Components/ScreenProps'
-import {
-  RegistrationButtonBarProps,
-  StopLoadFunc,
-} from '../../../Contracts/Components/RegistrationButtonBarProps'
-import { useGrid } from '../../../Hooks/useGrid'
+import { StopLoadFunc } from '../../../Contracts/Components/RegistrationButtonBarProps'
 import { useWindow } from '../../../Hooks/useWindow'
 import { useAlert } from '../../../Hooks/useAlert'
 import { ScreenStatus } from '../../../Constants/Enums'
@@ -22,9 +17,7 @@ import Render from '../../../Components/Render'
 import Container from '../../../Components/Layout/Container'
 import Row from '../../../Components/Layout/Row'
 import { GoodRegisterScreenProps } from '../../../Contracts/Screen/Register/Goods'
-import { Column, Row as TableRow } from '../../../Contracts/Components/Table'
-import { format } from 'date-fns'
-import { DateInput } from '@blueprintjs/datetime'
+import { Column } from '../../../Contracts/Components/Table'
 import InputDate from '../../../Components/InputDate'
 import Table from '../../../Components/Table'
 import GoodProduct from '../../../Contracts/Models/GoodProduct'
@@ -34,6 +27,7 @@ import { useScreen } from '../../../Hooks/useScreen'
 import { AddProductToGoodProps } from '../../../Contracts/Screen/AddProductToGood'
 import currencyFormat from '../../../Util/currencyFormat'
 import useMessageError from '../../../Hooks/useMessageError'
+import { DistributeGoodsProps } from '../../../Contracts/Screen/DistributeGoods'
 
 const GoodsScreen: React.FC<GoodRegisterScreenProps> = (
   {
@@ -48,13 +42,13 @@ const GoodsScreen: React.FC<GoodRegisterScreenProps> = (
     {
       errorMessage: 'O número da nota fiscal é obrigatória',
       inputId: screen.createElementId('invoice-number'),
-      check: () => Boolean(payload.invoice_number)
+      check: () => Boolean(payload.invoice_number),
     },
     {
       check: () => Boolean(payload.received_at),
       errorMessage: 'A data de recebimento é obrigatória',
       inputId: screen.id + 'received_at',
-    }
+    },
   ] as Validation[]
   const { validate } = useValidation(validations)
   const paginatedColumns = useMemo(
@@ -64,8 +58,8 @@ const GoodsScreen: React.FC<GoodRegisterScreenProps> = (
           name: 'Número da nota fiscal',
           keyName: 'invoice_number',
           style: {
-            width: 50
-          }
+            width: 50,
+          },
         },
         {
           name: 'Data de recebimento',
@@ -133,7 +127,7 @@ const GoodsScreen: React.FC<GoodRegisterScreenProps> = (
       const response = await GoodService.create({
         supplier_id: supplierId,
         distributed_at: null,
-        received_at: format(payload.received_at as Date, 'yyyy-MM-dd'),
+        received_at: (payload.received_at as Date)?.toISOString(),
         invoice_number: payload.invoice_number!,
         good_products:
           (payload.good_products?.map((gp) => ({
@@ -146,7 +140,7 @@ const GoodsScreen: React.FC<GoodRegisterScreenProps> = (
       showSuccessToast('Registro de mercadoria cadastrado com sucesso.')
       setPayload({
         ...response.data.data,
-        received_at: new Date(response.data.data.received_at)
+        received_at: new Date(response.data.data.received_at),
       })
       setScreenStatus(ScreenStatus.SEE_REGISTERS)
       openAlert({
@@ -198,9 +192,15 @@ const GoodsScreen: React.FC<GoodRegisterScreenProps> = (
         editGood(stopLoad)
       }
     }
-
   }
 
+  const handleDistributeGoodButtonClick = () => {
+    openSubScreen<DistributeGoodsProps>({
+      id: 'distribute-goods',
+    }, screen.id, {
+      good: payload,
+    })
+  }
   return (
     <Container style={{ height: 'calc(100% - 40px)' }}>
       <Row>
@@ -208,6 +208,14 @@ const GoodsScreen: React.FC<GoodRegisterScreenProps> = (
           handleSaveButtonOnClick={handleSaveButtonClick}
         />
       </Row>
+      <Render renderIf={screenStatus === ScreenStatus.SEE_REGISTERS}>
+        <Row className='my-2'>
+          <Bar>
+            <Button intent={Intent.PRIMARY} onClick={handleDistributeGoodButtonClick} text='Distribuir mercadorias'
+              disabled={!payload.id || !!payload.distributed_at} />
+          </Bar>
+        </Row>
+      </Render>
       <Render renderIf={screenStatus !== ScreenStatus.SEE_REGISTERS}>
         <Row>
           <InputText
@@ -218,6 +226,7 @@ const GoodsScreen: React.FC<GoodRegisterScreenProps> = (
             inputProps={{
               style: { width: '100%' },
             }}
+            timePrecision='minute'
             label='Data de recebimento'
             id={screen.id + 'received_at'}
             onChange={d => changePayloadAttribute('received_at', d)}

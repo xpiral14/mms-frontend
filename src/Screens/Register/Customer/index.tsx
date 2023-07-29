@@ -7,15 +7,15 @@ import RegistrationButtonBar from '../../../Components/RegistrationButtonBar'
 import { PersonType, ScreenStatus } from '../../../Constants/Enums'
 import { RegistrationButtonBarProps } from '../../../Contracts/Components/RegistrationButtonBarProps'
 import { Validation } from '../../../Contracts/Hooks/useValidation'
-import Costumer from '../../../Contracts/Models/Costumer'
-import { CostumerRegisterScreenProps } from '../../../Contracts/Screen/Register/Costumer'
+import Customer from '../../../Contracts/Models/Customer'
+import { CustomerRegisterScreenProps } from '../../../Contracts/Screen/Register/Customer'
 import { useAlert } from '../../../Hooks/useAlert'
 import { useGrid } from '../../../Hooks/useGrid'
 import useMessageError from '../../../Hooks/useMessageError'
 import { useToast } from '../../../Hooks/useToast'
 import useValidation from '../../../Hooks/useValidation'
 import { useWindow } from '../../../Hooks/useWindow'
-import CostumerService from '../../../Services/CostumerService'
+import CustomerService from '../../../Services/CustomerService'
 import cleanNumericInput from '../../../Util/cleanNumericInput'
 import formatIdentification from '../../../Util/formatIdentification'
 import formatPhone from '../../../Util/formatPhone'
@@ -36,17 +36,17 @@ const personTypesOptions = [
   },
 ]
 
-const CostumerRegister: React.FC<CostumerRegisterScreenProps> = ({
+const CustomerRegister: React.FC<CustomerRegisterScreenProps> = ({
   screen,
-  defaultCostumer,
+  defaultCustomer,
   defaultScreenStatus,
 }) => {
   const { payload, setPayload, screenStatus, setScreenStatus } =
-    useWindow<Costumer>()
+    useWindow<Customer>()
 
   useEffect(() => {
-    if (defaultCostumer) {
-      setPayload(defaultCostumer)
+    if (defaultCustomer) {
+      setPayload(defaultCustomer)
     }
     if (defaultScreenStatus) {
       setScreenStatus(defaultScreenStatus)
@@ -79,7 +79,7 @@ const CostumerRegister: React.FC<CostumerRegisterScreenProps> = ({
       check: () =>
         !payload?.phone || cleanNumericInput(payload?.phone).length === 11,
       errorMessage: 'O telefone apresenta um padrão incorreto',
-      inputId: 'costumer-register-phone',
+      inputId: 'customer-register-phone',
     },
   ]
   const { validate } = useValidation(validations)
@@ -90,7 +90,7 @@ const CostumerRegister: React.FC<CostumerRegisterScreenProps> = ({
   const isStatusVizualize = () => screenStatus === ScreenStatus.VISUALIZE
   const {showErrorMessage: showErrormessage} = useMessageError()
 
-  const createCostumer = async (stopLoad: () => void) => {
+  const createCustomer = async (stopLoad: () => void) => {
     if (!validate()) {
       stopLoad()
       return
@@ -101,7 +101,7 @@ const CostumerRegister: React.FC<CostumerRegisterScreenProps> = ({
         identification: cleanNumericInput(payload?.identification ?? ''),
         phone: cleanNumericInput(payload?.phone ?? ''),
       }
-      const response = await CostumerService.create(createPayload)
+      const response = await CustomerService.create(createPayload)
       if (response.status) {
         showSuccessToast({
           message: 'Cliente criado com sucesso',
@@ -125,7 +125,7 @@ const CostumerRegister: React.FC<CostumerRegisterScreenProps> = ({
     }
   }
 
-  const saveCostumer = async (stopLoad: () => void) => {
+  const saveCustomer = async (stopLoad: () => void) => {
     if (!validate()) {
       stopLoad()
       return
@@ -140,7 +140,7 @@ const CostumerRegister: React.FC<CostumerRegisterScreenProps> = ({
       if (!validate()) {
         return
       }
-      const response = await CostumerService.edit(requestPayload)
+      const response = await CustomerService.edit(requestPayload)
       if (response.status) {
         showSuccessToast({
           message: 'Cliente atualizado com sucesso',
@@ -167,10 +167,10 @@ const CostumerRegister: React.FC<CostumerRegisterScreenProps> = ({
     }
   }
 
-  const deleteCostumer = () => {
+  const deleteCustomer = () => {
     const onConfirm = async () => {
       try {
-        await CostumerService.delete(payload?.id as number)
+        await CustomerService.delete(payload?.id as number)
         setReloadGrid(true)
         setScreenStatus(ScreenStatus.VISUALIZE)
         setPayload({})
@@ -192,8 +192,8 @@ const CostumerRegister: React.FC<CostumerRegisterScreenProps> = ({
   const registratioButtonBarProps: RegistrationButtonBarProps = {
     screen,
     handleSaveButtonOnClick:
-      screenStatus === ScreenStatus.NEW ? createCostumer : saveCostumer,
-    handleDeleteButtonOnClick: deleteCostumer,
+      screenStatus === ScreenStatus.NEW ? createCustomer : saveCustomer,
+    handleDeleteButtonOnClick: deleteCustomer,
   }
 
   const createOnChange =
@@ -282,7 +282,7 @@ const CostumerRegister: React.FC<CostumerRegisterScreenProps> = ({
           />
           <InputText
             value={payload?.phone || ''}
-            id='costumer-register-phone'
+            id='customer-register-phone'
             required
             mask='(99) 99999-9999'
             label='Telefone'
@@ -326,7 +326,7 @@ const CostumerRegister: React.FC<CostumerRegisterScreenProps> = ({
               keyName: 'email',
             },
           ]}
-          request={CostumerService.getAll as any}
+          request={CustomerService.getAll as any}
           onRowSelect={(row) => {
             setScreenStatus(ScreenStatus.VISUALIZE)
             setPayload({
@@ -343,4 +343,4 @@ const CostumerRegister: React.FC<CostumerRegisterScreenProps> = ({
   )
 }
 
-export default CostumerRegister
+export default CustomerRegister

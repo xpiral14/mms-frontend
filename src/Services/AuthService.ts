@@ -6,7 +6,6 @@ import Response from '../Contracts/Types/Response'
 export default class AuthService {
   public static async login(email: string, password: string) {
     api.defaults.baseURL = process.env.REACT_APP_API_SERVER_URL
-
     await api.get('/sanctum/csrf-cookie')
     api.defaults.baseURL = process.env.REACT_APP_API_SERVER_URL + '/api/v1'
     const response = await api.post<Response<Auth>>('/auth/login', {

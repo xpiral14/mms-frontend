@@ -8,10 +8,10 @@ const screens = {
     path: 'Register/User',
     permissions: [Permissions.READ_USER, Permissions.WRITE_USER],
   },
-  'costumer-register': {
-    id: 'costumer-register',
+  'customer-register': {
+    id: 'customer-register',
     name: 'Cadastro de clientes',
-    path: 'Register/Costumer',
+    path: 'Register/Customer',
     permissions: [Permissions.READ_CUSTOMER, Permissions.WRITE_CUSTOMER],
   },
   'employees-register': {
@@ -151,6 +151,14 @@ const screens = {
     subScreenOnly: true,
     permissions: [Permissions.READ_EMPLOYEE, Permissions.WRITE_EMPLOYEE],
     contentSize: '600 200'
+  },
+  'distribute-goods': {
+    id: 'distribute-goods',
+    name: 'Distribuição de mercadorias para o estoque',
+    path: 'DistributeGoods',
+    subScreenOnly: true,
+    permissions: [Permissions.READ_EMPLOYEE, Permissions.WRITE_EMPLOYEE],
+    contentSize: '800 500'
   }
 } as Screens
 

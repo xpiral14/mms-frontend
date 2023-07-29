@@ -17,7 +17,7 @@ import ReceiptStatus from '../../Constants/ReceiptStatus'
 import { StopLoadFunc } from '../../Contracts/Components/RegistrationButtonBarProps'
 import { Option } from '../../Contracts/Components/Suggest'
 import { Validation } from '../../Contracts/Hooks/useValidation'
-import Costumer from '../../Contracts/Models/Costumer'
+import Customer from '../../Contracts/Models/Customer'
 import Order from '../../Contracts/Models/Order'
 import Receipt from '../../Contracts/Models/Receipt'
 import Valuable from '../../Contracts/Models/Valuable'
@@ -28,7 +28,7 @@ import { useGrid } from '../../Hooks/useGrid'
 import { useToast } from '../../Hooks/useToast'
 import useValidation from '../../Hooks/useValidation'
 import { useWindow } from '../../Hooks/useWindow'
-import CostumerService from '../../Services/CostumerService'
+import CustomerService from '../../Services/CustomerService'
 import OrderService from '../../Services/OrderService'
 import ReceiptService from '../../Services/ReceiptService'
 import currencyFormat from '../../Util/currencyFormat'
@@ -59,7 +59,7 @@ const ReceiptPosting: FC<ReceiptPostScreenProps> = ({ screen, ...props }) => {
     setScreenStatus(ScreenStatus.NEW)
   }, [props.receipt])
   const [orders, setOrders] = useState<Order[]>([])
-  const [customers, setCustomers] = useState<Costumer[]>([])
+  const [customers, setCustomers] = useState<Customer[]>([])
   const [statuses, setStatuses] = useState<Valuable[]>([])
   const { showErrorToast, showSuccessToast } = useToast()
 
@@ -67,8 +67,8 @@ const ReceiptPosting: FC<ReceiptPostScreenProps> = ({ screen, ...props }) => {
 
   const [loadingCustomers, loadCustomers] = useAsync(async () => {
     try {
-      const response = await CostumerService.getAll(0, 1000)
-      setCustomers(response.data.data as Costumer[])
+      const response = await CustomerService.getAll(0, 1000)
+      setCustomers(response.data.data as Customer[])
     } catch (error) {
       showErrorToast(
         'Não foi possível carregar a lista de clientes. Por favor, tente novamente.'
@@ -117,7 +117,7 @@ const ReceiptPosting: FC<ReceiptPostScreenProps> = ({ screen, ...props }) => {
     let formattedOrders = orders
     if (payload.customerId) {
       formattedOrders = formattedOrders.filter(
-        (o) => o.costumer_id === payload.customerId
+        (o) => o.customer_id === payload.customerId
       )
     }
 
@@ -250,7 +250,7 @@ const ReceiptPosting: FC<ReceiptPostScreenProps> = ({ screen, ...props }) => {
                   ...prev,
                   orderId: o.value as number,
                   customerId: orders.find((or) => or.id === o.value)
-                    ?.costumer_id,
+                    ?.customer_id,
                 }))
               }
               activeItem={payload?.orderId}

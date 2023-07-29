@@ -2,6 +2,7 @@ import api from '../Config/api'
 import Good from '../Contracts/Models/Good'
 import Paginated from '../Contracts/Models/Paginated'
 import Response from '../Contracts/Models/Response'
+import DistributedGoodProduct from '../Contracts/Models/DistributedGoodProduct'
 
 export const DEFAULT_PATH = '/goods'
 
@@ -29,5 +30,13 @@ export default class GoodService {
       receivedAt: payload.received_at,
       goodProducts:  payload.good_products
     })
+  }
+
+  static async createDistributedGoodProduct(goodId:number, distributedGoodProduct: Partial<DistributedGoodProduct>){
+    return api.post<Response<DistributedGoodProduct>>(`${DEFAULT_PATH}/${goodId}/goodProducts/${distributedGoodProduct.goodProductId}/distributedGoodProducts`)
+  }
+
+  static async updateDistributedGoodProduct(goodId:number, distributedGoodProduct: Partial<DistributedGoodProduct>){
+    return api.put<Response<DistributedGoodProduct>>(`${DEFAULT_PATH}/${goodId}/goodProducts/${distributedGoodProduct.goodProductId}/distributedGoodProducts`)
   }
 }

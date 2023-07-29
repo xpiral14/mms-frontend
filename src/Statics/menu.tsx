@@ -79,7 +79,7 @@ const menus = {
         name: 'Clientes',
         icon: 'person',
         screen: {
-          ...screens['costumer-register'],
+          ...screens['customer-register'],
           contentSize: '900 500',
           headerTitle: 'Clientes',
         },

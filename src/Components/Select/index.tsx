@@ -21,13 +21,14 @@ import { Option } from '../../Contracts/Components/Suggest'
 import { useMemo } from 'react'
 import Render from '../Render'
 import { CSSProperties } from 'styled-components'
+import { Wrapper } from './styles'
 
 export interface SelectProps
   extends Partial<Omit<BluePrintSelectProps<Option>, 'activeItem'>> {
   allowCreate?: boolean
   onChange?: (
     item: Option,
-    event?: React.SyntheticEvent<HTMLElement, Event> | undefined
+    event?: React.SyntheticEvent<HTMLElement, Event> | undefined,
   ) => void
   handleCreateButtonClick?: (query: string) => void
   id?: string
@@ -40,12 +41,15 @@ export interface SelectProps
   loading?: boolean
   handleButtonReloadClick?: () => Promise<void> | void
   activeItem?: number | string
-  buttonWidth?: number
+  buttonWidth?: number | string
 }
+
 const OptionSelect = CreateSelect.ofType<Option>()
+
 function areOptionsEqual(optionA: Option, optionB: Option) {
   return optionA.label.toLowerCase() === optionB.label.toLowerCase()
 }
+
 export default function Select({
   allowCreate = false,
   activeItem,
@@ -64,9 +68,11 @@ export default function Select({
       shouldDismissPopover={false}
     />
   )
+
   function escapeRegExpChars(text: string) {
     return text.replace(/([.*+?^=!:${}()|[\]/\\])/g, '\\$1')
   }
+
   const maybeCreateNewItemRenderer = allowCreate
     ? renderCreateOptionOption
     : undefined
@@ -106,7 +112,7 @@ export default function Select({
     query,
     option,
     _index,
-    exactMatch
+    exactMatch,
   ) => {
     const normalizedTitle = option.label.toLowerCase()
     const normalizedQuery = query.toLowerCase()
@@ -119,7 +125,7 @@ export default function Select({
   }
   const renderOption: ItemRenderer<Option> = (
     option,
-    { handleClick, modifiers, query }
+    { handleClick, modifiers, query },
   ) => {
     if (!modifiers.matchesPredicate) {
       return null
@@ -171,12 +177,17 @@ export default function Select({
       disabled={props.disabled}
       intent={props.intent}
       labelFor={props.id}
+      style={props.buttonWidth ? {
+        width: props.buttonWidth
+      } : undefined}
     >
-      <div className='d-flex gap-2'>
+      <Wrapper className='d-flex gap-2'>
         <OptionSelect
+          resetOnSelect
           filterable
           popoverProps={{
             fill: true,
+            boundary: 'window',
           }}
           itemPredicate={filterOption}
           items={props.items || []}
@@ -185,7 +196,8 @@ export default function Select({
           inputProps={{
             placeholder: 'Pesquisar...',
           }}
-          createNewItemFromQuery={(() => {}) as any}
+          createNewItemFromQuery={(() => {
+          }) as any}
           createNewItemRenderer={maybeCreateNewItemRenderer}
           itemsEqual={areOptionsEqual}
           noResults={<MenuItem disabled={true} text='Sem resultados' />}
@@ -202,24 +214,11 @@ export default function Select({
             intent={props.intent ?? activeOption?.intent}
             disabled={props.disabled}
             {...props?.buttonProps}
+            className='flex-1 w-100'
           >
-            <span
-              style={
-                props.buttonWidth
-                  ? {
-                    display: 'block',
-                    width: props.buttonWidth,
-                    whiteSpace: 'nowrap',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                  }
-                  : undefined
-              }
-            >
-              {activeOption?.label ||
+            {activeOption?.label ||
                 props.defaultButtonText ||
                 'Escolha um item'}
-            </span>
           </Button>
         </OptionSelect>
         {Boolean(props.handleButtonReloadClick) && (
@@ -230,7 +229,7 @@ export default function Select({
             loading={props.loading}
           />
         )}
-      </div>
+      </Wrapper>
     </FormGroup>
   )
 }

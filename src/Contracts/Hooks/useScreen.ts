@@ -4,7 +4,7 @@ import { Screen } from '../Components/ScreenProps'
 
 export type ScreenIds =
   | 'user-register'
-fea  | 'customer-register'
+  | 'customer-register'
   | 'employees-register'
   | 'product-register'
   | 'unit-register'

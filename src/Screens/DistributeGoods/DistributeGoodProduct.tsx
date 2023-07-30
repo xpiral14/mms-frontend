@@ -35,9 +35,14 @@ export default function DistributeGoodProduct({ goodProduct, screen, onSuccessRe
 }) {
   const [loadingSave, setLoadingSave] = useState(false)
   const [collapsed, setCollapsed] = useState(false)
-  const [distributedGoodProducts, setDistributedGoodProducts] = useState<Partial<DistributedGoodProduct & DistributedGoodProductContainerProps>[]>([{
-    uniqueKey: Math.random().toString(),
-  }])
+  const [distributedGoodProducts, setDistributedGoodProducts] = useState<
+    Partial<DistributedGoodProduct & DistributedGoodProductContainerProps>[]
+  >([
+    {
+      uniqueKey: Math.random().toString(),
+      goodProductId: goodProduct.id,
+    },
+  ])
   const [stocks, setStocks] = useState<Stock[]>([])
   const stockOptions: Option[] = useMemo(() => {
     const options = stocks.map((s) => ({
@@ -57,18 +62,24 @@ export default function DistributeGoodProduct({ goodProduct, screen, onSuccessRe
       return
     }
     try {
-      const response = await StockService.getStockThatHasProduct(goodProduct.product_id)
+      const response = await StockService.getStockThatHasProduct(
+        goodProduct.product_id
+      )
       setStocks(response.data.data)
     } catch (error) {
       showErrorMessage(
         error,
-        'Não foi possível obter a lista de estoques. Por favor, tente novamente.',
+        'Não foi possível obter a lista de estoques. Por favor, tente novamente.'
       )
     }
   }, [goodProduct])
 
-  const changeDistributedGoodProductAttribute = (index: number, key: string, value: any) => {
-    setDistributedGoodProducts(prev => {
+  const changeDistributedGoodProductAttribute = (
+    index: number,
+    key: string,
+    value: any
+  ) => {
+    setDistributedGoodProducts((prev) => {
       const copy = [...prev]
       copy[index] = {
         ...copy[index],
@@ -77,51 +88,76 @@ export default function DistributeGoodProduct({ goodProduct, screen, onSuccessRe
       return copy
     })
   }
-  const productStockOptions = useMemo(() => stocks.map((s) => ({
-    stockId: s.id,
-    options: s.product_stocks?.map(s => ({
-      label: s.product?.name,
-      value: s.id,
-    })) as Option[],
-  })), [stocks])
+  const productStockOptions = useMemo(
+    () =>
+      stocks.map((s) => ({
+        stockId: s.id,
+        options: s.product_stocks?.map((s) => ({
+          label: s.product?.name,
+          value: s.id,
+        })) as Option[],
+      })),
+    [stocks]
+  )
 
-  const totalDistributed = useMemo(() => distributedGoodProducts.reduce((c, a) => c + (a.quantity ?? 0), 0), [distributedGoodProducts])
+  const totalDistributed = useMemo(
+    () => distributedGoodProducts.reduce((c, a) => c + (a.quantity ?? 0), 0),
+    [distributedGoodProducts]
+  )
 
   const validations = [
     {
-      check: () => !(totalDistributed !== goodProduct.quantity) || totalDistributed > goodProduct.quantity,
+      check: () =>
+        !(totalDistributed !== goodProduct.quantity) ||
+        totalDistributed > goodProduct.quantity,
       errorMessage: 'A distribuição dos produtos deve ser completa',
     },
     {
-      check: () => !(totalDistributed !== goodProduct.quantity) || totalDistributed < goodProduct.quantity,
-      errorMessage: 'A distribuição dos produtos não pode ser maior do que a quantidade da mercadoria',
+      check: () =>
+        !(totalDistributed !== goodProduct.quantity) ||
+        totalDistributed < goodProduct.quantity,
+      errorMessage:
+        'A distribuição dos produtos não pode ser maior do que a quantidade da mercadoria',
     },
     {
-      check: () => distributedGoodProducts.every(dgp => dgp.stockId && dgp.productStockId),
+      check: () =>
+        distributedGoodProducts.every(
+          (dgp) => dgp.stockId && dgp.productStockId
+        ),
       errorMessage: 'Todos produtos devem ser distribuídos para um estoque',
     },
   ] as Validation[]
   const { validate } = useValidation(validations)
 
-  const {showErrorToast} = useToast()
+  const { showErrorToast } = useToast()
 
-  const handleSaveClick = async (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
+  const handleSaveClick = async (
+    e: React.MouseEvent<HTMLElement, MouseEvent>
+  ) => {
     e.stopPropagation()
     if (!validate()) {
       return
     }
     setLoadingSave(true)
     try {
-      await Promise.all(
-        [
-          ...distributedGoodProducts.filter(dgp => !dgp.id).map((dgp) => GoodService.createDistributedGoodProduct(goodProduct.good_id, dgp)),
-          distributedGoodProducts.filter(dgp => dgp.id).map((dgp) => GoodService.updateDistributedGoodProduct(goodProduct.good_id, dgp)),
-        ],
-      )
-      await Promise.all(distributedGoodProducts.filter(dgp => !dgp.id).map((dgp) => GoodService.createDistributedGoodProduct(goodProduct.good_id, dgp)))
+      await Promise.all([
+        ...distributedGoodProducts
+          .filter((dgp) => !dgp.id)
+          .map((dgp) =>
+            GoodService.createDistributedGoodProduct(goodProduct.good_id, dgp)
+          ),
+        distributedGoodProducts
+          .filter((dgp) => dgp.id)
+          .map((dgp) =>
+            GoodService.updateDistributedGoodProduct(goodProduct.good_id, dgp)
+          ),
+      ])
     } catch (error) {
-      showErrorMessage(error, 'Houve um erro ao tentar salvar a distribuição de produtos. Por favor, tente novamente.')
-    }finally {
+      showErrorMessage(
+        error,
+        'Houve um erro ao tentar salvar a distribuição de produtos. Por favor, tente novamente.'
+      )
+    } finally {
       setLoadingSave(false)
     }
   }

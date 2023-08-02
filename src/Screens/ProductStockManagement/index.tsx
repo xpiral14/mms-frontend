@@ -90,23 +90,23 @@ const ProductStockManagement: React.FC<ProductStockScreenProps> = ({
     },
     {
       check: () => {
-        const quantity = Number(payload.quantity)
-        return !isNaN(quantity) && quantity > 0
+        const quantity = Number(payload.quantity ?? 0)
+        return !isNaN(quantity) && quantity >= 0
       },
-      
+
       errorMessage: 'Quantidade deve ser um número maior que 0',
       inputId: 'productStockName',
     },
     {
       check: () => {
-        if(payload.minimum === undefined){
+        if (payload.minimum === undefined) {
           return true
         }
 
         const minimum = Number(payload.minimum)
         return !isNaN(minimum) && minimum > 0
       },
-      
+
       errorMessage: 'Quantidade mínima deve ser um número maior que 0',
       inputId: 'productStockName',
     },
@@ -132,10 +132,9 @@ const ProductStockManagement: React.FC<ProductStockScreenProps> = ({
         ))}
       </ul>
     )
-  
   }
 
-  const {showErrorMessage: showErrormessage} = useMessageError()
+  const { showErrorMessage } = useMessageError()
   const handleButtonCreateProductStockOnClick = async (stopLoad: Function) => {
     if (!validate()) {
       stopLoad()
@@ -143,6 +142,8 @@ const ProductStockManagement: React.FC<ProductStockScreenProps> = ({
     }
     const requestPayload = {
       ...payload,
+      quantity: payload.quantity || 0,
+      minimum: payload.minimum || 0,
       stock_id: stock.id
     }
     try {
@@ -158,23 +159,14 @@ const ProductStockManagement: React.FC<ProductStockScreenProps> = ({
       }
 
       if (!response) {
-        showErrormessage(response,  'Não foi possível cadastrar o produto no estoque')
+        showErrorMessage(response,  'Não foi possível cadastrar o produto no estoque')
       }
       setScreenStatus(ScreenStatus.SEE_REGISTERS)
       setPayload({})
 
     } catch (error: any) {
 
-      showErrormessage(error,   'Não foi possível cadastrar o produto no estoque')
-      const errorMessages = getErrorMessages(
-        error.response?.data?.errors,
-        'Não foi possível cadastrar o produto no estoque'
-      )
-
-      openAlert({
-        text: errorMessages,
-        intent: Intent.DANGER,
-      })
+      showErrorMessage(error,   'Não foi possível cadastrar o produto no estoque')
     } finally {
       stopLoad()
       increaseWindowSize?.()

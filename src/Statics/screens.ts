@@ -150,7 +150,7 @@ const screens = {
     path: 'AddProductToGood',
     subScreenOnly: true,
     permissions: [Permissions.READ_EMPLOYEE, Permissions.WRITE_EMPLOYEE],
-    contentSize: '600 200'
+    contentSize: '600 220',
   },
   'distribute-goods': {
     id: 'distribute-goods',

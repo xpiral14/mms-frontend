@@ -9,7 +9,10 @@ import Render from '../Render'
 const RegistrationButtonBar: React.FC<RegistrationButtonBarProps> = (
   props
 ): JSX.Element => {
-  const [loadings, setLoadings] = useState<{ isSaveLoading?: boolean }>({})
+  const [loadings, setLoadings] = useState<{
+    isSaveLoading?: boolean
+    isDeleteLoading?: boolean
+  }>({})
 
   const { screenStatus, setScreenStatus, payload, setPayload } = useWindow()
 
@@ -20,7 +23,7 @@ const RegistrationButtonBar: React.FC<RegistrationButtonBarProps> = (
     setLoadings((prev) => ({ ...prev, [key]: true }))
   }
 
-  const {screen } = props
+  const { screen } = props
 
   const handleNewButtonOnClick = () => {
     if (props?.handleNewButtonOnClick?.()) {
@@ -49,20 +52,16 @@ const RegistrationButtonBar: React.FC<RegistrationButtonBarProps> = (
     setScreenStatus(ScreenStatus.EDIT)
   }
 
-  const handleCancelButtonOnClick = () => {
-    if (props?.handleCancelButtonOnClick) {
-      props?.handleCancelButtonOnClick()
-      return
-    }
-
-    setPayload?.({})
-
-    setScreenStatus(ScreenStatus.VISUALIZE)
-  }
+  const handleCancelButtonOnClick =
+    props?.handleCancelButtonOnClick ||
+    (() => {
+      setScreenStatus(ScreenStatus.SEE_REGISTERS)
+    })
 
   const handleDeleteButtonOnClick = () => {
+    startLoad('isDeleteLoading')()
     if (props?.handleDeleteButtonOnClick) {
-      props?.handleDeleteButtonOnClick()
+      props?.handleDeleteButtonOnClick(stopLoad('isDeleteLoading'))
       return
     }
   }
@@ -89,7 +88,10 @@ const RegistrationButtonBar: React.FC<RegistrationButtonBarProps> = (
     return Boolean(payload.id)
   }, [payload])
 
-  const hasToShowButton = useCallback((button: RegistrationButtons) => props.buttonsToShow?.includes(button), [props.buttonsToShow])
+  const hasToShowButton = useCallback(
+    (button: RegistrationButtons) => props.buttonsToShow?.includes(button),
+    [props.buttonsToShow]
+  )
   return (
     <Bar>
       <ButtonGroup>
@@ -99,31 +101,29 @@ const RegistrationButtonBar: React.FC<RegistrationButtonBarProps> = (
             intent={Intent.PRIMARY}
             disabled={
               screenStatus === ScreenStatus.EDIT ||
-            screenStatus === ScreenStatus.NEW
+              screenStatus === ScreenStatus.NEW
             }
             onClick={handleNewButtonOnClick}
           >
-          Novo
+            Novo
           </Button>
         </Render>
         <Render renderIf={hasToShowButton(RegistrationButtons.SAVE)}>
-        
           <Button
             icon='floppy-disk'
             intent={Intent.SUCCESS}
             loading={loadings.isSaveLoading}
             disabled={
               screenStatus === ScreenStatus.SEE_REGISTERS ||
-            screenStatus === ScreenStatus.VISUALIZE
+              screenStatus === ScreenStatus.VISUALIZE
             }
             onClick={handleSaveButtonOnClick}
           >
-          Salvar
+            Salvar
           </Button>
         </Render>
 
         <Render renderIf={hasToShowButton(RegistrationButtons.CANCEL)}>
-    
           <Button
             icon={
               <Icon
@@ -135,11 +135,11 @@ const RegistrationButtonBar: React.FC<RegistrationButtonBarProps> = (
             outlined
             disabled={
               screenStatus === ScreenStatus.SEE_REGISTERS ||
-            screenStatus === ScreenStatus.VISUALIZE
+              screenStatus === ScreenStatus.VISUALIZE
             }
             onClick={handleCancelButtonOnClick}
           >
-          Cancelar
+            Cancelar
           </Button>
         </Render>
         <Render renderIf={hasToShowButton(RegistrationButtons.EDIT)}>
@@ -148,17 +148,16 @@ const RegistrationButtonBar: React.FC<RegistrationButtonBarProps> = (
             outlined
             disabled={
               screenStatus === ScreenStatus.NEW ||
-            screenStatus === ScreenStatus.EDIT ||
-            !hasPayload
+              screenStatus === ScreenStatus.EDIT ||
+              !hasPayload
             }
             onClick={handleEditButtonOnClick}
           >
-          Editar
+            Editar
           </Button>
         </Render>
 
         <Render renderIf={hasToShowButton(RegistrationButtons.DETAIL)}>
-
           {Boolean(props.handleButtonInfoOnClick) && (
             <Button
               icon='info-sign'
@@ -166,7 +165,7 @@ const RegistrationButtonBar: React.FC<RegistrationButtonBarProps> = (
               disabled={!hasPayload || screenStatus !== ScreenStatus.EDIT}
               onClick={props.handleButtonInfoOnClick}
             >
-            Detalhes
+              Detalhes
             </Button>
           )}
         </Render>
@@ -175,14 +174,14 @@ const RegistrationButtonBar: React.FC<RegistrationButtonBarProps> = (
             icon='trash'
             intent={Intent.DANGER}
             onClick={handleDeleteButtonOnClick}
+            loading={loadings.isDeleteLoading}
             disabled={!hasPayload && screenStatus !== ScreenStatus.EDIT}
             {...(props?.buttonDeleteProps || {})}
           >
-          Excluir
+            Excluir
           </Button>
         </Render>
         <Render renderIf={hasToShowButton(RegistrationButtons.VIZUALIZE)}>
-      
           <Button
             icon='filter-list'
             intent={Intent.NONE}
@@ -190,19 +189,18 @@ const RegistrationButtonBar: React.FC<RegistrationButtonBarProps> = (
             disabled={screenStatus !== ScreenStatus.VISUALIZE}
             {...(props?.buttonVisualizeProps || {})}
           >
-          Registros
+            Registros
           </Button>
         </Render>
       </ButtonGroup>
       <ButtonGroup>
-
         <Render renderIf={hasToShowButton(RegistrationButtons.RELOAD_ALL)}>
           <Button
             icon='refresh'
             outlined
             onClick={props.handleReloadScreenOnClick}
           >
-              Recarregar dados da tela
+            Recarregar dados da tela
           </Button>
         </Render>
         <Render renderIf={hasToShowButton(RegistrationButtons.CLOSE)}>

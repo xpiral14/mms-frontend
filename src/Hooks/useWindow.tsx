@@ -14,7 +14,7 @@ type WindowContext<P = any> = {
   isScreenStatusEdit: boolean
   isScreenStatusNew: boolean
   isScreenStatusSeeRegisters: boolean
-  changePayloadAttribute: (key: any, value: any) => void
+  changePayloadAttribute: (key: keyof P, value: any) => void
 }
 
 const windowContext = createContext<WindowContext>(null as any)

@@ -1,8 +1,8 @@
-import React, { FC, useMemo } from 'react'
+import React, { useMemo } from 'react'
 import { Column, TableProps } from '../../Contracts/Components/Table'
 import Render from '../Render'
 
-const Table: FC<TableProps> = (props) => {
+const Table = function<T = any>(props: TableProps<T>) {
   const getWithoutValueDefaultText = (column: Column) => {
     return column.withoutValueText || '-'
   }
@@ -35,7 +35,7 @@ const Table: FC<TableProps> = (props) => {
       <tbody>
         {props.rows?.map((row) => (
           <tr
-            key={props.rowKey?.(row) || row?.id}
+            key={props.rowKey?.(row) || row?.id as any}
             className={props?.isSelected?.(row) ? 'active' : ''}
           >
             {props.columns?.map((column) => (

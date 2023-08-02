@@ -25,6 +25,7 @@ import Container from '../../../Components/Layout/Container'
 import Button from '../../../Components/Button'
 import { useScreen } from '../../../Hooks/useScreen'
 import Bar from '../../../Components/Layout/Bar'
+import Box from '../../../Components/Layout/Box'
 
 const SupplierRegister: React.FC<SupplierRegisterScreenProps> = ({
   screen,
@@ -75,9 +76,12 @@ const SupplierRegister: React.FC<SupplierRegisterScreenProps> = ({
 
   const { openSubScreen } = useScreen()
 
-  const isStatusVizualize = () => screenStatus === ScreenStatus.VISUALIZE
+  const isStatusVisualize = screenStatus === ScreenStatus.VISUALIZE
   const { showErrorMessage: showErrormessage } = useMessageError()
-
+  const goToVisualizePage = () => {
+    setScreenStatus(ScreenStatus.SEE_REGISTERS)
+    screen.increaseScreenSize?.()
+  }
   const createSupplier = async (stopLoad: () => void) => {
     if (!validate()) {
       stopLoad()
@@ -95,7 +99,7 @@ const SupplierRegister: React.FC<SupplierRegisterScreenProps> = ({
           message: 'Fornecedor criado com sucesso',
           intent: Intent.SUCCESS,
         })
-        setReloadGrid(true)
+        goToVisualizePage()
       }
       if (!response) {
         openAlert({
@@ -120,10 +124,6 @@ const SupplierRegister: React.FC<SupplierRegisterScreenProps> = ({
         ...payload,
         identification: cleanNumericInput(payload?.identification ?? ''),
         phone: cleanNumericInput(payload?.phone ?? ''),
-      }
-
-      if (!validate()) {
-        return
       }
       const response = await SupplierService.edit(requestPayload)
       if (response.status) {
@@ -172,6 +172,15 @@ const SupplierRegister: React.FC<SupplierRegisterScreenProps> = ({
     handleSaveButtonOnClick:
       screenStatus === ScreenStatus.NEW ? createSupplier : saveSupplier,
     handleDeleteButtonOnClick: deleteSupplier,
+    handleNewButtonOnClick() {
+      setScreenStatus(ScreenStatus.NEW)
+      screen.decreaseScreenSize?.()
+    },
+    handleEditButtonOnClick() {
+      setScreenStatus(ScreenStatus.EDIT)
+      screen.decreaseScreenSize?.()
+    },
+    handleButtonVisualizeOnClick: goToVisualizePage,
   }
 
   const createOnChange = (attributeName: string) => (evt: any) => {
@@ -186,46 +195,52 @@ const SupplierRegister: React.FC<SupplierRegisterScreenProps> = ({
       <Row className='py-2'>
         <RegistrationButtonBar {...registratioButtonBarProps} />
       </Row>
-      <Render renderIf={screenStatus !== ScreenStatus.SEE_REGISTERS}>
-        <Row>
-          <InputText
-            value={payload.identification}
-            id='CNPJ'
-            mask='99.999.999/9999-99'
-            label='CNPJ'
-            placeholder='Digite o email do fornecedor'
-            disabled={isStatusVizualize()}
-            onChange={createOnChange('identification')}
-          />
-          <InputText
-            value={payload?.name || ''}
-            id='name'
-            label='Nome do fornecedor'
-            placeholder='Digite o nome do fornecedor'
-            disabled={isStatusVizualize()}
-            onChange={createOnChange('name')}
-            required
-          />
 
-          <InputText
-            value={payload?.mail || ''}
-            id='Email'
-            label='Email do fornecedor'
-            placeholder='Digite o email do fornecedor'
-            disabled={isStatusVizualize()}
-            onChange={createOnChange('email')}
-          />
-          <InputText
-            value={payload?.phone || ''}
-            id='supplier-register-phone'
-            required
-            mask='(99) 99999-9999'
-            label='Telefone'
-            placeholder='Digite o Telefone do fornecedor'
-            disabled={isStatusVizualize()}
-            onChange={createOnChange('phone')}
-          />
-        </Row>
+      <Render renderIf={screenStatus !== ScreenStatus.SEE_REGISTERS}>
+        <Box>
+          <Row>
+            <InputText
+              value={payload.identification}
+              id='CNPJ'
+              mask='99.999.999/9999-99'
+              label='CNPJ'
+              placeholder='Digite o email do fornecedor'
+              disabled={isStatusVisualize}
+              onChange={createOnChange('identification')}
+            />
+            <InputText
+              value={payload?.name || ''}
+              id='name'
+              label='Nome do fornecedor'
+              placeholder='Digite o nome do fornecedor'
+              disabled={isStatusVisualize}
+              onChange={createOnChange('name')}
+              required
+            />
+
+            <InputText
+              value={payload?.mail || ''}
+              id='Email'
+              label='Email do fornecedor'
+              placeholder='Digite o email do fornecedor'
+              disabled={isStatusVisualize}
+              onChange={createOnChange('mail')}
+            />
+            <InputText
+              value={payload?.phone || ''}
+              id='supplier-register-phone'
+              required
+              mask='(99) 99999-9999'
+              label='Telefone'
+              placeholder='Digite o Telefone do fornecedor'
+              disabled={isStatusVisualize}
+              onChange={createOnChange('phone')}
+            />
+          </Row>
+        </Box>
+        <Box>
+          <Row></Row>
+        </Box>
       </Render>
       <Render renderIf={screenStatus === ScreenStatus.SEE_REGISTERS}>
         <Bar>

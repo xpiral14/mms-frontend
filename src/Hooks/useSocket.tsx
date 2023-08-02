@@ -1,5 +1,5 @@
 import Echo from 'laravel-echo'
-import { useState } from 'react'
+import { useMemo } from 'react'
 import api from '../Config/api'
 // import getCookie from '../Util/getCookie'
 import { useAuth } from './useAuth'
@@ -7,7 +7,7 @@ import { useAuth } from './useAuth'
 export default function useSocket() {
   const { auth } = useAuth()
 
-  const [socket] = useState(() => {
+  const socket = useMemo(() => {
     let options: any = {
       broadcaster: 'pusher',
       key: process.env.REACT_APP_API_PUSHER_APP_KEY!,
@@ -24,7 +24,7 @@ export default function useSocket() {
                 .post('/broadcasting/auth', {
                   socket_id: socketId,
                   channel_name: channel.name,
-                  notCamel: true
+                  notCamel: true,
                 })
                 .then((response) => {
                   callback(false, response.data)
@@ -38,7 +38,7 @@ export default function useSocket() {
       }
     }
     return new Echo(options)
-  })
+  }, [])
 
   return socket
 }

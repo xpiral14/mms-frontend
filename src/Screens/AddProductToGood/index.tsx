@@ -1,4 +1,4 @@
-import React, { FC, useState, useMemo } from 'react'
+import React, { FC, useState, useMemo, useEffect } from 'react'
 import { AddProductToGoodScreenProps } from '../../Contracts/Screen/AddProductToGood'
 import useAsync from '../../Hooks/useAsync'
 import ProductsService from '../../Services/ProductsService'
@@ -16,9 +16,12 @@ import { Intent } from '@blueprintjs/core'
 import GoodProduct from '../../Contracts/Models/GoodProduct'
 import useValidation from '../../Hooks/useValidation'
 import { Validation } from '../../Contracts/Hooks/useValidation'
+import Box from '../../Components/Layout/Box'
 
 const AddProductToGood: FC<AddProductToGoodScreenProps> = ({
+  editMode,
   onAddProduct,
+  goodProduct,
   screen,
 }) => {
   const [products, setProducts] = useState<Product[]>([])
@@ -40,9 +43,15 @@ const AddProductToGood: FC<AddProductToGoodScreenProps> = ({
       check: () => Boolean(payload.value),
     },
   ] as Validation[]
-  const {validate} = useValidation(validations)
-  const { changePayloadAttribute, payload, setPayload } = useWindow<GoodProduct>()
-
+  const { validate } = useValidation(validations)
+  const { changePayloadAttribute, payload, setPayload } =
+    useWindow<GoodProduct>()
+  useEffect(() => {
+    if (goodProduct) {
+      console.log('aqui')
+      setPayload(goodProduct)
+    }
+  }, [goodProduct])
   const { showErrorToast } = useToast()
   const [loadingProducts, loadProducts] = useAsync(async () => {
     try {
@@ -68,58 +77,69 @@ const AddProductToGood: FC<AddProductToGoodScreenProps> = ({
   }, [products])
 
   const handleProductSelect = (option: Option) => {
-    setPayload(prev => ({
+    setPayload((prev) => ({
       ...prev,
       product_id: option.value as number,
-      product: products.find(p => p.id === option.value)
+      product: products.find((p) => p.id === option.value),
     }))
   }
-
   return (
     <Container>
       <Row>
         <Bar>
-          <Button intent={Intent.PRIMARY} onClick={() => {
-            if (!validate()){
-              return
-            }
-            onAddProduct(payload)
-            setPayload({})
-          }}>
-            Adicionar produto à mercadoria
+          <Button
+            intent={Intent.PRIMARY}
+            icon={editMode ? 'edit' : 'floppy-disk'}
+            onClick={() => {
+              if (!validate()) {
+                return
+              }
+              onAddProduct(payload, screen.close)
+              setPayload({})
+            }}
+          >
+            {editMode ? 'Salvar edição' : 'Adicionar produto à mercadoria'}
           </Button>
         </Bar>
       </Row>
-      <Row>
-        <Select
-          required
-          label='Produto'
-          onChange={handleProductSelect}
-          id={screen.id + '-product-select'}
-          items={productOptions}
-          activeItem={payload.product?.id}
-          loading={loadingProducts}
-          handleButtonReloadClick={loadProducts}
-          buttonWidth={100}
-        />
-
-        <NumericInput
-          label='Quantidade'
-          value={payload.quantity ?? 0}
-          id={screen.id + 'product-quantity'}
-          onValueChange={(v) => {
-            changePayloadAttribute('quantity', v)
-          }}
-        />
-        <NumericInput
-          label='Valor total'
-          value={payload.value ?? 0}
-          id={screen.id + '-product-quantity-value'}
-          onValueChange={(v) => {
-            changePayloadAttribute('value', v)
-          }}
-        />
-      </Row>
+      <Box className='mt-2'>
+        <Row>
+          <Select
+            required
+            label='Produto'
+            onChange={handleProductSelect}
+            id={screen.id + '-product-select'}
+            items={productOptions}
+            activeItem={payload.product?.id}
+            loading={loadingProducts}
+            disabled={editMode}
+            handleButtonReloadClick={loadProducts}
+            fill
+          />
+        </Row>
+      </Box>
+      <Box className='mt-2'>
+        <Row>
+          <NumericInput
+            label='Quantidade'
+            value={payload.quantity ?? 0}
+            id={screen.id + 'product-quantity'}
+            stepSize={0.1}
+            onValueChange={(v) => {
+              changePayloadAttribute('quantity', v)
+            }}
+          />
+          <NumericInput
+            label='Valor total'
+            allowNumericCharactersOnly={false}
+            value={payload.value ?? 0}
+            id={screen.id + '-product-quantity-value'}
+            onValueChange={(v) => {
+              changePayloadAttribute('value', v)
+            }}
+          />
+        </Row>
+      </Box>
     </Container>
   )
 }

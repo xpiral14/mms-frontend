@@ -28,7 +28,7 @@ export interface RegistrationButtonBarProps {
   handleSaveButtonOnClick?: (stopLoad: StopLoadFunc) => void
   handleEditButtonOnClick?: () => void
   handleCancelButtonOnClick?: () => void
-  handleDeleteButtonOnClick?: () => void
+  handleDeleteButtonOnClick?: (stopLoad: StopLoadFunc) => void
   handleExitButtonOnClick?: () => void
   handleReloadScreenOnClick?: () => void
   handleButtonInfoOnClick?: () => void

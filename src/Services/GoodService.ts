@@ -4,6 +4,7 @@ import Paginated from '../Contracts/Models/Paginated'
 import Response from '../Contracts/Models/Response'
 import DistributedGoodProduct from '../Contracts/Models/DistributedGoodProduct'
 import GoodProduct from '../Contracts/Models/GoodProduct'
+import { ReportRequestOption } from '../Contracts/Types/Api'
 
 export const DEFAULT_PATH = '/goods'
 
@@ -12,12 +13,16 @@ export default class GoodService {
   static deleteGoodProduct(good: Partial<Good>, selectedGoodProduct: Partial<GoodProduct>) {
     return api.delete<void>(`suppliers/${good.supplier_id}${DEFAULT_PATH}/${good.id}/goodProducts/${selectedGoodProduct.id}`)
   }
-  static async getAll(supplierId: number, page: number, limit: number) {
+  static async getAll(supplierId: number, page: number, limit: number, reportOptions?: ReportRequestOption) {
     return api.get<Paginated<Good>>(`suppliers/${supplierId}${DEFAULT_PATH}/paginated`, {
       params: {
         page,
         limit,
       },
+      responseType: reportOptions?.responseType ?? 'json',
+      headers: {
+        Accept: reportOptions?.mimeType || 'application/json'
+      }
     })
   }
 

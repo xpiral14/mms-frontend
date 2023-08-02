@@ -6,7 +6,7 @@ import FileService from '../../Services/FileService'
 
 const Reports = () => {
 
-  const downloadReport = (reportUuid: string) => () => FileService.downloadFile(reportUuid)
+  const downloadReport = (reportUuid: string, reportName: string) => () => FileService.downloadFile(reportUuid, reportName)
   return (
     <PaginatedTable
       height='100%'
@@ -52,7 +52,7 @@ const Reports = () => {
             return <div style={{textAlign: 'center', width: '100%'}}>
               <Button
                 icon="download"
-                onClick={r?.uuid ? downloadReport(r?.uuid as string) : undefined}>
+                onClick={r?.uuid ? downloadReport(r?.uuid as string, r.name) : undefined}>
               </Button>
             </div>
           }

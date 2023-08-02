@@ -279,7 +279,7 @@ export default function DistributeGoodProduct({
                     o.value
                   )
                 }}
-                disabled={!dsp.stockId || disabled}
+                disabled={goodProduct.has_distributed || !dsp.stockId || disabled}
               />
               <NumericInput
                 label='Quantidade'

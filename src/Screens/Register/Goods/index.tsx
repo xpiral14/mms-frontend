@@ -32,6 +32,7 @@ import useMessageError from '../../../Hooks/useMessageError'
 // import { DistributeGoodsProps } from '../../../Contracts/Screen/DistributeGoods'
 import Box from '../../../Components/Layout/Box'
 import { DistributeGoodsProps } from '../../../Contracts/Screen/DistributeGoods'
+import { ReportRequestOption } from '../../../Contracts/Types/Api'
 
 const GoodsScreen: React.FC<GoodRegisterScreenProps> = ({
   screen,
@@ -128,7 +129,7 @@ const GoodsScreen: React.FC<GoodRegisterScreenProps> = ({
       onConfirm: async () => {
         try {
           setLoadingDeleteProduct(true)
-          if(selectedGoodProduct!.id){
+          if (selectedGoodProduct!.id) {
             await GoodService.deleteGoodProduct(payload, selectedGoodProduct!)
           }
           setPayload((prev) => ({
@@ -139,8 +140,11 @@ const GoodsScreen: React.FC<GoodRegisterScreenProps> = ({
           }))
           setSelectedProduct(null)
         } catch (error) {
-          showErrorMessage(error, 'Não foi possível excluir o produto. Por favor, tente novamente')
-        }finally{
+          showErrorMessage(
+            error,
+            'Não foi possível excluir o produto. Por favor, tente novamente'
+          )
+        } finally {
           setLoadingDeleteProduct(false)
         }
       },
@@ -291,11 +295,13 @@ const GoodsScreen: React.FC<GoodRegisterScreenProps> = ({
   }
 
   const handleDistributeGoodButtonClick = () => {
-    if(!payload.goods_products?.length ){
-      showWarningToast('A mercadoria não possui produtos que possam ser distribuídos')
+    if (!payload.goods_products?.length) {
+      showWarningToast(
+        'A mercadoria não possui produtos que possam ser distribuídos'
+      )
       return
     }
-    
+
     openSubScreen<DistributeGoodsProps>(
       {
         id: 'distribute-goods',
@@ -321,6 +327,11 @@ const GoodsScreen: React.FC<GoodRegisterScreenProps> = ({
       requested_at: r.requested_at ? new Date(r.requested_at as string) : null,
     })
   }
+  const getSupplierGoods = useCallback(
+    (page: number, limit: number, _: any, options?: ReportRequestOption) =>
+      GoodService.getAll(supplierId, page, limit, options),
+    []
+  )
   return (
     <Container style={{ height: 'calc(100% - 95px)' }}>
       <Row>
@@ -331,12 +342,11 @@ const GoodsScreen: React.FC<GoodRegisterScreenProps> = ({
               text: 'Tem certeza que deseja remover essa mercadoria?',
               icon: 'warning-sign',
               intent: Intent.DANGER,
-              onConfirm
+              onConfirm,
             })
 
             async function onConfirm() {
               try {
-
                 await GoodService.delete(payload)
                 showSuccessToast('Mercadoria excluída com sucesso')
                 setScreenStatus(ScreenStatus.SEE_REGISTERS)
@@ -369,9 +379,7 @@ const GoodsScreen: React.FC<GoodRegisterScreenProps> = ({
         <Row className='h-100'>
           <PaginatedTable
             height='100%'
-            customRequest={(page, limit) =>
-              GoodService.getAll(supplierId, page, limit)
-            }
+            customRequest={getSupplierGoods}
             containerProps={{
               style: {
                 flex: 1,
@@ -380,6 +388,21 @@ const GoodsScreen: React.FC<GoodRegisterScreenProps> = ({
             columns={paginatedColumns}
             isSelected={(row: any) => row.id === payload?.id}
             onRowSelect={onGoodSelect}
+            downloadable
+            reportRequestOptions={[
+              {
+                reportType: 'csv',
+                name: 'Mercadorias do fornecedor',
+                responseType: 'text',
+                mimeType: 'text/csv',
+              },
+              {
+                reportType: 'pdf',
+                name: 'Mercadorias do fornecedor',
+                responseType: 'blob',
+                mimeType: 'application/pdf',
+              },
+            ]}
           />
         </Row>
       </Render>

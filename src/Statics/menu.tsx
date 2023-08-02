@@ -53,7 +53,7 @@ const menus = {
         name: 'Fornecedores',
         icon: <MdOutlineAddBusiness size={16}/>,
         screen: {
-          minHeight: 150,
+          minHeight: 175,
           maxHeight: 500,
           ...screens['supplier-register'],
           headerTitle: 'Cadastro de fornecedores',

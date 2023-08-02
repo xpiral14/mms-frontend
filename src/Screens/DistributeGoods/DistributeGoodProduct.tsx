@@ -1,4 +1,3 @@
-/* eslint-disable  @typescript-eslint/no-unused-vars*/
 import GoodProduct from '../../Contracts/Models/GoodProduct'
 import Box from '../../Components/Layout/Box'
 import Collapse from '../../Components/Collapse'
@@ -8,7 +7,7 @@ import NumericInput from '../../Components/NumericInput'
 import Render from '../../Components/Render'
 import Button from '../../Components/Button'
 import { Colors, Intent } from '@blueprintjs/core'
-import React, { useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import Stock from '../../Contracts/Models/Stock'
 import useMessageError from '../../Hooks/useMessageError'
 import useAsync from '../../Hooks/useAsync'
@@ -17,32 +16,54 @@ import DistributedGoodProduct from '../../Contracts/Models/DistributedGoodProduc
 import { Option } from '../../Contracts/Components/Suggest'
 import { Screen } from '../../Contracts/Components/ScreenProps'
 import addEllipsis from '../../Util/addEllipsis'
-import GoodService from '../../Services/GoodService'
 import useValidation from '../../Hooks/useValidation'
 import { Validation } from '../../Contracts/Hooks/useValidation'
-import { useToast } from '../../Hooks/useToast'
 
 type DistributedGoodProductContainerProps = {
-  isCollapsed?: boolean;
+  isCollapsed?: boolean
   stockId?: number
   uniqueKey: string
 }
-export default function DistributeGoodProduct({ goodProduct, screen, onSuccessRemove }: {
-  goodProduct: GoodProduct,
-  screen: Screen,
-  onSaveGoodDistributedGoodProduct?: () => void,
+enum ActionState {
+  EDIT,
+  VIEW,
+}
+export default function DistributeGoodProduct({
+  disabled,
+  goodProduct,
+  screen,
+  onSuccessRemove,
+  onSave,
+  distributedGoodProducts: defaultDistributedGoodProducts,
+}: {
+  disabled?: boolean
+  goodProduct: GoodProduct
+  screen: Screen
+  onSave: (
+    goodProductId: number,
+    distributedGoodProduct: Partial<DistributedGoodProduct>[]
+  ) => void
+  onSaveGoodDistributedGoodProduct?: () => void
   onSuccessRemove?: (goodProduct: GoodProduct) => void
+  distributedGoodProducts?: Partial<DistributedGoodProduct>[]
 }) {
-  const [loadingSave, setLoadingSave] = useState(false)
   const [collapsed, setCollapsed] = useState(false)
+  const [state, setState] = useState<ActionState>(ActionState.EDIT)
   const [distributedGoodProducts, setDistributedGoodProducts] = useState<
     Partial<DistributedGoodProduct & DistributedGoodProductContainerProps>[]
-  >([
-    {
-      uniqueKey: Math.random().toString(),
-      goodProductId: goodProduct.id,
-    },
-  ])
+  >(
+    defaultDistributedGoodProducts?.length
+      ? defaultDistributedGoodProducts.map((goodsDistribution) => ({
+        ...goodsDistribution,
+        uniqueKey: Math.random().toString(),
+      }))
+      : [
+        {
+          uniqueKey: Math.random().toString(),
+          goodProductId: goodProduct.id,
+        },
+      ]
+  )
   const [stocks, setStocks] = useState<Stock[]>([])
   const stockOptions: Option[] = useMemo(() => {
     const options = stocks.map((s) => ({
@@ -55,6 +76,12 @@ export default function DistributeGoodProduct({ goodProduct, screen, onSuccessRe
     }
     return options.length ? [firstOption, ...options] : []
   }, [stocks])
+
+  useEffect(() => {
+    if (defaultDistributedGoodProducts?.length) {
+      setDistributedGoodProducts(defaultDistributedGoodProducts)
+    }
+  }, [defaultDistributedGoodProducts])
   const { showErrorMessage } = useMessageError()
 
   const [loadingStocks, loadStocks] = useAsync(async () => {
@@ -107,6 +134,15 @@ export default function DistributeGoodProduct({ goodProduct, screen, onSuccessRe
 
   const validations = [
     {
+      check: () => distributedGoodProducts.every((dsp) => Boolean(dsp.stockId)),
+      errorMessage: 'Selecione o estoque.',
+    },
+    {
+      check: () =>
+        distributedGoodProducts.every((dsp) => Boolean(dsp.productStockId)),
+      errorMessage: 'Selecione o produto no estoque.',
+    },
+    {
       check: () =>
         !(totalDistributed !== goodProduct.quantity) ||
         totalDistributed > goodProduct.quantity,
@@ -119,17 +155,8 @@ export default function DistributeGoodProduct({ goodProduct, screen, onSuccessRe
       errorMessage:
         'A distribuição dos produtos não pode ser maior do que a quantidade da mercadoria',
     },
-    {
-      check: () =>
-        distributedGoodProducts.every(
-          (dgp) => dgp.stockId && dgp.productStockId
-        ),
-      errorMessage: 'Todos produtos devem ser distribuídos para um estoque',
-    },
   ] as Validation[]
   const { validate } = useValidation(validations)
-
-  const { showErrorToast } = useToast()
 
   const handleSaveClick = async (
     e: React.MouseEvent<HTMLElement, MouseEvent>
@@ -138,110 +165,173 @@ export default function DistributeGoodProduct({ goodProduct, screen, onSuccessRe
     if (!validate()) {
       return
     }
-    setLoadingSave(true)
-    try {
-      await Promise.all([
-        ...distributedGoodProducts
-          .filter((dgp) => !dgp.id)
-          .map((dgp) =>
-            GoodService.createDistributedGoodProduct(goodProduct.good_id, dgp)
-          ),
-        distributedGoodProducts
-          .filter((dgp) => dgp.id)
-          .map((dgp) =>
-            GoodService.updateDistributedGoodProduct(goodProduct.good_id, dgp)
-          ),
-      ])
-    } catch (error) {
-      showErrorMessage(
-        error,
-        'Houve um erro ao tentar salvar a distribuição de produtos. Por favor, tente novamente.'
-      )
-    } finally {
-      setLoadingSave(false)
-    }
+    onSave(goodProduct.id, distributedGoodProducts)
+    setState(ActionState.VIEW)
   }
   const handleRemoveClick = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
     e.stopPropagation()
     onSuccessRemove?.(goodProduct)
   }
-  return <Box className='mt-2'>
-    <Collapse
-      title={
-        <div className='d-flex justify-content-between w-100'>
-          <span>{addEllipsis(goodProduct?.product.name ?? '', 45)}</span>
-          <div className='d-flex gap-1'>
-            <span style={{
-              color: totalDistributed > goodProduct.quantity ? Colors.RED3 : undefined,
-            }}>{totalDistributed} de {goodProduct.quantity} distribuído(s)</span>
-            <div>
-              <Button
-                help='Salvar distribuição'
-                icon='floppy-disk'
-                intent={Intent.SUCCESS} small
-                onClick={handleSaveClick}
-                loading={loadingSave}
-              />
-              <Button help='Remover distribuição' icon='trash' small intent={Intent.DANGER}
-                onClick={handleRemoveClick} />
+  const handleEditClick = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
+    e.stopPropagation()
+    setState(ActionState.EDIT)
+    setCollapsed(false)
+  }
+  return (
+    <Box className='mt-2'>
+      <Collapse
+        title={
+          <div className='d-flex justify-content-between w-100'>
+            <span>{addEllipsis(goodProduct?.product.name ?? '', 45)}</span>
+            <div className='d-flex gap-1'>
+              <span
+                style={{
+                  color:
+                    totalDistributed > goodProduct.quantity
+                      ? Colors.RED3
+                      : undefined,
+                }}
+              >
+                <Render renderIf={!goodProduct.has_distributed}>
+                  {totalDistributed} de {goodProduct.quantity} distribuído(s)
+                </Render>
+                <Render renderIf={goodProduct.has_distributed}>
+                  <span style={{ color: Colors.GREEN1 }}>
+                    Mercadoria totalmente distribuída
+                  </span>
+                </Render>
+              </span>
+              <div className='flex justify-content'>
+                <Render renderIf={state === ActionState.EDIT}>
+                  <Button
+                    help={
+                      !goodProduct.has_distributed
+                        ? 'Salvar distribuição'
+                        : undefined
+                    }
+                    icon='floppy-disk'
+                    intent={Intent.SUCCESS}
+                    small
+                    onClick={handleSaveClick}
+                    disabled={goodProduct.has_distributed || disabled}
+                  />
+                </Render>
+                <Render renderIf={state === ActionState.VIEW}>
+                  <Button
+                    help='Editar distribuição'
+                    icon='edit'
+                    intent={Intent.PRIMARY}
+                    small
+                    onClick={handleEditClick}
+                    disabled={goodProduct.has_distributed || disabled}
+                  />
+                </Render>
+                <Button
+                  help='Remover distribuição'
+                  icon='trash'
+                  small
+                  intent={Intent.DANGER}
+                  onClick={handleRemoveClick}
+                  disabled={goodProduct.has_distributed || disabled}
+                />
+              </div>
             </div>
           </div>
-        </div>
-      }
-      isCollapsed={collapsed}
-      onChange={() => setCollapsed(prev => !prev)}
-    >
-      <Row style={{ maxHeight: 150, overflowY: 'scroll' }}>
-        {distributedGoodProducts.map((dsp, i, dgps) =>
-          <Row className='align-items-center' key={dsp.id}>
-            <Select
-              buttonWidth='200px'
-              label='Estoque'
-              items={stockOptions}
-              activeItem={dsp.stockId}
-              onItemSelect={o => {
-                changeDistributedGoodProductAttribute(i, 'stockId', o.value)
-                changeDistributedGoodProductAttribute(i, 'productStockId', undefined)
-                changeDistributedGoodProductAttribute(i, 'quantity', 0)
-
-              }}
-              disabled={!goodProduct}
-              loading={loadingStocks}
-              handleButtonReloadClick={loadStocks}
-            />
-            <Select
-              buttonWidth='150px'
-              label='Produto do estoque'
-              items={productStockOptions.find(pso => pso.stockId === dsp.stockId)?.options ?? []}
-              activeItem={dsp?.productStockId}
-              onItemSelect={(o) => {
-                changeDistributedGoodProductAttribute(i, 'productStockId', o.value)
-              }}
-              disabled={!dsp.stockId}
-            />
-            <NumericInput label='Quantidade' id={screen.createElementId('quantity')} style={{ flex: 1 }}
-              value={dsp.quantity ?? 0}
-              min={0}
-              max={goodProduct.quantity}
-              onValueChange={(v) => {
-                changeDistributedGoodProductAttribute(i, 'quantity', v)
-              }}
-            />
-            <div>
-              <Render renderIf={dgps.length > 1}>
-                <Button minimal intent={Intent.DANGER} icon='delete' onClick={() => {
-                  setDistributedGoodProducts(prev => prev.filter((i => i.uniqueKey !== dsp.uniqueKey)))
-                }} />
-              </Render>
-              <Render renderIf={i === dgps.length - 1}>
-                <Button minimal intent={Intent.PRIMARY} icon='add' onClick={() => {
-                  setDistributedGoodProducts(prev => [...prev, { uniqueKey: Math.random().toString() }])
-                }} />
-              </Render>
-            </div>
-          </Row>)}
-      </Row>
-    </Collapse>
-
-  </Box>
+        }
+        isCollapsed={collapsed}
+        onChange={() => setCollapsed((prev) => !prev)}
+      >
+        <Row style={{ maxHeight: 150, overflowY: 'scroll' }}>
+          {distributedGoodProducts.map((dsp, i, dgps) => (
+            <Row className='align-items-center' key={dsp.id}>
+              <Select
+                buttonWidth='200px'
+                label='Estoque'
+                required
+                items={stockOptions}
+                activeItem={dsp.stockId}
+                onItemSelect={(o) => {
+                  changeDistributedGoodProductAttribute(i, 'stockId', o.value)
+                  changeDistributedGoodProductAttribute(
+                    i,
+                    'productStockId',
+                    undefined
+                  )
+                  changeDistributedGoodProductAttribute(i, 'quantity', 0)
+                }}
+                disabled={goodProduct.has_distributed || disabled}
+                loading={loadingStocks}
+                handleButtonReloadClick={loadStocks}
+              />
+              <Select
+                buttonWidth='150px'
+                required
+                label='Produto do estoque'
+                items={
+                  productStockOptions.find((pso) => pso.stockId === dsp.stockId)
+                    ?.options ?? []
+                }
+                activeItem={dsp?.productStockId}
+                onItemSelect={(o) => {
+                  changeDistributedGoodProductAttribute(
+                    i,
+                    'productStockId',
+                    o.value
+                  )
+                }}
+                disabled={!dsp.stockId || disabled}
+              />
+              <NumericInput
+                label='Quantidade'
+                required
+                id={screen.createElementId('quantity')}
+                style={{ flex: 1 }}
+                value={dsp.quantity ?? 0}
+                min={0}
+                max={goodProduct.quantity}
+                disabled={
+                  goodProduct.has_distributed || !dsp.productStockId || disabled
+                }
+                onValueChange={(v) => {
+                  changeDistributedGoodProductAttribute(i, 'quantity', v)
+                }}
+              />
+              <div>
+                <Render renderIf={dgps.length > 1}>
+                  <Button
+                    minimal
+                    intent={Intent.DANGER}
+                    icon='delete'
+                    onClick={() => {
+                      setDistributedGoodProducts((prev) =>
+                        prev.filter((i) => i.uniqueKey !== dsp.uniqueKey)
+                      )
+                    }}
+                    disabled={goodProduct.has_distributed || disabled}
+                  />
+                </Render>
+                <Render renderIf={i === dgps.length - 1}>
+                  <Button
+                    minimal
+                    intent={Intent.PRIMARY}
+                    icon='add'
+                    onClick={() => {
+                      setDistributedGoodProducts((prev) => [
+                        ...prev,
+                        {
+                          uniqueKey: Math.random().toString(),
+                          goodProductId: goodProduct.id,
+                        },
+                      ])
+                    }}
+                    disabled={goodProduct.has_distributed || disabled}
+                  />
+                </Render>
+              </div>
+            </Row>
+          ))}
+        </Row>
+      </Collapse>
+    </Box>
+  )
 }

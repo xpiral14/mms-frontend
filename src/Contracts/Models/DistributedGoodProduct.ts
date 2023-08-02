@@ -1,5 +1,5 @@
 export default interface DistributedGoodProduct {
-  id?: number
+  id: number
   goodProductId: number
   productStockId: number
   quantity: number

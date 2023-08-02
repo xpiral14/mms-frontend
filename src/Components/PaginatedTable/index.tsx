@@ -34,23 +34,13 @@ const pageOptions: Option[] = [
   },
 ]
 
-const PaginatedTable: React.FC<PaginatedTableProps> = ({
-  columns,
-  request,
-  customRequest,
-  ...rest
-}) => {
+const PaginatedTable = function <T = any>({
+  columns, request, customRequest, ...rest
+}: PaginatedTableProps<T>) {
   const {
-    reloadGrid,
-    setReloadGrid,
-    page,
-    setPage,
-    limit,
-    setLimit,
-    setGridResponse,
-    gridResponse,
+    reloadGrid, setReloadGrid, page, setPage, limit, setLimit, setGridResponse, gridResponse,
   } = useGrid()
-  const [selectedRegions] = useState<{ cols: number[]; rows: number[] }[]>([])
+  const [selectedRegions] = useState<{ cols: number[]; rows: number[]} []>([])
   const { showErrorToast } = useToast()
 
   useEffect(() => {
@@ -58,7 +48,7 @@ const PaginatedTable: React.FC<PaginatedTableProps> = ({
       try {
         const apiRequest = customRequest ? customRequest : request
         const response = await apiRequest?.(page + 1, limit, rest?.filters || {})
-        if(response?.data)
+        if (response?.data)
           setGridResponse(response?.data)
       } catch (error) {
         showErrorToast({
@@ -71,40 +61,29 @@ const PaginatedTable: React.FC<PaginatedTableProps> = ({
     if (reloadGrid && limit) {
       loadRequestData()
     }
-  }, [reloadGrid, limit, page,  rest?.filters])
+  }, [reloadGrid, limit, page, rest?.filters])
 
   const paginateOptions = useMemo(
-    () =>
-      ({
-        breakLinkClassName: `${Classes.BUTTON} ${
-          reloadGrid ? Classes.DISABLED : ''
-        }`,
-        disabledClassName: Classes.DISABLED,
-        marginPagesDisplayed: 1,
-        containerClassName: 'flex',
-        nextLinkClassName: `${Classes.BUTTON} ${
-          reloadGrid ? Classes.DISABLED : ''
-        }`,
-        previousLinkClassName: `${Classes.BUTTON} ${
-          reloadGrid ? Classes.DISABLED : ''
-        }`,
-        activeLinkClassName: `${
-          reloadGrid ? Classes.DISABLED : Classes.INTENT_PRIMARY
-        }`,
+    () => ({
+      breakLinkClassName: `${Classes.BUTTON} ${reloadGrid ? Classes.DISABLED : ''}`,
+      disabledClassName: Classes.DISABLED,
+      marginPagesDisplayed: 1,
+      containerClassName: 'flex',
+      nextLinkClassName: `${Classes.BUTTON} ${reloadGrid ? Classes.DISABLED : ''}`,
+      previousLinkClassName: `${Classes.BUTTON} ${reloadGrid ? Classes.DISABLED : ''}`,
+      activeLinkClassName: `${reloadGrid ? Classes.DISABLED : Classes.INTENT_PRIMARY}`,
 
-        previousLabel: <Icon icon='arrow-left' />,
-        nextLabel: <Icon icon='arrow-right' />,
-        pageLinkClassName: `${Classes.BUTTON} ${
-          reloadGrid ? `${Classes.BUTTON} ${Classes.DISABLED}` : ''
-        }`,
-        initialPage: page,
-        onPageChange: ({ selected }) => {
-          if (reloadGrid) return
-          setPage(selected)
-          setReloadGrid(true)
-        },
-        pageCount: gridResponse?.meta.lastPage || 0,
-      } as ReactPaginateProps),
+      previousLabel: <Icon icon='arrow-left' />,
+      nextLabel: <Icon icon='arrow-right' />,
+      pageLinkClassName: `${Classes.BUTTON} ${reloadGrid ? `${Classes.BUTTON} ${Classes.DISABLED}` : ''}`,
+      initialPage: page,
+      onPageChange: ({ selected }) => {
+        if (reloadGrid) return
+        setPage(selected)
+        setReloadGrid(true)
+      },
+      pageCount: gridResponse?.meta.lastPage || 0,
+    } as ReactPaginateProps),
     [gridResponse, reloadGrid]
   )
 
@@ -137,14 +116,13 @@ const PaginatedTable: React.FC<PaginatedTableProps> = ({
           columns={columns}
           onRowSelect={rest.onRowSelect}
           isSelected={rest.isSelected}
-          rowKey={rest.rowKey}
-        />
+          rowKey={rest.rowKey} />
       </Body>
       {Boolean(gridResponse?.meta) && (
         <Footer>
           <Card style={cardStyle}>
             <div>
-              
+
               Mostrando {gridResponse?.data.length} de {gridResponse?.meta.total}
             </div>
 
@@ -152,14 +130,12 @@ const PaginatedTable: React.FC<PaginatedTableProps> = ({
               <Button
                 icon='reset'
                 loading={reloadGrid}
-                onClick={handleButtonReloadGridClick}
-              />
+                onClick={handleButtonReloadGridClick} />
               <div>
                 <Select
                   activeItem={limit}
                   items={pageOptions}
-                  onChange={handlePageSelectChange}
-                />
+                  onChange={handlePageSelectChange} />
               </div>
               <div>
                 <Paginate {...paginateOptions} />

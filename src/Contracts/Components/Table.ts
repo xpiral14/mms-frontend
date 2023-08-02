@@ -9,14 +9,14 @@ export type Column = {
   style?: CSSProperties
 }
 
-export type Row = Record<string, any>
+export type Row<T = any> = T & any
 
-export type TableProps = {
+export type TableProps<T = any> = {
   height?: string
-  isSelected?: (row: Row) => boolean
-  onRowSelect?: (row: Row) => void
-  rowKey?: (row: Row) => string
-  renderFooter?: (columns: Column[], rows:Row[]) => React.ReactElement
+  isSelected?: (row: Row<T>) => boolean
+  onRowSelect?: (row: Row<T>) => void
+  rowKey?: (row: Row<T>) => string
+  renderFooter?: (columns: Column[], rows:Row<T>[]) => React.ReactElement
   columns: Column[]
-  rows: Row[]
+  rows: Row<T>[]
 }

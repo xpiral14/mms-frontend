@@ -11,7 +11,7 @@ export interface ColumnProps extends BlueprintColumnProps {
   formatText?: (text: string, row?: Row) => React.ReactNode
   withoutValueText?: string
 }
-export interface PaginatedTableProps extends Omit<TableProps, 'rows'> {
+export interface PaginatedTableProps<T = any> extends Omit<TableProps<T>, 'rows'> {
   containerProps?: any
   request?: (
     page: number | any,

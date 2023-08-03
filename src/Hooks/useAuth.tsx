@@ -32,7 +32,7 @@ export const useAuth = () => {
   const context = useContext(authContext)
 
   if (!context) {
-    throw new Error('Elemet must wrap UserDataProvider')
+    throw new Error('Element must wrap UserDataProvider')
   }
   return context
 }

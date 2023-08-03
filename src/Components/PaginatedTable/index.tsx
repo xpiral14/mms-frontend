@@ -3,7 +3,7 @@ import Paginate, { ReactPaginateProps } from 'react-paginate'
 
 import { Body, Container, Footer, PaginateContainer } from './style'
 import { Card, Classes, Icon, Menu, MenuItem } from '@blueprintjs/core'
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useToast } from '../../Hooks/useToast'
 import { useGrid } from '../../Hooks/useGrid'
 import Select from '../Select'
@@ -17,6 +17,7 @@ import { uniqueId } from '@blueprintjs/core/lib/esm/common/utils'
 import { Popover2, Popover2InteractionKind } from '@blueprintjs/popover2'
 import { ReportRequestOption } from '../../Contracts/Types/Api'
 import Button from '../Button'
+import LoadingBackdrop from '../Layout/LoadingBackdrop'
 const pageOptions: Option[] = [
   {
     label: '5',
@@ -172,6 +173,10 @@ const PaginatedTable = function <T = any>({
       setLoadingReport(false)
     }
   }
+  const onFilter = useCallback((filter: { [x: string]: string }): void => {
+    setSelectedFilters(filter)
+    setReloadGrid(true)
+  }, [])
   return (
     <Container style={{ width: '100%' }} {...rest?.containerProps}>
       <Body height={rest?.height}>
@@ -181,12 +186,11 @@ const PaginatedTable = function <T = any>({
           onRowSelect={rest.onRowSelect}
           isSelected={rest.isSelected}
           rowKey={rest.rowKey}
-          onFilter={(filter) => {
-            setSelectedFilters(filter)
-            setReloadGrid(true)
-          }}
+          onFilter={onFilter}
           filter={selectedFilters}
+          loading={reloadGrid}
         />
+        <LoadingBackdrop loading={reloadGrid} />
       </Body>
       {Boolean(gridResponse?.meta) && (
         <Footer>

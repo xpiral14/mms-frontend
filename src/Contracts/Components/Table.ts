@@ -30,4 +30,5 @@ export type TableProps<T = Record<string, any>> = {
   rows: Row<T>[]
   onFilter?: ((filters: Filters) => void) | ((filters: Filters) => Promise<void>)
   filter?: Filters
+  loading?: boolean
 }

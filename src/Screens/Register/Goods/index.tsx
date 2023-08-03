@@ -372,6 +372,7 @@ const GoodsScreen: React.FC<GoodRegisterScreenProps> = ({
               icon: 'warning-sign',
               intent: Intent.DANGER,
               onConfirm,
+              onCancel: stopLoad
             })
 
             async function onConfirm() {

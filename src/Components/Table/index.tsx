@@ -28,7 +28,7 @@ const Table = function <T = any>(props: TableProps<T>) {
     [props.columns, props.rows]
   )
   return (
-    <table className='w-100 bp4-html-table bp4-html-table-bordered bp4-html-table-striped bp4-interactive'>
+    <table className='w-100 bp4-html-table bp4-html-table-bordered bp4-html-table-striped bp4-interactive position-relative'>
       <thead>
         <tr>
           {props.columns?.map((column) => (

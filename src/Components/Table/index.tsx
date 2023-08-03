@@ -85,6 +85,18 @@ const Table = function <T = any>(props: TableProps<T>) {
             ))}
           </tr>
         ))}
+        <Render renderIf={!props.loading && !props.rows?.length}>
+          <tr>
+            <td colSpan={props.columns.length}>
+              <div className='w-100 d-flex justify-content-center align-items-center gap-3'>
+                <Icon icon='zoom-out' size={32} color={Colors.GRAY3} />
+                <span style={{ fontSize: 30, color: Colors.GRAY3 }}>
+                Não há nada aqui
+                </span>
+              </div>
+            </td>
+          </tr>
+        </Render>
       </tbody>
       <Render renderIf={Boolean(props.renderFooter)}>{footer}</Render>
     </table>

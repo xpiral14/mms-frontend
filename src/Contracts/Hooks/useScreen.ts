@@ -76,7 +76,7 @@ export type ScreenContext = {
 
   openSubScreen<T = any>(
     screen: Omit<ContextPanelOptions, 'path'>,
-    parentScreenId: ScreenIds,
+    parentScreenId?: ScreenIds,
     props?: T,
   ): void
 }

@@ -133,7 +133,7 @@ const SupplierRegister: React.FC<SupplierRegisterScreenProps> = ({
         })
         setPayload({})
         setReloadGrid(true)
-        setScreenStatus(ScreenStatus.VISUALIZE)
+        goToVisualizePage()
       }
       if (!response) {
         openAlert({
@@ -181,6 +181,10 @@ const SupplierRegister: React.FC<SupplierRegisterScreenProps> = ({
       screen.decreaseScreenSize?.()
     },
     handleButtonVisualizeOnClick: goToVisualizePage,
+    reports: [{
+      screenId: 'unit-register',
+      text: 'Relatório de performance',
+    }]
   }
 
   const createOnChange = (attributeName: string) => (evt: any) => {

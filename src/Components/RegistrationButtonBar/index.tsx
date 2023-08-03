@@ -1,10 +1,23 @@
 import React, { useCallback, useMemo, useState } from 'react'
-import { Button, ButtonGroup, Intent, Icon } from '@blueprintjs/core'
-import { RegistrationButtonBarProps, RegistrationButtons } from '../../Contracts/Components/RegistrationButtonBarProps'
+import {
+  Button,
+  ButtonGroup,
+  Intent,
+  Icon,
+  Menu,
+  MenuItem,
+} from '@blueprintjs/core'
+import {
+  RegistrationButtonBarProps,
+  RegistrationButtons,
+  ReportButtonProps,
+} from '../../Contracts/Components/RegistrationButtonBarProps'
 import { ScreenStatus } from '../../Constants/Enums'
 import { useWindow } from '../../Hooks/useWindow'
 import Bar from '../Layout/Bar'
 import Render from '../Render'
+import { Popover2, Popover2InteractionKind } from '@blueprintjs/popover2'
+import { useScreen } from '../../Hooks/useScreen'
 
 const RegistrationButtonBar: React.FC<RegistrationButtonBarProps> = (
   props
@@ -24,7 +37,7 @@ const RegistrationButtonBar: React.FC<RegistrationButtonBarProps> = (
   }
 
   const { screen } = props
-
+  const { openSubScreen } = useScreen()
   const handleNewButtonOnClick = () => {
     if (props?.handleNewButtonOnClick?.()) {
       props?.handleNewButtonOnClick()
@@ -56,6 +69,7 @@ const RegistrationButtonBar: React.FC<RegistrationButtonBarProps> = (
     props?.handleCancelButtonOnClick ||
     (() => {
       setScreenStatus(ScreenStatus.SEE_REGISTERS)
+      screen?.increaseScreenSize?.()
     })
 
   const handleDeleteButtonOnClick = () => {
@@ -92,6 +106,15 @@ const RegistrationButtonBar: React.FC<RegistrationButtonBarProps> = (
     (button: RegistrationButtons) => props.buttonsToShow?.includes(button),
     [props.buttonsToShow]
   )
+  const openReportScreen = (report: ReportButtonProps) => () => {
+    openSubScreen(
+      {
+        id: report.screenId,
+      },
+      screen?.id,
+      true
+    )
+  }
   return (
     <Bar>
       <ButtonGroup>
@@ -191,6 +214,25 @@ const RegistrationButtonBar: React.FC<RegistrationButtonBarProps> = (
           >
             Registros
           </Button>
+          <Render renderIf={Boolean(props.reports?.length)}>
+            <Popover2
+              interactionKind={Popover2InteractionKind.HOVER}
+              placement='bottom'
+              content={
+                <Menu>
+                  {props.reports?.map((report) => (
+                    <MenuItem
+                      key={report.screenId}
+                      text={report.text}
+                      onClick={openReportScreen(report)}
+                    />
+                  ))}
+                </Menu>
+              }
+            >
+              <Button icon='document' outlined>Relatórios</Button>
+            </Popover2>
+          </Render>
         </Render>
       </ButtonGroup>
       <ButtonGroup>

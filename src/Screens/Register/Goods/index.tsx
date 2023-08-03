@@ -234,7 +234,10 @@ const GoodsScreen: React.FC<GoodRegisterScreenProps> = ({
       const response = await GoodService.create({
         status: GoodStatuses.NOT_DISTRIBUTED,
         supplier_id: supplierId,
-        distributed_at: null,
+        distributed_at: undefined,
+        expected_receipt_date: (
+          payload.expected_receipt_date as Date
+        ).toISOString(),
         received_at: (payload.received_at as Date)?.toISOString(),
         requested_at: (payload.requested_at as Date)?.toISOString(),
         invoice_number: payload.invoice_number!,
@@ -249,12 +252,13 @@ const GoodsScreen: React.FC<GoodRegisterScreenProps> = ({
       showSuccessToast('Registro de mercadoria cadastrado com sucesso.')
       setPayload({
         ...response.data.data,
-        received_at: new Date(response.data.data.received_at),
+        received_at: new Date(response.data.data.received_at!),
       })
       setScreenStatus(ScreenStatus.SEE_REGISTERS)
       openAlert({
         text: 'Deseja distribuir suas mercadorias para seus estoques agora?',
       })
+      screen.increaseScreenSize?.()
     } catch (error: any) {
       showErrorMessage(
         error,
@@ -269,6 +273,9 @@ const GoodsScreen: React.FC<GoodRegisterScreenProps> = ({
     try {
       await GoodService.update({
         ...payload,
+        expected_receipt_date: (
+          payload.expected_receipt_date as Date
+        )?.toISOString(),
         received_at: (payload.received_at as Date)?.toISOString(),
         requested_at: (payload.requested_at as Date)?.toISOString(),
         goods_products: payload.goods_products?.filter((gp) => !gp.id),
@@ -276,6 +283,7 @@ const GoodsScreen: React.FC<GoodRegisterScreenProps> = ({
       showSuccessToast('O registro de mercadoria foi atualizado com sucesso.')
       setPayload({})
       setScreenStatus(ScreenStatus.SEE_REGISTERS)
+      screen.increaseScreenSize?.()
     } catch (error) {
       showErrorMessage(
         error,
@@ -350,6 +358,9 @@ const GoodsScreen: React.FC<GoodRegisterScreenProps> = ({
       ...r,
       received_at: r.received_at ? new Date(r.received_at) : null,
       requested_at: r.requested_at ? new Date(r.requested_at as string) : null,
+      expected_receipt_date: r.expected_receipt_date
+        ? new Date(r.expected_receipt_date as string)
+        : null,
     })
   }
   const getSupplierGoods = useCallback(
@@ -361,36 +372,40 @@ const GoodsScreen: React.FC<GoodRegisterScreenProps> = ({
     ) => GoodService.getAll(supplierId, page, limit, filters, options),
     []
   )
+  const handleDeleteButtonOnClick = async (
+    stopLoad: StopLoadFunc
+  ): Promise<void> => {
+    openAlert({
+      text: 'Tem certeza que deseja remover essa mercadoria?',
+      icon: 'warning-sign',
+      intent: Intent.DANGER,
+      onConfirm,
+      onCancel: stopLoad,
+    })
+
+    async function onConfirm() {
+      try {
+        await GoodService.delete(payload)
+        showSuccessToast('Mercadoria excluída com sucesso')
+        setScreenStatus(ScreenStatus.SEE_REGISTERS)
+        setPayload({})
+      } catch (error) {
+        showErrorMessage(
+          error,
+          'Não foi possível excluir a mercadoria. Por favor, tente novamente'
+        )
+      } finally {
+        stopLoad()
+      }
+    }
+  }
   return (
     <Container style={{ height: 'calc(100% - 95px)' }}>
       <Row>
         <RegistrationButtonBar
           handleSaveButtonOnClick={handleSaveButtonClick}
-          handleDeleteButtonOnClick={async (stopLoad) => {
-            openAlert({
-              text: 'Tem certeza que deseja remover essa mercadoria?',
-              icon: 'warning-sign',
-              intent: Intent.DANGER,
-              onConfirm,
-              onCancel: stopLoad
-            })
-
-            async function onConfirm() {
-              try {
-                await GoodService.delete(payload)
-                showSuccessToast('Mercadoria excluída com sucesso')
-                setScreenStatus(ScreenStatus.SEE_REGISTERS)
-                setPayload({})
-              } catch (error) {
-                showErrorMessage(
-                  error,
-                  'Não foi possível excluir a mercadoria. Por favor, tente novamente'
-                )
-              } finally {
-                stopLoad()
-              }
-            }
-          }}
+          handleDeleteButtonOnClick={handleDeleteButtonOnClick}
+          screen={screen}
         />
       </Row>
       <Render renderIf={screenStatus === ScreenStatus.SEE_REGISTERS}>
@@ -456,6 +471,18 @@ const GoodsScreen: React.FC<GoodRegisterScreenProps> = ({
               id={screen.id + 'requested_at'}
               onChange={(d) => changePayloadAttribute('requested_at', d)}
               value={payload.requested_at as Date}
+            />
+            <InputDate
+              inputProps={{
+                style: { width: '100%' },
+              }}
+              timePrecision='minute'
+              label='Data esperada de recebimento'
+              id={screen.id + 'expected_receipt_date'}
+              onChange={(d) =>
+                changePayloadAttribute('expected_receipt_date', d)
+              }
+              value={payload.expected_receipt_date as Date}
             />
             <InputDate
               inputProps={{

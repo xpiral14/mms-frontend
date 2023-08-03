@@ -222,7 +222,7 @@ export default function ScreenProvider({ children }: any) {
 
   function openSubScreen<T = any>(
     panelOptions: Omit<ContextPanelOptions, 'path'>,
-    parentPanelId: ScreenIds,
+    parentPanelId?: ScreenIds,
     props?: T
   ) {
     const screen = allScreens[panelOptions.id]

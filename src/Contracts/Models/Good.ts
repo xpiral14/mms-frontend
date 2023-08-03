@@ -15,8 +15,9 @@ export default interface Good {
   id?: number;
   invoice_number: string
   supplier_id: number
-  received_at: string|Date
-  distributed_at: string|Date|null
+  received_at?: string|Date
+  distributed_at?: string|Date,
+  expected_receipt_date?: string|Date,
   requested_at?: string | Date
   goods_products: GoodProduct[]
   status: GoodStatuses

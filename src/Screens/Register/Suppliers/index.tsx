@@ -1,6 +1,5 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Intent } from '@blueprintjs/core'
-import React, { useEffect } from 'react'
+import React, { useEffect, useMemo } from 'react'
 import InputText from '../../../Components/InputText'
 import PaginatedTable from '../../../Components/PaginatedTable'
 import RegistrationButtonBar from '../../../Components/RegistrationButtonBar'
@@ -26,6 +25,7 @@ import Button from '../../../Components/Button'
 import { useScreen } from '../../../Hooks/useScreen'
 import Bar from '../../../Components/Layout/Bar'
 import Box from '../../../Components/Layout/Box'
+import { Column } from '../../../Contracts/Components/Table'
 
 const SupplierRegister: React.FC<SupplierRegisterScreenProps> = ({
   screen,
@@ -190,6 +190,64 @@ const SupplierRegister: React.FC<SupplierRegisterScreenProps> = ({
     }))
   }
 
+  const columns = useMemo(
+    () =>
+      [
+        {
+          name: 'Nome',
+          keyName: 'name',
+          style: {
+            width: '33%',
+          },
+          filters: [
+            {
+              name: 'Nome do fornecedor',
+              type: 'text',
+            },
+          ],
+        },
+        {
+          name: 'CPF ou CNPJ',
+          keyName: 'identification',
+          formatText: (row) =>
+            formatIdentification(row?.identification as string),
+          style: {
+            width: '33%',
+          },
+          filters: [
+            {
+              name: 'CPF ou CNPJ',
+              type: 'text',
+            },
+          ],
+        },
+        {
+          name: 'Telefone',
+          keyName: 'phone',
+          formatText: (row) => formatPhone(row?.phone as string),
+          style: {
+            width: '33%',
+          },
+          filters: [
+            {
+              name: 'Telefone',
+              type: 'text',
+            },
+          ],
+        },
+        {
+          name: 'Email',
+          keyName: 'mail',
+          filters: [
+            {
+              name: 'Email',
+              type: 'text',
+            },
+          ],
+        },
+      ] as Column<Supplier>[],
+    []
+  )
   return (
     <Container style={{ height: 'calc(100% - 95px)' }}>
       <Row className='py-2'>
@@ -262,39 +320,10 @@ const SupplierRegister: React.FC<SupplierRegisterScreenProps> = ({
             }}
           />
         </Bar>
-        <PaginatedTable
+        <PaginatedTable<Supplier>
           height='350px'
           isSelected={(row) => row.id === payload.id}
-          columns={[
-            {
-              name: 'Nome',
-              keyName: 'name',
-              style: {
-                width: '33%',
-              },
-            },
-            {
-              name: 'CPF ou CNPJ',
-              // keyName: 'identification',
-              formatText: (row) =>
-                formatIdentification(row?.identification as string),
-              style: {
-                width: '33%',
-              },
-            },
-            {
-              name: 'Telefone',
-              keyName: 'phone',
-              formatText: (row) => formatPhone(row?.phone as string),
-              style: {
-                width: '33%',
-              },
-            },
-            {
-              name: 'Email',
-              keyName: 'mail',
-            },
-          ]}
+          columns={columns}
           request={SupplierService.getAll as any}
           onRowSelect={(row) => {
             setPayload({

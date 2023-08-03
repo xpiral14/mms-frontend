@@ -67,6 +67,9 @@ const PaginatedTable = function <T = any>({
     gridResponse,
   } = useGrid()
   const [selectedRegions] = useState<{ cols: number[]; rows: number[] }[]>([])
+  const [selectedFilters, setSelectedFilters] = useState(
+    {} as Record<string, string>
+  )
   const [loadingReport, setLoadingReport] = useState(false)
   const { showErrorToast } = useToast()
   const apiRequest = customRequest ? customRequest : request
@@ -76,7 +79,7 @@ const PaginatedTable = function <T = any>({
         const response = await apiRequest?.(
           page + 1,
           limit,
-          rest?.filters || {}
+          selectedFilters ?? {}
         )
         if (response?.data) setGridResponse(response?.data)
       } catch (error) {
@@ -90,7 +93,7 @@ const PaginatedTable = function <T = any>({
     if (reloadGrid && limit) {
       loadRequestData()
     }
-  }, [reloadGrid, limit, page, rest?.filters])
+  }, [reloadGrid, limit, page, rest?.filters, selectedFilters])
 
   const paginateOptions = useMemo(
     () =>
@@ -150,7 +153,12 @@ const PaginatedTable = function <T = any>({
   const handleDownloadClick = (reportType: ReportRequestOption) => async () => {
     setLoadingReport(true)
     try {
-      const response = await apiRequest?.(page, limit, rest.filters, reportType)
+      const response = await apiRequest?.(
+        page,
+        limit,
+        selectedFilters,
+        reportType
+      )
       DownloadService.download(
         response,
         uniqueId(reportType.name ?? 'Relatório'),
@@ -173,6 +181,11 @@ const PaginatedTable = function <T = any>({
           onRowSelect={rest.onRowSelect}
           isSelected={rest.isSelected}
           rowKey={rest.rowKey}
+          onFilter={(filter) => {
+            setSelectedFilters(filter)
+            setReloadGrid(true)
+          }}
+          filter={selectedFilters}
         />
       </Body>
       {Boolean(gridResponse?.meta) && (
@@ -184,6 +197,17 @@ const PaginatedTable = function <T = any>({
             </div>
 
             <PaginateContainer>
+              <Render renderIf={Boolean(Object.keys(selectedFilters).length)}>
+                <Button
+                  help='Limpar filtros'
+                  icon='clean'
+                  loading={reloadGrid}
+                  onClick={() => {
+                    setSelectedFilters({})
+                    setReloadGrid(true)
+                  }}
+                />
+              </Render>
               <Render
                 renderIf={downloadable && reportRequestOptions.length > 1}
               >
@@ -237,4 +261,4 @@ const PaginatedTable = function <T = any>({
     </Container>
   )
 }
-export default React.memo(PaginatedTable)
+export default PaginatedTable

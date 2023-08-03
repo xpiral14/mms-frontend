@@ -32,7 +32,7 @@ import useMessageError from '../../../Hooks/useMessageError'
 // import { DistributeGoodsProps } from '../../../Contracts/Screen/DistributeGoods'
 import Box from '../../../Components/Layout/Box'
 import { DistributeGoodsProps } from '../../../Contracts/Screen/DistributeGoods'
-import { ReportRequestOption } from '../../../Contracts/Types/Api'
+import { FilterType, ReportRequestOption } from '../../../Contracts/Types/Api'
 
 const GoodsScreen: React.FC<GoodRegisterScreenProps> = ({
   screen,
@@ -66,19 +66,44 @@ const GoodsScreen: React.FC<GoodRegisterScreenProps> = ({
     () =>
       [
         {
-          name: 'Número da nota fiscal',
+          name: 'Nota fiscal',
           keyName: 'invoice_number',
           style: {
-            width: 50,
+            minWidth: 70,
+            maxWidth: 70,
           },
+          filters: [{ name: 'Nota fiscal', type: 'text' }],
         },
         {
           name: 'Data de recebimento',
+          filters: [{ name: 'Data de recebimento', type: 'from_date' }],
+          keyName: 'received_at',
           formatText: (row) => new Date(row!.received_at!).toLocaleDateString(),
         },
         {
           name: 'Status de distribuição',
           formatText: (row: Good) => GoodStatusesNames[row.status],
+          keyName: 'status',
+          filters: [
+            {
+              name: 'Selecione os status',
+              type: 'checkbox',
+              value: [
+                {
+                  label: 'Distribuído',
+                  value: GoodStatuses.DISTRIBUTED,
+                },
+                {
+                  label: 'Não distribuído',
+                  value: GoodStatuses.NOT_DISTRIBUTED,
+                },
+                {
+                  label: 'Parcialmente distribuído',
+                  value: GoodStatuses.PARTIAL_DISTRIBUTED,
+                },
+              ],
+            },
+          ],
         },
         {
           name: 'Valor total',
@@ -90,7 +115,7 @@ const GoodsScreen: React.FC<GoodRegisterScreenProps> = ({
               ) ?? 0
             ),
         },
-      ] as Column[],
+      ] as Column<Good>[],
     []
   )
   const columns = useMemo(
@@ -117,7 +142,7 @@ const GoodsScreen: React.FC<GoodRegisterScreenProps> = ({
           name: 'Valor total',
           formatText: (row) => currencyFormat(row?.value ?? 0),
         },
-      ] as Column[],
+      ] as Column<GoodProduct>[],
     []
   )
 
@@ -328,8 +353,12 @@ const GoodsScreen: React.FC<GoodRegisterScreenProps> = ({
     })
   }
   const getSupplierGoods = useCallback(
-    (page: number, limit: number, _: any, options?: ReportRequestOption) =>
-      GoodService.getAll(supplierId, page, limit, options),
+    (
+      page: number,
+      limit: number,
+      filters: FilterType,
+      options?: ReportRequestOption
+    ) => GoodService.getAll(supplierId, page, limit, filters, options),
     []
   )
   return (

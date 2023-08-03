@@ -21,6 +21,9 @@ const InputDate: FunctionComponent<Props> = (props) => {
       disabled={props.disabled}
       intent={props.intent}
       labelFor={props.id}
+      style={{
+        width: props.fill ? '100%' : undefined
+      }}
     >
       <DateInput
         invalidDateMessage='Data inválida'

@@ -1,17 +1,24 @@
 import api from '../Config/api'
 import Paginated from '../Contracts/Models/Paginated'
 import Stock from '../Contracts/Models/Stock'
+import { FilterType, ReportRequestOption } from '../Contracts/Types/Api'
 
 import Response from '../Contracts/Types/Response'
 
 export const DEFAULT_PATH = '/stocks'
 export default class StockService {
-  static async getAll(page: number, limit: number) {
+  static async getAll(page: number, limit: number, filters?: FilterType, reportOptions?: ReportRequestOption) {
+
     return api.get<Paginated<Stock>>(`${DEFAULT_PATH}/paginated`, {
       params: {
         page,
         limit,
+        ...(filters ?? {}), 
       },
+      responseType: reportOptions?.responseType ?? 'json',
+      headers: {
+        Accept: reportOptions?.mimeType || 'application/json'
+      }
     })
   }
 

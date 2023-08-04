@@ -25,6 +25,7 @@ import { useToast } from '../../../Hooks/useToast'
 import useValidation from '../../../Hooks/useValidation'
 import { useWindow } from '../../../Hooks/useWindow'
 import StockService from '../../../Services/StockService'
+import { Column } from '../../../Contracts/Components/Table'
 const StocksScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
   const { payload, setPayload, screenStatus, setScreenStatus } =
     useWindow<Stock>()
@@ -185,21 +186,32 @@ const StocksScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
   }
 
   const columns = useMemo(
-    () => [
-      {
-        id: 1,
-        name: 'Nome',
-        keyName: 'name',
-      },
-      {
-        id: 2,
-        name: 'Descrição',
-        keyName: 'description',
-        style: {
-          width: '100%',
+    () =>
+      [
+        {
+          name: 'Nome',
+          keyName: 'name',
+          filters: [
+            {
+              name: 'Nome do estoque',
+              type: 'text',
+            },
+          ],
         },
-      },
-    ],
+        {
+          name: 'Descrição',
+          keyName: 'description',
+          style: {
+            width: '75%',
+          },
+          filters: [
+            {
+              name: 'Descrição',
+              type: 'text',
+            },
+          ],
+        },
+      ] as Column<Stock>[],
     []
   )
 
@@ -234,7 +246,7 @@ const StocksScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
     decreaseWindowSize?.()
   }
 
-  const {openSubScreen} = useScreen()
+  const { openSubScreen } = useScreen()
 
   const registrationButtonBarProps: RegistrationButtonBarProps = {
     screen,
@@ -290,21 +302,26 @@ const StocksScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
       <Render renderIf={screenStatus !== ScreenStatus.SEE_REGISTERS}>
         <Box className='mt-1'>
           <Row className='d-flex justify-content-end'>
-            <Button icon={<FaProductHunt size={12} />} disabled={!payload.id} intent={Intent.PRIMARY} onClick={() => {
-              openSubScreen<ProductStockProps>(
-                {
-                  id: 'product-stock-management',
-                  headerTitle: `Gerenciamento de produtos do estoque "${payload.name}"`,
-                  contentSize: '750px 246px',
-                },
-                screen.id,
-                {
-                  stock: payload,
-                  defaultScreenStatus: ScreenStatus.SEE_REGISTERS
-                }
-              )
-            }}>
-            Gerenciar produtos
+            <Button
+              icon={<FaProductHunt size={12} />}
+              disabled={!payload.id}
+              intent={Intent.PRIMARY}
+              onClick={() => {
+                openSubScreen<ProductStockProps>(
+                  {
+                    id: 'product-stock-management',
+                    headerTitle: `Gerenciamento de produtos do estoque "${payload.name}"`,
+                    contentSize: '750px 246px',
+                  },
+                  screen.id,
+                  {
+                    stock: payload,
+                    defaultScreenStatus: ScreenStatus.SEE_REGISTERS,
+                  }
+                )
+              }}
+            >
+              Gerenciar produtos
             </Button>
           </Row>
         </Box>
@@ -336,13 +353,22 @@ const StocksScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
 
       <Render renderIf={screenStatus === ScreenStatus.SEE_REGISTERS}>
         <Row className='h-100'>
-          <PaginatedTable
+          <PaginatedTable<Stock>
             height='100%'
             onRowSelect={onRowSelect}
-            request={StockService.getAll}
+            customRequest={StockService.getAll}
             containerProps={containerProps}
             columns={columns}
             isSelected={(row) => row.id === payload?.id}
+            downloadable
+            reportRequestOptions={[
+              {
+                mimeType: 'text/csv',
+                reportType: 'csv',
+                responseType: 'text',
+                name: 'Estoques cadastrados'
+              },
+            ]}
           />
         </Row>
       </Render>

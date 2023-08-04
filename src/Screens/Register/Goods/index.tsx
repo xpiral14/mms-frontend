@@ -356,11 +356,13 @@ const GoodsScreen: React.FC<GoodRegisterScreenProps> = ({
   const onGoodSelect = (r: TableRow<Good>): void => {
     return setPayload({
       ...r,
-      received_at: r.received_at ? new Date(r.received_at) : null,
-      requested_at: r.requested_at ? new Date(r.requested_at as string) : null,
+      received_at: r.received_at ? new Date(r.received_at) : undefined,
+      requested_at: r.requested_at
+        ? new Date(r.requested_at as string)
+        : undefined,
       expected_receipt_date: r.expected_receipt_date
         ? new Date(r.expected_receipt_date as string)
-        : null,
+        : undefined,
     })
   }
   const getSupplierGoods = useCallback(
@@ -426,7 +428,7 @@ const GoodsScreen: React.FC<GoodRegisterScreenProps> = ({
           </Bar>
         </Row>
         <Row className='h-100'>
-          <PaginatedTable
+          <PaginatedTable<Good>
             height='100%'
             customRequest={getSupplierGoods}
             containerProps={{

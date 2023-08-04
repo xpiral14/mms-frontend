@@ -83,6 +83,7 @@ function Filter<T = Record<string, any>>({
         case 'text':
           return (
             <InputText
+              autoFocus
               style={{ width: '100%' }}
               inputStyle={{ width: '100%' }}
               id={'filter-' + filter.name}

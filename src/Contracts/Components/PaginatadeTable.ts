@@ -5,7 +5,7 @@ import { TableProps } from './Table'
 import { FilterType, ReportRequestOption } from '../Types/Api'
 // import { ReactPaginateProps } from 'react-paginate'
 
-export type Row = Record<string, any>
+export type Row<T = any> = T & Record<string, any>
 export interface ColumnProps extends BlueprintColumnProps {
   cellRenderer?: (cell: any) => any
   keyName?: string
@@ -28,9 +28,9 @@ export interface PaginatedTableProps<T = any> extends Omit<TableProps<T>, 'rows'
     options?: ReportRequestOption
   ) => Promise<AxiosResponse<Paginated<any>>>
   height?: string
-  isSelected?: (row: Row) => boolean
-  onRowSelect?: (row: Row) => void
-  rowKey?: (row: Row) => string
+  isSelected?: (row: Row<T>) => boolean
+  onRowSelect?: (row: Row<T>) => void
+  rowKey?: (row: Row<T>) => string
   filters?:Record<string, string | number | undefined>
   downloadable?: boolean
   reportRequestOptions?: ReportRequestOption[]

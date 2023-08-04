@@ -24,6 +24,8 @@ import UnitService from '../../../Services/UnitService'
 import Render from '../../../Components/Render'
 import Container from '../../../Components/Layout/Container'
 import Row from '../../../Components/Layout/Row'
+import { Column } from '../../../Contracts/Components/Table'
+import currencyFormat from '../../../Util/currencyFormat'
 
 const ProductsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
   const { payload, setPayload, screenStatus, setScreenStatus } =
@@ -155,8 +157,9 @@ const ProductsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
           message: 'Produto atualizada com sucesso',
           intent: Intent.SUCCESS,
         })
-
+        setScreenStatus(ScreenStatus.SEE_REGISTERS)
         setReloadGrid(true)
+        screen.increaseScreenSize?.()
       }
 
       if (!response) {
@@ -215,42 +218,44 @@ const ProductsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
   }
 
   const columns = useMemo(
-    () => [
-      {
-        id: 1,
-        name: 'Referencia',
-        keyName: 'reference',
-      },
-      {
-        id: 2,
-        name: 'Nome',
-        keyName: 'name',
-        style: {
-          width: '40%',
+    () =>
+      [
+        {
+          name: 'Referencia',
+          keyName: 'reference',
+          filters: [{ name: 'Referencia', type: 'text' }],
         },
-      },
-      {
-        id: 3,
-        name: 'Descrição',
-        keyName: 'description',
-        style: {
-          width: '40%',
+        {
+          name: 'Nome',
+          keyName: 'name',
+          filters: [{ name: 'Referencia', type: 'text' }],
+          style: {
+            width: '40%',
+          },
         },
-      },
-      {
-        id: 4,
-        name: 'Preço',
-        keyName: 'price',
-      },
-    ],
+        {
+          name: 'Descrição',
+          keyName: 'description',
+          filters: [{ name: 'Descrição', type: 'text' }],
+          style: {
+            width: '40%',
+          },
+        },
+        {
+          name: 'Preço',
+          keyName: 'price',
+          filters: [{ name: 'Descrição', type: 'text' }],
+          formatText: (row) => currencyFormat(row?.price)
+        },
+      ] as Column<Product>[],
     []
   )
 
   const containerProps = useMemo(
     () => ({
       style: {
-        flex: 1
-      }
+        flex: 1,
+      },
     }),
     []
   )
@@ -274,7 +279,6 @@ const ProductsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
 
   const handleVisualizeButtonOnClick = () => {
     setScreenStatus(ScreenStatus.SEE_REGISTERS)
-
     increaseWindowSize?.()
   }
 
@@ -305,6 +309,10 @@ const ProductsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
     },
     handleButtonVisualizeOnClick: handleVisualizeButtonOnClick,
     handleCancelButtonOnClick: handleCancelButtonOnClick,
+    handleEditButtonOnClick() {
+      setScreenStatus(ScreenStatus.EDIT)
+      screen.decreaseScreenSize?.()
+    },
   }
 
   const createOnChange =
@@ -327,7 +335,6 @@ const ProductsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
       </Row>
 
       <Render renderIf={screenStatus !== ScreenStatus.SEE_REGISTERS}>
-         
         <Row>
           <InputText
             id='productId'
@@ -346,7 +353,6 @@ const ProductsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
                 unit_id: o.value as number,
               }))
             }}
-              
             activeItem={payload.unit_id}
             id='productId'
             label='Unidade:'
@@ -387,7 +393,7 @@ const ProductsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
             id='productDescription'
             label='Descrição:'
             disabled={isStatusVizualize()}
-            style={{flex: 8 }}
+            style={{ flex: 8 }}
             inputStyle={{ width: '100%', minWidth: '300ptx' }}
             value={payload?.description || ''}
             maxLength={255}
@@ -411,13 +417,20 @@ const ProductsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
 
       <Render renderIf={screenStatus === ScreenStatus.SEE_REGISTERS}>
         <Row className='h-100'>
-          <PaginatedTable
+          <PaginatedTable<Product>
             height='100%'
             onRowSelect={onRowSelect}
             request={ProductsService.getAll}
             containerProps={containerProps}
             columns={columns}
-            isSelected={row => row.id === payload?.id}
+            isSelected={(row) => row.id === payload?.id}
+            downloadable
+            reportRequestOptions={[
+              {
+                mimeType: 'text/csv',
+                reportType: 'csv',
+              },
+            ]}
           />
         </Row>
       </Render>

@@ -16,7 +16,7 @@ export type Column<T = Record<string, any>> = {
   filters?: ColumnFilter<T>[]
 }
 
-export type Row<T = any> = T & any
+export type Row<T = any> = T & Record<any, any>
 
 type Filters = Record<string, string>
 
@@ -24,7 +24,7 @@ export type TableProps<T = Record<string, any>> = {
   height?: string
   isSelected?: (row: Row<T>) => boolean
   onRowSelect?: (row: Row<T>) => void
-  rowKey?: (row: Row<T>) => string
+  rowKey?: (row: Row<T>) => string|number
   renderFooter?: (columns: Column<T>[], rows: Row<T>[]) => React.ReactElement
   columns: Column<T>[]
   rows: Row<T>[]

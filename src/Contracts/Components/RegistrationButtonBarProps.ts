@@ -1,6 +1,6 @@
-import { ButtonProps } from '@blueprintjs/core'
+import { ButtonProps, IconName } from '@blueprintjs/core'
 import { Screen, } from './ScreenProps'
-import { ScreenIds } from '../Hooks/useScreen'
+import { DynamicReportScreenProps } from '../Screen/DynamicReportScreen'
 export enum RegistrationButtons {
   NEW,
   SAVE,
@@ -14,10 +14,11 @@ export enum RegistrationButtons {
 }
 export type ReportButtonProps = {
   text: string,
-  screenId: ScreenIds,
-  screenProps?: Record<string, any>
+  icon?: IconName
 }
 export type StopLoadFunc = () => void
+export type ReportProps = (DynamicReportScreenProps & ReportButtonProps)
+
 export interface RegistrationButtonBarProps {
   exitButton?: boolean
   buttonNewProps?: ButtonProps
@@ -39,5 +40,5 @@ export interface RegistrationButtonBarProps {
   handleButtonVisualizeOnClick?: () => void
   buttonsToShow?: RegistrationButtons[]
   screen?: Screen,
-  reports?: ReportButtonProps[]
+  reports?: ReportProps[]
 }

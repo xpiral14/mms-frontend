@@ -162,7 +162,7 @@ const PaginatedTable = function <T = any>({
       )
       DownloadService.download(
         response,
-        uniqueId(reportType.name ?? 'Relatório'),
+        uniqueId(reportType.name ?? 'Relatório') + `.${reportType.reportType}`,
         {
           mimeType: reportType.mimeType,
         }
@@ -253,6 +253,7 @@ const PaginatedTable = function <T = any>({
                   activeItem={limit}
                   items={pageOptions}
                   onChange={handlePageSelectChange}
+                  filterable={false}
                 />
               </div>
               <div>

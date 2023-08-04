@@ -18,7 +18,8 @@ export interface PaginatedTableProps<T = any> extends Omit<TableProps<T>, 'rows'
   request?: (
     page: number | any,
     limit: number,
-    filters?: Record<string, string | number | undefined>
+    filters?: Record<string, string | number | undefined>,
+    options?: ReportRequestOption
   ) => Promise<AxiosResponse<Paginated<any>>>
   customRequest?:(
     page: number | any,

@@ -10,7 +10,7 @@ import {
 import {
   RegistrationButtonBarProps,
   RegistrationButtons,
-  ReportButtonProps,
+  ReportProps,
 } from '../../Contracts/Components/RegistrationButtonBarProps'
 import { ScreenStatus } from '../../Constants/Enums'
 import { useWindow } from '../../Hooks/useWindow'
@@ -18,6 +18,7 @@ import Bar from '../Layout/Bar'
 import Render from '../Render'
 import { Popover2, Popover2InteractionKind } from '@blueprintjs/popover2'
 import { useScreen } from '../../Hooks/useScreen'
+import { DynamicReportScreenProps } from '../../Contracts/Screen/DynamicReportScreen'
 
 const RegistrationButtonBar: React.FC<RegistrationButtonBarProps> = (
   props
@@ -106,13 +107,14 @@ const RegistrationButtonBar: React.FC<RegistrationButtonBarProps> = (
     (button: RegistrationButtons) => props.buttonsToShow?.includes(button),
     [props.buttonsToShow]
   )
-  const openReportScreen = (report: ReportButtonProps) => () => {
-    openSubScreen(
+  const openReportScreen = (report: ReportProps) => () => {
+    openSubScreen<DynamicReportScreenProps>(
       {
-        id: report.screenId,
+        id: 'dynamic-report',
+        headerTitle: report.text,
       },
       screen?.id,
-      true
+      report
     )
   }
   return (
@@ -222,7 +224,7 @@ const RegistrationButtonBar: React.FC<RegistrationButtonBarProps> = (
                 <Menu>
                   {props.reports?.map((report) => (
                     <MenuItem
-                      key={report.screenId}
+                      key={report.text}
                       text={report.text}
                       onClick={openReportScreen(report)}
                     />
@@ -230,7 +232,9 @@ const RegistrationButtonBar: React.FC<RegistrationButtonBarProps> = (
                 </Menu>
               }
             >
-              <Button icon='document' outlined>Relatórios</Button>
+              <Button icon='document' outlined>
+                Relatórios
+              </Button>
             </Popover2>
           </Render>
         </Render>

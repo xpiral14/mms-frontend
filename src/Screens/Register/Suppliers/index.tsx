@@ -4,7 +4,10 @@ import InputText from '../../../Components/InputText'
 import PaginatedTable from '../../../Components/PaginatedTable'
 import RegistrationButtonBar from '../../../Components/RegistrationButtonBar'
 import { PersonType, ScreenStatus } from '../../../Constants/Enums'
-import { RegistrationButtonBarProps } from '../../../Contracts/Components/RegistrationButtonBarProps'
+import {
+  RegistrationButtonBarProps,
+  ReportProps,
+} from '../../../Contracts/Components/RegistrationButtonBarProps'
 import { Validation } from '../../../Contracts/Hooks/useValidation'
 import Supplier from '../../../Contracts/Models/Supplier'
 import { SupplierRegisterScreenProps } from '../../../Contracts/Screen/Register/Suppliers'
@@ -27,6 +30,51 @@ import Bar from '../../../Components/Layout/Bar'
 import Box from '../../../Components/Layout/Box'
 import { Column } from '../../../Contracts/Components/Table'
 
+const reports = [
+  {
+    columns: [
+      {
+        name: '',
+        formatText: (_, index) => (index ?? 0) + 1 + '°',
+      },
+      {
+        keyName: 'supplier_name',
+        name: 'Fornecedor',
+        filters: [
+          {
+            name: 'Nome do fornecedor',
+            type: 'text',
+          },
+        ],
+      },
+      { keyName: 'total_deliveries', name: 'Total de entregas' },
+      { keyName: 'total_on_deadline', name: 'Total de entregas no prazo' },
+      {
+        withoutValueText: '-',
+        formatText: (row) =>
+          (row.percent_before_deadline + row.percent_on_deadline)?.toFixed(2) +
+          '%',
+        name: 'Porcentagem de entregas no prazo',
+      },
+      {
+        withoutValueText: '-',
+        formatText: (row) => row.percent_after_deadline?.toFixed(2) + '%',
+        name: 'Entregas depois do prazo',
+      },
+    ],
+    downloadable: true,
+    reportRequestOptions: [
+      {
+        mimeType: 'application/csv',
+        reportType: 'csv',
+        name: 'Performance dos fornecedores',
+        responseType: 'text',
+      },
+    ],
+    request: SupplierService.performanceReport,
+    text: 'Performance dos fornecedores',
+  },
+] as ReportProps[]
 const SupplierRegister: React.FC<SupplierRegisterScreenProps> = ({
   screen,
   defaultSupplier,
@@ -181,10 +229,7 @@ const SupplierRegister: React.FC<SupplierRegisterScreenProps> = ({
       screen.decreaseScreenSize?.()
     },
     handleButtonVisualizeOnClick: goToVisualizePage,
-    reports: [{
-      screenId: 'unit-register',
-      text: 'Relatório de performance',
-    }]
+    reports,
   }
 
   const createOnChange = (attributeName: string) => (evt: any) => {

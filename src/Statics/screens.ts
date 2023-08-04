@@ -159,6 +159,13 @@ const screens = {
     subScreenOnly: true,
     permissions: [Permissions.READ_EMPLOYEE, Permissions.WRITE_EMPLOYEE],
     contentSize: '800 500'
+  },
+  'dynamic-report': {
+    id: 'dynamic-report',
+    name: 'Relatório dinâmico',
+    path: 'DynamicReportScreen',
+    subScreenOnly: true,
+    contentSize: '800 500'
   }
 } as Screens
 

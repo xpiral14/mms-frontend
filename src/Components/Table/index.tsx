@@ -11,16 +11,16 @@ const Table = function <T = any>(props: TableProps<T>) {
     return column.withoutValueText || '-'
   }
 
-  const getColumnText = (column: Column<T>, row?: Row<T>) => {
+  const getColumnText = (column: Column<T>, row?: Row<T>, rowIndex?: number) => {
     const text = row?.[column.keyName!]
     if (column.keyName && !row?.[column.keyName!]) {
       return getWithoutValueDefaultText(column)
     }
-    return column?.formatText?.(row) ?? text
+    return column?.formatText?.(row, rowIndex) ?? text
   }
 
-  const defaultCellRenderer = (column: Column<T>, row: Row<T>) => (
-    <div>{getColumnText(column, row)}</div>
+  const defaultCellRenderer = (column: Column<T>, row: Row<T>, rowIndex: number) => (
+    <div>{getColumnText(column, row, rowIndex)}</div>
   )
 
   const footer = useMemo(
@@ -73,14 +73,14 @@ const Table = function <T = any>(props: TableProps<T>) {
         </tr>
       </thead>
       <tbody>
-        {props.rows?.map((row) => (
+        {props.rows?.map((row, rowIndex) => (
           <tr
             key={props.rowKey?.(row) || (row?.id as any)}
             className={props?.isSelected?.(row) ? 'active' : ''}
           >
             {props.columns?.map((column) => (
               <td key={column.keyName} onClick={() => props.onRowSelect?.(row)}>
-                {(column?.cellRenderer ?? defaultCellRenderer)(column, row)}
+                {(column?.cellRenderer ?? defaultCellRenderer)(column, row, rowIndex)}
               </td>
             ))}
           </tr>

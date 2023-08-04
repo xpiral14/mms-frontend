@@ -27,6 +27,7 @@ export type ScreenIds =
   | 'goods-register'
   | 'good-product-register'
   | 'distribute-goods'
+  | 'dynamic-report'
 
 export interface ScreenData {
   id: ScreenIds

@@ -406,6 +406,10 @@ const GoodsScreen: React.FC<GoodRegisterScreenProps> = ({
           handleSaveButtonOnClick={handleSaveButtonClick}
           handleDeleteButtonOnClick={handleDeleteButtonOnClick}
           screen={screen}
+          reports={[{
+            columns: [],
+            text: ''
+          }]}
         />
       </Row>
       <Render renderIf={screenStatus === ScreenStatus.SEE_REGISTERS}>

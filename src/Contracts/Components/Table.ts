@@ -9,7 +9,7 @@ export type ColumnFilter<T = Record<string, any>> = {
 export type Column<T = Record<string, any>> = {
   cellRenderer?: (column: Column<T>, row: Row<T>) => React.ReactNode
   keyName?: keyof T & string
-  formatText?: (row?: Row<T>) => React.ReactNode
+  formatText?: (row?: Row<T>, rowIndex?: number) => React.ReactNode
   withoutValueText?: React.ReactNode
   name?: React.ReactNode
   style?: CSSProperties

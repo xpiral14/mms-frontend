@@ -74,14 +74,14 @@ const OrderResume: FunctionComponent<OrderResumeScreenProps> = (props) => {
   }, [])
 
   const { showErrorToast } = useToast()
-  const [costumer, setCostumer] = useState<User | null>(null)
-  const [isCostumerCollapsed, setIsCostumerCollapsed] = useState(false)
-  const [loadingCostumers, loadCostumer] = useAsync(async () => {
+  const [customer, setCustomer] = useState<User | null>(null)
+  const [isCustomerCollapsed, setIsCustomerCollapsed] = useState(false)
+  const [loadingCustomers, loadCustomer] = useAsync(async () => {
     if (!order?.id) return
 
-    const response = await OrderService.getOrderCostumer(order.id)
+    const response = await OrderService.getOrderCustomer(order.id)
 
-    setCostumer(response.data.data)
+    setCustomer(response.data.data)
   }, [])
   const [isOrderServicesCollapsed, setIsOrderServicesCollapsed] =
     useState(false)
@@ -268,7 +268,7 @@ const OrderResume: FunctionComponent<OrderResumeScreenProps> = (props) => {
   const reloadAll = () => {
     loadOrderServices()
     loadOrderProducts()
-    loadCostumer()
+    loadCustomer()
     loadOrder()
     loadOrderStatuses()
   }
@@ -312,15 +312,15 @@ const OrderResume: FunctionComponent<OrderResumeScreenProps> = (props) => {
             title={
               <Row>
                 Dados do cliente
-                <Render renderIf={loadingCostumers}>
+                <Render renderIf={loadingCustomers}>
                   <Spinner size={10} />
                 </Render>
               </Row>
             }
-            isCollapsed={isCostumerCollapsed || loadingCostumers}
-            onChange={() => setIsCostumerCollapsed((prev) => !prev)}
+            isCollapsed={isCustomerCollapsed || loadingCustomers}
+            onChange={() => setIsCustomerCollapsed((prev) => !prev)}
           >
-            <Render renderIf={!loadingCostumers}>
+            <Render renderIf={!loadingCustomers}>
               <Row className='flex align-center w-100'>
                 <InputText
                   id=''
@@ -332,7 +332,7 @@ const OrderResume: FunctionComponent<OrderResumeScreenProps> = (props) => {
                   }}
                   label='Nome do cliente'
                   readOnly
-                  value={costumer?.name}
+                  value={customer?.name}
                 />
                 <InputText
                   style={{
@@ -344,7 +344,7 @@ const OrderResume: FunctionComponent<OrderResumeScreenProps> = (props) => {
                   id=''
                   label='Email'
                   readOnly
-                  value={costumer?.email}
+                  value={customer?.email}
                 />
                 <InputText
                   style={{
@@ -470,12 +470,12 @@ const OrderResume: FunctionComponent<OrderResumeScreenProps> = (props) => {
             title={
               <Row>
                 Produtos
-                <Render renderIf={loadingCostumers}>
+                <Render renderIf={loadingCustomers}>
                   <Spinner size={10} />
                 </Render>
               </Row>
             }
-            isCollapsed={isOrderProductsCollapsed || loadingCostumers}
+            isCollapsed={isOrderProductsCollapsed || loadingCustomers}
             onChange={() => setIsOrderProductsCollapsed((prev) => !prev)}
           >
             <Table

@@ -17,7 +17,7 @@ import {
 import ScreenProps from '../../../Contracts/Components/ScreenProps'
 import { Option } from '../../../Contracts/Components/Suggest'
 import { Validation } from '../../../Contracts/Hooks/useValidation'
-import Costumer from '../../../Contracts/Models/Costumer'
+import Customer from '../../../Contracts/Models/Customer'
 import Employee from '../../../Contracts/Models/Employee'
 import Order from '../../../Contracts/Models/Order'
 import { ReceiptPostProps } from '../../../Contracts/Screen/ReceiptPosting'
@@ -29,7 +29,7 @@ import { useScreen } from '../../../Hooks/useScreen'
 import { useToast } from '../../../Hooks/useToast'
 import useValidation from '../../../Hooks/useValidation'
 import { useWindow } from '../../../Hooks/useWindow'
-import CostumerService from '../../../Services/CostumerService'
+import CustomerService from '../../../Services/CustomerService'
 import OrderService from '../../../Services/OrderService'
 import EmployeeService from '../../../Services/EmployeeService'
 import { Body, Container, Header } from './style'
@@ -55,6 +55,7 @@ import capitalize from '../../../Util/capitalize'
 import ReceiptStatus from '../../../Constants/ReceiptStatus'
 import { useAuth } from '../../../Hooks/useAuth'
 import useMessageError from '../../../Hooks/useMessageError'
+import Bar from '../../../Components/Layout/Bar'
 
 const discountTypeOptions: Option[] = [
   {
@@ -78,7 +79,7 @@ type OrderPayload = {
   id?: number
   serviceIds: number[]
   productIds: number[]
-  costumerId?: number
+  customerId?: number
   description?: string
   date: Date
   status: orderStatus
@@ -99,9 +100,9 @@ type OrderFilter = {
   status?: string
   validity?: Date
 }
-const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
+const OrderServiceCustomer: React.FC<ScreenProps> = ({ screen }) => {
   const { hasPermission, auth } = useAuth()
-  const [costumers, setCostumer] = useState<Costumer[]>([])
+  const [customers, setCustomer] = useState<Customer[]>([])
   const [employees, setEmployees] = useState<Employee[]>([])
   const [orderStatuses, setOrderStatuses] = useState<OrderStatus[]>([])
   const [isDetailsCollapsed, setIsDetailsCollapsed] = useState(true)
@@ -127,22 +128,22 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
       ...object,
     }))
 
-  const costumerOptions = useMemo(() => {
+  const customerOptions = useMemo(() => {
     const normalized = {
       options: [] as Option[],
       keyValue: {} as { [x: number]: Option },
     }
-    costumers.forEach((costumer) => {
+    customers.forEach((customer) => {
       const option = {
-        label: costumer.name,
-        value: costumer.id,
+        label: customer.name,
+        value: customer.id,
       }
       normalized.options.push(option)
 
       normalized.keyValue[option.value] = option
     })
     return normalized
-  }, [costumers])
+  }, [customers])
   const employeeOptions = useMemo(
     () =>
       employees.map((employee) => ({
@@ -152,10 +153,10 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
     [employees]
   )
 
-  const [loadingCostumers, loadCostumers] = useAsync(async () => {
+  const [loadingCustomers, loadCustomers] = useAsync(async () => {
     try {
-      const response = await CostumerService.getAll(1, 100)
-      setCostumer(response.data.data as Costumer[])
+      const response = await CustomerService.getAll(1, 100)
+      setCustomer(response.data.data as Customer[])
     } catch (error) {
       showErrorToast({
         message: 'Erro ao obter lista de clientes',
@@ -223,9 +224,9 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
 
   const validations: Validation[] = [
     {
-      check: createValidation('costumerId'),
+      check: createValidation('customerId'),
       errorMessage: 'Escolha o cliente',
-      inputId: `${screen.id}-select-costumer`,
+      inputId: `${screen.id}-select-customer`,
     },
   ]
   const { validate } = useValidation(validations)
@@ -236,7 +237,7 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
   const { openSubScreen } = useScreen()
   const {showErrorMessage} = useMessageError()
   const reloadAllScreenData = () => {
-    loadCostumers()
+    loadCustomers()
     loadEmployees()
     setReloadGrid(true)
   }
@@ -273,7 +274,7 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
             value: totalPrice - receiptsTotal,
             date: new Date(),
             orderId: payload.id,
-            customerId: payload.costumerId,
+            customerId: payload.customerId,
             description: payload?.reference
               ? 'Lançamento para a ordem ' + payload?.reference
               : undefined,
@@ -296,7 +297,7 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
       const requestPayload = {
         date: payload?.date ? format(payload?.date, 'yyyy-MM-dd') : null,
         reference: payload.reference,
-        costumerId: payload.costumerId!,
+        customerId: payload.customerId!,
         description: payload?.description,
         productIds: [] as number[],
         serviceIds: [] as number[],
@@ -370,7 +371,7 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
       id: payload.id,
       date: payload?.date ? format(payload?.date, 'yyyy-MM-dd') : null,
       reference: payload.reference,
-      costumerId: payload.costumerId!,
+      customerId: payload.customerId!,
       description: payload?.description,
       status: payload.status,
       validity: payload?.date
@@ -448,8 +449,8 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
   const toOrderModel = (data: Partial<OrderPayload>) => {
     return {
       id: data.id!,
-      costumer_id: data.costumerId,
-      employee_id: data.costumerId,
+      customer_id: data.customerId,
+      employee_id: data.customerId,
       status: '1',
       date: data.date,
       validity: data.validity,
@@ -610,7 +611,7 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
 
       <Body>
         <Render renderIf={screenStatus !== ScreenStatus.SEE_REGISTERS}>
-          <Box className='flex flex-justify-end'>
+          <Bar className='my-1 flex flex-justify-end'>
             <Render renderIf={Boolean(payload.id)}>
               <Button
                 intent='primary'
@@ -640,7 +641,7 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
             >
               Produtos
             </Button>
-          </Box>
+          </Bar>
           <Box className='flex align-center flex-wrap'>
             <Render renderIf={Boolean(payload.id)}>
               <InputText
@@ -694,24 +695,24 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
               handleButtonReloadClick={loadOrderStatuses}
             />
             <Select
-              handleButtonReloadClick={loadCostumers}
-              loading={loadingCostumers}
+              handleButtonReloadClick={loadCustomers}
+              loading={loadingCustomers}
               required
               allowCreate
-              activeItem={payload?.costumerId}
-              onChange={(option) => changePayload('costumerId', option.value)}
+              activeItem={payload?.customerId}
+              onChange={(option) => changePayload('customerId', option.value)}
               defaultButtonText='Escolha um profissional'
               label='Cliente'
-              items={costumerOptions.options}
+              items={customerOptions.options}
               handleCreateButtonClick={(query) => {
                 openSubScreen(
                   {
-                    id: 'costumer-register',
+                    id: 'customer-register',
                     contentSize: '700px 350px',
                   },
                   screen.id,
                   {
-                    defaultCostumer: {
+                    defaultCustomer: {
                       name: query,
                       personType: PersonType.PHYSICAL,
                     },
@@ -721,7 +722,7 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
               }}
               buttonProps={
                 {
-                  id: `${screen.id}-select-costumer`,
+                  id: `${screen.id}-select-customer`,
                   style: {
                     width: '100%',
                     minWidth: '150px',
@@ -751,7 +752,7 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
                     },
                     screen.id,
                     {
-                      defaultCostumer: {
+                      defaultCustomer: {
                         name: query,
                         personType: PersonType.PHYSICAL,
                       },
@@ -761,7 +762,7 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
                 }}
                 buttonProps={
                   {
-                    id: `${screen.id}-select-costumer`,
+                    id: `${screen.id}-select-customer`,
                     style: {
                       width: '100%',
                       minWidth: '150px',
@@ -957,7 +958,7 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
                   inputStyle={{
                     width: '100%',
                   }}
-                  id={screen.id + 'costumer_filter'}
+                  id={screen.id + 'customer_filter'}
                   value={filter.customerName}
                   label='Nome do cliente'
                   onChange={(e) =>
@@ -1020,4 +1021,4 @@ const OrderServiceCostumer: React.FC<ScreenProps> = ({ screen }) => {
   )
 }
 
-export default OrderServiceCostumer
+export default OrderServiceCustomer

@@ -5,12 +5,12 @@ import Paginated from '../Contracts/Models/Paginated'
 const DEFAULT_URL = '/employees'
 
 export default class EmployeeService {
-  static async create(costumerData: Partial<Employee>) {
-    return api.post(`${DEFAULT_URL}`, costumerData)
+  static async create(customerData: Partial<Employee>) {
+    return api.post(`${DEFAULT_URL}`, customerData)
   }
 
-  static async edit(costumerData: Partial<Employee>) {
-    return api.put(`${DEFAULT_URL}/${costumerData.id}`, costumerData)
+  static async edit(customerData: Partial<Employee>) {
+    return api.put(`${DEFAULT_URL}/${customerData.id}`, customerData)
   }
 
   static async getAll(page = 10, limit = 20, query?: Partial<Employee>) {
@@ -23,7 +23,7 @@ export default class EmployeeService {
     })
   }
 
-  static async delete(costumerId: number) {
-    return api.delete(`${DEFAULT_URL}/${costumerId}`)
+  static async delete(customerId: number) {
+    return api.delete(`${DEFAULT_URL}/${customerId}`)
   }
 }

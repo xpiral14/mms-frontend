@@ -12,7 +12,7 @@ type Props = {
 
 const Collapse: FunctionComponent<Props> = (props) => {
   return <>
-    <CollapseTitle onClick={props.onChange}>
+    <CollapseTitle className='d-flex gap-3' onClick={props.onChange}>
       <Render renderIf={props.isCollapsed}>
         <Icon icon='chevron-right'/>
       </Render>
@@ -21,7 +21,7 @@ const Collapse: FunctionComponent<Props> = (props) => {
       </Render>
       {props.title}
     </CollapseTitle>
-    <BluePrintCollapse className='w-100' isOpen={!props.isCollapsed}>
+    <BluePrintCollapse className='w-100' isOpen={!props.isCollapsed} keepChildrenMounted>
       {props.children}
     </BluePrintCollapse>
     <Render renderIf={props.bordered && props.isCollapsed}>

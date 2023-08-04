@@ -105,7 +105,8 @@ export default function ScreenProvider({ children }: any) {
         ziBase: 4,
         id: screenOptions.id.replace(/ /g, '-'),
         headerTitle: screenOptions.headerTitle ?? screenData.name,
-        contentSize: screenOptions.contentSize ?? '900300',
+        contentSize:
+          screenOptions.contentSize ?? screenData.contentSize ?? '900 300',
         onclosed: () => {
           removeScreen(screenOptions.id)
         },
@@ -121,6 +122,9 @@ export default function ScreenProvider({ children }: any) {
       screen.increaseScreenSize = screenOptions.minHeight
         ? changeScreenHeight(screen, screenOptions.maxHeight as any)
         : undefined
+      screen.createElementId = function(id: string){
+        return screen.id + '-' + id
+      }
       screen.id = screenOptions.id
 
       const Component = lazy(() => {
@@ -218,7 +222,7 @@ export default function ScreenProvider({ children }: any) {
 
   function openSubScreen<T = any>(
     panelOptions: Omit<ContextPanelOptions, 'path'>,
-    parentPanelId: ScreenIds,
+    parentPanelId?: ScreenIds,
     props?: T
   ) {
     const screen = allScreens[panelOptions.id]

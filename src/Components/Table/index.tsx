@@ -1,22 +1,26 @@
-import React, { FC, useMemo } from 'react'
-import { Column, TableProps } from '../../Contracts/Components/Table'
+import React, { useMemo } from 'react'
+import { Column, Row, TableProps } from '../../Contracts/Components/Table'
 import Render from '../Render'
+import Button from '../Button'
+import { Popover2 } from '@blueprintjs/popover2'
+import Filter from './Filter'
+import { Colors, Icon } from '@blueprintjs/core'
 
-const Table: FC<TableProps> = (props) => {
-  const getWithoutValueDefaultText = (column: Column) => {
+const Table = function <T = any>(props: TableProps<T>) {
+  const getWithoutValueDefaultText = (column: Column<T>) => {
     return column.withoutValueText || '-'
   }
 
-  const getColumnText = (column: Column, row?: Record<string, any>) => {
+  const getColumnText = (column: Column<T>, row?: Row<T>, rowIndex?: number) => {
     const text = row?.[column.keyName!]
     if (column.keyName && !row?.[column.keyName!]) {
       return getWithoutValueDefaultText(column)
     }
-    return column?.formatText?.(row) ?? text
+    return column?.formatText?.(row, rowIndex) ?? text
   }
 
-  const defaultCellRenderer = (column: Column, row: Record<any, any>) => (
-    <div>{getColumnText(column, row)}</div>
+  const defaultCellRenderer = (column: Column<T>, row: Row<T>, rowIndex: number) => (
+    <div>{getColumnText(column, row, rowIndex)}</div>
   )
 
   const footer = useMemo(
@@ -24,27 +28,75 @@ const Table: FC<TableProps> = (props) => {
     [props.columns, props.rows]
   )
   return (
-    <table className='w-100 bp4-html-table bp4-html-table-bordered bp4-html-table-striped bp4-interactive'>
+    <table className='w-100 bp4-html-table bp4-html-table-bordered bp4-html-table-striped bp4-interactive position-relative'>
       <thead>
         <tr>
           {props.columns?.map((column) => (
-            <th key={column.keyName} style={column.style}>{column.name}</th>
+            <th key={column.keyName as string} style={column.style}>
+              <div
+                className='d-flex justify-content-between align-items-center'
+                style={{ height: 30 }}
+              >
+                <span>{column.name}</span>
+                <Render renderIf={Boolean(column.filters?.length)}>
+                  <Popover2
+                    content={
+                      <Filter<T>
+                        column={column}
+                        onFilter={props.onFilter}
+                        filter={props.filter ?? {}}
+                      />
+                    }
+                  >
+                    <Button
+                      help='Aplicar filtros'
+                      icon={
+                        <Icon
+                          icon='filter'
+                          color={
+                            Object.keys(props.filter ?? {}).some(
+                              (k) =>
+                                column.keyName && k.startsWith(column.keyName)
+                            )
+                              ? Colors.BLUE3
+                              : undefined
+                          }
+                        />
+                      }
+                      minimal
+                    />
+                  </Popover2>
+                </Render>
+              </div>
+            </th>
           ))}
         </tr>
       </thead>
       <tbody>
-        {props.rows?.map((row) => (
+        {props.rows?.map((row, rowIndex) => (
           <tr
-            key={props.rowKey?.(row) || row?.id}
+            key={props.rowKey?.(row) || (row?.id as any)}
             className={props?.isSelected?.(row) ? 'active' : ''}
           >
             {props.columns?.map((column) => (
               <td key={column.keyName} onClick={() => props.onRowSelect?.(row)}>
-                {(column?.cellRenderer ?? defaultCellRenderer)(column, row)}
+                {(column?.cellRenderer ?? defaultCellRenderer)(column, row, rowIndex)}
               </td>
             ))}
           </tr>
         ))}
+        <Render renderIf={!props.loading && !props.rows?.length}>
+          <tr>
+            <td colSpan={props.columns.length}>
+              <div className='w-100 d-flex justify-content-center align-items-center gap-3'>
+                <Icon icon='zoom-out' size={32} color={Colors.GRAY3} />
+                <span style={{ fontSize: 30, color: Colors.GRAY3 }}>
+                Não há nada aqui
+                </span>
+              </div>
+            </td>
+          </tr>
+        </Render>
       </tbody>
       <Render renderIf={Boolean(props.renderFooter)}>{footer}</Render>
     </table>

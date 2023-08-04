@@ -14,7 +14,7 @@ type WindowContext<P = any> = {
   isScreenStatusEdit: boolean
   isScreenStatusNew: boolean
   isScreenStatusSeeRegisters: boolean
-  changePayloadAttribute: (key: any, value: any) => void
+  changePayloadAttribute: (key: keyof P, value: any) => void
 }
 
 const windowContext = createContext<WindowContext>(null as any)
@@ -33,7 +33,7 @@ export function useWindow<P = Partial<any>>() {
 const WindowContextProvider: React.FC = ({ children }) => {
   const [payload, setPayload] = useState<any>({})
   const [screenStatus, setScreenStatus] = useState<ScreenStatus>(
-    ScreenStatus.VISUALIZE
+    ScreenStatus.SEE_REGISTERS
   )
 
   const changePayloadAttribute = useCallback((key: keyof typeof payload, value: any) => {

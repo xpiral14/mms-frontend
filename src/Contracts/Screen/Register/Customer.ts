@@ -1,8 +1,8 @@
 import { ScreenStatus } from '../../../Constants/Enums'
 import ScreenProps from '../../Components/ScreenProps'
-import Costumer from '../../Models/Costumer'
+import Customer from '../../Models/Customer'
 
-export interface CostumerRegisterScreenProps extends ScreenProps {
-  defaultCostumer?: Partial<Costumer>
+export interface CustomerRegisterScreenProps extends ScreenProps {
+  defaultCustomer?: Partial<Customer>
   defaultScreenStatus?: ScreenStatus
 }

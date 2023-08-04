@@ -7,7 +7,6 @@ declare module 'jspanel4/es6module/jspanel' {
      * String can be any value that can be assigned to the CSS property animation-duration
      */
     time?: string | number
-    background?: string
     /**
      * By default the progressbar is shown. false turns it off
      * If progressbar is set to false any setting of background has no effect
@@ -30,9 +29,6 @@ declare module 'jspanel4/es6module/jspanel' {
     height?: string | number | (() => {})
   }
   type PanelOptions = {
-    position?: string
-    contentSize?: string
-    contentAjax?: any
     addCloseControl?: number
     animateIn?: string
     animateOut?: string
@@ -293,7 +289,7 @@ declare module 'jspanel4/es6module/jspanel' {
       | 'material-icons'
       | 'bootstrap'
       | 'glyphicon'
-      | Array
+      | Array<string>
 
     id?: string | (() => string)
 
@@ -336,30 +332,10 @@ declare module 'jspanel4/es6module/jspanel' {
 
     /**
      * Function or array of function to execute immediately before a panel
-     * normalizes, regardless of whether the panel is minimized by a user or
-     * programmatically. It may also be used to cancel minimizing of a panel.
-     */
-    onbeforeminimize?: FunctionWithPanelInMethod | FunctionWithPanelInMethod[]
-
-    /**
-     * Function or array of function to execute immediately before a panel
-     * smallifies, regardless of whether the panel is minimized by a user or
-     * programmatically. It may also be used to cancel minimizing of a panel.
-     */
-    onbeforeminimize?: FunctionWithPanelInMethod | FunctionWithPanelInMethod[]
-
-    /**
-     * Function or array of function to execute immediately before a panel
      * unsmallifies, regardless of whether the panel is smallified by a user or
      * programmatically. It may also be used to cancel minimizing of a panel.
      */
     onbeforeunsmallify?: FunctionWithPanelInMethod | FunctionWithPanelInMethod[]
-
-    /**
-     * Function or array of function to execute after a panel closed,
-     * regardless of whether the panel was closed by a user or programmatically.
-     */
-    onclosed?: FunctionWithPanelInMethod | FunctionWithPanelInMethod[]
 
     /**
      * Function or array of function to execute after a panel fronted
@@ -367,13 +343,6 @@ declare module 'jspanel4/es6module/jspanel' {
      * whether the panel was fronted by a user or programmatically.
      */
     onclosed?: FunctionWithPanelInMethod | FunctionWithPanelInMethod[]
-
-    /**
-     * Function or array of function to execute after a panel maximized,
-     * regardless of whether the panel was maximized by a user or
-     * rogrammatically.
-     */
-    onmaximized?: FunctionWithPanelInMethod | FunctionWithPanelInMethod[]
 
     /**
      * Function or array of function to execute after a panel minimized,
@@ -540,8 +509,8 @@ declare module 'jspanel4/es6module/jspanel' {
      */
     addToolbar(
       locatio?: 'header' | 'footer',
-      toolbar?: string | Node | Array | Function,
-      callback: FunctionWithPanelInMethod
+      toolbar?: string | Node | Array<string> | Function,
+      callback?: FunctionWithPanelInMethod
     ): Panel
 
     /**

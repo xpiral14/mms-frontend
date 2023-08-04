@@ -116,8 +116,8 @@ export default class OrderService {
     return api.delete(`${DEFAULT_PATH}/${orderId}/orderProducts/${orderServiceId}`)
   }
 
-  static async getOrderCostumer(orderId: number) {
-    return api.get<Response<User>>(`${DEFAULT_PATH}/${orderId}/costumer`)
+  static async getOrderCustomer(orderId: number) {
+    return api.get<Response<User>>(`${DEFAULT_PATH}/${orderId}/customer`)
   }
 
   static async downloadOrderResumeReport(order: Partial<Order>) {

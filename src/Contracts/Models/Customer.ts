@@ -1,6 +1,6 @@
 import { PersonType } from '../../Constants/Enums'
 
-export default interface Costumer {
+export default interface Customer {
   id: number
   roleId: number
   companyId: number

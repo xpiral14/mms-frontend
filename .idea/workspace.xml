@@ -1,31 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
   <component name="ChangeListManager">
-    <list default="true" id="79e2c5f6-2a38-41a8-86d5-8d43eb801e3b" name="Changes" comment="Merge pull request #43 from xpiral14/feat/Add-real-time&#10;&#10;Feat/add real time">
-      <changelist_data name="Samuel Araujo Reis" email="sa.reis1999@gmail.com" />
-      <change afterPath="$PROJECT_DIR$/src/Screens/Order/AssignEmployeeToOrder/index.tsx" afterDir="false" />
+    <list default="true" id="79e2c5f6-2a38-41a8-86d5-8d43eb801e3b" name="Changes" comment="feat: added screen to added products to good">
+      <change afterPath="$PROJECT_DIR$/src/Components/Select/styles.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/Contracts/Models/DistributedGoodProduct.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/Contracts/Screen/DistributeGoods/index.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/Screens/DistributeGoods/DistributeGoodProduct.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/Screens/DistributeGoods/index.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/Util/addEllipsis.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Components/Layout/Bar/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/Components/Layout/Bar/index.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/App.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/App.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Components/Collapse/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/Components/Collapse/index.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Components/Select/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/Components/Select/index.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Contracts/Hooks/useScreen.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/Contracts/Hooks/useScreen.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Contracts/Models/Service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/Contracts/Models/Service.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Contracts/Screen/OrderServiceDetails/OrderServiceDetailsProps.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/Contracts/Screen/OrderServiceDetails/OrderServiceDetailsProps.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Screens/OrderPartDetails/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/Screens/OrderPartDetails/index.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Screens/OrderResume/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/Screens/OrderResume/index.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Screens/OrderServiceDetails/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/Screens/OrderServiceDetails/index.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Screens/Register/ServiceOrder/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/Screens/Register/ServiceOrder/index.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Services/EmployeeService.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/Services/EmployeeService.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Services/NotificationService.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/Services/NotificationService.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Services/OrderService.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/Services/OrderService.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Services/PartsService.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/Services/PartsService.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Statics/menu.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/Statics/menu.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Contracts/Models/Product.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/Contracts/Models/Product.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Contracts/Models/ProductStock.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/Contracts/Models/ProductStock.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Contracts/Models/Stock.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/Contracts/Models/Stock.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Hooks/useAuth.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/Hooks/useAuth.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Hooks/useMessageError.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/Hooks/useMessageError.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Pages/Index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/Pages/Index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Routes/Route.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/Routes/Route.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Screens/Register/Goods/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/Screens/Register/Goods/index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Services/AuthService.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/Services/AuthService.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Services/GoodService.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/Services/GoodService.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Services/StockService.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/Services/StockService.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Statics/screens.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/Statics/screens.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/globalStyle.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/globalStyle.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Util/getCookie.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/Util/getCookie.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ChangesViewManager">
+    <option name="groupingKeys">
+      <option value="directory" />
+    </option>
   </component>
   <component name="ComposerSettings">
     <execution />
@@ -48,26 +62,38 @@
   <component name="GitToolBoxStore">
     <option name="projectConfigVersion" value="5" />
   </component>
+  <component name="MacroExpansionManager">
+    <option name="directoryName" value="447aumdo" />
+  </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
   </component>
+  <component name="PackageJsonUpdateNotifier">
+    <dismissed value="$PROJECT_DIR$/package.json" />
+  </component>
+  <component name="PhpWorkspaceProjectConfiguration" interpreter_name="PHP 8.2" />
   <component name="ProjectId" id="2AxSnQ0bHjF4VFAmaywLNeTV7nE" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "WebServerToolWindowFactoryState": "false",
-    "node.js.detected.package.eslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "nodejs_package_manager_path": "yarn",
-    "ts.external.directory.path": "\\\\wsl$\\Ubuntu\\home\\samreis\\documents\\work\\mms\\mms-frontend\\node_modules\\typescript\\lib",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;feature/suppliers&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/sarei/Documents/work/mms/mms-frontend&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;yarn&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;C:\\Users\\sarei\\Documents\\work\\mms\\mms-frontend\\node_modules\\typescript\\lib&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
@@ -77,7 +103,25 @@
       <option name="presentableId" value="Default" />
       <updated>1655949923911</updated>
       <workItem from="1655949925354" duration="2778000" />
+      <workItem from="1681071497733" duration="5993000" />
+      <workItem from="1681163738166" duration="11381000" />
+      <workItem from="1681220920449" duration="595000" />
+      <workItem from="1681431049891" duration="15459000" />
+      <workItem from="1681476509382" duration="32000" />
+      <workItem from="1681512266108" duration="4954000" />
+      <workItem from="1681737435516" duration="75000" />
+      <workItem from="1681769984590" duration="2389000" />
+      <workItem from="1681853643963" duration="3472000" />
+      <workItem from="1685663226554" duration="1000" />
     </task>
+    <task id="LOCAL-00001" summary="feat: added screen to added products to good">
+      <created>1681080713183</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1681080713183</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -97,6 +141,7 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Added AssignEmployeeToOrderScreen" />
     <MESSAGE value="Merge pull request #43 from xpiral14/feat/Add-real-time&#10;&#10;Feat/add real time" />
-    <option name="LAST_COMMIT_MESSAGE" value="Merge pull request #43 from xpiral14/feat/Add-real-time&#10;&#10;Feat/add real time" />
+    <MESSAGE value="feat: added screen to added products to good" />
+    <option name="LAST_COMMIT_MESSAGE" value="feat: added screen to added products to good" />
   </component>
 </project>

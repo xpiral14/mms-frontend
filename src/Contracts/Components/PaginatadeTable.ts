@@ -2,6 +2,7 @@ import { ColumnProps as BlueprintColumnProps } from '@blueprintjs/table'
 import { AxiosResponse } from 'axios'
 import Paginated from '../Models/Paginated'
 import { TableProps } from './Table'
+import { FilterType, ReportRequestOption } from '../Types/Api'
 // import { ReactPaginateProps } from 'react-paginate'
 
 export type Row = Record<string, any>
@@ -11,21 +12,26 @@ export interface ColumnProps extends BlueprintColumnProps {
   formatText?: (text: string, row?: Row) => React.ReactNode
   withoutValueText?: string
 }
-export interface PaginatedTableProps extends Omit<TableProps, 'rows'> {
+
+export interface PaginatedTableProps<T = any> extends Omit<TableProps<T>, 'rows'> {
   containerProps?: any
   request?: (
     page: number | any,
     limit: number,
-    filters?: Record<string, string | number | undefined>
+    filters?: Record<string, string | number | undefined>,
+    options?: ReportRequestOption
   ) => Promise<AxiosResponse<Paginated<any>>>
   customRequest?:(
     page: number | any,
     limit: number,
-    filters?: Record<string, string | number | undefined>
+    filters: FilterType,
+    options?: ReportRequestOption
   ) => Promise<AxiosResponse<Paginated<any>>>
   height?: string
   isSelected?: (row: Row) => boolean
   onRowSelect?: (row: Row) => void
   rowKey?: (row: Row) => string
   filters?:Record<string, string | number | undefined>
+  downloadable?: boolean
+  reportRequestOptions?: ReportRequestOption[]
 }

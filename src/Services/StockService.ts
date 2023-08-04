@@ -32,4 +32,8 @@ export default class StockService {
   static async delete(id: number) {
     return api.delete(`${DEFAULT_PATH}/${id}`)
   }
+
+  static async getStockThatHasProduct(productId: number) {
+    return api.get<Response<Stock[]>>(`${DEFAULT_PATH}/product_stocks/products/${productId}`)
+  }
 }

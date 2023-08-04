@@ -1,3 +1,5 @@
+import Unit from './Unit'
+
 export default  interface Product {
   id: number;
   companyId: number;
@@ -9,6 +11,7 @@ export default  interface Product {
   description?: string;
   created_at: string;
   updated_at: string;
+  unit?: Unit
 }
 
 

@@ -13,6 +13,7 @@ export const Container = styled.div`
 `
 
 export const Body = styled.div<{ height?: string }>`
+  position: relative;
   flex: 1;
   height: ${(p) =>
     css`
@@ -32,7 +33,12 @@ export const Body = styled.div<{ height?: string }>`
     color: ${Colors.WHITE};
   }
 `
-
+export const TableBackDrop = styled.div<{loading?: boolean}>`
+  display: ${p => p.loading ? 'block' : 'none'};
+  position: absolute;
+  top: 0;
+  left:0;
+`
 export const Footer = styled.div`
   margin-top: 5px;
   ul {

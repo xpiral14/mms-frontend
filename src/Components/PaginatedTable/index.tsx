@@ -2,8 +2,8 @@ import { PaginatedTableProps } from '../../Contracts/Components/PaginatadeTable'
 import Paginate, { ReactPaginateProps } from 'react-paginate'
 
 import { Body, Container, Footer, PaginateContainer } from './style'
-import { Card, Classes, Icon, Button } from '@blueprintjs/core'
-import { useEffect, useMemo, useState } from 'react'
+import { Card, Classes, Icon, Menu, MenuItem } from '@blueprintjs/core'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useToast } from '../../Hooks/useToast'
 import { useGrid } from '../../Hooks/useGrid'
 import Select from '../Select'
@@ -11,6 +11,13 @@ import { Option } from '../../Contracts/Components/Suggest'
 import { CSSProperties } from 'styled-components'
 import React from 'react'
 import Table from '../Table'
+import Render from '../Render'
+import DownloadService from '../../Services/DownloadService'
+import { uniqueId } from '@blueprintjs/core/lib/esm/common/utils'
+import { Popover2, Popover2InteractionKind } from '@blueprintjs/popover2'
+import { ReportRequestOption } from '../../Contracts/Types/Api'
+import Button from '../Button'
+import LoadingBackdrop from '../Layout/LoadingBackdrop'
 const pageOptions: Option[] = [
   {
     label: '5',
@@ -34,12 +41,22 @@ const pageOptions: Option[] = [
   },
 ]
 
-const PaginatedTable: React.FC<PaginatedTableProps> = ({
+const defaultRequestOptions = [
+  {
+    reportType: 'csv',
+    name: 'Mercadorias do fornecedor',
+    responseType: 'text',
+    mimeType: 'text/csv',
+  },
+] as ReportRequestOption[]
+const PaginatedTable = function <T = any>({
   columns,
   request,
   customRequest,
+  downloadable,
+  reportRequestOptions = defaultRequestOptions,
   ...rest
-}) => {
+}: PaginatedTableProps<T>) {
   const {
     reloadGrid,
     setReloadGrid,
@@ -51,15 +68,21 @@ const PaginatedTable: React.FC<PaginatedTableProps> = ({
     gridResponse,
   } = useGrid()
   const [selectedRegions] = useState<{ cols: number[]; rows: number[] }[]>([])
+  const [selectedFilters, setSelectedFilters] = useState(
+    {} as Record<string, string>
+  )
+  const [loadingReport, setLoadingReport] = useState(false)
   const { showErrorToast } = useToast()
-
+  const apiRequest = customRequest ? customRequest : request
   useEffect(() => {
     const loadRequestData = async () => {
       try {
-        const apiRequest = customRequest ? customRequest : request
-        const response = await apiRequest?.(page + 1, limit, rest?.filters || {})
-        if(response?.data)
-          setGridResponse(response?.data)
+        const response = await apiRequest?.(
+          page + 1,
+          limit,
+          selectedFilters ?? {}
+        )
+        if (response?.data) setGridResponse(response?.data)
       } catch (error) {
         showErrorToast({
           message: 'Erro ao obter dados',
@@ -71,7 +94,7 @@ const PaginatedTable: React.FC<PaginatedTableProps> = ({
     if (reloadGrid && limit) {
       loadRequestData()
     }
-  }, [reloadGrid, limit, page,  rest?.filters])
+  }, [reloadGrid, limit, page, rest?.filters, selectedFilters])
 
   const paginateOptions = useMemo(
     () =>
@@ -128,7 +151,32 @@ const PaginatedTable: React.FC<PaginatedTableProps> = ({
     setReloadGrid(true)
     setLimit(option.value as number)
   }
-
+  const handleDownloadClick = (reportType: ReportRequestOption) => async () => {
+    setLoadingReport(true)
+    try {
+      const response = await apiRequest?.(
+        page,
+        limit,
+        selectedFilters,
+        reportType
+      )
+      DownloadService.download(
+        response,
+        uniqueId(reportType.name ?? 'Relatório') + `.${reportType.reportType}`,
+        {
+          mimeType: reportType.mimeType,
+        }
+      )
+    } catch (error) {
+      showErrorToast('não foi possível baixar o relatório')
+    } finally {
+      setLoadingReport(false)
+    }
+  }
+  const onFilter = useCallback((filter: { [x: string]: string }): void => {
+    setSelectedFilters(filter)
+    setReloadGrid(true)
+  }, [])
   return (
     <Container style={{ width: '100%' }} {...rest?.containerProps}>
       <Body height={rest?.height}>
@@ -138,17 +186,63 @@ const PaginatedTable: React.FC<PaginatedTableProps> = ({
           onRowSelect={rest.onRowSelect}
           isSelected={rest.isSelected}
           rowKey={rest.rowKey}
+          onFilter={onFilter}
+          filter={selectedFilters}
+          loading={reloadGrid}
         />
+        <LoadingBackdrop loading={reloadGrid} />
       </Body>
       {Boolean(gridResponse?.meta) && (
         <Footer>
           <Card style={cardStyle}>
             <div>
-              
-              Mostrando {gridResponse?.data.length} de {gridResponse?.meta.total}
+              Mostrando {gridResponse?.data.length} de{' '}
+              {gridResponse?.meta.total}
             </div>
 
             <PaginateContainer>
+              <Render renderIf={Boolean(Object.keys(selectedFilters).length)}>
+                <Button
+                  help='Limpar filtros'
+                  icon='clean'
+                  loading={reloadGrid}
+                  onClick={() => {
+                    setSelectedFilters({})
+                    setReloadGrid(true)
+                  }}
+                />
+              </Render>
+              <Render
+                renderIf={downloadable && reportRequestOptions.length > 1}
+              >
+                <Popover2
+                  interactionKind={Popover2InteractionKind.HOVER}
+                  placement='bottom'
+                  content={
+                    <Menu>
+                      {reportRequestOptions?.map((option) => (
+                        <MenuItem
+                          key={option.reportType}
+                          onClick={handleDownloadClick(option)}
+                          text={`Obter relatório ${option.reportType}`}
+                        />
+                      ))}
+                    </Menu>
+                  }
+                >
+                  <Button icon='download' loading={loadingReport} />
+                </Popover2>
+              </Render>
+              <Render
+                renderIf={downloadable && reportRequestOptions.length === 1}
+              >
+                <Button
+                  help={`Obter relatório ${reportRequestOptions[0].reportType}`}
+                  icon='download'
+                  loading={loadingReport}
+                  onClick={handleDownloadClick(reportRequestOptions[0])}
+                />
+              </Render>
               <Button
                 icon='reset'
                 loading={reloadGrid}
@@ -159,6 +253,7 @@ const PaginatedTable: React.FC<PaginatedTableProps> = ({
                   activeItem={limit}
                   items={pageOptions}
                   onChange={handlePageSelectChange}
+                  filterable={false}
                 />
               </div>
               <div>
@@ -171,5 +266,4 @@ const PaginatedTable: React.FC<PaginatedTableProps> = ({
     </Container>
   )
 }
-
-export default React.memo(PaginatedTable)
+export default PaginatedTable

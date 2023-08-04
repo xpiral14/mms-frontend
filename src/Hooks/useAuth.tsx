@@ -32,7 +32,7 @@ export const useAuth = () => {
   const context = useContext(authContext)
 
   if (!context) {
-    throw new Error('Elemet must wrap UserDataProvider')
+    throw new Error('Element must wrap UserDataProvider')
   }
   return context
 }
@@ -59,7 +59,7 @@ const AuthProvider: FC = ({ children }) => {
       },
       (error) => {
         if (
-          error?.response?.data?.data?.messages?.includes('Unauthenticated') &&
+          error?.response?.data?.data?.messages === 'Unauthenticated' ||
           error.response.status === 401
         ) {
           showErrorToast({

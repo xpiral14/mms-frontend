@@ -5,7 +5,7 @@ export interface ToastContextProps {
   showToast: (toastProps: ToastProps) => string
   showErrorToast: (toastProps: ToastProps | string) => string
   showSuccessToast: (toastProps: ToastProps | string) => string
-  showWarningToast: (toastProps: ToastProps) => string
+  showWarningToast: (toastProps: ToastProps | string) => string
   showPrimaryToast: (toastProps: ToastProps) => string
 }
 const toastContext = createContext<ToastContextProps>(null as any)
@@ -41,9 +41,11 @@ const ToastContextProvider: React.FC<any> = ({ children }) => {
     })
   }
 
-  const showWarningToast = (toastProps: ToastProps) => {
+  const showWarningToast = (toastProps: ToastProps | string) => {
     return showToast({
-      ...toastProps,
+      ...(typeof toastProps === 'string'
+        ? { message: toastProps }
+        : toastProps),
       intent: Intent.WARNING,
     })
   }

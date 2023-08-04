@@ -8,10 +8,10 @@ const screens = {
     path: 'Register/User',
     permissions: [Permissions.READ_USER, Permissions.WRITE_USER],
   },
-  'costumer-register': {
-    id: 'costumer-register',
+  'customer-register': {
+    id: 'customer-register',
     name: 'Cadastro de clientes',
-    path: 'Register/Costumer',
+    path: 'Register/Customer',
     permissions: [Permissions.READ_CUSTOMER, Permissions.WRITE_CUSTOMER],
   },
   'employees-register': {
@@ -129,6 +129,43 @@ const screens = {
     path: 'Reports',
     subScreenOnly: true,
     permission: [Permissions.READ_STOCK, Permissions.WRITE_STOCK],
+  },
+  'supplier-register': {
+    id: 'supplier-register',
+    name: 'Cadastro de fornecedores',
+    path: 'Register/Suppliers',
+    permissions: [Permissions.READ_EMPLOYEE, Permissions.WRITE_EMPLOYEE]
+  },
+  'goods-register': {
+    id: 'goods-register',
+    name: 'Gerenciamento de mercadorias',
+    path: 'Register/Goods',
+    subScreenOnly: true,
+    permissions: [Permissions.READ_EMPLOYEE, Permissions.WRITE_EMPLOYEE],
+    contentSize: '980 340'
+  },
+  'good-product-register': {
+    id: 'good-product-register',
+    name: 'Cadastro de produto nas mercadorias',
+    path: 'AddProductToGood',
+    subScreenOnly: true,
+    permissions: [Permissions.READ_EMPLOYEE, Permissions.WRITE_EMPLOYEE],
+    contentSize: '600 220',
+  },
+  'distribute-goods': {
+    id: 'distribute-goods',
+    name: 'Distribuição de mercadorias para o estoque',
+    path: 'DistributeGoods',
+    subScreenOnly: true,
+    permissions: [Permissions.READ_EMPLOYEE, Permissions.WRITE_EMPLOYEE],
+    contentSize: '800 500'
+  },
+  'dynamic-report': {
+    id: 'dynamic-report',
+    name: 'Relatório dinâmico',
+    path: 'DynamicReportScreen',
+    subScreenOnly: true,
+    contentSize: '800 500'
   }
 } as Screens
 

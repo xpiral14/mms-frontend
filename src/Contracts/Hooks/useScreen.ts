@@ -4,7 +4,7 @@ import { Screen } from '../Components/ScreenProps'
 
 export type ScreenIds =
   | 'user-register'
-  | 'costumer-register'
+  | 'customer-register'
   | 'employees-register'
   | 'product-register'
   | 'unit-register'
@@ -23,6 +23,11 @@ export type ScreenIds =
   | 'product-stock-management'
   | 'product-stock-warning'
   | 'reports'
+  | 'supplier-register'
+  | 'goods-register'
+  | 'good-product-register'
+  | 'distribute-goods'
+  | 'dynamic-report'
 
 export interface ScreenData {
   id: ScreenIds
@@ -31,11 +36,13 @@ export interface ScreenData {
   permissions?: Permissions[]
   subScreenOnly?: boolean
   canBeUsedAsSubScreen?: boolean
+  contentSize?: string
 }
 
 export type Screens = {
   [x in ScreenIds]: ScreenData
 }
+
 export interface ContextPanelOptions extends PanelOptions {
   id: ScreenIds
   path: string
@@ -65,12 +72,12 @@ export type ScreenContext = {
   >
   openScreen: (
     panelOptions: Omit<ContextPanelOptions, 'path'>,
-    isModal?: boolean | undefined
+    isModal?: boolean | undefined,
   ) => void
 
   openSubScreen<T = any>(
     screen: Omit<ContextPanelOptions, 'path'>,
-    parentScreenId: ScreenIds,
-    props?: T
+    parentScreenId?: ScreenIds,
+    props?: T,
   ): void
 }

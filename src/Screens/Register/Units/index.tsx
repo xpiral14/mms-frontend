@@ -20,6 +20,7 @@ import Unit from '../../../Contracts/Models/Unit'
 import Render from '../../../Components/Render'
 import Container from '../../../Components/Layout/Container'
 import Row from '../../../Components/Layout/Row'
+import { Column } from '../../../Contracts/Components/Table'
 
 const UnitsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
   const { payload, setPayload, screenStatus, setScreenStatus } =
@@ -183,19 +184,19 @@ const UnitsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
   const columns = useMemo(
     () => [
       {
-        id: 1,
         name: 'Nome',
         keyName: 'name',
+        filters: [{name: 'Nome da unidade', type: 'text'}]
       },
       {
-        id: 2,
         name: 'Descrição',
         keyName: 'description',
+        filters: [{name: 'Descrição da unidade', type: 'text'}],
         style: {
           width: '100%',
         },
       },
-    ],
+    ] as Column<Unit>[],
     []
   )
 
@@ -308,13 +309,20 @@ const UnitsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
       </Row>
       <Render renderIf={screenStatus === ScreenStatus.SEE_REGISTERS}>
         <Row className='h-100'>
-          <PaginatedTable
+          <PaginatedTable<Unit>
             height='100%'
             onRowSelect={onRowSelect}
             request={UnitService.getAll}
             containerProps={containerProps}
             columns={columns}
             isSelected={(row) => row.id === payload?.id}
+            downloadable
+            reportRequestOptions={[{
+              mimeType: 'text/csv',
+              reportType: 'csv',
+              name: 'unidades',
+              responseType: 'text'
+            }]}
           />
         </Row>
       </Render>

@@ -1,5 +1,5 @@
 import { Intent } from '@blueprintjs/core'
-import React, { useEffect } from 'react'
+import React, { useCallback, useEffect, useMemo } from 'react'
 import InputText from '../../../Components/InputText'
 import PaginatedTable from '../../../Components/PaginatedTable'
 import RadioGroup from '../../../Components/RadioGroup'
@@ -22,7 +22,8 @@ import formatPhone from '../../../Util/formatPhone'
 import Render from '../../../Components/Render'
 import Row from '../../../Components/Layout/Row'
 import Container from '../../../Components/Layout/Container'
-
+import Box from '../../../Components/Layout/Box'
+import { Column, Row as TableRow } from '../../../Contracts/Components/Table'
 const personTypesOptions = [
   {
     value: PersonType.PHYSICAL as string,
@@ -88,7 +89,7 @@ const CustomerRegister: React.FC<CustomerRegisterScreenProps> = ({
   const { openAlert } = useAlert()
 
   const isStatusVizualize = () => screenStatus === ScreenStatus.VISUALIZE
-  const {showErrorMessage: showErrormessage} = useMessageError()
+  const { showErrorMessage: showErrormessage } = useMessageError()
 
   const createCustomer = async (stopLoad: () => void) => {
     if (!validate()) {
@@ -107,7 +108,8 @@ const CustomerRegister: React.FC<CustomerRegisterScreenProps> = ({
           message: 'Cliente criado com sucesso',
           intent: Intent.SUCCESS,
         })
-        setReloadGrid(true)
+        setScreenStatus(ScreenStatus.SEE_REGISTERS)
+        setPayload({})
       }
       if (!response) {
         openAlert({
@@ -116,10 +118,7 @@ const CustomerRegister: React.FC<CustomerRegisterScreenProps> = ({
         })
       }
     } catch (error: any) {
-      showErrormessage(
-        error,
-        'Não foi possível criar o cliente'
-      )
+      showErrormessage(error, 'Não foi possível criar o cliente')
     } finally {
       stopLoad()
     }
@@ -157,11 +156,7 @@ const CustomerRegister: React.FC<CustomerRegisterScreenProps> = ({
         })
       }
     } catch (error: any) {
-      showErrormessage(
-        error,
-        'Não foi possível atualizar o cliente'
-      )
-
+      showErrormessage(error, 'Não foi possível atualizar o cliente')
     } finally {
       stopLoad()
     }
@@ -175,10 +170,7 @@ const CustomerRegister: React.FC<CustomerRegisterScreenProps> = ({
         setScreenStatus(ScreenStatus.VISUALIZE)
         setPayload({})
       } catch (error: any) {
-        showErrormessage(
-          error,
-          'Não foi possível criar o cliente'
-        )
+        showErrormessage(error, 'Não foi possível criar o cliente')
       }
     }
     openAlert({
@@ -196,51 +188,101 @@ const CustomerRegister: React.FC<CustomerRegisterScreenProps> = ({
     handleDeleteButtonOnClick: deleteCustomer,
   }
 
-  const createOnChange =
-    (attributeName: string) => (evt: any) => {
-      setPayload((prev: any) => ({
-        ...prev,
-        [attributeName]: evt.target.value,
-      }))
-    }
+  const createOnChange = (attributeName: string) => (evt: any) => {
+    setPayload((prev: any) => ({
+      ...prev,
+      [attributeName]: evt.target.value,
+    }))
+  }
 
+  const columns = useMemo(
+    () =>
+      [
+        {
+          name: 'Nome',
+          filters: [{ name: 'Nome', type: 'text' }],
+          keyName: 'name',
+          style: {
+            width: '33%',
+          },
+        },
+        {
+          name: 'CPF ou CNPJ',
+          filters: [{ name: 'CPF', type: 'text' }],
+          keyName: 'identification',
+          formatText: (row) =>
+            formatIdentification(row?.identification as string),
+          style: {
+            width: '33%',
+          },
+        },
+        {
+          name: 'Telefone',
+          filters: [{ name: 'Telefone', type: 'text' }],
+          keyName: 'phone',
+          formatText: (row) => formatPhone(row?.phone as string),
+          style: {
+            width: '33%',
+          },
+        },
+        {
+          name: 'Email',
+          filters: [{ name: 'Email', type: 'text' }],
+          keyName: 'email',
+        },
+      ] as Column<Customer>[],
+    []
+  )
+  const onRowSelect = useCallback((row: TableRow<Customer>): void => {
+    setPayload({
+      ...row,
+      personType:
+        row.identification?.length > 11
+          ? PersonType.LEGAL
+          : PersonType.PHYSICAL,
+    })
+  }, [])
+  const isSelected = useCallback((row: TableRow<Customer>): boolean => row.id === payload.id, [])
   return (
-    <Container style={{height: 'calc(100% - 40px)'}}>
+    <Container style={{ height: 'calc(100% - 40px)' }}>
       <Row>
         <RegistrationButtonBar {...registratioButtonBarProps} />
       </Row>
       <Render renderIf={screenStatus !== ScreenStatus.SEE_REGISTERS}>
-        <Row>
-          <RadioGroup
-            id='personTypes'
-            selectedValue={payload.personType}
-            label='Tipo de pessoa'
-            inline
-            disabled={isStatusVizualize()}
-            radios={personTypesOptions}
-            onClick={(v) => {
-              if (v !== payload.personType) return
-              setPayload((prev) => ({
-                ...prev,
-                personType: undefined,
-                identification: undefined,
-              }))
-            }}
-            onChange={async (evt: any) => {
-              evt.persist()
-              setPayload((prev) => ({
-                ...prev,
-                identification: '',
-                personType:
+        <Box>
+          <Row>
+            <RadioGroup
+              id='personTypes'
+              selectedValue={payload.personType}
+              label='Tipo de pessoa'
+              inline
+              disabled={isStatusVizualize()}
+              radios={personTypesOptions}
+              onClick={(v) => {
+                if (v !== payload.personType) return
+                setPayload((prev) => ({
+                  ...prev,
+                  personType: undefined,
+                  identification: undefined,
+                }))
+              }}
+              onChange={async (evt: any) => {
+                evt.persist()
+                setPayload((prev) => ({
+                  ...prev,
+                  identification: '',
+                  personType:
                     evt.target.value === prev.personType
                       ? null
                       : (evt.target.value as any),
-              }))
-            }}
-          />
-        </Row>
-        <Row>
-          {Boolean(payload.personType) &&
+                }))
+              }}
+            />
+          </Row>
+        </Box>
+        <Box className='mt-2'>
+          <Row>
+            {Boolean(payload.personType) &&
               (payload.personType === PersonType.PHYSICAL ? (
                 <InputText
                   value={payload?.identification}
@@ -262,81 +304,51 @@ const CustomerRegister: React.FC<CustomerRegisterScreenProps> = ({
                   onChange={createOnChange('identification')}
                 />
               ))}
-          <InputText
-            value={payload?.name || ''}
-            id='name'
-            label='Nome do cliente'
-            placeholder='Digite o nome do cliente'
-            disabled={isStatusVizualize()}
-            onChange={createOnChange('name')}
-            required
-          />
+            <InputText
+              value={payload?.name || ''}
+              id='name'
+              label='Nome do cliente'
+              placeholder='Digite o nome do cliente'
+              disabled={isStatusVizualize()}
+              onChange={createOnChange('name')}
+              required
+            />
 
-          <InputText
-            value={payload?.email || ''}
-            id='Email'
-            label='Email do cliente'
-            placeholder='Digite o email do cliente'
-            disabled={isStatusVizualize()}
-            onChange={createOnChange('email')}
-          />
-          <InputText
-            value={payload?.phone || ''}
-            id='customer-register-phone'
-            required
-            mask='(99) 99999-9999'
-            label='Telefone'
-            placeholder='Digite o Telefone do cliente'
-            disabled={isStatusVizualize()}
-            onChange={createOnChange('phone')}
-          />
-        </Row>
+            <InputText
+              value={payload?.email || ''}
+              id='Email'
+              label='Email do cliente'
+              placeholder='Digite o email do cliente'
+              disabled={isStatusVizualize()}
+              onChange={createOnChange('email')}
+            />
+            <InputText
+              value={payload?.phone || ''}
+              id='customer-register-phone'
+              required
+              mask='(99) 99999-9999'
+              label='Telefone'
+              placeholder='Digite o Telefone do cliente'
+              disabled={isStatusVizualize()}
+              onChange={createOnChange('phone')}
+            />
+          </Row>
+        </Box>
       </Render>
       <Render renderIf={screenStatus === ScreenStatus.SEE_REGISTERS}>
-        <PaginatedTable
+        <PaginatedTable<Customer>
           height='350px'
-          isSelected={(row) => row.id === payload.id}
-          columns={[
-            {
-              name: 'Nome',
-              keyName: 'name',
-              style: {
-                width: '33%',
-              },
-            },
-            {
-              name: 'CPF ou CNPJ',
-              // keyName: 'identification',
-              formatText: (row) =>
-                formatIdentification(row?.identification as string),
-              style: {
-                width: '33%',
-              },
-            },
-            {
-              name: 'Telefone',
-              keyName: 'phone',
-              formatText: (row) => formatPhone(row?.phone as string),
-              style: {
-                width: '33%',
-              },
-            },
-            {
-              name: 'Email',
-              keyName: 'email',
-            },
-          ]}
+          isSelected={isSelected}
+          columns={columns}
           request={CustomerService.getAll as any}
-          onRowSelect={(row) => {
-            setScreenStatus(ScreenStatus.VISUALIZE)
-            setPayload({
-              ...row,
-              personType:
-                  row.identification?.length > 11
-                    ? PersonType.LEGAL
-                    : PersonType.PHYSICAL,
-            })
-          }}
+          onRowSelect={onRowSelect}
+          downloadable
+          reportRequestOptions={[{
+            mimeType: 'text/csv',
+            reportType: 'csv',
+            name: 'Relatório de funcionáarios',
+            responseType: 'text'
+          }]}
         />
       </Render>
     </Container>

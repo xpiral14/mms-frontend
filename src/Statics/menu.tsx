@@ -75,15 +75,6 @@ const menus = {
       Permissions.WRITE_SERVICE,
     ],
     items: {
-      Clientes: {
-        name: 'Clientes',
-        icon: 'person',
-        screen: {
-          ...screens['customer-register'],
-          contentSize: '900 500',
-          headerTitle: 'Clientes',
-        },
-      },
       OrdemServico: {
         name: 'Ordem de serviços',
         icon: 'clipboard',
@@ -179,6 +170,15 @@ const menus = {
           ...screens['employees-register'],
           headerTitle: 'Funcionários',
           contentSize: '710px 190px',
+        },
+      },
+      Clientes: {
+        name: 'Clientes',
+        icon: 'person',
+        screen: {
+          ...screens['customer-register'],
+          contentSize: '900 500',
+          headerTitle: 'Clientes',
         },
       },
     },

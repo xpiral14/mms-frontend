@@ -165,11 +165,11 @@ const menus = {
         name: 'Funcionários',
         icon: 'people',
         screen: {
-          minHeight: 224, // This has to be the contentSize height + 34px that's the height of the bar
+          minHeight: 240, // This has to be the contentSize height + 34px that's the height of the bar
           maxHeight: 500,
           ...screens['employees-register'],
           headerTitle: 'Funcionários',
-          contentSize: '710px 190px',
+          contentSize: '710px 240px',
         },
       },
       Clientes: {

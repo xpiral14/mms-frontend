@@ -604,12 +604,12 @@ const OrderServiceCustomer: React.FC<ScreenProps> = ({ screen }) => {
     [orderStatuses]
   )
   return (
-    <Container>
+    <Container style={{ height: 'calc(100% - 50px)' }}>
       <Header>
         <RegistrationButtonBar {...registrationButtonBarProps} />
       </Header>
 
-      <Body>
+      <Body className='h-100'>
         <Render renderIf={screenStatus !== ScreenStatus.SEE_REGISTERS}>
           <Bar className='my-1 flex flex-justify-end'>
             <Render renderIf={Boolean(payload.id)}>
@@ -924,7 +924,7 @@ const OrderServiceCustomer: React.FC<ScreenProps> = ({ screen }) => {
           </Collapse>
         </Render>
         <Render renderIf={screenStatus === ScreenStatus.SEE_REGISTERS}>
-          <Row style={{ flex: 1 }}>
+          <Row style={{ flex: 1 }} className='h-100'>
             <Box>
               <Row
                 className='align-center d-flex flex-between'
@@ -996,7 +996,7 @@ const OrderServiceCustomer: React.FC<ScreenProps> = ({ screen }) => {
               </Row>
             </Box>
             <Box style={{ flex: 1 }}>
-              <Row>
+              <Row className='h-100'>
                 <PaginatedTable
                   containerProps={{
                     className: 'styled-scroll',

@@ -19,6 +19,8 @@ import { useWindow } from '../../../Hooks/useWindow'
 import EmployeeService from '../../../Services/EmployeeService'
 import cleanNumericInput from '../../../Util/cleanNumericInput'
 import { Container, Header, Body, FormContainer, TableContainer } from './style'
+import Row from '../../../Components/Layout/Row'
+import Box from '../../../Components/Layout/Box'
 
 const personTypesOptions = [
   {
@@ -112,7 +114,7 @@ const EmployeeRegister: React.FC<EmployeeRegisterScreenProps> = ({
   const { showSuccessToast } = useToast()
   const { openAlert } = useAlert()
 
-  const isStatusVizualize = () => screenStatus === ScreenStatus.VISUALIZE
+  const isStatusVizualize =  screenStatus === ScreenStatus.VISUALIZE
 
   const getErrorMessages = (errors?: any[], defaultMessage?: string) => {
     const errorMessages = errors?.map((error) => ({
@@ -350,38 +352,39 @@ const EmployeeRegister: React.FC<EmployeeRegisterScreenProps> = ({
       <Body>
         <Render renderIf={screenStatus !== ScreenStatus.SEE_REGISTERS}>
           <FormContainer>
-            <div>
-              <RadioGroup
-                id='personTypes'
-                selectedValue={payload.personType}
-                label='Tipo de pessoa'
-                inline
-                disabled={isStatusVizualize()}
-                radios={personTypesOptions}
-                onChange={(evt: React.FormEvent<HTMLInputElement>) => {
-                  evt.persist()
+            <Box>
+              <Row>
+                <RadioGroup
+                  id='personTypes'
+                  selectedValue={payload.personType}
+                  label='Tipo de pessoa'
+                  inline
+                  disabled={isStatusVizualize}
+                  radios={personTypesOptions}
+                  onChange={(evt: React.FormEvent<HTMLInputElement>) => {
+                    evt.persist()
 
-                  const value = evt.currentTarget.value
+                    const value = evt.currentTarget.value
 
-                  setPayload((prev) => ({
-                    ...prev,
-                    identification: '',
-                    personType: value as any,
-                  }))
-                }}
-              />
-            </div>
-
-            <div>
-              {Boolean(payload.personType) &&
-                (payload.personType === PersonType.PHYSICAL ? (
+                    setPayload((prev) => ({
+                      ...prev,
+                      identification: '',
+                      personType: value as any,
+                    }))
+                  }}
+                />
+              </Row>
+            </Box>
+            <Box className='mt-2'>
+              <Row>
+                {payload?.personType === PersonType.PHYSICAL ? (
                   <InputText
                     value={payload?.identification}
                     id='CPF'
                     mask='999.999.999-99'
                     label='CPF'
                     placeholder='Digite o email do funcionário'
-                    disabled={isStatusVizualize()}
+                    disabled={isStatusVizualize}
                     onChange={changePayload('identification')}
                   />
                 ) : (
@@ -391,39 +394,40 @@ const EmployeeRegister: React.FC<EmployeeRegisterScreenProps> = ({
                     mask='99.999.999/9999-99'
                     label='CNPJ'
                     placeholder='Digite o email do funcionário'
-                    disabled={isStatusVizualize()}
+                    disabled={isStatusVizualize}
                     onChange={changePayload('identification')}
                   />
-                ))}
-              <InputText
-                value={payload?.name || ''}
-                id='employee-name'
-                label='Nome'
-                placeholder='Digite o nome'
-                disabled={isStatusVizualize()}
-                onChange={changePayload('name')}
-                required
-              />
+                )}
+                <InputText
+                  value={payload?.name || ''}
+                  id='employee-name'
+                  label='Nome'
+                  placeholder='Digite o nome'
+                  disabled={isStatusVizualize}
+                  onChange={changePayload('name')}
+                  required
+                />
 
-              <InputText
-                value={payload?.email || ''}
-                id='Email'
-                label='Email do funcionário'
-                placeholder='Digite o email do funcionário'
-                disabled={isStatusVizualize()}
-                onChange={changePayload('email')}
-              />
-              <InputText
-                value={payload?.phone || ''}
-                id='employee-register-phone'
-                required
-                mask='(99) 99999-9999'
-                label='Telefone'
-                placeholder='Digite o Telefone do funcionário'
-                disabled={isStatusVizualize()}
-                onChange={changePayload('phone')}
-              />
-            </div>
+                <InputText
+                  value={payload?.email || ''}
+                  id='Email'
+                  label='Email do funcionário'
+                  placeholder='Digite o email do funcionário'
+                  disabled={isStatusVizualize}
+                  onChange={changePayload('email')}
+                />
+                <InputText
+                  value={payload?.phone || ''}
+                  id='employee-register-phone'
+                  required
+                  mask='(99) 99999-9999'
+                  label='Telefone'
+                  placeholder='Digite o Telefone do funcionário'
+                  disabled={isStatusVizualize}
+                  onChange={changePayload('phone')}
+                />
+              </Row>
+            </Box>
           </FormContainer>
         </Render>
 

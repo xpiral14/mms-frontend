@@ -7,14 +7,11 @@ import { StopLoadFunc } from '../../../Contracts/Components/RegistrationButtonBa
 import { useWindow } from '../../../Hooks/useWindow'
 import { useAlert } from '../../../Hooks/useAlert'
 import { ScreenStatus } from '../../../Constants/Enums'
-import { ButtonGroup, Intent } from '@blueprintjs/core'
+import { ButtonGroup, Callout, Icon, Intent, Tag } from '@blueprintjs/core'
 import { useToast } from '../../../Hooks/useToast'
 import useValidation from '../../../Hooks/useValidation'
 import { Validation } from '../../../Contracts/Hooks/useValidation'
-import Good, {
-  GoodStatuses,
-  GoodStatusesNames,
-} from '../../../Contracts/Models/Good'
+import Good, { GoodStatuses } from '../../../Contracts/Models/Good'
 import Render from '../../../Components/Render'
 import Container from '../../../Components/Layout/Container'
 import Row from '../../../Components/Layout/Row'
@@ -75,6 +72,13 @@ const GoodsScreen: React.FC<GoodRegisterScreenProps> = ({
           filters: [{ name: 'Nota fiscal', type: 'text' }],
         },
         {
+          name: 'Data do pedido',
+          filters: [{ name: 'Data do pedido', type: 'date' }],
+          keyName: 'requested_at',
+          formatText: (row) =>
+            new Date(row!.requested_at!).toLocaleDateString(),
+        },
+        {
           name: 'Data de recebimento',
           filters: [{ name: 'Data de recebimento', type: 'from_date' }],
           keyName: 'received_at',
@@ -82,13 +86,17 @@ const GoodsScreen: React.FC<GoodRegisterScreenProps> = ({
         },
         {
           name: 'Status de distribuição',
-          formatText: (row: Good) => GoodStatusesNames[row.status],
           keyName: 'status',
+          formatText: (row) => row?.status_name,
           filters: [
             {
               name: 'Selecione os status',
               type: 'checkbox',
               value: [
+                {
+                  label: 'Não recebido',
+                  value: GoodStatuses.NOT_RECEIVED,
+                },
                 {
                   label: 'Distribuído',
                   value: GoodStatuses.DISTRIBUTED,
@@ -100,6 +108,10 @@ const GoodsScreen: React.FC<GoodRegisterScreenProps> = ({
                 {
                   label: 'Parcialmente distribuído',
                   value: GoodStatuses.PARTIAL_DISTRIBUTED,
+                },
+                {
+                  label: 'Cancelado',
+                  value: GoodStatuses.CANCELED,
                 },
               ],
             },
@@ -114,6 +126,28 @@ const GoodsScreen: React.FC<GoodRegisterScreenProps> = ({
                 0
               ) ?? 0
             ),
+        },
+        {
+          name: 'Pedido automático',
+          keyName: 'is_automatic_request',
+          filters: [
+            {
+              type: 'radio',
+              value: [
+                { label: 'sim', value: 'true' },
+                { label: 'não', value: 'false' },
+              ],
+            },
+          ],
+          cellRenderer(_, row) {
+            return (
+              <Tag
+                intent={row.is_automatic_request ? Intent.SUCCESS : Intent.NONE}
+              >
+                <Icon icon={row.is_automatic_request ? 'tick' : 'cross'} />
+              </Tag>
+            )
+          },
         },
       ] as Column<Good>[],
     []
@@ -334,7 +368,12 @@ const GoodsScreen: React.FC<GoodRegisterScreenProps> = ({
       )
       return
     }
-
+    if (!payload.received_at) {
+      showWarningToast(
+        'O pedido ainda não está com data de recebimento. Logo suas mercadorias não podem ser distribuídas'
+      )
+      return
+    }
     openSubScreen<DistributeGoodsProps>(
       {
         id: 'distribute-goods',
@@ -346,6 +385,7 @@ const GoodsScreen: React.FC<GoodRegisterScreenProps> = ({
     )
   }
   const onRowSelect = useCallback((g: GoodProduct): void => {
+    if (payload.is_automatic_request) return
     setSelectedProduct(g)
   }, [])
   const isGoodProductSelect = useCallback(
@@ -408,10 +448,12 @@ const GoodsScreen: React.FC<GoodRegisterScreenProps> = ({
           handleSaveButtonOnClick={handleSaveButtonClick}
           handleDeleteButtonOnClick={handleDeleteButtonOnClick}
           screen={screen}
-          reports={[{
-            columns: [],
-            text: ''
-          }]}
+          reports={[
+            {
+              columns: [],
+              text: '',
+            },
+          ]}
         />
       </Row>
       <Render renderIf={screenStatus === ScreenStatus.SEE_REGISTERS}>
@@ -458,12 +500,16 @@ const GoodsScreen: React.FC<GoodRegisterScreenProps> = ({
         </Row>
       </Render>
       <Render renderIf={screenStatus !== ScreenStatus.SEE_REGISTERS}>
+        <Render renderIf={payload.is_automatic_request}>
+          <Callout intent={Intent.WARNING}>Pedido automático</Callout>
+        </Render>
         <Box className='mt-2'>
           <Row>
             <InputText
               id={screen.createElementId('invoice-number')}
               value={payload.invoice_number ?? ''}
               label='Número da nota fiscal'
+              disabled={payload.is_automatic_request}
               onChange={(e) =>
                 changePayloadAttribute('invoice_number', e.target.value)
               }
@@ -476,6 +522,7 @@ const GoodsScreen: React.FC<GoodRegisterScreenProps> = ({
               label='Data do pedido'
               id={screen.id + 'requested_at'}
               onChange={(d) => changePayloadAttribute('requested_at', d)}
+              disabled={payload.is_automatic_request}
               value={payload.requested_at as Date}
             />
             <InputDate
@@ -488,6 +535,7 @@ const GoodsScreen: React.FC<GoodRegisterScreenProps> = ({
               onChange={(d) =>
                 changePayloadAttribute('expected_receipt_date', d)
               }
+              disabled={payload.is_automatic_request}
               value={payload.expected_receipt_date as Date}
             />
             <InputDate
@@ -498,6 +546,7 @@ const GoodsScreen: React.FC<GoodRegisterScreenProps> = ({
               label='Data de recebimento'
               id={screen.id + 'received_at'}
               onChange={(d) => changePayloadAttribute('received_at', d)}
+              disabled={payload.is_automatic_request}
               value={payload.received_at as Date}
             />
           </Row>
@@ -510,6 +559,7 @@ const GoodsScreen: React.FC<GoodRegisterScreenProps> = ({
                 icon='add'
                 onClick={handleAddProduct}
                 intent={Intent.PRIMARY}
+                disabled={payload.is_automatic_request}
               >
                 Adicionar produto
               </Button>

@@ -1,5 +1,5 @@
-import { Icon, Intent } from '@blueprintjs/core'
 import React, { useEffect, useMemo, useState } from 'react'
+import { Intent } from '@blueprintjs/core'
 import PaginatedTable from '../../../Components/PaginatedTable'
 import RegistrationButtonBar from '../../../Components/RegistrationButtonBar'
 import Select from '../../../Components/Select'
@@ -95,38 +95,12 @@ type OrderPayload = {
   totalPrice: number
 }
 
-type OrderFilter = {
-  customerName?: string
-  status?: string
-  validity?: Date
-}
 const OrderServiceCustomer: React.FC<ScreenProps> = ({ screen }) => {
   const { hasPermission, auth } = useAuth()
   const [customers, setCustomer] = useState<Customer[]>([])
   const [employees, setEmployees] = useState<Employee[]>([])
   const [orderStatuses, setOrderStatuses] = useState<OrderStatus[]>([])
   const [isDetailsCollapsed, setIsDetailsCollapsed] = useState(true)
-  const [filter, setFilter] = useState<OrderFilter>({
-    customerName: '',
-    status: '',
-    validity: undefined,
-  })
-
-  const formattedFilter = useMemo(
-    () => ({
-      ...filter,
-      validity: filter.validity
-        ? format(filter.validity, 'yyyy-MM-dd')
-        : undefined,
-    }),
-    [filter]
-  )
-
-  const changeFilter = (object: Partial<OrderFilter>) =>
-    setFilter((prev) => ({
-      ...prev,
-      ...object,
-    }))
 
   const customerOptions = useMemo(() => {
     const normalized = {
@@ -231,7 +205,7 @@ const OrderServiceCustomer: React.FC<ScreenProps> = ({ screen }) => {
   ]
   const { validate } = useValidation(validations)
 
-  const { setReloadGrid, setPage } = useGrid()
+  const { setReloadGrid } = useGrid()
   const { showSuccessToast, showErrorToast } = useToast()
   const { openAlert } = useAlert()
   const { openSubScreen } = useScreen()
@@ -925,76 +899,6 @@ const OrderServiceCustomer: React.FC<ScreenProps> = ({ screen }) => {
         </Render>
         <Render renderIf={screenStatus === ScreenStatus.SEE_REGISTERS}>
           <Row style={{ flex: 1 }} className='h-100'>
-            <Box>
-              <Row
-                className='align-center d-flex flex-between'
-                style={{ width: 200 }}
-              >
-                <div>
-                  <Icon icon='filter' />
-                  Filtros
-                </div>
-                <Button
-                  icon='search'
-                  onClick={() => {
-                    setPage(0)
-                    setReloadGrid(true)
-                  }}
-                >
-                  Filtrar
-                </Button>
-              </Row>
-              <Row
-                className='mt-3'
-                style={{
-                  maxWidth: 250,
-                  flexDirection: 'column',
-                }}
-              >
-                <InputText
-                  style={{
-                    width: '100%',
-                  }}
-                  inputStyle={{
-                    width: '100%',
-                  }}
-                  id={screen.id + 'customer_filter'}
-                  value={filter.customerName}
-                  label='Nome do cliente'
-                  onChange={(e) =>
-                    changeFilter({
-                      customerName: e.target.value,
-                    })
-                  }
-                />
-                <InputDate
-                  fill
-                  inputProps={{
-                    style: { width: '100%' },
-                  }}
-                  label='Validade da nota'
-                  id={screen.id + 'filter-date-validatiom'}
-                  value={filter?.validity}
-                  onChange={(validity) => changeFilter({ validity: validity })}
-                />
-                <Select
-                  label='Status da ordem'
-                  onItemSelect={(i) => {
-                    changeFilter({
-                      status: i.value as string,
-                    })
-                  }}
-                  buttonProps={{
-                    style: {
-                      width: '100%',
-                    },
-                  }}
-                  filterable={false}
-                  activeItem={filter.status}
-                  items={orderStatusOptions}
-                />
-              </Row>
-            </Box>
             <Box style={{ flex: 1 }}>
               <Row className='h-100'>
                 <PaginatedTable
@@ -1004,7 +908,6 @@ const OrderServiceCustomer: React.FC<ScreenProps> = ({ screen }) => {
                       width: '100%',
                     },
                   }}
-                  filters={formattedFilter}
                   rowKey={(row) => row.id + row.created_at}
                   columns={columns}
                   isSelected={(row) => row.id === payload?.id}

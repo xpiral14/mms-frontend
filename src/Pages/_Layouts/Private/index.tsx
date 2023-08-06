@@ -29,11 +29,9 @@ const PrivateLayout: React.FC = ({ children }) => {
           message: notification.message,
           action: {
             icon: 'tick',
-
             onClick: () => {
               NotificationService.markAsRead(notification.id)
             },
-            text: '',
           },
         })
       })

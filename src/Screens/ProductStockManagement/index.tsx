@@ -1,4 +1,4 @@
-import { Intent, Tag } from '@blueprintjs/core'
+import { Checkbox, Icon, Intent, Tag } from '@blueprintjs/core'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import Button from '../../Components/Button'
 import Box from '../../Components/Layout/Box'
@@ -12,7 +12,7 @@ import Select from '../../Components/Select'
 import { ScreenStatus } from '../../Constants/Enums'
 import {
   RegistrationButtonBarProps,
-  StopLoadFunc
+  StopLoadFunc,
 } from '../../Contracts/Components/RegistrationButtonBarProps'
 import { Option } from '../../Contracts/Components/Suggest'
 import { Column } from '../../Contracts/Components/Table'
@@ -32,10 +32,12 @@ import ProductStockService from '../../Services/ProductStockService'
 
 import ProductStockScreenProps from '../../Contracts/Screen/ProductStockManagement'
 import { ProductStockWarningProps } from '../../Contracts/Screen/ProductStockWarning'
+import { Tooltip2 } from '@blueprintjs/popover2'
+import SupplierService from '../../Services/SupplierService'
 const ProductStockManagement: React.FC<ProductStockScreenProps> = ({
   screen,
   stock,
-  defaultScreenStatus
+  defaultScreenStatus,
 }): JSX.Element => {
   const {
     payload,
@@ -45,12 +47,24 @@ const ProductStockManagement: React.FC<ProductStockScreenProps> = ({
     setScreenStatus,
   } = useWindow<ProductStock>()
 
+  const [supplierOptions, setSupplierOptions] = useState<Option[]>([])
+  const [isLoadingSuppliers, loadSuppliers] = useAsync(
+    () =>
+      SupplierService.getAll(1, 1000).then((r) => {
+        setSupplierOptions(
+          r.data.data.map((supplier) => ({
+            label: supplier.name!,
+            value: supplier.id,
+          }))
+        )
+      }),
+    []
+  )
   useEffect(() => {
     if (defaultScreenStatus) {
       setScreenStatus(defaultScreenStatus)
-    }  
+    }
   }, [defaultScreenStatus])
-  
 
   const { showErrorToast, showSuccessToast } = useToast()
 
@@ -144,10 +158,12 @@ const ProductStockManagement: React.FC<ProductStockScreenProps> = ({
       ...payload,
       quantity: payload.quantity || 0,
       minimum: payload.minimum || 0,
-      stock_id: stock.id
+      stock_id: stock.id,
     }
     try {
-      const response = await ProductStockService.create(requestPayload as ProductStock)
+      const response = await ProductStockService.create(
+        requestPayload as ProductStock
+      )
 
       if (response.status) {
         showSuccessToast({
@@ -159,21 +175,24 @@ const ProductStockManagement: React.FC<ProductStockScreenProps> = ({
       }
 
       if (!response) {
-        showErrorMessage(response,  'Não foi possível cadastrar o produto no estoque')
+        showErrorMessage(
+          response,
+          'Não foi possível cadastrar o produto no estoque'
+        )
       }
       setScreenStatus(ScreenStatus.SEE_REGISTERS)
       setPayload({})
-
     } catch (error: any) {
-
-      showErrorMessage(error,   'Não foi possível cadastrar o produto no estoque')
+      showErrorMessage(error, 'Não foi possível cadastrar o produto no estoque')
     } finally {
       stopLoad()
       increaseWindowSize?.()
     }
   }
 
-  const handleButtonUpdateProductStockOnClick = async (stopLoad: StopLoadFunc) => {
+  const handleButtonUpdateProductStockOnClick = async (
+    stopLoad: StopLoadFunc
+  ) => {
     decreaseWindowSize?.()
 
     if (!validate()) {
@@ -217,7 +236,9 @@ const ProductStockManagement: React.FC<ProductStockScreenProps> = ({
     }
   }
 
-  const handleButtonDeleteProductStockOnClick = async () => {
+  const handleButtonDeleteProductStockOnClick = async (
+    stopLoad: StopLoadFunc
+  ) => {
     try {
       const response = await ProductStockService.delete(
         stock.id!,
@@ -253,6 +274,7 @@ const ProductStockManagement: React.FC<ProductStockScreenProps> = ({
       })
     } finally {
       setScreenStatus(ScreenStatus.SEE_REGISTERS)
+      stopLoad()
     }
   }
 
@@ -263,6 +285,7 @@ const ProductStockManagement: React.FC<ProductStockScreenProps> = ({
           id: 1,
           name: 'Nome',
           keyName: 'product_name',
+          filters: [{ name: 'Nome', type: 'text' }],
         },
         {
           id: 2,
@@ -286,23 +309,87 @@ const ProductStockManagement: React.FC<ProductStockScreenProps> = ({
           },
         },
         {
-          style: {
-            width: '20%',
+          name: 'Reposição automática',
+          cellRenderer(_, row) {
+            const tooltipMessage = row?.enable_product_restocking
+              ? 'Ativo'
+              :'Inativo'
+            return (
+              <Row className='d-flex justify-content-center'>
+                <Tooltip2 content={tooltipMessage}>
+                  <Tag
+                    large
+                    fill
+                    intent={
+                      row?.enable_product_restocking
+                        ? Intent.SUCCESS
+                        : Intent.NONE
+                    }
+                  >
+                    <Icon
+                      icon={row?.enable_product_restocking ? 'tick' : 'cross'}
+                    />
+                  </Tag>
+                </Tooltip2>
+              </Row>
+            )
           },
-          name: 'Relação com o estoque mínimo',
+        },
+        {
+          style: {
+            width: '30',
+          },
+          name: 'Status',
           cellRenderer(_, row) {
             const belowStock = row.quantity! < row.minimum!
-            return <Tag large fill intent={belowStock ? Intent.DANGER : Intent.SUCCESS}>
-              <Render renderIf={belowStock}>
-                Abaixo do estoque mínimo
-              </Render>
-              <Render renderIf={!belowStock}>
-                Dentro do estoque mínimo
-              </Render>
-            </Tag>
+            const tooltipMessage = belowStock
+              ? 'Abaixo do estoque mínimo'
+              : row.quantity === row.minimum
+                ? 'Igual o estoque mínimo'
+                : 'Acima do estoque mínimo'
+            return (
+              <Row className='d-flex justify-content-center'>
+                <Tooltip2 content={tooltipMessage} fill>
+                  <Tag
+                    large
+                    fill
+                    intent={
+                      belowStock
+                        ? Intent.DANGER
+                        : row.quantity === row.minimum
+                          ? Intent.WARNING
+                          : Intent.SUCCESS
+                    }
+                    className='text-center'
+                  >
+                    <Render renderIf={belowStock}>
+                      <Icon icon='minus' />
+                    </Render>
+                    <Render renderIf={row.quantity === row.minimum}>
+                      <Icon icon='equals' />
+                    </Render>
+                    <Render renderIf={row.quantity > row.minimum}>
+                      <Icon icon='plus' />
+                    </Render>
+                  </Tag>
+                </Tooltip2>
+              </Row>
+            )
           },
-        }
-      ] as Column[],
+          keyName: 'stock_relation',
+          filters: [
+            {
+              name: 'Relação com o estoque mínimo',
+              type: 'radio',
+              keyName: 'stock_relation',
+              value: [
+                { label: 'Dentro do estoque mínimo', value: 'inside' },
+                { label: 'Abaixo do estoque mínimo', value: 'below' },
+              ],
+            },
+          ],
+        },
+      ] as Column<ProductStock>[],
     []
   )
 
@@ -350,11 +437,11 @@ const ProductStockManagement: React.FC<ProductStockScreenProps> = ({
       decreaseWindowSize?.()
       focusNameInput()
     },
-    handleDeleteButtonOnClick: () => {
+    handleDeleteButtonOnClick: (stopLoad: StopLoadFunc) => {
       openAlert({
         text: 'Deletar o item selecionado?',
         intent: Intent.DANGER,
-        onConfirm: handleButtonDeleteProductStockOnClick,
+        onConfirm: () => handleButtonDeleteProductStockOnClick(stopLoad),
         cancelButtonText: 'Cancelar',
       })
     },
@@ -379,40 +466,27 @@ const ProductStockManagement: React.FC<ProductStockScreenProps> = ({
     changePayloadAttribute('product_id', option.value)
   }
 
-  const {openSubScreen} = useScreen()
+  const { openSubScreen } = useScreen()
 
-  const selectedProduct = useMemo(() => payload.product_id ?  products.find(p => p.id === payload.product_id ) : undefined, [payload?.product_id, products])
+  const selectedProduct = useMemo(
+    () =>
+      payload.product_id
+        ? products.find((p) => p.id === payload.product_id)
+        : undefined,
+    [payload?.product_id, products]
+  )
   return (
-    <Container style={{ height: 'calc(100% - 40px)' }}>
+    <Container style={{ height: 'calc(100% - 90px)' }}>
       <Row>
         <RegistrationButtonBar {...registrationButtonBarProps} />
       </Row>
 
       <Render renderIf={screenStatus !== ScreenStatus.SEE_REGISTERS}>
-        <Box className='d-flex justify-content-end'>
-          <Button
-            help="Alertas de estoque serve para avisar quando determinado item do estoque está abaixo ou dentro de um certo limite pré-definido"
-            icon='warning-sign'
-            disabled={!payload.id}
-            intent={Intent.PRIMARY}
-            onClick={() => {
-              openSubScreen<ProductStockWarningProps>({
-                id: 'product-stock-warning',
-                headerTitle: `Alerta de estoque para "${selectedProduct?.name}"`,
-                contentSize: '420 110'
-              }, screen.id, {
-                productStock: payload
-              })
-            }}
-          >
-            Criar alerta de estoque
-          </Button>
-        </Box>
-
-        <Row className='mt-2'>
-          <Select
-            required
-            buttonProps={
+        <Box>
+          <Row>
+            <Select
+              required
+              buttonProps={
               {
                 className: 'w-100',
                 style: {
@@ -420,61 +494,137 @@ const ProductStockManagement: React.FC<ProductStockScreenProps> = ({
                   justifyContent: 'space-between',
                 },
               } as any
-            }
-            label='Produto'
-            onChange={handleProductSelect}
-            id={screen.id + 'productIdSelect'}
-            items={productOptions}
-            activeItem={payload.product_id}
-            loading={loadingProducts}
-            handleButtonReloadClick={loadProducts}
-          />
+              }
+              label='Produto'
+              onChange={handleProductSelect}
+              id={screen.id + 'productIdSelect'}
+              items={productOptions}
+              activeItem={payload.product_id}
+              loading={loadingProducts}
+              handleButtonReloadClick={loadProducts}
+            />
 
-          <NumericInput
-            id='productStockDescription'
-            label='Quantidade'
-            disabled={isStatusVizualize()}
-            stepSize={0.1}
-            min={0}
-            style={{
-              flex: 1,
-            }}
-            fill
-            required
-            value={payload?.quantity || 0}
-            onValueChange={(_, stringValue) => {
-              changePayloadAttribute('quantity', stringValue)
-            }}
-            maxLength={120}
-          />
+            <NumericInput
+              id='productStockDescription'
+              label='Quantidade'
+              disabled={isStatusVizualize()}
+              stepSize={0.1}
+              min={0}
+              style={{
+                flex: 1,
+              }}
+              fill
+              required
+              value={payload?.quantity || 0}
+              onValueChange={(_, stringValue) => {
+                changePayloadAttribute('quantity', stringValue)
+              }}
+              maxLength={120}
+            />
 
-          <NumericInput
-            id='productStockDescription'
-            label='Quantidade mínima:'
-            disabled={isStatusVizualize()}
-            stepSize={0.1}
-            min={0}
-            fill
-            value={payload?.minimum || 0}
-            onValueChange={(_, stringValue) => {
-              changePayloadAttribute('minimum', stringValue)
-            }}
-            style={{
-              flex: 1,
-            }}
-            maxLength={120}
-          />
-        </Row>
+            <NumericInput
+              id='productStockDescription'
+              label='Quantidade mínima:'
+              disabled={isStatusVizualize()}
+              stepSize={0.1}
+              min={0}
+              fill
+              value={payload?.minimum || 0}
+              onValueChange={(_, stringValue) => {
+                changePayloadAttribute('minimum', stringValue)
+              }}
+              style={{
+                flex: 1,
+              }}
+              maxLength={120}
+            />
+          </Row>
+        </Box>
+        <Box className='mt-2'>
+          <Row className='align-items-center'>
+            <Tooltip2 content='Ativando essa opção o sistema enviará um pedido automático sobre reposição de estoque para o fornecedor selecionado'>
+              <Checkbox
+                label='Ativar reposição de estoque automática'
+                style={{
+                  height: 'min-content',
+                }}
+                checked={payload.enable_product_restocking}
+                onChange={() =>
+                  changePayloadAttribute(
+                    'enable_product_restocking',
+                    !payload.enable_product_restocking
+                  )
+                }
+              />
+            </Tooltip2>
+          </Row>
+          <Render renderIf={payload?.enable_product_restocking}>
+            <Row>
+              <Select
+                label='Fornecedor padrão'
+                loading={isLoadingSuppliers}
+                activeItem={payload.default_supplier_id}
+                handleButtonReloadClick={loadSuppliers}
+                items={supplierOptions}
+                onChange={(supplierOption) =>
+                  changePayloadAttribute(
+                    'default_supplier_id',
+                    supplierOption.value
+                  )
+                }
+              />
+              <NumericInput
+                id='quantity_type'
+                label='Total de produtos para reposição'
+                defaultValue={payload?.default_restock_quantity ?? 0}
+                onValueChange={(v) => {
+                  changePayloadAttribute('default_restock_quantity', v)
+                }}
+              />
+              <NumericInput
+                id='quantity_type'
+                label='Dias úteis esperados'
+                defaultValue={payload?.expected_business_days ?? 0}
+                onValueChange={(v) => {
+                  changePayloadAttribute('expected_business_days', v)
+                }}
+              />
+            </Row>
+          </Render>
+        </Box>
       </Render>
       <Render renderIf={screenStatus === ScreenStatus.SEE_REGISTERS}>
-        <Row className='h-100'>
-          <PaginatedTable
+        <Box className='d-flex justify-content-end'>
+          <Button
+            help='Alertas de estoque serve para avisar quando determinado item do estoque está abaixo ou dentro de um certo limite pré-definido'
+            icon='warning-sign'
+            disabled={!payload.id}
+            intent={Intent.PRIMARY}
+            onClick={() => {
+              openSubScreen<ProductStockWarningProps>(
+                {
+                  id: 'product-stock-warning',
+                  headerTitle: `Alerta de estoque para "${selectedProduct?.name}"`,
+                  contentSize: '420 110',
+                },
+                screen.id,
+                {
+                  productStock: payload,
+                }
+              )
+            }}
+          >
+            Criar alerta de estoque
+          </Button>
+        </Box>
+        <Row className='h-100 mt-2'>
+          <PaginatedTable<ProductStock>
             height='100%'
             onRowSelect={onRowSelect}
             customRequest={(page, limit) =>
               ProductStockService.getAll(stock.id!, page, limit)
             }
-            rowKey={(row) => row.id}
+            rowKey={(row) => row.id!}
             containerProps={containerProps}
             columns={columns}
             isSelected={(row) => row.id === payload?.id}

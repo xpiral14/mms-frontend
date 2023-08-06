@@ -70,7 +70,7 @@ const Notification = () => {
   return (
     <Container
       style={{
-        width: 250,
+        width: 350,
         maxHeight: 420,
         overflowY: 'scroll',
         position: 'relative',

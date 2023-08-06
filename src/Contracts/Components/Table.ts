@@ -1,7 +1,7 @@
 import { CSSProperties } from 'react'
 
 export type ColumnFilter<T = Record<string, any>> = {
-  type?: 'text' | 'from_date' | 'to_date' | 'date' | 'checkbox'
+  type?: 'text' | 'from_date' | 'to_date' | 'date' | 'checkbox' | 'radio'
   name: string,
   value?: string & ({ label: string, value: string }[])
   keyName?: keyof T & string

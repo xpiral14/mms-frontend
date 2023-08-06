@@ -1,6 +1,8 @@
 import GoodProduct from './GoodProduct'
 
 export enum GoodStatuses {
+  NOT_RECEIVED = 'NOT_RECEIVED',
+  CANCELED = 'CANCELED',
   DISTRIBUTED = 'DISTRIBUTED',
   NOT_DISTRIBUTED = 'NOT_DISTRIBUTED',
   PARTIAL_DISTRIBUTED = 'PARTIAL_DISTRIBUTED'
@@ -20,5 +22,7 @@ export default interface Good {
   expected_receipt_date?: string|Date,
   requested_at?: string | Date
   goods_products: GoodProduct[]
-  status: GoodStatuses
+  status_name?: string
+  is_automatic_request?: boolean
+  status: GoodStatuses,
 }

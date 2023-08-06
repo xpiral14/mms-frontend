@@ -30,7 +30,7 @@ export interface PaginatedTableProps<T = any> extends Omit<TableProps<T>, 'rows'
   height?: string
   isSelected?: (row: Row<T>) => boolean
   onRowSelect?: (row: Row<T>) => void
-  rowKey?: (row: Row<T>) => string
+  rowKey?: (row: Row<T>) => string | number
   filters?:Record<string, string | number | undefined>
   downloadable?: boolean
   reportRequestOptions?: ReportRequestOption[]

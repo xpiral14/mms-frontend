@@ -7,8 +7,9 @@ import Row from '../Layout/Row'
 import InputText from '../InputText'
 import { parse } from 'date-fns'
 import { isValidIsoDate } from '../../Util/isValidIsoDate'
+import RadioGroup from '../RadioGroup'
 
-type FilterType = 'eq' | 'in' | 'like' | 'gte' | 'lte'
+type FilterType = 'eq' | 'in' | 'like' | 'gte' | 'lte' | 'dateq'
 type FilterProps<T = Record<string, any>> = {
   column: Column<T>
   onFilter?: (filters: Record<string, string>) => void
@@ -34,10 +35,10 @@ function Filter<T = Record<string, any>>({
     )
   )
 
-  const changeFilter = (filterType: FilterType, value: any) => {
+  const changeFilter = (filterType: FilterType, value: any, defaultKeyName?: string) => {
     setFilters((prev) => ({
       ...prev,
-      [(column.keyName as string) + '_' + filterType]: value,
+      [(column.keyName ?? defaultKeyName as string) + '_' + filterType]: value,
     }))
   }
 
@@ -64,10 +65,10 @@ function Filter<T = Record<string, any>>({
           return (
             <InputDate
               fill
-              value={filters[(column.keyName as string) + '_eq'] as Date}
+              value={filters[(column.keyName as string) + '_dateeq'] as Date}
               id={'filter-' + filter.name}
               placeholder={filter.name}
-              onChange={(date) => changeFilter('eq', date)}
+              onChange={(date) => changeFilter('dateq', date)}
             />
           )
         case 'from_date':
@@ -120,6 +121,16 @@ function Filter<T = Record<string, any>>({
               />
             </div>
           ))
+        case 'radio':
+          return (
+            <RadioGroup
+              radios={filter.value ?? []}
+              selectedValue={filters[column.keyName + '_eq'] as string ?? ''}
+              onChange={(evt: React.FormEvent<HTMLInputElement>) => {
+                changeFilter('eq', (evt.target as any).value, column.keyName)
+              }}
+            />
+          )
         }
       })}
 

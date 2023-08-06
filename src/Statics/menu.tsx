@@ -24,7 +24,7 @@ const menus = {
           minHeight: 290,
           maxHeight: 500,
           ...screens['stock-register'],
-          contentSize: '750px 246px',
+          contentSize: '750px 290',
         },
       },
       Produtos: {

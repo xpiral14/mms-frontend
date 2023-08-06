@@ -29,7 +29,7 @@ const Button: FC<ButtonProps> = (props) => {
               <ButtonComponent />
             </Popover2>
           ) : (
-            <Tooltip2 content={props.help} position='right'>
+            <Tooltip2 content={!props.disabled ? props.help : undefined} position='right'>
               <ButtonComponent />
             </Tooltip2>
           )}

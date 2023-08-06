@@ -15,18 +15,11 @@ export default class ProductStockService {
   }
 
   static async create(payload: Omit<ProductStock, 'id'>) {
-    return api.post<Response<ProductStock>>(`${DEFAULT_PATH}/${payload.stock_id}/productStocks`, {
-      quantity: payload.quantity,
-      minimum: payload.minimum ?? 1,
-      product_id: payload.product_id
-    })
+    return api.post<Response<ProductStock>>(`${DEFAULT_PATH}/${payload.stock_id}/productStocks`, payload)
   }
 
   static async update(payload: ProductStock) {
-    return api.put<Response<ProductStock>>(`${DEFAULT_PATH}/${payload.stock_id}/productStocks/${payload.id}`, {
-      quantity: payload.quantity,
-      minimum: payload.minimum,
-    })
+    return api.put<Response<ProductStock>>(`${DEFAULT_PATH}/${payload.stock_id}/productStocks/${payload.id}`, payload)
   }
 
   static async delete(stockId:number, id: number) {

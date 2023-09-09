@@ -1,16 +1,30 @@
-import {createContext, lazy, Suspense, useContext, useEffect, useState,} from 'react'
-import {jsPanel, Panel, PanelOptions} from 'jspanel4/es6module/jspanel'
+import {
+  createContext,
+  lazy,
+  Suspense,
+  useContext,
+  useEffect,
+  useState,
+} from 'react'
+import { jsPanel, Panel, PanelOptions } from 'jspanel4/es6module/jspanel'
 import CreatePortal from '../Components/createPortal'
 import jsPanelDefaultOptions from '../Config/jsPanelDefaultOptions'
-import {useAlert} from './useAlert'
-import {useAuth} from './useAuth'
+import { useAlert } from './useAlert'
+import { useAuth } from './useAuth'
 import GridProvider from './useGrid'
 import WindowContextProvider from './useWindow'
-import {ContextPanelOptions, ScreenContext, ScreenIds, ScreenObject,} from '../Contracts/Hooks/useScreen'
+import {
+  ContextPanelOptions,
+  ScreenContext,
+  ScreenIds,
+  ScreenObject,
+} from '../Contracts/Hooks/useScreen'
 import { Intent, ProgressBar } from '@blueprintjs/core'
 import allScreens from '../Statics/screens'
 import { Screen } from '../Contracts/Components/ScreenProps'
 import { useCallback } from 'react'
+import findContainment from '../Util/findContainement'
+import { IS_DEVELOPMENT_MODE } from '../Constants'
 
 export const screenContext = createContext<ScreenContext>(null as any)
 
@@ -25,6 +39,7 @@ export const useScreen = () => {
 }
 jsPanel.ziBase = 4
 
+const offsetMenuHeight = IS_DEVELOPMENT_MODE ? 60 : 50
 export default function ScreenProvider({ children }: any) {
   const [screens, setScreens] = useState<{
     [x: string]: ScreenObject
@@ -53,6 +68,48 @@ export default function ScreenProvider({ children }: any) {
     }
   }, [auth, screens])
 
+  useEffect(() => {
+    const handler = (
+      event: React.DragEvent<HTMLDivElement> & {
+        panel: Panel & HTMLDivElement
+        detail: any
+      }
+    ) => {
+      let positionObject = null
+      const panelContainment = findContainment(
+        event.panel,
+        document.querySelector('.main-screen-container')!
+      )
+
+      const clientRect = event.panel.getBoundingClientRect()
+      if (
+        !panelContainment.top &&
+        !panelContainment.right &&
+        !panelContainment.bottom &&
+        !panelContainment.left
+      )
+        return
+
+      positionObject = {
+        offsetX: panelContainment.right
+          ? document.body.offsetWidth - clientRect.width
+          : panelContainment.left
+            ? 0
+            : clientRect.left,
+        offsetY: panelContainment.top
+          ? 0
+          : panelContainment.bottom
+            ? document.body.offsetHeight - clientRect.height - offsetMenuHeight
+            : clientRect.top - offsetMenuHeight,
+        my: 'left-top',
+        at: 'left-bottom',
+        of: '.main-menu',
+      }
+      event.panel.reposition(positionObject)
+    }
+    document.addEventListener('jspaneldragstop' as any, handler, false)
+    return () => document.removeEventListener('jspaneldrag' as any, handler)
+  }, [])
   const { openAlert } = useAlert()
 
   const changeScreenHeight = (screen: Panel, size: number | string) => () => {
@@ -110,6 +167,7 @@ export default function ScreenProvider({ children }: any) {
         onclosed: () => {
           removeScreen(screenOptions.id)
         },
+        container: 'div.main-screen-container',
       } as PanelOptions
 
       const screen = (modal ?? screenOptions.isSubScreen
@@ -122,7 +180,7 @@ export default function ScreenProvider({ children }: any) {
       screen.increaseScreenSize = screenOptions.minHeight
         ? changeScreenHeight(screen, screenOptions.maxHeight as any)
         : undefined
-      screen.createElementId = function(id: string){
+      screen.createElementId = function (id: string) {
         return screen.id + '-' + id
       }
       screen.id = screenOptions.id

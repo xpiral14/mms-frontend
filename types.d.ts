@@ -581,7 +581,7 @@ declare module 'jspanel4/es6module/jspanel' {
     /**
      * Reposition panel in order to maintain centered position
      */
-    reposition: () => void
+    reposition: (position: any) => void
 
     /**
      * This method normalizes the panel to position and size before it was maximized, minimized or smallified.

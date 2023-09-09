@@ -166,7 +166,7 @@ const OrderServiceCustomer: React.FC<ScreenProps> = ({ screen }) => {
 
   const { payload, setPayload, screenStatus, setScreenStatus } =
     useWindow<OrderPayload>()
-  const isStatusVisualize = Boolean(screenStatus === ScreenStatus.VISUALIZE)
+  const isStatusVisualize = Boolean(screenStatus === ScreenStatus.SEE_REGISTERS)
   useEffect(() => {
     setPayload({
       date: new Date(),
@@ -209,7 +209,7 @@ const OrderServiceCustomer: React.FC<ScreenProps> = ({ screen }) => {
   const { showSuccessToast, showErrorToast } = useToast()
   const { openAlert } = useAlert()
   const { openSubScreen } = useScreen()
-  const {showErrorMessage} = useMessageError()
+  const { showErrorMessage } = useMessageError()
   const reloadAllScreenData = () => {
     loadCustomers()
     loadEmployees()
@@ -298,7 +298,10 @@ const OrderServiceCustomer: React.FC<ScreenProps> = ({ screen }) => {
           )
         }
       } catch (error) {
-        showErrorMessage(error, 'Ocorreu um erro ao tentar salvar os produtos. Por favor, tente novamente.')
+        showErrorMessage(
+          error,
+          'Ocorreu um erro ao tentar salvar os produtos. Por favor, tente novamente.'
+        )
       }
 
       try {
@@ -310,7 +313,10 @@ const OrderServiceCustomer: React.FC<ScreenProps> = ({ screen }) => {
           )
         }
       } catch (error) {
-        showErrorMessage(error, 'Ocorreu um erro ao tentar salvar os serviços. Por favor, tente novamente.')
+        showErrorMessage(
+          error,
+          'Ocorreu um erro ao tentar salvar os serviços. Por favor, tente novamente.'
+        )
       }
 
       showSuccessToast({
@@ -473,7 +479,7 @@ const OrderServiceCustomer: React.FC<ScreenProps> = ({ screen }) => {
     }
     openSubScreen<OrderServiceDetailsProps>(
       {
-        id: 'order-resume'
+        id: 'order-resume',
       },
       screen.id,
       orderResumeProps
@@ -584,38 +590,38 @@ const OrderServiceCustomer: React.FC<ScreenProps> = ({ screen }) => {
       </Header>
 
       <Body className='h-100'>
-        <Render renderIf={screenStatus !== ScreenStatus.SEE_REGISTERS}>
-          <Bar className='my-1 flex flex-justify-end'>
-            <Render renderIf={Boolean(payload.id)}>
-              <Button
-                intent='primary'
-                title='Mostrar resumo da ordem'
-                rightIcon='th-list'
-                onClick={openOrderResumeScreen}
-              >
-                Mostrar resumo
-              </Button>
-            </Render>
+        <Bar className='my-1 flex flex-justify-end'>
+          <Render renderIf={Boolean(payload.id)}>
             <Button
               intent='primary'
-              title='Mostrar serviços'
-              rightIcon='wrench'
-              onClick={openOrderDetailsScreen}
-              disabled={Boolean(!payload.id && isStatusVisualize)}
+              title='Mostrar resumo da ordem'
+              rightIcon='th-list'
+              onClick={openOrderResumeScreen}
             >
-              Serviços
+              Mostrar resumo
             </Button>
+          </Render>
+          <Button
+            intent='primary'
+            title='Mostrar serviços'
+            rightIcon='wrench'
+            onClick={openOrderDetailsScreen}
+            disabled={Boolean(!payload.id && isStatusVisualize)}
+          >
+            Serviços
+          </Button>
 
-            <Button
-              intent='primary'
-              title='Mostrar produtos'
-              rightIcon='barcode'
-              disabled={!payload.id && isStatusVisualize}
-              onClick={openOrderProductScreen}
-            >
-              Produtos
-            </Button>
-          </Bar>
+          <Button
+            intent='primary'
+            title='Mostrar produtos'
+            rightIcon='barcode'
+            disabled={!payload.id && isStatusVisualize}
+            onClick={openOrderProductScreen}
+          >
+            Produtos
+          </Button>
+        </Bar>
+        <Render renderIf={screenStatus !== ScreenStatus.SEE_REGISTERS}>
           <Box className='flex align-center flex-wrap'>
             <Render renderIf={Boolean(payload.id)}>
               <InputText

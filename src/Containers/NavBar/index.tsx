@@ -109,64 +109,65 @@ const NavBar: React.FC<NavBarProps> = ({ menuItems }) => {
   const { openAlert } = useAlert()
 
   return (
-    <Navbar style={{ display: 'flex', justifyContent: 'space-between' }}>
-      <NavbarGroup>
-        <ButtonGroup>
-          <BuiltMenu />
-        </ButtonGroup>
-      </NavbarGroup>
-      <NavbarGroup>
-        <Popover2
-          fill
-
-          placement='bottom-start'
-          interactionKind={Popover2InteractionKind.HOVER}
-          content={
-            <Menu style={{ width: 250 }}>
-              <MenuItem
-                text='Meus dados'
-                icon='people'
-                onClick={() =>
-                  openScreen({
-                    id: 'user-data',
-                    contentSize: '900 110',
-                  })
-                }
-              />
-              <MenuItem
-                text='Dados da empresa'
-                icon={<IoMdBusiness size={16} />}
-                onClick={() =>
-                  openScreen({
-                    id: 'company-data',
-                    contentSize: '900 335',
-                  })
-                }
-              />
-            </Menu>
-          }
-        >
-          <NavbarHeading>
-            {auth?.user.name} | {company?.name}{' '}
-          </NavbarHeading>
-        </Popover2>
-        <NavbarDivider />
-        <Popover2 content={<Notification />} placement='bottom-start'>
-          <Button icon='notifications' help='Notificações' />
-        </Popover2>
-        <NavbarDivider />
-        <Button
-          text='Logout'
-          icon='log-out'
-          onClick={() => {
-            openAlert({
-              text: 'Você quer mesmo sair do sistema?',
-              onConfirm: logout,
-            })
-          }}
-        />
-      </NavbarGroup>
-    </Navbar>
+    <div className='main-menu'>
+      <Navbar style={{ display: 'flex', justifyContent: 'space-between' }}>
+        <NavbarGroup>
+          <ButtonGroup>
+            <BuiltMenu />
+          </ButtonGroup>
+        </NavbarGroup>
+        <NavbarGroup>
+          <Popover2
+            fill
+            placement='bottom-start'
+            interactionKind={Popover2InteractionKind.HOVER}
+            content={
+              <Menu style={{ width: 250 }}>
+                <MenuItem
+                  text='Meus dados'
+                  icon='people'
+                  onClick={() =>
+                    openScreen({
+                      id: 'user-data',
+                      contentSize: '900 110',
+                    })
+                  }
+                />
+                <MenuItem
+                  text='Dados da empresa'
+                  icon={<IoMdBusiness size={16} />}
+                  onClick={() =>
+                    openScreen({
+                      id: 'company-data',
+                      contentSize: '900 335',
+                    })
+                  }
+                />
+              </Menu>
+            }
+          >
+            <NavbarHeading>
+              {auth?.user.name} | {company?.name}{' '}
+            </NavbarHeading>
+          </Popover2>
+          <NavbarDivider />
+          <Popover2 content={<Notification />} placement='bottom-start'>
+            <Button icon='notifications' help='Notificações' />
+          </Popover2>
+          <NavbarDivider />
+          <Button
+            text='Logout'
+            icon='log-out'
+            onClick={() => {
+              openAlert({
+                text: 'Você quer mesmo sair do sistema?',
+                onConfirm: logout,
+              })
+            }}
+          />
+        </NavbarGroup>
+      </Navbar>
+    </div>
   )
 }
 

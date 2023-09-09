@@ -10,6 +10,7 @@ import PublicLayout from '../Pages/_Layouts/Public'
 import LoadingPage from '../Pages/LoadingPage'
 // import { isBefore } from 'date-fns'
 import Strip from '../Components/Strip'
+import { IS_DEVELOPMENT_MODE } from '../Constants'
 interface RouteProps extends ReactDomRouteProps {
   component: React.FC<any>
   isPrivate?: boolean
@@ -56,13 +57,12 @@ const Route: FC<RouteProps> = ({
       )
     }
 
-    const isDevelopment = process.env.NODE_ENV === 'development'
-    return <>
-      {isDevelopment && <Strip variation="warning">
-      </Strip>}
-
-      <Layout />
-    </>
+    return (
+      <>
+        {IS_DEVELOPMENT_MODE && <Strip variation='warning' />}
+        <Layout />
+      </>
+    )
   }
 
   return (

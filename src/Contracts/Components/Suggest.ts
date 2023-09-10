@@ -24,9 +24,10 @@ export interface SuggestProps {
   handleCreateButtonClick?: React.MouseEventHandler<HTMLElement>
 }
 
-export interface Option {
+export interface Option<T = any> {
   label: string
   value?: string | number,
   intent?: Intent
   icon?: IconName
+  data?: T
 }

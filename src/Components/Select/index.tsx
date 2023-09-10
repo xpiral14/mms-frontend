@@ -6,8 +6,10 @@ import {
   Button,
   ButtonProps,
   FormGroup,
-  Intent, Menu,
+  Intent,
+  Menu,
   MenuItem,
+  Spinner,
 } from '@blueprintjs/core'
 import {
   ItemListRenderer,
@@ -23,12 +25,12 @@ import Render from '../Render'
 import { CSSProperties } from 'styled-components'
 import { Wrapper } from './styles'
 
-export interface SelectProps
-  extends Partial<Omit<BluePrintSelectProps<Option>, 'activeItem'>> {
+export interface SelectProps<T = any>
+  extends Partial<Omit<BluePrintSelectProps<Option<T>>, 'activeItem'>> {
   allowCreate?: boolean
   onChange?: (
     item: Option,
-    event?: React.SyntheticEvent<HTMLElement, Event> | undefined,
+    event?: React.SyntheticEvent<HTMLElement, Event> | undefined
   ) => void
   handleCreateButtonClick?: (query: string) => void
   id?: string
@@ -44,17 +46,18 @@ export interface SelectProps
   buttonWidth?: number | string
 }
 
-const OptionSelect = CreateSelect.ofType<Option>()
+const OptionSelect = CreateSelect.ofType<Option<any>>()
 
 function areOptionsEqual(optionA: Option, optionB: Option) {
   return optionA.label.toLowerCase() === optionB.label.toLowerCase()
 }
 
-export default function Select({
+export default function Select<T = any>({
   allowCreate = false,
   activeItem,
   ...props
 }: SelectProps) {
+  const selectRef = React.useRef<any>()
   const activeOption = useMemo(() => {
     if (activeItem === null || activeItem === undefined) return null
     return props.items?.find((o) => o.value === activeItem)
@@ -108,11 +111,11 @@ export default function Select({
     return tokens
   }
 
-  const filterOption: ItemPredicate<Option> = (
+  const filterOption: ItemPredicate<Option<T>> = (
     query,
     option,
     _index,
-    exactMatch,
+    exactMatch
   ) => {
     const normalizedTitle = option.label.toLowerCase()
     const normalizedQuery = query.toLowerCase()
@@ -123,9 +126,9 @@ export default function Select({
       return `${option.value}. ${normalizedTitle}`.indexOf(normalizedQuery) >= 0
     }
   }
-  const renderOption: ItemRenderer<Option> = (
+  const renderOption: ItemRenderer<Option<T>> = (
     option,
-    { handleClick, modifiers, query },
+    { handleClick, modifiers, query }
   ) => {
     if (!modifiers.matchesPredicate) {
       return null
@@ -144,7 +147,7 @@ export default function Select({
     )
   }
 
-  const renderMenu: ItemListRenderer<Option> = ({
+  const renderMenu: ItemListRenderer<Option<T>> = ({
     items,
     itemsParentRef,
     query,
@@ -167,6 +170,16 @@ export default function Select({
           />
         </Render>
         {renderedItems}
+        <Render renderIf={props.loading}>
+          <MenuItem
+            disabled
+            text={
+              <span className='flex'>
+                <Spinner size={16} /> Carregando...
+              </span>
+            }
+          />
+        </Render>
       </Menu>
     )
   }
@@ -177,17 +190,24 @@ export default function Select({
       disabled={props.disabled}
       intent={props.intent}
       labelFor={props.id}
-      style={props.buttonWidth ? {
-        width: props.buttonWidth
-      } : undefined}
+      style={
+        props.buttonWidth
+          ? {
+            width: props.buttonWidth,
+          }
+          : undefined
+      }
     >
       <Wrapper className='d-flex gap-2'>
         <OptionSelect
+          ref={selectRef}
           resetOnSelect
           filterable
           popoverProps={{
             fill: true,
             boundary: 'window',
+            enforceFocus: true,
+            target: selectRef.current,
           }}
           itemPredicate={filterOption}
           items={props.items || []}
@@ -196,8 +216,7 @@ export default function Select({
           inputProps={{
             placeholder: 'Pesquisar...',
           }}
-          createNewItemFromQuery={(() => {
-          }) as any}
+          createNewItemFromQuery={(() => {}) as any}
           createNewItemRenderer={maybeCreateNewItemRenderer}
           itemsEqual={areOptionsEqual}
           noResults={<MenuItem disabled={true} text='Sem resultados' />}
@@ -217,8 +236,8 @@ export default function Select({
             className='flex-1 w-100'
           >
             {activeOption?.label ||
-                props.defaultButtonText ||
-                'Escolha um item'}
+              props.defaultButtonText ||
+              'Escolha um item'}
           </Button>
         </OptionSelect>
         {Boolean(props.handleButtonReloadClick) && (

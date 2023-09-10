@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useMemo, useState } from 'react'
+import React, { FunctionComponent, useCallback, useMemo, useState } from 'react'
 import {
   OrderProductDetailsScreenProps,
   OrderProductItem,
@@ -21,29 +21,23 @@ import Row from '../../Components/Layout/Row'
 import Collapse from '../../Components/Collapse'
 import InputText from '../../Components/InputText'
 import Bar from '../../Components/Layout/Bar'
-import Select from '../../Components/Select'
 import { Option } from '../../Contracts/Components/Suggest'
 import NumericInput from '../../Components/NumericInput'
 import { useAlert } from '../../Hooks/useAlert'
 import Empty from '../../Components/Empty'
-import Stock from '../../Contracts/Models/Stock'
 import ProductStock from '../../Contracts/Models/ProductStock'
-import StockService from '../../Services/StockService'
 import useMessageError from '../../Hooks/useMessageError'
 import ProductStockService from '../../Services/ProductStockService'
-import { useWindow } from '../../Hooks/useWindow'
 import { uniqueId } from '@blueprintjs/core/lib/esm/common/utils'
 import OrderProduct from '../../Contracts/Models/OrderProduct'
+import AsyncSelect, { AsyncSearchFunction } from '../../Components/AsyncSelect'
 
 const OrderProductDetails: FunctionComponent<OrderProductDetailsScreenProps> = (
   props
 ) => {
-  const { changePayloadAttribute, payload } = useWindow()
   const { showErrorToast } = useToast()
   const { showErrorMessage } = useMessageError()
   const { openAlert } = useAlert()
-  const [stocks, setStocks] = useState<Stock[]>([])
-  const [productStocks, setProductStocks] = useState<ProductStock[]>([])
   const [orderProducts, setOrderProducts] = useState<OrderProductItem[]>(() =>
     (props.selectedOrderProducts || []).map((orderProduct) => {
       return {
@@ -65,82 +59,51 @@ const OrderProductDetails: FunctionComponent<OrderProductDetailsScreenProps> = (
     })
   )
 
-  const [loadingStocks, loadStocks] = useAsync(async () => {
-    try {
-      const response = await StockService.getAll(0, 1000)
-      setStocks(response.data.data)
-    } catch (error) {
-      showErrorMessage(
-        error,
-        'Não foi possível obter a lista de estoques. Por favor, tente novamente.'
-      )
-    }
-  }, [])
-
-  const [loadingProductStocks, loadProductStocks] = useAsync(async () => {
-    try {
-      if (!payload.stockId) {
-        return
-      }
-      const response = await ProductStockService.getAll(payload.stockId, 0, 1000)
-      setProductStocks(response.data.data)
-    } catch (error) {
-      showErrorMessage(
-        error,
-        'Não foi possível obter a lista de estoques. Por favor, tente novamente.'
-      )
-    }
-  }, [payload.stockId])
-
-  const stockOptions: Option[] = useMemo(() => {
-    const options = stocks.map((s) => ({
-      label: s.name,
-      value: s.id,
-    }))
-    const firstOption = {
-      label: 'Selecionar produtos',
-      value: 0,
-    }
-    return options.length ? [firstOption, ...options] : []
-  }, [stocks])
-
-  const productStockOptions: Option[] = useMemo(() => {
-    const options = productStocks.map((s) => ({
-      label: s.product_name!,
-      value: s.id,
-    }))
-    const firstOption = {
-      label: 'Selecionar produtos',
-      value: 0,
-    }
-    return options.length ? [firstOption, ...options] : []
-  }, [productStocks])
+  const searchForProductsFromAllStocks: AsyncSearchFunction<ProductStock> =
+    useCallback(async (query) => {
+      return (
+        await ProductStockService.getAllFromAllStocks({
+          product_name_like: query,
+        })
+      ).data.map((productStock) => ({
+        label: `Produto: ${productStock.product?.name} | Estoque: ${productStock.stock.name} |  Quantidade atual: ${productStock.quantity}`,
+        value: productStock.id,
+        data: productStock,
+      }))
+    }, [])
 
   const [loadingOrderProducts] = useAsync(async () => {
     if (!props?.order?.id) return
-    const orderProductsResponse = await OrderService.getOrderProducts(props.order.id)
-    const orderProductItems = orderProductsResponse.data.data.map((orderProduct) => {
-      return {
-        unique_key: uniqueId('orderProducts'),
-        description: orderProduct.order_product.description,
-        id: orderProduct.order_product.id,
-        isCollapsed: true,
-        isEditMode: false,
-        order_id: orderProduct.order_product.order_id,
-        quantity: orderProduct.order_product.quantity,
-        replaced_price: orderProduct.order_product.replaced_price,
-        product_id: orderProduct.product.id,
-        product_name: orderProduct.product?.name,
-        product_price: orderProduct.product?.price,
-        product_unit_id: orderProduct.product.unit_id,
-        product_unit_name: orderProduct?.product?.unit_name,
-      } as OrderProductItem
-    })
+    const orderProductsResponse = await OrderService.getOrderProducts(
+      props.order.id
+    )
+    const orderProductItems = orderProductsResponse.data.data.map(
+      (orderProduct) => {
+        return {
+          unique_key: uniqueId('orderProducts'),
+          description: orderProduct.order_product.description,
+          id: orderProduct.order_product.id,
+          isCollapsed: true,
+          isEditMode: false,
+          order_id: orderProduct.order_product.order_id,
+          quantity: orderProduct.order_product.quantity,
+          replaced_price: orderProduct.order_product.replaced_price,
+          product_id: orderProduct.product.id,
+          product_name: orderProduct.product?.name,
+          product_price: orderProduct.product?.price,
+          product_unit_id: orderProduct.product.unit_id,
+          product_unit_name: orderProduct?.product?.unit_name,
+        } as OrderProductItem
+      }
+    )
 
     setOrderProducts(orderProductItems)
   }, [])
 
-  const changeOrderProductItem = (index: number, attributes: OrderProductItem) => {
+  const changeOrderProductItem = (
+    index: number,
+    attributes: OrderProductItem
+  ) => {
     setOrderProducts((prev) => {
       const copy = [...prev]
       copy[index as number] = {
@@ -175,7 +138,9 @@ const OrderProductDetails: FunctionComponent<OrderProductDetailsScreenProps> = (
       restoreOrderProductAtState(orderProduct)
     }
     if (props?.order?.id && orderProduct?.id) {
-      OrderService.deleteOrderProduct(props!.order.id, orderProduct.id).catch(onError)
+      OrderService.deleteOrderProduct(props!.order.id, orderProduct.id).catch(
+        onError
+      )
     }
     removeOrderProduct(orderProduct)
   }
@@ -247,8 +212,8 @@ const OrderProductDetails: FunctionComponent<OrderProductDetailsScreenProps> = (
               await OrderService.editProduct(props.order!.id!, osModel)
               return
             }
-            osi = (await OrderService.addProduct(props.order!.id!, osModel)).data
-              .data
+            osi = (await OrderService.addProduct(props.order!.id!, osModel))
+              .data.data
 
             savedOrderProducts.push({
               ...osi,
@@ -270,8 +235,8 @@ const OrderProductDetails: FunctionComponent<OrderProductDetailsScreenProps> = (
         setOrderProducts(newOrderProductItems)
 
         props.onSave?.(
-            newOrderProductItems.map(toOrderProductModel) as OrderProduct[],
-            props.screen
+          newOrderProductItems.map(toOrderProductModel) as OrderProduct[],
+          props.screen
         )
       } catch (error: any) {
         showErrorToast({
@@ -298,12 +263,9 @@ const OrderProductDetails: FunctionComponent<OrderProductDetailsScreenProps> = (
     onConfirm()
   }
 
-  const handleSelectStock = (option: Option) => {
-    changePayloadAttribute('stockId', option.value)
-  }
-  const handleProductSelect = (option: Option) => {
+  const handleProductSelect = (option: Option<ProductStock>) => {
     if (!option.value) return
-    const productStock = productStocks.find((s) => s.id === option.value)!
+    const productStock = option.data!
     const orderProduct: OrderProductItem = {
       id: undefined,
       order_id: props?.order?.id ?? undefined,
@@ -312,10 +274,10 @@ const OrderProductDetails: FunctionComponent<OrderProductDetailsScreenProps> = (
       quantity: 1,
       product_stock_id: productStock.id,
       replaced_price: undefined,
-      product_name: productStock.product_name,
-      product_price: productStock.product_price,
-      product_unit_name: productStock?.unit_name,
-      product_unit_id: productStock.unit_id,
+      product_name: productStock.product?.name,
+      product_price: productStock.product?.price,
+      product_unit_name: productStock?.product?.unit?.name,
+      product_unit_id: productStock.product?.unit_id,
       isEditMode: true,
       isCollapsed: false,
       unique_key: uniqueId('orderProducts'),
@@ -400,26 +362,22 @@ const OrderProductDetails: FunctionComponent<OrderProductDetailsScreenProps> = (
           </Button>
         </Bar>
       </Row>
-      <Row>
-        <Select
-          onChange={handleSelectStock}
-          id=''
-          label='Estoque'
-          items={stockOptions}
-          activeItem={payload.stockId}
-          loading={loadingStocks}
-          handleButtonReloadClick={loadStocks}
-        />
-        <Select
-          onChange={handleProductSelect}
-          id=''
-          disabled={!payload.stockId}
-          label='Produtos no estoque'
-          items={productStockOptions}
-          loading={loadingProductStocks}
-          handleButtonReloadClick={loadProductStocks}
-        />
-      </Row>
+      <AsyncSelect
+        fill
+        buttonProps={
+          {
+            className: 'w-100',
+            style: {
+              display: 'flex',
+              justifyContent: 'space-between',
+            },
+          } as any
+        }
+        onChange={handleProductSelect}
+        searchFunction={searchForProductsFromAllStocks}
+        id=''
+        label='Produtos no estoque'
+      />
       <Render renderIf={loadingOrderProducts}>
         <ProgressBar intent={Intent.SUCCESS} />
       </Render>
@@ -505,7 +463,9 @@ const OrderProductDetails: FunctionComponent<OrderProductDetailsScreenProps> = (
                   <InputText
                     readOnly
                     label='Valor por unidade'
-                    value={`R$ ${price ?? 0} / ${orderProduct?.product_unit_name}`}
+                    value={`R$ ${price ?? 0} / ${
+                      orderProduct?.product_unit_name
+                    }`}
                     id={props.screen.id + 'unit_name'}
                   />
                   <InputText
@@ -513,7 +473,8 @@ const OrderProductDetails: FunctionComponent<OrderProductDetailsScreenProps> = (
                     readOnly
                     label='Valor total (R$)'
                     value={
-                      (orderProducts?.[orderProductKey]?.quantity ?? 0) * (price ?? 0)
+                      (orderProducts?.[orderProductKey]?.quantity ?? 0) *
+                      (price ?? 0)
                     }
                   />
                 </section>

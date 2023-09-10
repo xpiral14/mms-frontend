@@ -584,7 +584,7 @@ const OrderServiceCustomer: React.FC<ScreenProps> = ({ screen }) => {
     [orderStatuses]
   )
   return (
-    <Container style={{ height: 'calc(100% - 50px)' }}>
+    <Container style={{ height: 'calc(100% - 85px)' }}>
       <Header>
         <RegistrationButtonBar {...registrationButtonBarProps} />
       </Header>

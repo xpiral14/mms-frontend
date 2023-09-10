@@ -1,4 +1,5 @@
 import Product from './Product'
+import Stock from './Stock'
 
 export default interface ProductStock {
   id?: number;
@@ -16,4 +17,5 @@ export default interface ProductStock {
   default_restock_quantity?: number
   expected_business_days?: number
   product?: Product
+  stock: Stock;
 }

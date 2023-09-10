@@ -5,7 +5,12 @@ import Response from '../Contracts/Types/Response'
 
 export const DEFAULT_PATH = '/stocks'
 export default class ProductStockService {
-  static async getAll(stockId:number, page: number, limit: number) {
+  static async getAllFromAllStocks(filter?: Record<string, any>) {
+    return (await api.get<Paginated<ProductStock>>(`${DEFAULT_PATH}/productStocks/paginated`, {
+      params: filter
+    })).data
+  }
+  static async getAll(stockId: number, page: number, limit: number) {
     return api.get<Paginated<ProductStock>>(`${DEFAULT_PATH}/${stockId}/productStocks/paginated`, {
       params: {
         page,
@@ -22,7 +27,7 @@ export default class ProductStockService {
     return api.put<Response<ProductStock>>(`${DEFAULT_PATH}/${payload.stock_id}/productStocks/${payload.id}`, payload)
   }
 
-  static async delete(stockId:number, id: number) {
+  static async delete(stockId: number, id: number) {
     return api.delete(`${DEFAULT_PATH}/${stockId}/productStocks/${id}`)
   }
 }

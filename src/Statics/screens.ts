@@ -166,6 +166,13 @@ const screens = {
     path: 'DynamicReportScreen',
     subScreenOnly: true,
     contentSize: '800 500'
+  },
+  'product-stock-movement': {
+    id: 'product-stock-movement',
+    name: 'Movimentações do produto no estoque',
+    path: 'ProductStockMovement',
+    subScreenOnly: true,
+    contentSize: '800 500'
   }
 } as Screens
 

@@ -1,4 +1,4 @@
-import { Checkbox, Icon, Intent, Tag } from '@blueprintjs/core'
+import { ButtonGroup, Checkbox, Icon, Intent, Tag } from '@blueprintjs/core'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import Button from '../../Components/Button'
 import Box from '../../Components/Layout/Box'
@@ -34,6 +34,8 @@ import ProductStockScreenProps from '../../Contracts/Screen/ProductStockManageme
 import { ProductStockWarningProps } from '../../Contracts/Screen/ProductStockWarning'
 import { Tooltip2 } from '@blueprintjs/popover2'
 import SupplierService from '../../Services/SupplierService'
+import { ProductStockMovementProps } from '../../Contracts/Screen/ProductStockMovement'
+import Bar from '../../Components/Layout/Bar'
 const ProductStockManagement: React.FC<ProductStockScreenProps> = ({
   screen,
   stock,
@@ -45,7 +47,12 @@ const ProductStockManagement: React.FC<ProductStockScreenProps> = ({
     changePayloadAttribute,
     screenStatus,
     setScreenStatus,
-  } = useWindow<ProductStock>()
+  } = useWindow<
+    ProductStock & {
+      persisted_quantity?: number
+      create_product_stock_movement?: boolean
+    }
+  >()
 
   const [supplierOptions, setSupplierOptions] = useState<Option[]>([])
   const [isLoadingSuppliers, loadSuppliers] = useAsync(
@@ -193,6 +200,7 @@ const ProductStockManagement: React.FC<ProductStockScreenProps> = ({
   const handleButtonUpdateProductStockOnClick = async (
     stopLoad: StopLoadFunc
   ) => {
+    const requestPayload = { ...payload } as any
     decreaseWindowSize?.()
 
     if (!validate()) {
@@ -200,39 +208,79 @@ const ProductStockManagement: React.FC<ProductStockScreenProps> = ({
       return
     }
 
-    try {
-      const response = await ProductStockService.update(payload as ProductStock)
+    const deltaQuantity =
+      requestPayload.persisted_quantity! - requestPayload.quantity!
+    if (requestPayload.id && deltaQuantity != 0) {
+      openAlert({
+        intent: 'warning',
+        icon: 'warning-sign',
+        text: (
+          <div>
+            <p>
+              Deseja criar uma movimentação de estoque para essa modificação?
+            </p>
+            <ul className='p-0'>
+              <li>
+                <b>Quantidade:</b> {Math.abs(deltaQuantity).toFixed(2)}{' '}
+                {requestPayload.unit_name}
+              </li>
+              <li>
+                <b>Tipo de transação: </b>{' '}
+                {deltaQuantity < 0 ? 'Incremento' : 'Decremento'}
+              </li>
+            </ul>
+          </div>
+        ),
+        cancelButtonText: 'Não criar movimentação',
+        confirmButtonText: 'Criar movimentação',
+        onConfirm: () => {
+          requestPayload.create_product_stock_movement = true
+          update()
+        },
+        onCancel: () => {
+          update()
+        },
+      })
+      return
+    }
+    update()
+    async function update() {
+      try {
+        const response = await ProductStockService.update(
+          requestPayload as ProductStock
+        )
 
-      if (response.status) {
-        showSuccessToast({
-          message: 'Produto atualizada com sucesso',
-          intent: Intent.SUCCESS,
-        })
+        if (response.status) {
+          showSuccessToast({
+            message: 'Produto atualizado com sucesso',
+            intent: Intent.SUCCESS,
+          })
 
-        setReloadGrid(true)
-      }
+          setReloadGrid(true)
+        }
 
-      if (!response) {
+        if (!response) {
+          openAlert({
+            text: 'Não foi possível atualizar o produto',
+            intent: Intent.DANGER,
+          })
+        }
+      } catch (error: any) {
+        const ErrorMessages = getErrorMessages(
+          error.response?.data?.errors,
+          'Não foi possível atualizar o produto'
+        )
+
         openAlert({
-          text: 'Não foi possível atualizar o produto',
+          text: ErrorMessages,
           intent: Intent.DANGER,
         })
+      } finally {
+        setPayload({})
+        setScreenStatus(ScreenStatus.SEE_REGISTERS)
+        stopLoad()
+        increaseWindowSize?.()
       }
-    } catch (error: any) {
-      const ErrorMessages = getErrorMessages(
-        error.response?.data?.errors,
-        'Não foi possível atualizar o produto'
-      )
-
-      openAlert({
-        text: ErrorMessages,
-        intent: Intent.DANGER,
-      })
-    } finally {
-      setPayload({})
-      setScreenStatus(ScreenStatus.SEE_REGISTERS)
-      stopLoad()
-      increaseWindowSize?.()
     }
   }
 
@@ -286,6 +334,9 @@ const ProductStockManagement: React.FC<ProductStockScreenProps> = ({
           name: 'Nome',
           keyName: 'product_name',
           filters: [{ name: 'Nome', type: 'text' }],
+          style: {
+            minWidth: 400
+          }
         },
         {
           id: 2,
@@ -313,7 +364,7 @@ const ProductStockManagement: React.FC<ProductStockScreenProps> = ({
           cellRenderer(_, row) {
             const tooltipMessage = row?.enable_product_restocking
               ? 'Ativo'
-              :'Inativo'
+              : 'Inativo'
             return (
               <Row className='d-flex justify-content-center'>
                 <Tooltip2 content={tooltipMessage}>
@@ -418,7 +469,9 @@ const ProductStockManagement: React.FC<ProductStockScreenProps> = ({
   }
 
   const handleButtonNewOnClick = () => {
-    setPayload({})
+    setPayload({
+      create_product_stock_movement: false,
+    })
     setScreenStatus(ScreenStatus.NEW)
     focusNameInput()
     decreaseWindowSize?.()
@@ -458,7 +511,12 @@ const ProductStockManagement: React.FC<ProductStockScreenProps> = ({
   }
 
   const onRowSelect = useCallback(
-    (row: { [key: string]: any }) => setPayload(row),
+    (row: { [key: string]: any }) =>
+      setPayload({
+        ...row,
+        persisted_quantity: row.quantity,
+        create_product_stock_movement: false,
+      }),
     []
   )
 
@@ -475,25 +533,73 @@ const ProductStockManagement: React.FC<ProductStockScreenProps> = ({
         : undefined,
     [payload?.product_id, products]
   )
+  const customRequest = useCallback(
+    (page: number, limit: number) =>
+      ProductStockService.getAll(stock.id!, page, limit),
+    [stock.id]
+  )
   return (
     <Container style={{ height: 'calc(100% - 90px)' }}>
       <Row>
         <RegistrationButtonBar {...registrationButtonBarProps} />
       </Row>
-
+      <Bar className='mt-1 mb-1'>
+        <ButtonGroup>
+          <Button
+            help='Alertas de estoque servem para avisar quando determinado item do estoque está abaixo ou dentro de um certo limite pré-definido'
+            icon='warning-sign'
+            disabled={!payload.id}
+            intent='primary'
+            onClick={() => {
+              openSubScreen<ProductStockWarningProps>(
+                {
+                  id: 'product-stock-warning',
+                  headerTitle: `Alerta de estoque para "${selectedProduct?.name}"`,
+                  contentSize: '420 110',
+                },
+                screen.id,
+                {
+                  productStock: payload,
+                }
+              )
+            }}
+          >
+            Criar alerta de estoque
+          </Button>
+          <Button
+            intent='primary'
+            icon='history'
+            disabled={!payload.id}
+            onClick={() => {
+              openSubScreen<ProductStockMovementProps>(
+                {
+                  id: 'product-stock-movement',
+                  headerTitle: `Movimentações do produto ${payload.product?.name} no estoque ${payload.stock?.name}`,
+                },
+                screen.id,
+                {
+                  productStock: payload,
+                }
+              )
+            }}
+          >
+            Ver histórico de movimentações
+          </Button>
+        </ButtonGroup>
+      </Bar>
       <Render renderIf={screenStatus !== ScreenStatus.SEE_REGISTERS}>
         <Box>
           <Row>
             <Select
               required
               buttonProps={
-              {
-                className: 'w-100',
-                style: {
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                },
-              } as any
+                {
+                  className: 'w-100',
+                  style: {
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                  },
+                } as any
               }
               label='Produto'
               onChange={handleProductSelect}
@@ -594,36 +700,11 @@ const ProductStockManagement: React.FC<ProductStockScreenProps> = ({
         </Box>
       </Render>
       <Render renderIf={screenStatus === ScreenStatus.SEE_REGISTERS}>
-        <Box className='d-flex justify-content-end'>
-          <Button
-            help='Alertas de estoque serve para avisar quando determinado item do estoque está abaixo ou dentro de um certo limite pré-definido'
-            icon='warning-sign'
-            disabled={!payload.id}
-            intent={Intent.PRIMARY}
-            onClick={() => {
-              openSubScreen<ProductStockWarningProps>(
-                {
-                  id: 'product-stock-warning',
-                  headerTitle: `Alerta de estoque para "${selectedProduct?.name}"`,
-                  contentSize: '420 110',
-                },
-                screen.id,
-                {
-                  productStock: payload,
-                }
-              )
-            }}
-          >
-            Criar alerta de estoque
-          </Button>
-        </Box>
         <Row className='h-100 mt-2'>
           <PaginatedTable<ProductStock>
             height='100%'
             onRowSelect={onRowSelect}
-            customRequest={(page, limit) =>
-              ProductStockService.getAll(stock.id!, page, limit)
-            }
+            customRequest={customRequest}
             rowKey={(row) => row.id!}
             containerProps={containerProps}
             columns={columns}

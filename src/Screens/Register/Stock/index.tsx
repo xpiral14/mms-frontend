@@ -26,6 +26,7 @@ import useValidation from '../../../Hooks/useValidation'
 import { useWindow } from '../../../Hooks/useWindow'
 import StockService from '../../../Services/StockService'
 import { Column } from '../../../Contracts/Components/Table'
+import Bar from '../../../Components/Layout/Bar'
 const StocksScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
   const { payload, setPayload, screenStatus, setScreenStatus } =
     useWindow<Stock>()
@@ -295,6 +296,29 @@ const StocksScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
       <Row>
         <RegistrationButtonBar {...registrationButtonBarProps} />
       </Row>
+      <Bar className='my-1'>
+        <Button
+          icon={<FaProductHunt size={12} />}
+          disabled={!payload.id}
+          intent={Intent.PRIMARY}
+          onClick={() => {
+            openSubScreen<ProductStockProps>(
+              {
+                id: 'product-stock-management',
+                headerTitle: `Gerenciamento de produtos do estoque "${payload.name}"`,
+                contentSize: '900 400',
+              },
+              screen.id,
+              {
+                stock: payload,
+                defaultScreenStatus: ScreenStatus.SEE_REGISTERS,
+              }
+            )
+          }}
+        >
+              Gerenciar produtos
+        </Button>
+      </Bar>
       <Render renderIf={screenStatus !== ScreenStatus.SEE_REGISTERS}>
         <Box className='mt-2'>
           <Row>
@@ -323,31 +347,6 @@ const StocksScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
       </Render>
 
       <Render renderIf={screenStatus === ScreenStatus.SEE_REGISTERS}>
-        <Box className='mt-1'>
-          <Row className='d-flex justify-content-end'>
-            <Button
-              icon={<FaProductHunt size={12} />}
-              disabled={!payload.id}
-              intent={Intent.PRIMARY}
-              onClick={() => {
-                openSubScreen<ProductStockProps>(
-                  {
-                    id: 'product-stock-management',
-                    headerTitle: `Gerenciamento de produtos do estoque "${payload.name}"`,
-                    contentSize: '750px 246px',
-                  },
-                  screen.id,
-                  {
-                    stock: payload,
-                    defaultScreenStatus: ScreenStatus.SEE_REGISTERS,
-                  }
-                )
-              }}
-            >
-              Gerenciar produtos
-            </Button>
-          </Row>
-        </Box>
         <Row className='h-100'>
           <PaginatedTable<Stock>
             height='100%'

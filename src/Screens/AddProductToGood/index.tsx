@@ -48,7 +48,6 @@ const AddProductToGood: FC<AddProductToGoodScreenProps> = ({
     useWindow<GoodProduct>()
   useEffect(() => {
     if (goodProduct) {
-      console.log('aqui')
       setPayload(goodProduct)
     }
   }, [goodProduct])

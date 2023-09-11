@@ -35,10 +35,15 @@ function Filter<T = Record<string, any>>({
     )
   )
 
-  const changeFilter = (filterType: FilterType, value: any, defaultKeyName?: string) => {
+  const changeFilter = (
+    filterType: FilterType,
+    value: any,
+    defaultKeyName?: string
+  ) => {
     setFilters((prev) => ({
       ...prev,
-      [(column.keyName ?? defaultKeyName as string) + '_' + filterType]: value,
+      [(column.keyName ?? (defaultKeyName as string)) + '_' + filterType]:
+        value,
     }))
   }
 
@@ -60,12 +65,13 @@ function Filter<T = Record<string, any>>({
   return (
     <Row className='p-2 d-flex flex-column'>
       {column.filters?.map((filter) => {
+        const filterName = filter.keyName ?? column.keyName as string
         switch (filter.type) {
         case 'date':
           return (
             <InputDate
               fill
-              value={filters[(column.keyName as string) + '_dateeq'] as Date}
+              value={filters[filterName + '_dateeq'] as Date}
               id={'filter-' + filter.name}
               placeholder={filter.name}
               onChange={(date) => changeFilter('dateq', date)}
@@ -75,10 +81,20 @@ function Filter<T = Record<string, any>>({
           return (
             <InputDate
               fill
-              value={filters[(column.keyName as string) + '_gte'] as Date}
+              value={filters[filterName + '_gte'] as Date}
               id={'filter-' + filter.name}
               placeholder={filter.name}
               onChange={(date) => changeFilter('gte', date)}
+            />
+          )
+        case 'to_date':
+          return (
+            <InputDate
+              fill
+              value={filters[filterName + '_lte'] as Date}
+              id={'filter-' + filter.name}
+              placeholder={filter.name}
+              onChange={(date) => changeFilter('lte', date)}
             />
           )
         case 'text':
@@ -88,11 +104,7 @@ function Filter<T = Record<string, any>>({
               style={{ width: '100%' }}
               inputStyle={{ width: '100%' }}
               id={'filter-' + filter.name}
-              value={
-                (filters[
-                  ((column.keyName ?? filter.keyName) as string) + '_like'
-                ] as string) ?? ''
-              }
+              value={(filters[filterName + '_like'] as string) ?? ''}
               placeholder={filter.name}
               onChange={(event) => changeFilter('like', event.target.value)}
             />
@@ -102,17 +114,17 @@ function Filter<T = Record<string, any>>({
             <div key={option.value}>
               <Checkbox
                 label={option.label}
-                checked={(
-                    filters[column.keyName + '_in'] as string
-                )?.includes(option.value)}
+                checked={(filters[filterName + '_in'] as string)?.includes(
+                  option.value
+                )}
                 onChange={() => {
-                  const filterName = column.keyName + '_in'
                   setFilters((prev) => {
-                    const filterValue = (prev[filterName] as string[]) ?? []
+                    const checkboxFilterName = filterName + '_in'
+                    const filterValue = (prev[checkboxFilterName] as string[]) ?? []
                     const optionValue = option.value
                     return {
                       ...prev,
-                      [filterName]: filterValue?.includes(optionValue)
+                      [checkboxFilterName]: filterValue?.includes(optionValue)
                         ? filterValue.filter((v) => v != optionValue)
                         : [...filterValue, optionValue],
                     }
@@ -125,7 +137,9 @@ function Filter<T = Record<string, any>>({
           return (
             <RadioGroup
               radios={filter.value ?? []}
-              selectedValue={filters[column.keyName + '_eq'] as string ?? ''}
+              selectedValue={
+                (filters[column.keyName + '_eq'] as string) ?? ''
+              }
               onChange={(evt: React.FormEvent<HTMLInputElement>) => {
                 changeFilter('eq', (evt.target as any).value, column.keyName)
               }}

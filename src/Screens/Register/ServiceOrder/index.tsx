@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react'
-import { Intent } from '@blueprintjs/core'
+import { ButtonGroup, Intent } from '@blueprintjs/core'
 import PaginatedTable from '../../../Components/PaginatedTable'
 import RegistrationButtonBar from '../../../Components/RegistrationButtonBar'
 import Select from '../../../Components/Select'
@@ -591,35 +591,35 @@ const OrderServiceCustomer: React.FC<ScreenProps> = ({ screen }) => {
 
       <Body className='h-100'>
         <Bar className='my-1 flex flex-justify-end'>
-          <Render renderIf={Boolean(payload.id)}>
+          <ButtonGroup>
             <Button
               intent='primary'
               title='Mostrar resumo da ordem'
               rightIcon='th-list'
               onClick={openOrderResumeScreen}
+              disabled={!payload.id}
             >
               Mostrar resumo
             </Button>
-          </Render>
-          <Button
-            intent='primary'
-            title='Mostrar serviços'
-            rightIcon='wrench'
-            onClick={openOrderDetailsScreen}
-            disabled={Boolean(!payload.id && isStatusVisualize)}
-          >
+            <Button
+              intent='primary'
+              title='Mostrar serviços'
+              rightIcon='wrench'
+              onClick={openOrderDetailsScreen}
+              disabled={Boolean(!payload.id && isStatusVisualize)}
+            >
             Serviços
-          </Button>
-
-          <Button
-            intent='primary'
-            title='Mostrar produtos'
-            rightIcon='barcode'
-            disabled={!payload.id && isStatusVisualize}
-            onClick={openOrderProductScreen}
-          >
+            </Button>
+            <Button
+              intent='primary'
+              title='Mostrar produtos'
+              rightIcon='barcode'
+              disabled={!payload.id && isStatusVisualize}
+              onClick={openOrderProductScreen}
+            >
             Produtos
-          </Button>
+            </Button>
+          </ButtonGroup>
         </Bar>
         <Render renderIf={screenStatus !== ScreenStatus.SEE_REGISTERS}>
           <Box className='flex align-center flex-wrap'>

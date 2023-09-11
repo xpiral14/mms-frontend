@@ -108,7 +108,11 @@ export default function ScreenProvider({ children }: any) {
       event.panel.reposition(positionObject)
     }
     document.addEventListener('jspaneldragstop' as any, handler, false)
-    return () => document.removeEventListener('jspaneldrag' as any, handler)
+    document.addEventListener('jspanelresizestop' as any, handler, false)
+    return () => {
+      document.removeEventListener('jspaneldrag' as any, handler)
+      document.removeEventListener('jspanelresizestop' as any, handler)
+    }
   }, [])
   const { openAlert } = useAlert()
 

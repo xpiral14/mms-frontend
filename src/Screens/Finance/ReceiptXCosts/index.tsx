@@ -1,14 +1,10 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import React, { useMemo, useState } from 'react'
+import { useState } from 'react'
 import Container from '../../../Components/Layout/Container'
-import ReceiptService from '../../../Services/ReceiptService'
-import Receipt from '../../../Contracts/Models/Receipt'
 import useAsync from '../../../Hooks/useAsync'
 import useMessageError from '../../../Hooks/useMessageError'
 import {
   Bar,
   BarChart,
-  CartesianGrid,
   Legend,
   Line,
   ResponsiveContainer,
@@ -16,8 +12,6 @@ import {
   XAxis,
   YAxis,
 } from 'recharts'
-import Cost from '../../../Contracts/Models/Cost'
-import CostService from '../../../Services/CostService'
 import { Colors } from '@blueprintjs/core'
 import ChartService from '../../../Services/ChartService'
 import { endOfMonth, format, startOfMonth, subDays, subMonths } from 'date-fns'

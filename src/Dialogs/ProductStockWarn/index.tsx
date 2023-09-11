@@ -16,7 +16,7 @@ export interface ProductStockWarnProps {
 }
 
 interface ProductStockWarnDialogProps extends ProductStockWarnProps, DialogProps {}
-const index: FC<ProductStockWarnDialogProps> = ({
+const ProductStockWarn: FC<ProductStockWarnDialogProps> = ({
   stock,
   product,
   productStockWarning,
@@ -57,4 +57,4 @@ const index: FC<ProductStockWarnDialogProps> = ({
   )
 }
 
-export default index
+export default ProductStockWarn

@@ -31,9 +31,8 @@ const AlertContextProvider: React.FC<any> = ({ children }) => {
         id: alertId,
         canEscapeKeyCancel: true,
         canOutsideClickCancel: true,
-        onClose: () => {
-          alertProps?.onCancel?.()
-
+        onClose: (confirmed, event) => {
+          alertProps?.onClose?.(confirmed, event)
           closeAlert(alertId)
         },
         handleConfirm: () => {

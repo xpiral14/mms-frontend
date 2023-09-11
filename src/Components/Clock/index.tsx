@@ -13,7 +13,7 @@ const Clock = () => {
   return (
     <ClockContainer>
       <TimerContent>
-        {format(now, 'hh')}<span className='blink'>:</span>
+        {format(now, 'HH')}<span className='blink'>:</span>
         {format(now, 'mm')}
       </TimerContent>
       <DayContent>

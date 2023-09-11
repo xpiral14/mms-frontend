@@ -9,8 +9,9 @@
 }
 
 h6 {
-  margin: 0!important;
+  margin: 0 !important;
 }
+
 html,
 body {
   height: 100%;
@@ -19,14 +20,20 @@ body {
 [aria-disabled='true'] {
   opacity: 0.3;
 }
+
 .jsPanel-hdr {
   background-color: #215CAF !important;
 }
+
 .jsPanel-title {
   font-family: Roboto, 'Open-sans', Lato, serif;
-  text-transform: capitalize;
-  font-variant: none!important;
+  font-variant: none !important;
 }
+
+.jsPanel-title:first-letter {
+  text-transform: capitalize;
+}
+
 .jsPanel {
   font-family: Roboto, 'Open-sans', Lato, serif;
 }
@@ -37,7 +44,7 @@ body {
 }
 
 .jsPanel-replacement {
- border-radius: 5px 5px 0 0;
+  border-radius: 5px 5px 0 0;
 }
 
 .screen-container {
@@ -62,33 +69,39 @@ body {
   flex-direction: column;
 }
 
-.flex-justify-end{
+.flex-justify-end {
   justify-content: flex-end;
 }
+
 .flex-between {
   justify-content: space-between;
 }
+
 .flex-center {
   align-items: center;
   justify-content: center;
 }
-.flex-wrap  {
+
+.flex-wrap {
   flex-wrap: wrap;
 }
 
-.flex-column{
- flex-direction: column;
+.flex-column {
+  flex-direction: column;
 }
 
 .align-center {
   align-items: center;
 }
+
 .align-end {
   align-items: flex-end;
 }
+
 .mt-1 {
   margin-top: 5px;
 }
+
 .m-center {
   margin-left: auto;
   margin-right: auto;
@@ -110,23 +123,25 @@ body {
   width: 25%;
 }
 
-.flex-center{
+.flex-center {
   display: flex;
   align-items: center;
   justify-content: center;
 }
-.mb-1{
+
+.mb-1 {
   margin-bottom: .25rem;
 }
 
-.mb-2{
+.mb-2 {
   margin-bottom: .5rem;
 }
 
-.mb-3{
+.mb-3 {
   margin-bottom: .75rem;
 }
-.mb-4{
+
+.mb-4 {
   margin-bottom: 1rem;
 }
 

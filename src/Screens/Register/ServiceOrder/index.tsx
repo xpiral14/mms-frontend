@@ -56,6 +56,7 @@ import ReceiptStatus from '../../../Constants/ReceiptStatus'
 import { useAuth } from '../../../Hooks/useAuth'
 import useMessageError from '../../../Hooks/useMessageError'
 import Bar from '../../../Components/Layout/Bar'
+import Switch from '../../../Components/ScreenComponents/Switch'
 
 const discountTypeOptions: Option[] = [
   {
@@ -93,6 +94,7 @@ type OrderPayload = {
   productDiscount?: number
   employeeId?: number
   totalPrice: number
+  sendNotificationWhenConcluded?: boolean
 }
 
 const OrderServiceCustomer: React.FC<ScreenProps> = ({ screen }) => {
@@ -284,6 +286,7 @@ const OrderServiceCustomer: React.FC<ScreenProps> = ({ screen }) => {
         productDiscount: payload.productDiscount,
         productDiscountType: payload.productDiscountType,
         employeeId: payload?.employeeId,
+        sendNotificationWhenConcluded: payload.sendNotificationWhenConcluded
       }
       const response = await OrderService.create(requestPayload)
       const orderId = response.data.data.id
@@ -372,6 +375,7 @@ const OrderServiceCustomer: React.FC<ScreenProps> = ({ screen }) => {
           : payload.productDiscount ?? null,
       productDiscountType: payload.productDiscountType,
       employeeId: payload.employeeId,
+      sendNotificationWhenConcluded: payload.sendNotificationWhenConcluded
     }
 
     try {
@@ -608,7 +612,7 @@ const OrderServiceCustomer: React.FC<ScreenProps> = ({ screen }) => {
               onClick={openOrderDetailsScreen}
               disabled={Boolean(!payload.id && isStatusVisualize)}
             >
-            Serviços
+              Serviços
             </Button>
             <Button
               intent='primary'
@@ -617,117 +621,78 @@ const OrderServiceCustomer: React.FC<ScreenProps> = ({ screen }) => {
               disabled={!payload.id && isStatusVisualize}
               onClick={openOrderProductScreen}
             >
-            Produtos
+              Produtos
             </Button>
           </ButtonGroup>
         </Bar>
         <Render renderIf={screenStatus !== ScreenStatus.SEE_REGISTERS}>
-          <Box className='flex align-center flex-wrap'>
-            <Render renderIf={Boolean(payload.id)}>
-              <InputText
-                label='Número da ordem'
-                id={`${screen.id}-order-id`}
-                value={payload.id ?? ''}
-                disabled={isStatusVisualize}
-                readOnly
-              />
-            </Render>
+          <Row className='flex-column'>
+            <Box className='flex align-center flex-wrap'>
+              <Render renderIf={Boolean(payload.id)}>
+                <InputText
+                  label='Número da ordem'
+                  id={`${screen.id}-order-id`}
+                  value={payload.id ?? ''}
+                  disabled={isStatusVisualize}
+                  readOnly
+                />
+              </Render>
 
-            <InputText
-              label='Referência'
-              id={`${screen.id}-reference`}
-              value={payload.reference ?? ''}
-              onChange={(event) =>
-                changePayload('reference', event.target.value)
-              }
-              disabled={isStatusVisualize}
-            />
-            <InputDate
-              label='Data'
-              id={`${screen.id}-order-date`}
-              value={payload.date}
-              onChange={(selectedDate) => changePayload('date', selectedDate)}
-              disabled={isStatusVisualize}
-            />
-            <InputDate
-              intent={
-                payload?.validity
-                  ? isBefore(payload.validity, new Date())
-                    ? Intent.WARNING
+              <InputText
+                label='Referência'
+                id={`${screen.id}-reference`}
+                value={payload.reference ?? ''}
+                onChange={(event) =>
+                  changePayload('reference', event.target.value)
+                }
+                disabled={isStatusVisualize}
+              />
+              <InputDate
+                label='Data'
+                id={`${screen.id}-order-date`}
+                value={payload.date}
+                onChange={(selectedDate) => changePayload('date', selectedDate)}
+                disabled={isStatusVisualize}
+              />
+              <InputDate
+                intent={
+                  payload?.validity
+                    ? isBefore(payload.validity, new Date())
+                      ? Intent.WARNING
+                      : Intent.NONE
                     : Intent.NONE
-                  : Intent.NONE
-              }
-              label='Validade da nota'
-              id={`${screen.id}-order-date`}
-              value={payload.validity}
-              onChange={(selectedDate) =>
-                changePayload('validity', selectedDate)
-              }
-              disabled={isStatusVisualize}
-            />
-            <Select
-              onChange={(item) => changePayload('status', item.value)}
-              label='Status da ordem'
-              activeItem={payload?.status}
-              items={orderStatusOptions}
-              disabled={isStatusVisualize}
-              loading={loadingOrderStatuses}
-              handleButtonReloadClick={loadOrderStatuses}
-            />
-            <Select
-              handleButtonReloadClick={loadCustomers}
-              loading={loadingCustomers}
-              required
-              allowCreate
-              activeItem={payload?.customerId}
-              onChange={(option) => changePayload('customerId', option.value)}
-              defaultButtonText='Escolha um profissional'
-              label='Cliente'
-              items={customerOptions.options}
-              handleCreateButtonClick={(query) => {
-                openSubScreen(
-                  {
-                    id: 'customer-register',
-                    contentSize: '700px 350px',
-                  },
-                  screen.id,
-                  {
-                    defaultCustomer: {
-                      name: query,
-                      personType: PersonType.PHYSICAL,
-                    },
-                    defaultScreenStatus: ScreenStatus.NEW,
-                  }
-                )
-              }}
-              buttonProps={
-                {
-                  id: `${screen.id}-select-customer`,
-                  style: {
-                    width: '100%',
-                    minWidth: '150px',
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                  },
-                } as any
-              }
-              disabled={screenStatus === ScreenStatus.VISUALIZE}
-            />
-            <Render renderIf={hasPermission(Permissions.READ_EMPLOYEE)}>
+                }
+                label='Validade da nota'
+                id={`${screen.id}-order-date`}
+                value={payload.validity}
+                onChange={(selectedDate) =>
+                  changePayload('validity', selectedDate)
+                }
+                disabled={isStatusVisualize}
+              />
               <Select
-                handleButtonReloadClick={loadEmployees}
-                loading={loadingEmployees}
+                onChange={(item) => changePayload('status', item.value)}
+                label='Status da ordem'
+                activeItem={payload?.status}
+                items={orderStatusOptions}
+                disabled={isStatusVisualize}
+                loading={loadingOrderStatuses}
+                handleButtonReloadClick={loadOrderStatuses}
+              />
+              <Select
+                handleButtonReloadClick={loadCustomers}
+                loading={loadingCustomers}
                 required
                 allowCreate
-                activeItem={payload?.employeeId}
-                onChange={(option) => changePayload('employeeId', option.value)}
+                activeItem={payload?.customerId}
+                onChange={(option) => changePayload('customerId', option.value)}
                 defaultButtonText='Escolha um profissional'
-                label='Funcionário'
-                items={employeeOptions}
+                label='Cliente'
+                items={customerOptions.options}
                 handleCreateButtonClick={(query) => {
                   openSubScreen(
                     {
-                      id: 'employees-register',
+                      id: 'customer-register',
                       contentSize: '700px 350px',
                     },
                     screen.id,
@@ -748,160 +713,215 @@ const OrderServiceCustomer: React.FC<ScreenProps> = ({ screen }) => {
                       minWidth: '150px',
                       display: 'flex',
                       justifyContent: 'space-between',
-                      maxWidth: 250,
-                      textOverflow: 'ellipsis',
-                      whiteSpace: 'nowrap',
-                      overflow: 'hidden',
                     },
                   } as any
                 }
                 disabled={screenStatus === ScreenStatus.VISUALIZE}
               />
-            </Render>
-          </Box>
-          <Collapse
-            title={<h6> Informações básicas </h6>}
-            isCollapsed={isDetailsCollapsed}
-            onChange={() => setIsDetailsCollapsed((prev) => !prev)}
-          >
-            <Box>
-              <Row>
-                <InputGroup
-                  type='number'
-                  id={screen.id + 'product_discount_value'}
-                  disabled={Boolean(
-                    isStatusVisualize || !payload.productDiscountType
-                  )}
-                  label='Desconto nos produtos'
-                  max={isProductDiscountTypePercent ? 100 : undefined}
-                  leftIcon={
-                    payload.productDiscountType
-                      ? isProductDiscountTypePercent
-                        ? 'percentage'
-                        : 'dollar'
-                      : undefined
+              <Render renderIf={hasPermission(Permissions.READ_EMPLOYEE)}>
+                <Select
+                  handleButtonReloadClick={loadEmployees}
+                  loading={loadingEmployees}
+                  required
+                  allowCreate
+                  activeItem={payload?.employeeId}
+                  onChange={(option) =>
+                    changePayload('employeeId', option.value)
                   }
-                  value={
-                    payload?.productDiscount
-                      ? String(payload?.productDiscount)
-                      : ''
+                  defaultButtonText='Escolha um profissional'
+                  label='Funcionário'
+                  items={employeeOptions}
+                  handleCreateButtonClick={(query) => {
+                    openSubScreen(
+                      {
+                        id: 'employees-register',
+                        contentSize: '700px 350px',
+                      },
+                      screen.id,
+                      {
+                        defaultCustomer: {
+                          name: query,
+                          personType: PersonType.PHYSICAL,
+                        },
+                        defaultScreenStatus: ScreenStatus.NEW,
+                      }
+                    )
+                  }}
+                  buttonProps={
+                    {
+                      id: `${screen.id}-select-customer`,
+                      style: {
+                        width: '100%',
+                        minWidth: '150px',
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        maxWidth: 250,
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                      },
+                    } as any
                   }
-                  onChange={(e: any) => {
-                    let value = +e.target.value
-                    if (isProductDiscountTypePercent && value > 100) {
-                      value = 100
-                    }
-
-                    changePayload('productDiscount', value)
-                  }}
-                  selectProps={{
-                    id: screen.id + 'select_product_discount_value',
-                    disabled: isStatusVisualize,
-                    activeItem: payload.productDiscountType,
-                    onChange: (item) => {
-                      const productDiscountType = item.value as DiscountType
-
-                      setPayload((prev) => {
-                        let productDiscount = prev.productDiscount
-
-                        if (
-                          isProductDiscountTypePercent &&
-                          prev.productDiscount! > 100
-                        ) {
-                          productDiscount = 100
-                        }
-
-                        if (!productDiscountType) {
-                          productDiscount = undefined
-                        }
-                        return {
-                          ...prev,
-                          productDiscountType,
-                          productDiscount,
-                        }
-                      })
-                    },
-                    intent: Intent.PRIMARY,
-                    items: discountTypeOptions,
-                  }}
-                />
-                <InputGroup
-                  id=''
-                  disabled={Boolean(
-                    isStatusVisualize || !payload.serviceDiscountType
-                  )}
-                  type='number'
-                  max={isServiceDiscountTypePercent ? 100 : undefined}
-                  leftIcon={
-                    payload.serviceDiscountType
-                      ? isServiceDiscountTypePercent
-                        ? 'percentage'
-                        : 'dollar'
-                      : undefined
-                  }
-                  label='Desconto nos serviços'
-                  value={
-                    payload?.serviceDiscount
-                      ? String(payload?.serviceDiscount)
-                      : ''
-                  }
-                  onChange={(e: any) => {
-                    let value = +e.target.value
-
-                    if (isServiceDiscountTypePercent && value > 100) {
-                      value = 100
-                    }
-                    changePayload('serviceDiscount', value)
-                  }}
-                  selectProps={{
-                    disabled: isStatusVisualize,
-                    intent: Intent.PRIMARY,
-                    activeItem: payload.serviceDiscountType,
-                    onChange: (item) => {
-                      const serviceDiscountType = item.value as DiscountType
-
-                      setPayload((prev) => {
-                        let serviceDiscount = prev.serviceDiscount
-
-                        if (
-                          isServiceDiscountTypePercent &&
-                          prev.serviceDiscount! > 100
-                        ) {
-                          serviceDiscount = 100
-                        }
-
-                        if (!serviceDiscountType) {
-                          serviceDiscount = undefined
-                        }
-                        return {
-                          ...prev,
-                          serviceDiscountType,
-                          serviceDiscount,
-                        }
-                      })
-                    },
-                    items: discountTypeOptions,
-                  }}
-                />
-              </Row>
-
-              <Row>
-                <TextArea
-                  id={screen.id + 'order-description'}
-                  label='Descrição'
-                  value={payload?.description || ''}
-                  onChange={(e) => {
-                    changePayload('description', e.currentTarget.value)
-                  }}
-                  maxLength={150}
-                  placeholder='Digite a observação'
                   disabled={screenStatus === ScreenStatus.VISUALIZE}
-                  growVertically={false}
-                  style={{ flex: 1 }}
                 />
-              </Row>
+              </Render>
             </Box>
-          </Collapse>
+            <Box>
+              <Collapse
+                title={<h6> Informações básicas </h6>}
+                isCollapsed={isDetailsCollapsed}
+                onChange={() => setIsDetailsCollapsed((prev) => !prev)}
+              >
+                <Box>
+                  <Row>
+                    <InputGroup
+                      type='number'
+                      id={screen.id + 'product_discount_value'}
+                      disabled={Boolean(
+                        isStatusVisualize || !payload.productDiscountType
+                      )}
+                      label='Desconto nos produtos'
+                      max={isProductDiscountTypePercent ? 100 : undefined}
+                      leftIcon={
+                        payload.productDiscountType
+                          ? isProductDiscountTypePercent
+                            ? 'percentage'
+                            : 'dollar'
+                          : undefined
+                      }
+                      value={
+                        payload?.productDiscount
+                          ? String(payload?.productDiscount)
+                          : ''
+                      }
+                      onChange={(e: any) => {
+                        let value = +e.target.value
+                        if (isProductDiscountTypePercent && value > 100) {
+                          value = 100
+                        }
+
+                        changePayload('productDiscount', value)
+                      }}
+                      selectProps={{
+                        id: screen.id + 'select_product_discount_value',
+                        disabled: isStatusVisualize,
+                        activeItem: payload.productDiscountType,
+                        onChange: (item) => {
+                          const productDiscountType = item.value as DiscountType
+
+                          setPayload((prev) => {
+                            let productDiscount = prev.productDiscount
+
+                            if (
+                              isProductDiscountTypePercent &&
+                              prev.productDiscount! > 100
+                            ) {
+                              productDiscount = 100
+                            }
+
+                            if (!productDiscountType) {
+                              productDiscount = undefined
+                            }
+                            return {
+                              ...prev,
+                              productDiscountType,
+                              productDiscount,
+                            }
+                          })
+                        },
+                        intent: Intent.PRIMARY,
+                        items: discountTypeOptions,
+                      }}
+                    />
+                    <InputGroup
+                      id=''
+                      disabled={Boolean(
+                        isStatusVisualize || !payload.serviceDiscountType
+                      )}
+                      type='number'
+                      max={isServiceDiscountTypePercent ? 100 : undefined}
+                      leftIcon={
+                        payload.serviceDiscountType
+                          ? isServiceDiscountTypePercent
+                            ? 'percentage'
+                            : 'dollar'
+                          : undefined
+                      }
+                      label='Desconto nos serviços'
+                      value={
+                        payload?.serviceDiscount
+                          ? String(payload?.serviceDiscount)
+                          : ''
+                      }
+                      onChange={(e: any) => {
+                        let value = +e.target.value
+
+                        if (isServiceDiscountTypePercent && value > 100) {
+                          value = 100
+                        }
+                        changePayload('serviceDiscount', value)
+                      }}
+                      selectProps={{
+                        disabled: isStatusVisualize,
+                        intent: Intent.PRIMARY,
+                        activeItem: payload.serviceDiscountType,
+                        onChange: (item) => {
+                          const serviceDiscountType = item.value as DiscountType
+
+                          setPayload((prev) => {
+                            let serviceDiscount = prev.serviceDiscount
+
+                            if (
+                              isServiceDiscountTypePercent &&
+                              prev.serviceDiscount! > 100
+                            ) {
+                              serviceDiscount = 100
+                            }
+
+                            if (!serviceDiscountType) {
+                              serviceDiscount = undefined
+                            }
+                            return {
+                              ...prev,
+                              serviceDiscountType,
+                              serviceDiscount,
+                            }
+                          })
+                        },
+                        items: discountTypeOptions,
+                      }}
+                    />
+                  </Row>
+
+                  <Row>
+                    <TextArea
+                      id={screen.id + 'order-description'}
+                      label='Descrição'
+                      value={payload?.description || ''}
+                      onChange={(e) => {
+                        changePayload('description', e.currentTarget.value)
+                      }}
+                      maxLength={150}
+                      placeholder='Digite a observação'
+                      disabled={screenStatus === ScreenStatus.VISUALIZE}
+                      growVertically={false}
+                      style={{ flex: 1 }}
+                    />
+                  </Row>
+                </Box>
+              </Collapse>
+            </Box>
+            <Box>
+              <Collapse title='Configurações'>
+                <Row>
+                  <Switch<OrderPayload>
+                    name='sendNotificationWhenConcluded'
+                    label='Avisar cliente sobre a conclusão do serviço'
+                  />
+                </Row>
+              </Collapse>
+            </Box>
+          </Row>
         </Render>
         <Render renderIf={screenStatus === ScreenStatus.SEE_REGISTERS}>
           <Row style={{ flex: 1 }} className='h-100'>

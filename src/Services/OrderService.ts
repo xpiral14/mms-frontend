@@ -130,7 +130,7 @@ export default class OrderService {
   }
 
   static async getTotalPriceOfOrder(orderId: number){
-    const response = await api.get<Response<number>>(makeURL(DEFAULT_PATH, orderId, 'total-price'))
+    const response = await api.get<Response<number>>(makeURL(DEFAULT_PATH, orderId, 'totalPrice'))
 
     return response.data.data
   }

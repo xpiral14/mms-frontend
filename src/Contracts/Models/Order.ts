@@ -21,4 +21,5 @@ export default interface Order {
   product_discount_type?: DiscountType
   service_discount?: number
   product_discount?: number
+  send_notification_when_concluded?: boolean
 }

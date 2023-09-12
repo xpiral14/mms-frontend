@@ -153,6 +153,7 @@ const ReceiptPosting: FC<ReceiptPostScreenProps> = ({ screen, ...props }) => {
         date: format(payload.date ?? new Date(), 'yyyy-MM-dd'),
       })
       cleanPayload()
+      setScreenStatus(ScreenStatus.SEE_REGISTERS)
       showSuccessToast('Receita lançada com sucesso!')
     } catch (error) {
       showErrorToast(

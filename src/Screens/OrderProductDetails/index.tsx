@@ -21,7 +21,6 @@ import Row from '../../Components/Layout/Row'
 import Collapse from '../../Components/Collapse'
 import InputText from '../../Components/InputText'
 import Bar from '../../Components/Layout/Bar'
-import { Option } from '../../Contracts/Components/Suggest'
 import NumericInput from '../../Components/NumericInput'
 import { useAlert } from '../../Hooks/useAlert'
 import Empty from '../../Components/Empty'
@@ -30,7 +29,12 @@ import useMessageError from '../../Hooks/useMessageError'
 import ProductStockService from '../../Services/ProductStockService'
 import { uniqueId } from '@blueprintjs/core/lib/esm/common/utils'
 import OrderProduct from '../../Contracts/Models/OrderProduct'
-import AsyncSelect, { AsyncSearchFunction } from '../../Components/AsyncSelect'
+import AsyncTableSelect from '../../Components/AsyncTableSelect'
+import {
+  Column,
+  Filters,
+  Row as TableRowContract,
+} from '../../Contracts/Components/Table'
 
 const OrderProductDetails: FunctionComponent<OrderProductDetailsScreenProps> = (
   props
@@ -59,18 +63,12 @@ const OrderProductDetails: FunctionComponent<OrderProductDetailsScreenProps> = (
     })
   )
 
-  const searchForProductsFromAllStocks: AsyncSearchFunction<ProductStock> =
-    useCallback(async (query) => {
-      return (
-        await ProductStockService.getAllFromAllStocks({
-          product_name_like: query,
-        })
-      ).data.map((productStock) => ({
-        label: `Produto: ${productStock.product?.name} | Estoque: ${productStock.stock.name} |  Quantidade atual: ${productStock.quantity}`,
-        value: productStock.id,
-        data: productStock,
-      }))
-    }, [])
+  const searchForProductsFromAllStocks = useCallback(
+    (page: number, limit: number, filters?: Filters) => {
+      return ProductStockService.getAllFromAllStocks(page, limit, filters)
+    },
+    []
+  )
 
   const [loadingOrderProducts] = useAsync(async () => {
     if (!props?.order?.id) return
@@ -88,6 +86,7 @@ const OrderProductDetails: FunctionComponent<OrderProductDetailsScreenProps> = (
           order_id: orderProduct.order_product.order_id,
           quantity: orderProduct.order_product.quantity,
           replaced_price: orderProduct.order_product.replaced_price,
+          product_stock_id: orderProduct.order_product.product_stock_id,
           product_id: orderProduct.product.id,
           product_name: orderProduct.product?.name,
           product_price: orderProduct.product?.price,
@@ -263,9 +262,7 @@ const OrderProductDetails: FunctionComponent<OrderProductDetailsScreenProps> = (
     onConfirm()
   }
 
-  const handleProductSelect = (option: Option<ProductStock>) => {
-    if (!option.value) return
-    const productStock = option.data!
+  const handleProductSelect = (productStock: ProductStock) => {
     const orderProduct: OrderProductItem = {
       id: undefined,
       order_id: props?.order?.id ?? undefined,
@@ -341,6 +338,52 @@ const OrderProductDetails: FunctionComponent<OrderProductDetailsScreenProps> = (
     })
   }
 
+  const columns = useMemo(
+    () =>
+      [
+        {
+          formatText: (r) => r?.product?.reference,
+          name: 'Referência',
+          filters: [
+            {
+              name: 'Nome do produto',
+              keyName: 'reference' as any,
+              type: 'text',
+            },
+          ],
+        },
+        {
+          formatText: (r) => r?.product?.name,
+          name: 'Produto',
+          filters: [
+            {
+              name: 'Nome do produto',
+              keyName: 'product_name' as any,
+              type: 'text',
+            },
+          ],
+        },
+        {
+          formatText: (r) => r?.stock.name,
+          name: 'Estoque',
+          filters: [
+            {
+              name: 'Nome do produto',
+              keyName: 'stock_name' as any,
+              type: 'text',
+            },
+          ],
+        },
+        {
+          formatText: (r) => r?.quantity,
+          name: 'Quantidade no estoque',
+        },
+      ] as Column<ProductStock>[],
+    []
+  )
+  const isSelected = useCallback((r: TableRowContract<ProductStock>): boolean => {
+    return orderProducts.some((o) => o.product_stock_id === r.id)
+  }, [orderProducts])
   return (
     <Container>
       <Row className='w-100 mb-2'>
@@ -362,22 +405,21 @@ const OrderProductDetails: FunctionComponent<OrderProductDetailsScreenProps> = (
           </Button>
         </Bar>
       </Row>
-      <AsyncSelect
-        fill
-        buttonProps={
-          {
-            className: 'w-100',
-            style: {
-              display: 'flex',
-              justifyContent: 'space-between',
-            },
-          } as any
-        }
-        onChange={handleProductSelect}
-        searchFunction={searchForProductsFromAllStocks}
-        id=''
-        label='Produtos no estoque'
-      />
+      <Row className='mb-2'>
+        <AsyncTableSelect<ProductStock>
+          buttonProps={{
+            fill: true,
+            alignText: 'left',
+            rightIcon: 'circle-arrow-down',
+            text: 'Selecione os produtos'
+          }}
+          popoverProps={{ fill: true, className: 'w-100' }}
+          columns={columns}
+          onRowSelect={handleProductSelect}
+          isSelected={isSelected}
+          request={searchForProductsFromAllStocks}
+        />
+      </Row>
       <Render renderIf={loadingOrderProducts}>
         <ProgressBar intent={Intent.SUCCESS} />
       </Render>

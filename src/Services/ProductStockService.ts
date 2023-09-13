@@ -5,10 +5,14 @@ import Response from '../Contracts/Types/Response'
 
 export const DEFAULT_PATH = '/stocks'
 export default class ProductStockService {
-  static async getAllFromAllStocks(filter?: Record<string, any>) {
-    return (await api.get<Paginated<ProductStock>>(`${DEFAULT_PATH}/productStocks/paginated`, {
-      params: filter
-    })).data
+  static async getAllFromAllStocks(page: number, limit: number, filters?: Record<string, any>) {
+    return api.get<Paginated<ProductStock>>(`${DEFAULT_PATH}/productStocks/paginated`, {
+      params: {
+        page,
+        perPage: limit,
+        ...filters
+      }
+    })
   }
   static async getAll(stockId: number, page: number, limit: number) {
     return api.get<Paginated<ProductStock>>(`${DEFAULT_PATH}/${stockId}/productStocks/paginated`, {

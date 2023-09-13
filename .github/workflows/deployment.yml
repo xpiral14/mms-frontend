@@ -26,6 +26,7 @@ jobs:
         script: |
           cd /var/www/mms-frontend/
           eval "$(ssh-agent -s)"
+          ssh-add ~/.ssh/github_actions
           git pull origin main
           git status
           npm install --only=prod

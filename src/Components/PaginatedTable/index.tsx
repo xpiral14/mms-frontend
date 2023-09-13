@@ -17,7 +17,6 @@ import { uniqueId } from '@blueprintjs/core/lib/esm/common/utils'
 import { Popover2, Popover2InteractionKind } from '@blueprintjs/popover2'
 import { ReportRequestOption } from '../../Contracts/Types/Api'
 import Button from '../Button'
-import LoadingBackdrop from '../Layout/LoadingBackdrop'
 const pageOptions: Option[] = [
   {
     label: '5',
@@ -190,7 +189,6 @@ const PaginatedTable = function <T = any>({
           filter={selectedFilters}
           loading={reloadGrid}
         />
-        <LoadingBackdrop loading={reloadGrid} />
       </Body>
       {Boolean(gridResponse?.meta) && (
         <Footer>

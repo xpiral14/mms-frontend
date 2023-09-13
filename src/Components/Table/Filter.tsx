@@ -42,7 +42,7 @@ function Filter<T = Record<string, any>>({
   ) => {
     setFilters((prev) => ({
       ...prev,
-      [(column.keyName ?? (defaultKeyName as string)) + '_' + filterType]:
+      [(column.keyName ??  (defaultKeyName as string)) + '_' + filterType]:
         value,
     }))
   }
@@ -84,7 +84,7 @@ function Filter<T = Record<string, any>>({
               value={filters[filterName + '_gte'] as Date}
               id={'filter-' + filter.name}
               placeholder={filter.name}
-              onChange={(date) => changeFilter('gte', date)}
+              onChange={(date) => changeFilter('gte', date, filterName)}
             />
           )
         case 'to_date':
@@ -94,7 +94,7 @@ function Filter<T = Record<string, any>>({
               value={filters[filterName + '_lte'] as Date}
               id={'filter-' + filter.name}
               placeholder={filter.name}
-              onChange={(date) => changeFilter('lte', date)}
+              onChange={(date) => changeFilter('lte', date, filterName)}
             />
           )
         case 'text':
@@ -106,7 +106,7 @@ function Filter<T = Record<string, any>>({
               id={'filter-' + filter.name}
               value={(filters[filterName + '_like'] as string) ?? ''}
               placeholder={filter.name}
-              onChange={(event) => changeFilter('like', event.target.value)}
+              onChange={(event) => changeFilter('like', event.target.value, filterName)}
             />
           )
         case 'checkbox':
@@ -141,7 +141,7 @@ function Filter<T = Record<string, any>>({
                 (filters[column.keyName + '_eq'] as string) ?? ''
               }
               onChange={(evt: React.FormEvent<HTMLInputElement>) => {
-                changeFilter('eq', (evt.target as any).value, column.keyName)
+                changeFilter('eq', (evt.target as any).value, )
               }}
             />
           )

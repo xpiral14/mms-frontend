@@ -18,7 +18,7 @@ export type Column<T = Record<string, any>> = {
 
 export type Row<T = any> = T & Record<any, any>
 
-type Filters = Record<string, string>
+export type Filters = Record<string, string>
 
 export type TableProps<T = Record<string, any>> = {
   height?: string

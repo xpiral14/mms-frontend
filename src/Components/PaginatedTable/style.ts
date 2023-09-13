@@ -1,4 +1,3 @@
-import { Colors } from '@blueprintjs/core'
 import styled, { css } from 'styled-components'
 
 export const Container = styled.div`
@@ -24,14 +23,6 @@ export const Body = styled.div<{ height?: string }>`
     css`
       overflow-y: scroll;
     `}
-  tr.active td {
-    background-color: ${Colors.BLUE2}!important;
-    color: ${Colors.WHITE};
-  }
-  tr.active:hover {
-    background-color: ${Colors.BLUE2}!important;
-    color: ${Colors.WHITE};
-  }
 `
 export const TableBackDrop = styled.div<{loading?: boolean}>`
   display: ${p => p.loading ? 'block' : 'none'};

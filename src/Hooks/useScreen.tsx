@@ -210,6 +210,7 @@ export default function ScreenProvider({ children }: any) {
           screenOptions: {
             ...screenOptions,
             path: screenData.path,
+            windowProps: screenData.windowProps
           },
           parentScreen: (screenOptions?.parentScreenId &&
             prev?.[screenOptions.parentScreenId as string]?.screen) as
@@ -233,7 +234,7 @@ export default function ScreenProvider({ children }: any) {
 
       return (
         <CreatePortal rootNode={node} key={screen.id as string}>
-          <WindowContextProvider>
+          <WindowContextProvider {...screens[panelId].screenOptions.windowProps}>
             <GridProvider>
               {Array.isArray(Comp) ? (
                 Comp.map((C) => (

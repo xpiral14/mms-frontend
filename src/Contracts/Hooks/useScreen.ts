@@ -1,6 +1,7 @@
 import { Panel, PanelOptions } from 'jspanel4/es6module/jspanel'
-import { Permissions } from '../../Constants/Enums'
+import { Permissions, ScreenStatus } from '../../Constants/Enums'
 import { Screen } from '../Components/ScreenProps'
+import { WindowContextProviderProps } from '../../Hooks/useWindow'
 
 export type ScreenIds =
   | 'user-register'
@@ -37,7 +38,10 @@ export interface ScreenData {
   permissions?: Permissions[]
   subScreenOnly?: boolean
   canBeUsedAsSubScreen?: boolean
-  contentSize?: string
+  contentSize?: string,
+  windowProps?: {
+    screenStatus?: ScreenStatus
+  }
 }
 
 export type Screens = {
@@ -52,6 +56,7 @@ export interface ContextPanelOptions extends PanelOptions {
   minHeight?: string | number
   maxHeight?: string | number
   forceOpen?: boolean
+  windowProps?: WindowContextProviderProps
 }
 
 export type ScreenObject = {

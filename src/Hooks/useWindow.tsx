@@ -1,4 +1,10 @@
-import React, { Context, createContext, useCallback, useContext, useState } from 'react'
+import React, {
+  Context,
+  createContext,
+  useCallback,
+  useContext,
+  useState,
+} from 'react'
 import { ScreenStatus } from '../Constants/Enums'
 
 type WindowContext<P = any> = {
@@ -30,18 +36,25 @@ export function useWindow<P = Partial<any>>() {
   return context
 }
 
-const WindowContextProvider: React.FC = ({ children }) => {
+export type WindowContextProviderProps = { screenStatus?: ScreenStatus }
+const WindowContextProvider: React.FC<WindowContextProviderProps> = ({
+  children,
+  screenStatus: screenStatusProp,
+}) => {
   const [payload, setPayload] = useState<any>({})
   const [screenStatus, setScreenStatus] = useState<ScreenStatus>(
-    ScreenStatus.SEE_REGISTERS
+    screenStatusProp ?? ScreenStatus.SEE_REGISTERS
   )
 
-  const changePayloadAttribute = useCallback((key: keyof typeof payload, value: any) => {
-    setPayload((prev: any) => ({
-      ...prev,
-      [key]: value,
-    }))
-  }, [setPayload])
+  const changePayloadAttribute = useCallback(
+    (key: keyof typeof payload, value: any) => {
+      setPayload((prev: any) => ({
+        ...prev,
+        [key]: value,
+      }))
+    },
+    [setPayload]
+  )
   const isScreenStatusVizualize = screenStatus === ScreenStatus.VISUALIZE
   const isScreenStatusEdit = screenStatus === ScreenStatus.EDIT
   const isScreenStatusNew = screenStatus === ScreenStatus.NEW

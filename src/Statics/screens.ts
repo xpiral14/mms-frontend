@@ -1,4 +1,4 @@
-import { Permissions } from '../Constants/Enums'
+import { Permissions, ScreenStatus } from '../Constants/Enums'
 import { Screens } from '../Contracts/Hooks/useScreen'
 
 const screens = {
@@ -66,6 +66,9 @@ const screens = {
     id: 'user-data',
     name: 'Dados do usuário',
     path: 'UserData',
+    windowProps: {
+      screenStatus: ScreenStatus.EDIT
+    }
   },
   'order-service-details': {
     id: 'order-service-details',

@@ -1,31 +1,30 @@
-import {Button, Card, Classes, FormGroup, Intent} from '@blueprintjs/core'
-import React, {useState} from 'react'
-import {Container} from './style'
-import {useForm} from 'react-hook-form'
+import { Button, Card, Classes, FormGroup, Intent } from '@blueprintjs/core'
+import React, { useState } from 'react'
+import { Container, Footer } from './style'
+import { useForm } from 'react-hook-form'
 import Render from '../../Components/Render'
 import AuthService from '../../Services/AuthService'
-import {useAuth} from '../../Hooks/useAuth'
-import {useHistory} from 'react-router-dom'
-import {useToast} from '../../Hooks/useToast'
+import { useAuth } from '../../Hooks/useAuth'
+import { useHistory } from 'react-router-dom'
+import { useToast } from '../../Hooks/useToast'
 
 enum PageMode {
   LOGIN = 'login',
-  RESET_PASSWORD = 'reset_password'
+  RESET_PASSWORD = 'reset_password',
 }
 
 const LoginPage = () => {
-
   const [pageMode, setPageMode] = useState(PageMode.LOGIN)
   const [sentEmail, setSentEmail] = useState(false)
   const history = useHistory()
   const [loading, setLoading] = useState(false)
-  const {handleSubmit, register} = useForm()
-  const {setAuth} = useAuth()
-  const {showToast, showErrorToast} = useToast()
+  const { handleSubmit, register } = useForm()
+  const { setAuth } = useAuth()
+  const { showToast, showErrorToast } = useToast()
 
-  const onSubmit = async ({email, password}: any) => {
+  const onSubmit = async ({ email, password }: any) => {
     if (pageMode === PageMode.RESET_PASSWORD) {
-      AuthService.sendPasswordEmail({email})
+      AuthService.sendPasswordEmail({ email })
       setSentEmail(true)
       return
     }
@@ -55,7 +54,14 @@ const LoginPage = () => {
 
   return (
     <Container>
+      <div className='px-4' style={{ flex: 1, maxWidth: 700 }}>
+        <h1>Sam Reis ERP</h1>
+        <p>
+          Bem vindos ao sistema completo para o gerenciamento de sua empresa. 
+        </p>
+      </div>
       <Card
+        className='shadow-sm'
         style={{
           width: '100%',
           maxWidth: '400px',
@@ -80,10 +86,10 @@ const LoginPage = () => {
 
         <Render renderIf={!sentEmail}>
           <Render renderIf={pageMode === PageMode.RESET_PASSWORD}>
-            <p className='mt-3'>
+            <span className='mt-3'>
               Um email de recuperação de senha será enviado para o email
               digitado abaixo caso esteja cadastrado no sistema
-            </p>
+            </span>
           </Render>
           <form onSubmit={handleSubmit(onSubmit)} className='mt-1 w-100'>
             <FormGroup label='Email' labelFor='login-input' labelInfo='*'>
@@ -137,6 +143,9 @@ const LoginPage = () => {
           </Button>
         </Render>
       </Card>
+      <Footer>
+        <p>Todos os direitos reservados</p>
+      </Footer>
     </Container>
   )
 }

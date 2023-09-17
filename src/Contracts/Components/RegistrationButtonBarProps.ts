@@ -17,7 +17,7 @@ export type ReportButtonProps = {
   icon?: IconName
 }
 export type StopLoadFunc = () => void
-export type ReportProps = (DynamicReportScreenProps & ReportButtonProps)
+export type ReportProps<T = any> = (DynamicReportScreenProps<T> & ReportButtonProps)
 
 export interface RegistrationButtonBarProps {
   exitButton?: boolean

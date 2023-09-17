@@ -515,8 +515,8 @@ const OrderProductDetails: FunctionComponent<OrderProductDetailsScreenProps> = (
                     readOnly
                     label='Valor total (R$)'
                     value={
-                      (orderProducts?.[orderProductKey]?.quantity ?? 0) *
-                      (price ?? 0)
+                      ((orderProducts?.[orderProductKey]?.quantity ?? 0) *
+                      (price ?? 0)).toFixed(2)
                     }
                   />
                 </section>

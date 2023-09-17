@@ -5,6 +5,26 @@ import { ReportRequestOption } from '../Contracts/Types/Api'
 
 const DEFAULT_PATH = '/products'
 class ProductsService {
+  static async rankOfProductsBySale(page: any, limit: number, filters?: Record<string, any>, reportType?: ReportRequestOption) {
+    return await api.get<Paginated<{
+      'id': number,
+      'reference': string,
+      'name': string,
+      'unit_name': string,
+      'total_quantity_sold': string,
+      'total_value_sold': string,
+    }>>(`${DEFAULT_PATH}/reports/rankBySales`, {
+      params: {
+        page,
+        limit,
+        ...filters,
+      },
+      responseType: reportType?.responseType ?? 'json',
+      headers: {
+        Accept: reportType?.mimeType || 'application/json',
+      }
+    })
+  }
   static async getAll(page = 10, limit = 20, filters?: Record<string, any>, reportType?: ReportRequestOption) {
     return api.get<Paginated<Product>>(`${DEFAULT_PATH}/paginated`, {
       params: {

@@ -6,6 +6,7 @@ import ProductsService from '../../../Services/ProductsService'
 import ScreenProps from '../../../Contracts/Components/ScreenProps'
 import {
   RegistrationButtonBarProps,
+  ReportProps,
   StopLoadFunc,
 } from '../../../Contracts/Components/RegistrationButtonBarProps'
 import { useGrid } from '../../../Hooks/useGrid'
@@ -26,7 +27,57 @@ import Container from '../../../Components/Layout/Container'
 import Row from '../../../Components/Layout/Row'
 import { Column } from '../../../Contracts/Components/Table'
 import currencyFormat from '../../../Util/currencyFormat'
-
+const reports = [
+  {
+    columns: [
+      {
+        name: '',
+        formatText: (_, index) => (index ?? 0) + 1 + '°',
+      },
+      {
+        name: 'Referencia',
+        keyName: 'product_reference',
+        filters: [
+          {
+            keyName: 'product_reference',
+            name: 'Referência',
+            type: 'text',
+          },
+        ],
+      },
+      {
+        keyName: 'product_name',
+        name: 'Produto',
+        filters: [
+          {
+            keyName: 'product_name',
+            name: 'Produto',
+            type: 'text',
+          },
+        ],
+      },
+      {
+        name: 'Quantidade total vendida',
+        formatText: (r) => `${r.total_quantity_sold} ${r.unit_name}`,
+      },
+      {
+        name: 'Valor total vendida',
+        formatText: (r) => `R$ ${r.total_value_sold}`,
+      },
+    ],
+    downloadable: true,
+    reportRequestOptions: [
+      {
+        mimeType: 'application/csv',
+        reportType: 'csv',
+        name: 'Rank de venda de produtos',
+        responseType: 'text',
+      },
+    ],
+    request: ProductsService.rankOfProductsBySale,
+    text: 'Rank de venda de produtos',
+  },
+] as ReportProps[]
 const ProductsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
   const { payload, setPayload, screenStatus, setScreenStatus } =
     useWindow<Product>()
@@ -245,7 +296,7 @@ const ProductsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
           name: 'Preço',
           keyName: 'price',
           filters: [{ name: 'Descrição', type: 'text' }],
-          formatText: (row) => currencyFormat(row?.price)
+          formatText: (row) => currencyFormat(row?.price),
         },
       ] as Column<Product>[],
     []
@@ -313,6 +364,7 @@ const ProductsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
       setScreenStatus(ScreenStatus.EDIT)
       screen.decreaseScreenSize?.()
     },
+    reports,
   }
 
   const createOnChange =

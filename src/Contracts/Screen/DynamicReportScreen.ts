@@ -1,3 +1,3 @@
 import { PaginatedTableProps } from '../Components/PaginatadeTable'
 
-export type DynamicReportScreenProps = Omit<PaginatedTableProps, 'isSelected'| 'onRowSelect' | 'containerProps' | 'height'>
+export type DynamicReportScreenProps<T = any> = Omit<PaginatedTableProps<T>, 'isSelected'| 'onRowSelect' | 'containerProps' | 'height'>

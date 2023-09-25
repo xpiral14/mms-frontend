@@ -7,7 +7,7 @@ import debounce from '../../Util/debounce'
 export type AsyncSearchFunction<T = any> = (
   query: string | null
 ) => Promise<Option<T>[]>
-interface AsyncSelectProps extends SelectProps {
+export interface AsyncSelectProps extends SelectProps {
   searchFunction: AsyncSearchFunction
 }
 function AsyncSelect<T = any>({ searchFunction, ...props }: AsyncSelectProps) {

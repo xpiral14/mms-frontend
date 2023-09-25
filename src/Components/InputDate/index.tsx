@@ -1,4 +1,4 @@
-import React, {FunctionComponent} from 'react'
+import React, {CSSProperties, FunctionComponent} from 'react'
 import {DateInput, DateInputProps} from '@blueprintjs/datetime'
 import {FormGroup, Intent} from '@blueprintjs/core'
 import { parse } from 'date-fns'
@@ -10,7 +10,9 @@ type Props = {
   disabled?: boolean
   intent?: Intent
   labelFor?: string
-} & Omit<DateInputProps, 'formatDate' | 'parseDate'>;
+  style?: CSSProperties
+  formatDate?: (date: Date) => string,
+} & Omit<DateInputProps, 'parseDate' | 'formatDate'>;
 
 const InputDate: FunctionComponent<Props> = (props) => {
 
@@ -22,7 +24,8 @@ const InputDate: FunctionComponent<Props> = (props) => {
       intent={props.intent}
       labelFor={props.id}
       style={{
-        width: props.fill ? '100%' : undefined
+        width: props.fill ? '100%' : undefined,
+        ...props.style
       }}
     >
       <DateInput
@@ -32,10 +35,14 @@ const InputDate: FunctionComponent<Props> = (props) => {
         inputProps={{
           id: props.id,
         }}
-        formatDate={(date) => date.toLocaleDateString()}
         parseDate={(str) => parse(str, 'dd/MM/yyyy', new Date())}
-        placeholder={'dd/mm/aaaa'}
+        placeholder='dd/mm/aaaa'
+        popoverProps={{
+          boundary: 'window'
+        }}
         {...props}
+        formatDate={(date) => props?.formatDate?.(date) ?? date.toLocaleDateString()}
+
       />
     </FormGroup>
   )

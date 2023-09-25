@@ -71,16 +71,18 @@ function Filter<T = Record<string, any>>({
           return (
             <InputDate
               fill
+              label={filter.name}
               value={filters[filterName + '_dateeq'] as Date}
               id={'filter-' + filter.name}
               placeholder={filter.name}
-              onChange={(date) => changeFilter('dateq', date)}
+              onChange={(date) => changeFilter('dateq', date, filterName)}
             />
           )
         case 'from_date':
           return (
             <InputDate
               fill
+              label={filter.name}
               value={filters[filterName + '_gte'] as Date}
               id={'filter-' + filter.name}
               placeholder={filter.name}
@@ -91,6 +93,7 @@ function Filter<T = Record<string, any>>({
           return (
             <InputDate
               fill
+              label={filter.name}
               value={filters[filterName + '_lte'] as Date}
               id={'filter-' + filter.name}
               placeholder={filter.name}
@@ -101,6 +104,7 @@ function Filter<T = Record<string, any>>({
           return (
             <InputText
               autoFocus
+              label={filter.name}
               style={{ width: '100%' }}
               inputStyle={{ width: '100%' }}
               id={'filter-' + filter.name}

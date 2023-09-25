@@ -198,7 +198,7 @@ export default function Select<T = any>({
           : undefined
       }
     >
-      <Wrapper className='d-flex gap-2'>
+      <Wrapper className='d-flex gap-1'>
         <OptionSelect
           ref={selectRef}
           resetOnSelect

@@ -5,7 +5,7 @@ export interface InputProps extends React.DetailedHTMLProps<React.InputHTMLAttri
   label?: string
   mask?: string
   required?: boolean
-  id: string
+  id?: string
   placeholder?: string
   disabled?: boolean
   itent?: Intent

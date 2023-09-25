@@ -33,6 +33,7 @@ import SupplierService from '../../Services/SupplierService'
 import currencyFormat from '../../Util/currencyFormat'
 import useMessageError from '../../Hooks/useMessageError'
 import { endOfDay, startOfDay } from 'date-fns'
+import { useScreen } from '../../Hooks/useScreen'
 
 const BillsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
   const {
@@ -42,6 +43,8 @@ const BillsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
     setScreenStatus,
     changePayloadAttribute,
   } = useWindow<Bill>()
+
+  const {openSubScreen} = useScreen()
   const [selectedBills, setSelectedBills] = useState<Bill[]>([])
 
   const createValidation = (keyName: keyof Bill) => () =>
@@ -401,6 +404,11 @@ const BillsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
             icon={<MdOutlinePayments size={14} />}
             intent={Intent.PRIMARY}
             disabled={selectedBills.length === 0}
+            onClick={() => {
+              openSubScreen({
+                id: 'bill-payment'
+              }) 
+            }}
           >
             Pagar conta{selectedBills.length > 1 && 's'}
           </Button>

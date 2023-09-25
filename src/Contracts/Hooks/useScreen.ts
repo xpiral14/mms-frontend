@@ -31,7 +31,7 @@ export type ScreenIds =
   | 'dynamic-report'
   | 'product-stock-movement'
   | 'bill-register'
-
+  | 'bill-payment'
 export interface ScreenData {
   id: ScreenIds
   name: string

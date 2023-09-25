@@ -3,6 +3,7 @@ import Paginated from '../Contracts/Models/Paginated'
 import Bill from '../Contracts/Models/Bill'
 import { ReportRequestOption } from '../Contracts/Types/Api'
 import Response from '../Contracts/Types/Response'
+import { Enum } from '../Contracts/Models/Generics'
 
 export const DEFAULT_PATH = '/bills'
 export default {
@@ -36,5 +37,8 @@ export default {
 
   async delete(id: number) {
     return api.delete(`${DEFAULT_PATH}/${id}`)
+  },
+  async getPaymentTypes() {
+    return api.get<Response<Enum[]>>(`${DEFAULT_PATH}/payments/types`)
   }
 }

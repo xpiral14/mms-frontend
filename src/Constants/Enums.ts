@@ -53,7 +53,7 @@ export enum CostType {
   TRANSPORT = 4,
   TAX = 5,
   OTHERS = 6,
-} 
+}
 
 
 export enum Permissions {
@@ -196,4 +196,33 @@ export enum Permissions {
    * Can do write operations in stocks
    */
   WRITE_STOCK = 30,
+}
+
+export enum PaymentTypes {
+  CREDIT = 'credit_card',
+  DEBIT = 'debit_card',
+  BANK_SLIP = 'bank_slip',
+  CHECK = 'check',
+  PIX = 'pix',
+}
+
+export enum BillStatuses {
+  OPENED = 'opened',
+  PAID = 'paid',
+  EXPIRED = 'expired',
+}
+
+export const DateFormats = {
+  DATE_ONLY: {
+    day: '2-digit',
+    month: '2-digit',
+    year: '2-digit'
+  } as Intl.DateTimeFormatOptions,
+  DATE_SHORT_TIME: {
+    day: '2-digit',
+    month: '2-digit',
+    year: '2-digit',
+    hour: '2-digit',
+    'minute': '2-digit'
+  }as Intl.DateTimeFormatOptions
 }

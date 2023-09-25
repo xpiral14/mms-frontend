@@ -7,7 +7,7 @@ import {
 import { FC } from 'react'
 import { Container } from './style'
 
-interface TextAreaProps extends BlueprintTextAreaProps {
+export interface TextAreaProps extends BlueprintTextAreaProps {
   label?: string
   id: string
 }

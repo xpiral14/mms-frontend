@@ -1,7 +1,7 @@
 import { useState } from 'react'
-import Container from '../../../Components/Layout/Container'
-import useAsync from '../../../Hooks/useAsync'
-import useMessageError from '../../../Hooks/useMessageError'
+import Container from '../../Components/Layout/Container'
+import useAsync from '../../Hooks/useAsync'
+import useMessageError from '../../Hooks/useMessageError'
 import {
   Bar,
   BarChart,
@@ -13,17 +13,17 @@ import {
   YAxis,
 } from 'recharts'
 import { Colors } from '@blueprintjs/core'
-import ChartService from '../../../Services/ChartService'
+import ChartService from '../../Services/ChartService'
 import { endOfMonth, format, startOfMonth, subDays, subMonths } from 'date-fns'
-import getDateWithTz from '../../../Util/getDateWithTz'
-import currencyFormat from '../../../Util/currencyFormat'
-import Row from '../../../Components/Layout/Row'
-import Box from '../../../Components/Layout/Box'
-import Select from '../../../Components/Select'
+import getDateWithTz from '../../Util/getDateWithTz'
+import currencyFormat from '../../Util/currencyFormat'
+import Row from '../../Components/Layout/Row'
+import Box from '../../Components/Layout/Box'
+import Select from '../../Components/Select'
 import ptBR from 'date-fns/locale/pt-BR'
-import capitalize from '../../../Util/capitalize'
-import { useWindow } from '../../../Hooks/useWindow'
-import joinClasses from '../../../Util/joinClasses'
+import capitalize from '../../Util/capitalize'
+import { useWindow } from '../../Hooks/useWindow'
+import joinClasses from '../../Util/joinClasses'
 
 enum GroupType  {
   CURRENT_MONTH = 1,

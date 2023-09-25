@@ -139,6 +139,17 @@ const menus = {
           headerTitle: 'Lançamento de custos',
         },
       },
+      billRegister: {
+        name: 'Contas a pagar',
+        icon: <GiExpense size={16} />,
+        screen: {
+          minHeight: 320,
+          maxHeight: 500,
+          ...screens['bill-register'],
+          contentSize: '1315 500',
+          headerTitle: 'Lançamento de custos',
+        },
+      },
       ReceiptsXCosts: {
         name: screens['receipts-x-costs'].name,
         icon: <GiExpense size={16} />,

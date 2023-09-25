@@ -555,10 +555,9 @@ const OrderServiceCustomer: React.FC<ScreenProps> = ({ screen }) => {
     },
     {
       name: 'Validade',
-      keyName: 'validity',
       formatText: (row) => {
         return row?.validity
-          ? getDateWithTz(new Date(row.validity)).toLocaleDateString('pt-BR')
+          ? new Date(row.validity).toLocaleString()
           : '-'
       },
     },

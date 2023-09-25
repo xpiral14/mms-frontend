@@ -92,6 +92,16 @@ const screens = {
     contentSize: '770 430',
     permissions: [Permissions.READ_ORDER],
   },
+  'bill-register': {
+    id: 'bill-register',
+    name: 'Contas a pagar',
+    path: 'Finance/Bill',
+  },
+  'bill-payment': {
+    id: 'bill-payment',
+    name: 'Pagar conta(s)',
+    path: 'Finance/BillPayment',
+  },
   'receipts-x-costs': {
     id: 'receipts-x-costs',
     name: 'Receitas x Custos',

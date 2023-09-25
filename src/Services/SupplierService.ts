@@ -26,7 +26,7 @@ export default class SupplierService {
     return api.put(`${DEFAULT_URL}/${supplierData.id}`, supplierData)
   }
 
-  static async getAll(page = 10, limit = 20, query?: Partial<Supplier>) {
+  static async getAll(page = 10, limit = 20, query?: Record<string, any>) {
     return api.get<Paginated<Partial<Supplier>>>(`${DEFAULT_URL}/paginated`, {
       params: {
         page,

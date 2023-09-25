@@ -43,10 +43,10 @@ const menus = {
         icon: 'numerical',
         screen: {
           minHeight: 150,
-          maxHeight: 500,
+          maxHeight: 450,
           ...screens['unit-register'],
           headerTitle: 'Unidades',
-          contentSize: '710px 150px',
+          contentSize: '710px 450',
         },
       },
       Fornecedores: {

@@ -9,7 +9,7 @@ export default interface Bill {
   supplier_id: number
   parent_id?: number,
   reference: number,
-  value: number
+  value: number | string
   due_date?: string|Date
   opening_date?: string | Date
   installment?: number

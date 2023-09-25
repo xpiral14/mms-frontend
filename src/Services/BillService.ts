@@ -20,7 +20,7 @@ export default {
     })
   },
 
-  async create(payload: Omit<Bill, 'id'>) {
+  async create(payload: Omit<Partial<Bill>, 'id'>) {
     return api.post<Response<Bill>>(`${DEFAULT_PATH}`, {
       ...payload,
       notCamel: true

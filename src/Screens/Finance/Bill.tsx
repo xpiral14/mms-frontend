@@ -13,11 +13,7 @@ import RegistrationButtonBar from '../../Components/RegistrationButtonBar'
 import Render from '../../Components/Render'
 import AsyncSelect from '../../Components/ScreenComponents/AsyncSelect'
 import InputText from '../../Components/ScreenComponents/InputText'
-import {
-  BillStatuses,
-  DateFormats,
-  ScreenStatus,
-} from '../../Constants/Enums'
+import { BillStatuses, DateFormats, ScreenStatus } from '../../Constants/Enums'
 import {
   RegistrationButtonBarProps,
   StopLoadFunc,
@@ -35,6 +31,8 @@ import { useWindow } from '../../Hooks/useWindow'
 import BillService from '../../Services/BillService'
 import SupplierService from '../../Services/SupplierService'
 import currencyFormat from '../../Util/currencyFormat'
+import useMessageError from '../../Hooks/useMessageError'
+import { endOfDay, startOfDay } from 'date-fns'
 
 const BillsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
   const {
@@ -51,9 +49,19 @@ const BillsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
 
   const validations: Validation[] = [
     {
-      check: createValidation('installment'),
+      check: createValidation('reference'),
       errorMessage: 'O número da parcela é obrigatório',
-      inputId: 'billName',
+      inputId: 'bill-reference',
+    },
+    {
+      check: createValidation('name'),
+      errorMessage: 'O nome da conta é obrigatório',
+      inputId: 'bill-name',
+    },
+    {
+      check: createValidation('value'),
+      errorMessage: 'O valor da conta é obrigatório',
+      inputId: 'bill-value',
     },
   ]
 
@@ -79,6 +87,8 @@ const BillsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
     )
   }
 
+  const { showErrorMessage } = useMessageError()
+
   const handleButtonCreateBillOnClick = async (stopLoad: Function) => {
     if (!validate()) {
       stopLoad()
@@ -86,38 +96,25 @@ const BillsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
     }
 
     try {
-      const response = await BillService.create(payload as Bill)
-
-      if (response.status) {
-        showSuccessToast({
-          message: 'Unidade cadastrada com sucesso',
-          intent: Intent.SUCCESS,
-        })
-
-        setReloadGrid(true)
-      }
-
-      if (!response) {
-        openAlert({
-          text: 'Não foi possível cadastrar a unidade',
-          intent: Intent.DANGER,
-        })
-      }
-    } catch (error: any) {
-      const errorMessages = getErrorMessages(
-        error.response?.data?.errors,
-        'Não foi possível cadastrar a unidade'
-      )
-
-      openAlert({
-        text: errorMessages,
-        intent: Intent.DANGER,
+      await BillService.create({
+        ...payload,
+        value: +(payload.value as string)?.replace(',', '.'),
       })
-    } finally {
+      showSuccessToast({
+        message: 'Conta cadastrada com sucesso',
+        intent: Intent.SUCCESS,
+      })
+
       setPayload({})
       setScreenStatus(ScreenStatus.SEE_REGISTERS)
-      stopLoad()
       increaseWindowSize?.()
+    } catch (error: any) {
+      showErrorMessage(
+        error,
+        'Não foi possível criar a conta. Por favor, tente novamente'
+      )
+    } finally {
+      stopLoad()
     }
   }
 
@@ -179,7 +176,7 @@ const BillsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
     } catch (error: any) {
       const ErrorMessages = getErrorMessages(
         error.response?.data?.errors,
-        'Não foi possível deletar a unidade'
+        'Não foi possível deletar a conta'
       )
 
       openAlert({
@@ -225,17 +222,6 @@ const BillsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
           },
         },
         {
-          name: 'Parcela',
-          formatText: (r) =>
-            `Parcela ${r?.installment} de ${r?.total_installments}`,
-          filters: [
-            { name: 'Número da parcela', type: 'text', keyName: 'installment' },
-          ],
-          style: {
-            minWidth: 180,
-          },
-        },
-        {
           name: 'Data de abertura',
           formatText: (r) =>
             new Date(r!.opening_date as string).toLocaleString(
@@ -246,7 +232,7 @@ const BillsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
             { name: 'Data da abertura', type: 'date', keyName: 'opening_date' },
           ],
           style: {
-            minWidth: 130,
+            minWidth: 150,
           },
         },
         {
@@ -260,7 +246,7 @@ const BillsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
             { name: 'Data de vencimento', type: 'date', keyName: 'due_date' },
           ],
           style: {
-            minWidth: 130,
+            minWidth: 150,
           },
         },
         {
@@ -320,9 +306,11 @@ const BillsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
   }
 
   const handleButtonNewOnClick = () => {
-    setPayload({})
+    setPayload({
+      opening_date: startOfDay(new Date()),
+      due_date: endOfDay(new Date()),
+    })
     setScreenStatus(ScreenStatus.NEW)
-    focusNameInput()
     decreaseWindowSize?.()
   }
 
@@ -356,12 +344,8 @@ const BillsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
     },
     handleButtonVisualizeOnClick: handleVisualizeButtonOnClick,
     handleCancelButtonOnClick: () => {
-      if (screenStatus === ScreenStatus.EDIT) {
-        increaseWindowSize?.()
-        setScreenStatus(ScreenStatus.SEE_REGISTERS)
-        return
-      }
-      setScreenStatus(ScreenStatus.VISUALIZE)
+      increaseWindowSize?.()
+      setScreenStatus(ScreenStatus.SEE_REGISTERS)
     },
     buttonNewProps: {
       disabled: selectedBills.length > 0,
@@ -439,7 +423,7 @@ const BillsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
         <Row>
           <InputText<Bill>
             name='reference'
-            id='billName'
+            id='bill-reference'
             label='Referência:'
             disabled={isStatusVisualize}
             maxLength={15}
@@ -450,7 +434,7 @@ const BillsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
           />
           <InputText<Bill>
             name='name'
-            id='billName'
+            id='bill-name'
             label='Nome:'
             disabled={isStatusVisualize}
             maxLength={100}
@@ -460,25 +444,9 @@ const BillsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
             inputStyle={{ width: '100%' }}
           />
           <InputNumber
-            name='installment'
-            id='bill-installment'
-            label='Parcela:'
-            value={payload.installment}
-            disabled={isStatusVisualize}
-            onValueChange={(value) => {
-              changePayloadAttribute('installment', value)
-            }}
-            min={0}
-            max={1000}
-            integerOnly
-            step={1}
-            required
-            style={{ flex: 1 }}
-            inputStyle={{ width: 'calc(100% - 34px)' }}
-          />
-          <InputNumber
             label='Valor'
             required
+            id='bill-value'
             value={payload.value}
             intlConfig={{
               locale: 'pt-BR',
@@ -541,7 +509,7 @@ const BillsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
               {
                 mimeType: 'text/csv',
                 reportType: 'csv',
-                name: 'unidades',
+                name: 'contas',
                 responseType: 'text',
               },
             ]}

@@ -40,7 +40,7 @@ const RegistrationButtonBar: React.FC<RegistrationButtonBarProps> = (
   const { screen } = props
   const { openSubScreen } = useScreen()
   const handleNewButtonOnClick = () => {
-    if (props?.handleNewButtonOnClick?.()) {
+    if (props?.handleNewButtonOnClick) {
       props?.handleNewButtonOnClick()
       return
     }

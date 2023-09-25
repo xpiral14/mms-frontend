@@ -193,6 +193,15 @@ const BillsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
     () =>
       [
         {
+          name: 'Referência',
+          keyName: 'reference',
+          filters: [{ name: 'Referência', type: 'text' }],
+          style: {
+            minWidth: 100,
+            width: 100,
+          },
+        },
+        {
           name: 'Nome',
           keyName: 'name',
           filters: [{ name: 'Nome da conta', type: 'text' }],

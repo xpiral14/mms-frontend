@@ -1,6 +1,7 @@
 import api from '../Config/api'
 import Paginated from '../Contracts/Models/Paginated'
 import Bill from '../Contracts/Models/Bill'
+import Transaction from '../Contracts/Models/Transaction'
 import { ReportRequestOption } from '../Contracts/Types/Api'
 import Response from '../Contracts/Types/Response'
 import { Enum } from '../Contracts/Models/Generics'
@@ -40,5 +41,9 @@ export default {
   },
   async getPaymentTypes() {
     return api.get<Response<Enum[]>>(`${DEFAULT_PATH}/payments/types`)
+  },
+
+  async payBill(billId: number, transaction: Partial<Transaction>) {
+    return api.post<Response<Transaction>>(`${DEFAULT_PATH}/${billId}/payments`, { ...transaction, notCamel: true })
   }
 }

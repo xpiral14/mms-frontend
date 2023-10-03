@@ -6,7 +6,7 @@ import joinClasses from '../../Util/joinClasses'
 import CurrencyInput, { CurrencyInputProps } from 'react-currency-input-field'
 import Button from '../Button'
 
-interface InputNumberProps
+export interface InputNumberProps
   extends Omit<InputProps, 'ref' | 'defaultValue' | 'ref' | 'step'>,
     CurrencyInputProps {
   integerOnly?: boolean

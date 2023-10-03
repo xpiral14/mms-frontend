@@ -34,6 +34,7 @@ import currencyFormat from '../../Util/currencyFormat'
 import useMessageError from '../../Hooks/useMessageError'
 import { endOfDay, startOfDay } from 'date-fns'
 import { useScreen } from '../../Hooks/useScreen'
+import { BillPaymentProps } from './BillPayment'
 
 const BillsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
   const {
@@ -405,9 +406,9 @@ const BillsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
             intent={Intent.PRIMARY}
             disabled={selectedBills.length === 0}
             onClick={() => {
-              openSubScreen({
+              openSubScreen<BillPaymentProps>({
                 id: 'bill-payment'
-              }) 
+              }, screen.id, {bills: selectedBills}) 
             }}
           >
             Pagar conta{selectedBills.length > 1 && 's'}

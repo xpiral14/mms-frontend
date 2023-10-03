@@ -1,5 +1,6 @@
 import { BillStatuses, PaymentTypes } from '../../Constants/Enums'
 import Supplier from './Supplier'
+import Transaction from './Transaction'
 
 export default interface Bill {
   id: number
@@ -17,5 +18,6 @@ export default interface Bill {
   annotations?: string
   status?: BillStatuses
   type: PaymentTypes
-  supplier?: Supplier
+  supplier?: Supplier,
+  transactions?: Transaction[]
 }

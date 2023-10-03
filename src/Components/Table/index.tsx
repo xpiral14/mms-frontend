@@ -7,7 +7,7 @@ import Filter from './Filter'
 import { Colors, Icon } from '@blueprintjs/core'
 import { StyledTable } from './styles'
 import LoadingBackdrop from '../Layout/LoadingBackdrop'
-// import LoadingBackdrop from '../Layout/LoadingBackdrop'
+import joinClasses from '../../Util/joinClasses'
 
 const Table = function <T = any>(props: TableProps<T>) {
   const getWithoutValueDefaultText = (column: Column<T>) => {
@@ -35,50 +35,59 @@ const Table = function <T = any>(props: TableProps<T>) {
   )
   return (
     <div>
-      <StyledTable className='w-100 bp4-html-table bp4-html-table-bordered bp4-html-table-striped bp4-interactive position-relative'>
-        <thead>
-          <tr>
-            {props.columns?.map((column) => (
-              <th key={column.keyName as string} style={column.style}>
-                <div
-                  className='d-flex justify-content-between align-items-center'
-                  style={{ height: 30 }}
-                >
-                  <span>{column.name}</span>
-                  <Render renderIf={Boolean(column.filters?.length)}>
-                    <Popover2
-                      content={
-                        <Filter<T>
-                          column={column}
-                          onFilter={props.onFilter}
-                          filter={props.filter ?? {}}
-                        />
-                      }
-                    >
-                      <Button
-                        help='Aplicar filtros'
-                        icon={
-                          <Icon
-                            icon='filter'
-                            color={
-                              Object.keys(props.filter ?? {}).some(
-                                (k) =>
-                                  props.filter?.[k] && (column.keyName && k.startsWith(column.keyName)  || column.filters?.some(filter => filter.keyName && k.startsWith(filter.keyName)))
-                              )
-                                ? Colors.BLUE3
-                                : undefined
-                            }
+      <StyledTable className={
+        joinClasses({
+          'w-100 bp4-html-table bp4-html-table-bordered position-relative': true,
+          'bp4-html-table-striped': props.stripped,
+          'bp4-interactive': props.interactive
+        })
+      }>
+        <Render renderIf={!props.noHeader}>
+          <thead>
+            <tr>
+              {props.columns?.map((column) => (
+                <th key={column.keyName as string} style={column.style}>
+                  <div
+                    className='d-flex justify-content-between align-items-center'
+                    style={{ height: 30 }}
+                  >
+                    <span>{column.name}</span>
+                    <Render renderIf={Boolean(column.filters?.length)}>
+                      <Popover2
+                        content={
+                          <Filter<T>
+                            column={column}
+                            onFilter={props.onFilter}
+                            filter={props.filter ?? {}}
                           />
                         }
-                        minimal
-                      />
-                    </Popover2>
-                  </Render>
-                </div>
-              </th>
-            ))}
-          </tr>
-        </thead>
+                      >
+                        <Button
+                          help='Aplicar filtros'
+                          icon={
+                            <Icon
+                              icon='filter'
+                              color={
+                                Object.keys(props.filter ?? {}).some(
+                                  (k) =>
+                                    props.filter?.[k] && (column.keyName && k.startsWith(column.keyName)  || column.filters?.some(filter => filter.keyName && k.startsWith(filter.keyName)))
+                                )
+                                  ? Colors.BLUE3
+                                  : undefined
+                              }
+                            />
+                          }
+                          minimal
+                        />
+                      </Popover2>
+                    </Render>
+                  </div>
+                </th>
+              ))}
+            </tr>
+          </thead>
+
+        </Render>
         <tbody>
           {props.rows?.map((row, rowIndex) => (
             <tr
@@ -89,6 +98,7 @@ const Table = function <T = any>(props: TableProps<T>) {
                 <td
                   key={column.keyName}
                   onClick={() => props.onRowSelect?.(row)}
+                  style={column.style}
                 >
                   {(column?.cellRenderer ?? defaultCellRenderer)(
                     column,
@@ -123,4 +133,8 @@ const Table = function <T = any>(props: TableProps<T>) {
   )
 }
 
+Table.defaultProps = {
+  interactive: true,
+  stripped: true
+}
 export default Table

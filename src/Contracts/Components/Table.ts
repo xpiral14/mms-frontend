@@ -7,7 +7,7 @@ export type ColumnFilter<T = Record<string, any>> = {
   keyName?: keyof T & string
 }
 export type Column<T = Record<string, any>> = {
-  cellRenderer?: (column: Column<T>, row: Row<T>) => React.ReactNode
+  cellRenderer?: (column: Column<T>, row: Row<T>, rowIndex: number) => React.ReactNode
   keyName?: keyof T & string
   formatText?: (row?: Row<T>, rowIndex?: number) => React.ReactNode
   withoutValueText?: React.ReactNode
@@ -31,4 +31,7 @@ export type TableProps<T = Record<string, any>> = {
   onFilter?: ((filters: Filters) => void) | ((filters: Filters) => Promise<void>)
   filter?: Filters
   loading?: boolean
+  noHeader?: boolean
+  stripped?: boolean
+  interactive?: boolean
 }

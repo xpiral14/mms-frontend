@@ -39,7 +39,7 @@ body {
 }
 
 .jsPanel-content,
-.bp4-input {
+.bp5-input {
   font-size: 0.7rem !important;
 }
 
@@ -165,15 +165,15 @@ body {
   border: 3px solid #ffffff;
 }
 
-.bp4-input::-webkit-outer-spin-button,
-.bp4-input::-webkit-inner-spin-button {
+.bp5-input::-webkit-outer-spin-button,
+.bp5-input::-webkit-inner-spin-button {
   /* display: none; <- Crashes Chrome on hover */
   -webkit-appearance: none;
   margin: 0;
   /* <-- Apparently some margin are still there even though it's hidden */
 }
 
-.bp4-input[type=number] {
+.bp5-input[type=number] {
   -moz-appearance: textfield;
   /* Firefox */
 }

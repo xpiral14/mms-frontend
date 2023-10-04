@@ -204,10 +204,8 @@ export default function Select<T = any>({
           resetOnSelect
           filterable
           popoverProps={{
-            fill: true,
-            boundary: 'window',
+            boundary: document.body,
             enforceFocus: true,
-            target: selectRef.current,
           }}
           itemPredicate={filterOption}
           items={props.items || []}

@@ -8,6 +8,7 @@ import '@blueprintjs/table/lib/css/table.css'
 import '@blueprintjs/icons/lib/css/blueprint-icons.css'
 import '@blueprintjs/datetime/lib/css/blueprint-datetime.css'
 import '@blueprintjs/popover2/lib/css/blueprint-popover2.css'
+import '@blueprintjs/datetime2/lib/css/blueprint-datetime2.css'
 import AlertContextProvider from './Hooks/useAlert'
 import './globalStyle.css'
 

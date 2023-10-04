@@ -99,11 +99,11 @@ const InputNumber = (props: InputNumberProps) => {
       />
       <ButtonGroup
         vertical
-        className='bp4-fixed ml-2'
+        className='bp5-fixed ml-2'
         style={{ marginLeft: 4 }}
       >
         <button
-          className='bp4-button'
+          className='bp5-button'
           style={{ maxHeight: 15, minHeight: 15 }}
           onMouseDown={onUp}
           onMouseUp={clearIntervalOnUp}
@@ -111,7 +111,7 @@ const InputNumber = (props: InputNumberProps) => {
           <Icon icon='chevron-up' />
         </button>
         <button
-          className='bp4-button'
+          className='bp5-button'
           style={{ maxHeight: 15, minHeight: 15 }}
           onMouseDown={onDown}
           onMouseUp={clearIntervalOnUp}

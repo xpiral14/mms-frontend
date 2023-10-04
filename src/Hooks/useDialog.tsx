@@ -112,7 +112,8 @@ export default function DialogProvider({ children }: any) {
         return new Promise((resolve) => {
           return import(`../Dialogs/${dialogData.path}`)
             .then(resolve)
-            .catch(() => {
+            .catch((e) => {
+              debugger
               setDialogError({
                 dialogId: dialogOptions.id,
               })

@@ -215,7 +215,7 @@ const BillsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
           },
         },
         {
-          name: 'Fornecedor',
+          name: 'Fornecedoraa',
           formatText: (r) => r?.supplier?.name,
           filters: [
             { name: 'Fornecedor', type: 'text', keyName: 'supplier_name' },

@@ -37,9 +37,9 @@ const Table = function <T = any>(props: TableProps<T>) {
     <div>
       <StyledTable className={
         joinClasses({
-          'w-100 bp4-html-table bp4-html-table-bordered position-relative': true,
-          'bp4-html-table-striped': props.stripped,
-          'bp4-interactive': props.interactive
+          'w-100 bp5-html-table bp5-html-table-bordered position-relative': true,
+          'bp5-html-table-striped': props.stripped,
+          'bp5-interactive': props.interactive
         })
       }>
         <Render renderIf={!props.noHeader}>

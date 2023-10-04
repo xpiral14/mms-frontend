@@ -100,7 +100,7 @@ const ReceiptXCosts = () => {
           />
         </Row>
       </Box>
-      <Box className={joinClasses({'flex-grow-1': true, 'bp4-skeleton': loadingChart}) }>
+      <Box className={joinClasses({'flex-grow-1': true, 'bp5-skeleton': loadingChart}) }>
         <ResponsiveContainer width='100%' height='100%'>
           <BarChart
             width={500}

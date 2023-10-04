@@ -4,7 +4,7 @@ export const Container = styled.div<{ maxWidth?: string | number }>`
   display: flex;
   align-items: center;
   gap: 5px;
-  .bp4-multi-select {
+  .bp5-multi-select {
     position: relative ;
     width: ${(p) => p.maxWidth || '100%'};
     height: 30px;

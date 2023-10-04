@@ -33,7 +33,7 @@ function PaymentTypeSelect<T = any>(props: PaymentTypeSelectProps<T>) {
   return (
     <Select
       items={paymentTypeOptions}
-      activeItem={payload[props.name] as string}
+      activeItem={payload[props.name] as any}
       onChange={(paymentTypeOption) =>
         changePayloadAttribute(props.name, paymentTypeOption.value)
       }

@@ -123,7 +123,7 @@ const BillPayment = (props: BillPaymentScreenProps) => {
             {
               name: 'Referencia',
               cellRenderer: (_, r) => (
-                <p className='d-flex align-center margin-0'>
+                <p className='flex align-center margin-0'>
                   {r?.bill?.reference}
                 </p>
               ),
@@ -133,7 +133,7 @@ const BillPayment = (props: BillPaymentScreenProps) => {
               name: 'Saldo',
               cellRenderer: (_, billTransaction) => {
                 return (
-                  <p className='d-flex align-center margin-0'>
+                  <p className='flex align-center margin-0'>
                     {currencyFormat(
                       strToNumber(billTransaction.bill?.value) -
                         (strToNumber(billTransaction.addition as string) +

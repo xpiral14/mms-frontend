@@ -214,7 +214,7 @@ const ReceiptPosting: FC<ReceiptPostScreenProps> = ({ screen, ...props }) => {
         }}
       />
       <Render renderIf={!isScreenStatusSeeRegisters}>
-        <Box className='w-100'>
+        <Box className='w-full'>
           <Row>
             <Select
               items={customerOptions}
@@ -337,7 +337,7 @@ const ReceiptPosting: FC<ReceiptPostScreenProps> = ({ screen, ...props }) => {
         </Box>
       </Render>
       <Render renderIf={isScreenStatusSeeRegisters}>
-        <Row className='h-100'>
+        <Row className='h-full'>
           <PaginatedTable
             height='100%'
             request={ReceiptService.getAll}

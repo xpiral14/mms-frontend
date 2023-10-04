@@ -181,9 +181,9 @@ export default function DistributeGoodProduct({
     <Box className='mt-2'>
       <Collapse
         title={
-          <div className='d-flex justify-content-between w-100'>
+          <div className='flex justify-between w-full'>
             <span>{addEllipsis(goodProduct?.product.name ?? '', 45)}</span>
-            <div className='d-flex gap-1'>
+            <div className='flex gap-1'>
               <span
                 style={{
                   color:
@@ -243,7 +243,7 @@ export default function DistributeGoodProduct({
       >
         <Row style={{ maxHeight: 150, overflowY: 'scroll' }}>
           {distributedGoodProducts.map((dsp, i, dgps) => (
-            <Row className='align-items-center' key={dsp.id}>
+            <Row className='items-center' key={dsp.id}>
               <Select
                 buttonWidth='200px'
                 label='Estoque'

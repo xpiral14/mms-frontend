@@ -19,7 +19,8 @@ import ToastContextProvider from './Hooks/useToast'
 import Pusher from 'pusher-js'
 import DialogProvider from './Hooks/useDialog'
 
-if (import.meta.env.NODE_ENV !== 'production') {
+console.log(import.meta.env)
+if (import.meta.env.MODE !== 'production') {
   Pusher.logToConsole = true
 }
 

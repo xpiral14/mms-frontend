@@ -217,7 +217,7 @@ const CostPosting: FC<CostPostScreenProps> = ({ screen, ...props }) => {
         }}
       />
       <Render renderIf={!isScreenStatusSeeRegisters}>
-        <Box className='w-100'>
+        <Box className='w-full'>
           <Render renderIf={Boolean(payload.id)}>
             <Row>
               <InputText
@@ -343,7 +343,7 @@ const CostPosting: FC<CostPostScreenProps> = ({ screen, ...props }) => {
         </Box>
       </Render>
       <Render renderIf={isScreenStatusSeeRegisters}>
-        <Row className='h-100'>
+        <Row className='h-full'>
           <PaginatedTable
             height='100%'
             request={CostService.getAll}

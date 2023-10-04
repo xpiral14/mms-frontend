@@ -91,7 +91,7 @@ const LoginPage = () => {
               digitado abaixo caso esteja cadastrado no sistema
             </span>
           </Render>
-          <form onSubmit={handleSubmit(onSubmit)} className='mt-1 w-100'>
+          <form onSubmit={handleSubmit(onSubmit)} className='mt-1 w-full'>
             <FormGroup label='Email' labelFor='login-input' labelInfo='*'>
               <input
                 style={{ width: '100%' }}

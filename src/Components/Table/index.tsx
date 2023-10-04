@@ -37,7 +37,7 @@ const Table = function <T = any>(props: TableProps<T>) {
     <div>
       <StyledTable className={
         joinClasses({
-          'w-100 bp5-html-table bp5-html-table-bordered position-relative': true,
+          'w-full bp5-html-table bp5-html-table-bordered position-relative': true,
           'bp5-html-table-striped': props.stripped,
           'bp5-interactive': props.interactive
         })
@@ -48,7 +48,7 @@ const Table = function <T = any>(props: TableProps<T>) {
               {props.columns?.map((column) => (
                 <th key={column.keyName as string} style={column.style}>
                   <div
-                    className='d-flex justify-content-between align-items-center'
+                    className='flex justify-between items-center'
                     style={{ height: 30 }}
                   >
                     <span>{column.name}</span>
@@ -112,7 +112,7 @@ const Table = function <T = any>(props: TableProps<T>) {
           <Render renderIf={!props.loading && !props.rows?.length}>
             <tr>
               <td colSpan={props.columns.length}>
-                <div className='w-100 d-flex justify-content-center align-items-center gap-3'>
+                <div className='w-full flex justify-center items-center gap-3'>
                   <Icon icon='zoom-out' size={32} color={Colors.GRAY3} />
                   <span style={{ fontSize: 30, color: Colors.GRAY3 }}>
                     Não há nada aqui

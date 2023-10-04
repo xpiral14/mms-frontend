@@ -70,7 +70,7 @@ const ReceiptXCosts = () => {
   }, [payload.groupType])
 
   return (
-    <Container className='h-100 w-100 d-flex gap-2'>
+    <Container className='h-full w-full flex gap-2'>
       <Box className='flex-shrink-1'>
         <Row>
           <Select

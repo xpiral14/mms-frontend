@@ -368,7 +368,7 @@ const OrderServiceDetails: FunctionComponent<OrderServiceDetailScreenProps> = (
 
   return (
     <Container>
-      <Row className='w-100 mb-2'>
+      <Row className='w-full mb-2'>
         <Bar style={{ display: 'flex', justifyContent: 'space-between' }}>
           <Button
             intent={Intent.SUCCESS}
@@ -391,7 +391,7 @@ const OrderServiceDetails: FunctionComponent<OrderServiceDetailScreenProps> = (
       <Select
         buttonProps={
           {
-            className: 'w-100',
+            className: 'w-full',
             style: {
               display: 'flex',
               justifyContent: 'space-between',
@@ -429,7 +429,7 @@ const OrderServiceDetails: FunctionComponent<OrderServiceDetailScreenProps> = (
                 })
               }
               title={
-                <Row className='flex-between w-100'>
+                <Row className='flex-between w-full'>
                   <span>{orderService.service_name}</span>
                   <ButtonGroup>
                     <Render renderIf={!orderService.isEditMode}>
@@ -455,7 +455,7 @@ const OrderServiceDetails: FunctionComponent<OrderServiceDetailScreenProps> = (
                 </Row>
               }
             >
-              <Row className='w-100 align-center flex-between'>
+              <Row className='w-full align-center flex-between'>
                 <section className='flex flex-wrap'>
                   <NumericInput
                     disabled={!orderService.isEditMode}
@@ -508,7 +508,7 @@ const OrderServiceDetails: FunctionComponent<OrderServiceDetailScreenProps> = (
                 </section>
               </Row>
 
-              <Row className='w-100 flex-between'>
+              <Row className='w-full flex-between'>
                 <TextArea
                   value={orderService.description}
                   onChange={handleDescriptionChange(serviceKey)}

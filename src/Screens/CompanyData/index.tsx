@@ -176,7 +176,7 @@ const CompanyData: FC<ScreenProps> = ({ screen }) => {
       </Box>
 
       <Box className='mt-2'>
-        <Row className='w-100'>
+        <Row className='w-full'>
           <Collapse
             title='Endereço'
             isCollapsed={addressCollapsed}
@@ -220,7 +220,7 @@ const CompanyData: FC<ScreenProps> = ({ screen }) => {
                 value={address.bairro ?? ''}
               />
             </Row>
-            <Row className='w-100'>
+            <Row className='w-full'>
               <InputText
                 id={screen.id + 'company_complement'}
                 disabled={isScreenStatusVizualize}

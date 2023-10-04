@@ -469,7 +469,7 @@ const GoodsScreen: React.FC<GoodRegisterScreenProps> = ({
             />
           </Bar>
         </Row>
-        <Row className='h-100'>
+        <Row className='h-full'>
           <PaginatedTable<Good>
             height='100%'
             customRequest={getSupplierGoods}

@@ -592,7 +592,7 @@ const OrderServiceCustomer: React.FC<ScreenProps> = ({ screen }) => {
         <RegistrationButtonBar {...registrationButtonBarProps} />
       </Header>
 
-      <Body className='h-100'>
+      <Body className='h-full'>
         <Bar className='my-1 flex flex-justify-end'>
           <ButtonGroup>
             <Button
@@ -923,9 +923,9 @@ const OrderServiceCustomer: React.FC<ScreenProps> = ({ screen }) => {
           </Row>
         </Render>
         <Render renderIf={screenStatus === ScreenStatus.SEE_REGISTERS}>
-          <Row style={{ flex: 1 }} className='h-100'>
+          <Row style={{ flex: 1 }} className='h-full'>
             <Box style={{ flex: 1 }}>
-              <Row className='h-100'>
+              <Row className='h-full'>
                 <PaginatedTable
                   containerProps={{
                     className: 'styled-scroll',

@@ -63,7 +63,7 @@ function Filter<T = Record<string, any>>({
     onFilter?.(formattedFilters)
   }
   return (
-    <Row className='p-2 d-flex flex-column'>
+    <Row className='p-2 flex flex-column'>
       {column.filters?.map((filter) => {
         const filterName = filter.keyName ?? column.keyName as string
         switch (filter.type) {

@@ -400,11 +400,12 @@ const BillsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
         <RegistrationButtonBar {...registrationButtonBarProps} />
       </Row>
       <Row>
-        <Bar className='mt-1'>
+        <Bar className='mt-1 justify-between'>
           <Button
             icon={<MdOutlinePayments size={14} />}
             intent={Intent.PRIMARY}
             disabled={selectedBills.length === 0}
+            className='font-bold'
             onClick={() => {
               openSubScreen<BillPaymentProps>(
                 {
@@ -418,7 +419,7 @@ const BillsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
             Pagar conta{selectedBills.length > 1 && 's'}
           </Button>
 
-          <Row>
+          <div>
             <Render
               renderIf={
                 selectedBills.length > 0 &&
@@ -438,7 +439,7 @@ const BillsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
             <Row>
               <Card style={{padding: '5px 10px'}}>Contas vencidas: R$ 5000</Card>
             </Row>
-          </Row>
+          </div>
         </Bar>
       </Row>
       <Render renderIf={screenStatus !== ScreenStatus.SEE_REGISTERS}>

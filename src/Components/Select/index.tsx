@@ -198,7 +198,7 @@ export default function Select<T = any>({
           : undefined
       }
     >
-      <Wrapper className='d-flex gap-1'>
+      <Wrapper className='flex gap-1'>
         <OptionSelect
           ref={selectRef}
           resetOnSelect
@@ -231,7 +231,7 @@ export default function Select<T = any>({
             intent={props.intent ?? activeOption?.intent}
             disabled={props.disabled}
             {...props?.buttonProps}
-            className='flex-1 w-100'
+            className='flex-1 w-full'
           >
             {activeOption?.label ||
               props.defaultButtonText ||

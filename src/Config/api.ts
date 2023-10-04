@@ -2,7 +2,7 @@ import axios from 'axios'
 import keysToCamel from '../Util/keysToKamel'
 
 const api = axios.create({
-  baseURL: process.env.REACT_APP_API_SERVER_URL + '/api/v1',
+  baseURL: import.meta.env.VITE_API_SERVER_URL + '/api/v1',
   headers: { Accept: 'application/json' },
   withCredentials: true,
 })

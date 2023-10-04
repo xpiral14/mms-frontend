@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Intent } from '@blueprintjs/core'
+import { Card, Intent } from '@blueprintjs/core'
 import { useCallback, useMemo, useState } from 'react'
 import { MdOutlinePayments } from 'react-icons/md'
 import Button from '../../Components/Button'
@@ -45,7 +45,7 @@ const BillsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
     changePayloadAttribute,
   } = useWindow<Bill>()
 
-  const {openSubScreen} = useScreen()
+  const { openSubScreen } = useScreen()
   const [selectedBills, setSelectedBills] = useState<Bill[]>([])
 
   const createValidation = (keyName: keyof Bill) => () =>
@@ -406,27 +406,41 @@ const BillsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
             intent={Intent.PRIMARY}
             disabled={selectedBills.length === 0}
             onClick={() => {
-              openSubScreen<BillPaymentProps>({
-                id: 'bill-payment'
-              }, screen.id, {bills: selectedBills}) 
+              openSubScreen<BillPaymentProps>(
+                {
+                  id: 'bill-payment',
+                },
+                screen.id,
+                { bills: selectedBills }
+              )
             }}
           >
             Pagar conta{selectedBills.length > 1 && 's'}
           </Button>
-          <Render renderIf={selectedBills.length > 0}>
-            <Button
-              icon='clean'
-              intent={Intent.DANGER}
-              onClick={() => {
-                setSelectedBills([])
-              }}
+
+          <Row>
+            <Render
+              renderIf={
+                selectedBills.length > 0 &&
+                screenStatus === ScreenStatus.SEE_REGISTERS
+              }
             >
-              Limpar seleção
-            </Button>
-          </Render>
+              <Button
+                icon='clean'
+                intent={Intent.DANGER}
+                onClick={() => {
+                  setSelectedBills([])
+                }}
+              >
+                Limpar seleção
+              </Button>
+            </Render>
+            <Row>
+              <Card style={{padding: '5px 10px'}}>Contas vencidas: R$ 5000</Card>
+            </Row>
+          </Row>
         </Bar>
       </Row>
-
       <Render renderIf={screenStatus !== ScreenStatus.SEE_REGISTERS}>
         <Row>
           <AsyncSelect<Bill>

@@ -215,7 +215,7 @@ const BillsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
           },
         },
         {
-          name: 'Fornecedoraa',
+          name: 'Fornecedora',
           formatText: (r) => r?.supplier?.name,
           filters: [
             { name: 'Fornecedor', type: 'text', keyName: 'supplier_name' },
@@ -245,7 +245,7 @@ const BillsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
             { name: 'Data da abertura', type: 'date', keyName: 'opening_date' },
           ],
           style: {
-            minWidth: 150,
+            minWidth: 200,
           },
         },
         {
@@ -259,7 +259,7 @@ const BillsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
             { name: 'Data de vencimento', type: 'date', keyName: 'due_date' },
           ],
           style: {
-            minWidth: 150,
+            minWidth: 200,
           },
         },
         {
@@ -287,7 +287,7 @@ const BillsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
             },
           ],
           style: {
-            width: '100%',
+            minWidth: 150,
           },
         },
       ] as Column<Bill>[],

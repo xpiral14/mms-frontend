@@ -143,7 +143,7 @@ const menus = {
         name: 'Contas a pagar',
         icon: <GiExpense size={16} />,
         screen: {
-          minHeight: 320,
+          minHeight: 350,
           maxHeight: 500,
           ...screens['bill-register'],
           contentSize: '1315 500',

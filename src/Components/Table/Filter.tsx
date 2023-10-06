@@ -8,6 +8,8 @@ import InputText from '../InputText'
 import { parse } from 'date-fns'
 import { isValidIsoDate } from '../../Util/isValidIsoDate'
 import RadioGroup from '../RadioGroup'
+import InputNumber from '../InputNumber'
+import strToNumber from '../../Util/strToNumber'
 
 type FilterType = 'eq' | 'in' | 'like' | 'gte' | 'lte' | 'dateq'
 type FilterProps<T = Record<string, any>> = {
@@ -42,11 +44,11 @@ function Filter<T = Record<string, any>>({
   ) => {
     setFilters((prev) => ({
       ...prev,
-      [(column.keyName ??  (defaultKeyName as string)) + '_' + filterType]:
+      [(column.keyName ?? (defaultKeyName as string)) + '_' + filterType]:
         value,
     }))
   }
-
+  const currencyFormat = /[0-9]+,[0-9]+/
   const handleFilterClick = () => {
     const formattedFilters = Object.entries(filters).reduce(
       (filterObject, [filter, filterValue]) => {
@@ -55,7 +57,9 @@ function Filter<T = Record<string, any>>({
             ? filterValue.toISOString().slice(0, 10)
             : Array.isArray(filterValue)
               ? filterValue?.join(',')
-              : filterValue
+              : currencyFormat.test(filterValue)
+                ? String(strToNumber(filterValue))
+                : filterValue
         return filterObject
       },
       {} as Record<string, string>
@@ -65,7 +69,7 @@ function Filter<T = Record<string, any>>({
   return (
     <Row className='p-2 flex flex-column'>
       {column.filters?.map((filter) => {
-        const filterName = filter.keyName ?? column.keyName as string
+        const filterName = filter.keyName ?? (column.keyName as string)
         switch (filter.type) {
         case 'date':
           return (
@@ -110,7 +114,21 @@ function Filter<T = Record<string, any>>({
               id={'filter-' + filter.name}
               value={(filters[filterName + '_like'] as string) ?? ''}
               placeholder={filter.name}
-              onChange={(event) => changeFilter('like', event.target.value, filterName)}
+              prefix='R$'
+              onChange={(event) =>
+                changeFilter('like', event.target.value, filterName)
+              }
+            />
+          )
+        case 'currency':
+          return (
+            <InputNumber
+              placeholder={filter.name}
+              value={(filters[filterName + '_like'] as string) ?? ''}
+              style={{ width: '100%' }}
+              prefix='R$ '
+              inputStyle={{ width: 'calc(100% - 35px)' }}
+              onValueChange={(v) => changeFilter('like', v, filterName)}
             />
           )
         case 'checkbox':
@@ -124,7 +142,8 @@ function Filter<T = Record<string, any>>({
                 onChange={() => {
                   setFilters((prev) => {
                     const checkboxFilterName = filterName + '_in'
-                    const filterValue = (prev[checkboxFilterName] as string[]) ?? []
+                    const filterValue =
+                        (prev[checkboxFilterName] as string[]) ?? []
                     const optionValue = option.value
                     return {
                       ...prev,
@@ -145,7 +164,7 @@ function Filter<T = Record<string, any>>({
                 (filters[column.keyName + '_eq'] as string) ?? ''
               }
               onChange={(evt: React.FormEvent<HTMLInputElement>) => {
-                changeFilter('eq', (evt.target as any).value, )
+                changeFilter('eq', (evt.target as any).value)
               }}
             />
           )

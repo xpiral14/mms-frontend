@@ -22,6 +22,7 @@ import { useToast } from '../../Hooks/useToast'
 
 export interface BillPaymentProps {
   bills: Bill[]
+  onPay?: () => void
 }
 
 interface BillPaymentScreenProps extends ScreenProps, BillPaymentProps {}
@@ -76,6 +77,7 @@ const BillPayment = (props: BillPaymentScreenProps) => {
           })
         ) ?? []
       )
+      props?.onPay?.()
       showSuccessToast('Os pagamentos foram efetuados com sucesso.')
       props.screen.close()
     } catch (error) {
@@ -103,7 +105,7 @@ const BillPayment = (props: BillPaymentScreenProps) => {
           <PaymentTypeSelect<Transaction>
             name='payment_type'
             buttonWidth='100%'
-            label='Forma de pagamento'
+            label='Forma de pagamento*'
           />
         </Row>
         <Row>
@@ -213,6 +215,8 @@ const BillPayment = (props: BillPaymentScreenProps) => {
                   value={row.value}
                   style={{ margin: 0, width: 130 }}
                   inputStyle={{ width: 90 }}
+                  max={props.bills[index].value}
+                  min={0}
                   onValueChange={(v) =>
                     setPayload((prev) => {
                       const copy = {

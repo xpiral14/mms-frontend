@@ -6,6 +6,14 @@ import { ReportRequestOption } from '../Contracts/Types/Api'
 import Response from '../Contracts/Types/Response'
 import { Enum } from '../Contracts/Models/Generics'
 
+export type MonthSummary = {
+  opened?: number
+  paid?: number
+  expired?: number,
+  partially_paid_expired?: number
+  partially_paid?: number
+}
+
 export const DEFAULT_PATH = '/bills'
 export default {
   async getAll(page: number, perPage: number, filters?: Record<any, any>, reportType?: ReportRequestOption) {
@@ -45,5 +53,9 @@ export default {
 
   async payBill(billId: number, transaction: Partial<Transaction>) {
     return api.post<Response<Transaction>>(`${DEFAULT_PATH}/${billId}/payments`, { ...transaction, notCamel: true })
+  },
+
+  async getMonthSummary(date: string) {
+    return api.get<Response<MonthSummary>>(`${DEFAULT_PATH}/summary`, { params: { date } })
   }
 }

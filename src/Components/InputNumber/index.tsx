@@ -17,12 +17,12 @@ const InputNumber = (props: InputNumberProps) => {
     () =>
       joinClasses(
         Classes.INPUT,
-        props.itent
-          ? (Classes as any)[('INTENT_' + props.itent.toUpperCase()) as any]
+        props.intent
+          ? (Classes as any)[('INTENT_' + props.intent.toUpperCase()) as any]
           : '',
         props.className ?? ''
       ),
-    [props.itent, props.className]
+    [props.intent, props.className]
   )
   const onInputValueChange: InputNumberProps['onValueChange'] = (
     value,
@@ -37,7 +37,6 @@ const InputNumber = (props: InputNumberProps) => {
       return props.onValueChange?.(value, name, values)
     }
     const valueAsNumber = +(value?.replace(',', '.') ?? 0)
-
     if (typeof props.min === 'number') {
       value = String(Math.max(+props.min!, valueAsNumber))
     }
@@ -84,7 +83,7 @@ const InputNumber = (props: InputNumberProps) => {
       label={props.label}
       labelInfo={props.required && '*'}
       disabled={props.disabled}
-      intent={props.itent}
+      intent={props.intent}
       labelFor={props.id}
       style={props.style}
     >

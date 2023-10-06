@@ -8,17 +8,17 @@ const InputText: React.FC<InputProps> = (props) => {
 
   const className = useMemo(() => joinClasses(
     Classes.INPUT,
-    props.itent
-      ? (Classes as any)[('INTENT_' + props.itent.toUpperCase()) as any]
+    props.intent
+      ? (Classes as any)[('INTENT_' + props.intent.toUpperCase()) as any]
       : '',
     props.className ?? ''
-  ), [props.itent, props.className])
+  ), [props.intent, props.className])
   return (
     <FormGroup
       label={props.label}
       labelInfo={props.required && '*'}
       disabled={props.disabled}
-      intent={props.itent}
+      intent={props.intent}
       labelFor={props.id}
       style={props.style}
     >

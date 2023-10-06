@@ -20,7 +20,11 @@ const Table = function <T = any>(props: TableProps<T>) {
     rowIndex?: number
   ) => {
     const text = row?.[column.keyName!]
-    return text ?? column?.formatText?.(row, rowIndex) ??  getWithoutValueDefaultText(column)
+    return (
+      text ??
+      column?.formatText?.(row, rowIndex) ??
+      getWithoutValueDefaultText(column)
+    )
   }
 
   const defaultCellRenderer = (
@@ -35,18 +39,26 @@ const Table = function <T = any>(props: TableProps<T>) {
   )
   return (
     <div>
-      <StyledTable className={
-        joinClasses({
-          'w-full bp5-html-table bp5-html-table-bordered position-relative': true,
+      <StyledTable
+        className={joinClasses({
+          'w-full bp5-html-table bp5-html-table-bordered position-relative':
+            true,
           'bp5-html-table-striped': props.stripped,
-          'bp5-interactive': props.interactive
-        })
-      }>
+          'bp5-interactive': props.interactive,
+        })}
+      >
         <Render renderIf={!props.noHeader}>
           <thead>
             <tr>
               {props.columns?.map((column) => (
-                <th key={column.keyName as string} style={column.style}>
+                <th
+                  key={column.keyName as string}
+                  style={
+                    typeof column.headerColStyle === 'function'
+                      ? column.headerColStyle(column)
+                      : column.headerColStyle
+                  }
+                >
                   <div
                     className='flex justify-between items-center'
                     style={{ height: 30 }}
@@ -70,7 +82,14 @@ const Table = function <T = any>(props: TableProps<T>) {
                               color={
                                 Object.keys(props.filter ?? {}).some(
                                   (k) =>
-                                    props.filter?.[k] && (column.keyName && k.startsWith(column.keyName)  || column.filters?.some(filter => filter.keyName && k.startsWith(filter.keyName)))
+                                    props.filter?.[k] &&
+                                    ((column.keyName &&
+                                      k.startsWith(column.keyName)) ||
+                                      column.filters?.some(
+                                        (filter) =>
+                                          filter.keyName &&
+                                          k.startsWith(filter.keyName)
+                                      ))
                                 )
                                   ? Colors.BLUE3
                                   : undefined
@@ -86,19 +105,28 @@ const Table = function <T = any>(props: TableProps<T>) {
               ))}
             </tr>
           </thead>
-
         </Render>
         <tbody>
           {props.rows?.map((row, rowIndex) => (
             <tr
               key={props.rowKey?.(row) || (row?.id as any)}
-              className={props?.isSelected?.(row) ? 'active' : ''}
+              className={joinClasses({
+                active: props?.isSelected?.(row),
+                [typeof props.rowClassNames === 'string'
+                  ? props.rowClassNames
+                  : props.rowClassNames?.(row) ?? '']: true,
+              })}
+              style={props.rowStyle?.(row)}
             >
               {props.columns?.map((column) => (
                 <td
                   key={column.keyName}
                   onClick={() => props.onRowSelect?.(row)}
-                  style={column.style}
+                  style={
+                    typeof column.style === 'function'
+                      ? column.style(row, column)
+                      : column.style
+                  }
                 >
                   {(column?.cellRenderer ?? defaultCellRenderer)(
                     column,
@@ -123,9 +151,7 @@ const Table = function <T = any>(props: TableProps<T>) {
           </Render>
         </tbody>
         <Render renderIf={Boolean(props.renderFooter)}>
-          <tfoot>
-            {footer}
-          </tfoot>
+          <tfoot>{footer}</tfoot>
         </Render>
       </StyledTable>
       <LoadingBackdrop loading={props.loading} />
@@ -135,6 +161,6 @@ const Table = function <T = any>(props: TableProps<T>) {
 
 Table.defaultProps = {
   interactive: true,
-  stripped: true
+  stripped: true,
 }
 export default Table

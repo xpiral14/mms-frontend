@@ -418,7 +418,7 @@ const ProductsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
             id='productReference'
             label='Referência:'
             disabled={isStatusVizualize()}
-            itent='primary'
+            intent='primary'
             style={{ width: '20%' }}
             inputStyle={{ width: '100%' }}
             value={payload?.reference || ''}

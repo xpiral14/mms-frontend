@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Card, Intent } from '@blueprintjs/core'
-import { useCallback, useMemo, useState } from 'react'
+import { ButtonGroup, Card, Colors, Intent } from '@blueprintjs/core'
+import { CSSProperties, useCallback, useMemo, useState } from 'react'
 import { MdOutlinePayments } from 'react-icons/md'
 import Button from '../../Components/Button'
 import InputDate from '../../Components/InputDate'
@@ -20,7 +20,7 @@ import {
 } from '../../Contracts/Components/RegistrationButtonBarProps'
 import ScreenProps from '../../Contracts/Components/ScreenProps'
 import { Option } from '../../Contracts/Components/Suggest'
-import { Column } from '../../Contracts/Components/Table'
+import { Column, Row as RowType } from '../../Contracts/Components/Table'
 import { Validation } from '../../Contracts/Hooks/useValidation'
 import Bill from '../../Contracts/Models/Bill'
 import { useAlert } from '../../Hooks/useAlert'
@@ -28,13 +28,15 @@ import { useGrid } from '../../Hooks/useGrid'
 import { useToast } from '../../Hooks/useToast'
 import useValidation from '../../Hooks/useValidation'
 import { useWindow } from '../../Hooks/useWindow'
-import BillService from '../../Services/BillService'
+import BillService, { MonthSummary } from '../../Services/BillService'
 import SupplierService from '../../Services/SupplierService'
 import currencyFormat from '../../Util/currencyFormat'
 import useMessageError from '../../Hooks/useMessageError'
-import { endOfDay, startOfDay } from 'date-fns'
+import { endOfDay, startOfDay, startOfMonth } from 'date-fns'
 import { useScreen } from '../../Hooks/useScreen'
 import { BillPaymentProps } from './BillPayment'
+import useAsync from '../../Hooks/useAsync'
+import strToNumber from '../../Util/strToNumber'
 
 const BillsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
   const {
@@ -44,6 +46,37 @@ const BillsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
     setScreenStatus,
     changePayloadAttribute,
   } = useWindow<Bill>()
+  const [monthSummary, setMonthSummary] = useState<{
+    opened: string
+    paid: string
+    expired: string
+  }>({
+    opened: currencyFormat(0),
+    paid: currencyFormat(0),
+    expired: currencyFormat(0),
+  })
+  const { showErrorMessage } = useMessageError()
+
+  const [, reloadSummary] = useAsync(async () => {
+    try {
+      const summary = (
+        await BillService.getMonthSummary(
+          startOfMonth(new Date()).toISOString().slice(0, 10)
+        )
+      ).data.data
+      setMonthSummary({
+        expired: currencyFormat(
+          (summary.expired ?? 0) + (summary?.partially_paid_expired ?? 0)
+        ),
+        paid: currencyFormat(
+          (summary.paid ?? 0) + (summary?.partially_paid ?? 0)
+        ),
+        opened: currencyFormat(summary.opened ?? 0),
+      })
+    } catch (error) {
+      showErrorMessage(error, 'Não foi possível obter o resumo do mês.')
+    }
+  }, [])
 
   const { openSubScreen } = useScreen()
   const [selectedBills, setSelectedBills] = useState<Bill[]>([])
@@ -91,8 +124,6 @@ const BillsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
     )
   }
 
-  const { showErrorMessage } = useMessageError()
-
   const handleButtonCreateBillOnClick = async (stopLoad: Function) => {
     if (!validate()) {
       stopLoad()
@@ -112,6 +143,7 @@ const BillsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
       setPayload({})
       setScreenStatus(ScreenStatus.SEE_REGISTERS)
       increaseWindowSize?.()
+      reloadSummary()
     } catch (error: any) {
       showErrorMessage(
         error,
@@ -130,7 +162,10 @@ const BillsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
     }
 
     try {
-      const response = await BillService.update(payload as Bill)
+      const response = await BillService.update({
+        ...payload,
+        value: strToNumber(payload.value),
+      } as Bill)
 
       if (response.status) {
         showSuccessToast({
@@ -151,6 +186,7 @@ const BillsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
 
       setPayload({})
       setScreenStatus(ScreenStatus.SEE_REGISTERS)
+      reloadSummary()
     } catch (error: any) {
       const ErrorMessages = getErrorMessages(
         error.response?.data?.errors,
@@ -176,6 +212,7 @@ const BillsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
       })
       setPayload({})
       setSelectedBills([])
+      reloadSummary()
       setReloadGrid(true)
     } catch (error: any) {
       const ErrorMessages = getErrorMessages(
@@ -227,7 +264,9 @@ const BillsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
         },
         {
           name: 'Valor',
-          filters: [{ name: 'Nome da conta', type: 'text', keyName: 'value' }],
+          filters: [
+            { name: 'Valor da conta', type: 'currency', keyName: 'value' },
+          ],
           formatText: (r) => currencyFormat(r?.value),
           style: {
             minWidth: 100,
@@ -364,10 +403,10 @@ const BillsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
       disabled: selectedBills.length > 0,
     },
     buttonDeleteProps: {
-      disabled: false,
+      disabled: selectedBills.length === 0,
     },
     buttonEditProps: {
-      disabled: selectedBills.length > 1,
+      disabled: selectedBills.length != 1,
     },
   }
 
@@ -393,7 +432,6 @@ const BillsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
     },
     []
   )
-
   return (
     <Container style={{ height: 'calc(100% - 40px)' }}>
       <Row>
@@ -401,34 +439,39 @@ const BillsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
       </Row>
       <Row>
         <Bar className='mt-1 justify-between'>
-          <Button
-            icon={<MdOutlinePayments size={14} />}
-            intent={Intent.PRIMARY}
-            disabled={selectedBills.length === 0}
-            className='font-bold'
-            onClick={() => {
-              openSubScreen<BillPaymentProps>(
-                {
-                  id: 'bill-payment',
-                },
-                screen.id,
-                { bills: selectedBills }
-              )
-            }}
-          >
-            Pagar conta{selectedBills.length > 1 && 's'}
-          </Button>
-
-          <div>
-            <Render
-              renderIf={
-                selectedBills.length > 0 &&
-                screenStatus === ScreenStatus.SEE_REGISTERS
+          <ButtonGroup>
+            <Button
+              icon={<MdOutlinePayments size={14} />}
+              intent={Intent.PRIMARY}
+              disabled={
+                selectedBills.length === 0 ||
+                selectedBills.some((b) => b.status === BillStatuses.PAID)
               }
+              className='font-bold'
+              onClick={() => {
+                openSubScreen<BillPaymentProps>(
+                  {
+                    id: 'bill-payment',
+                  },
+                  screen.id,
+                  {
+                    bills: selectedBills,
+                    onPay: () => {
+                      setSelectedBills([])
+                      reloadSummary()
+                      setReloadGrid(true)
+                    },
+                  }
+                )
+              }}
             >
+              Pagar conta{selectedBills.length > 1 && 's'}
+            </Button>
+            <Render renderIf={screenStatus === ScreenStatus.SEE_REGISTERS}>
               <Button
                 icon='clean'
                 intent={Intent.DANGER}
+                disabled={selectedBills.length === 0}
                 onClick={() => {
                   setSelectedBills([])
                 }}
@@ -436,10 +479,31 @@ const BillsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
                 Limpar seleção
               </Button>
             </Render>
-            <Row>
-              <Card style={{padding: '5px 10px'}}>Contas vencidas: R$ 5000</Card>
-            </Row>
-          </div>
+          </ButtonGroup>
+          <Render renderIf={screenStatus === ScreenStatus.SEE_REGISTERS}>
+            <div>
+              <Row>
+                <Card
+                  className='py-2 px-3 text-white font-bold text-xs'
+                  style={{ backgroundColor: Colors.RED3 }}
+                >
+                  Contas vencidas: {monthSummary?.expired}
+                </Card>
+                <Card
+                  className='py-2 px-3 text-white font-bold text-xs'
+                  style={{ backgroundColor: Colors.ORANGE3 }}
+                >
+                  Contas pendentes: {monthSummary?.opened}
+                </Card>
+                <Card
+                  className='py-2 px-3 text-white font-bold text-xs'
+                  style={{ backgroundColor: Colors.GREEN3 }}
+                >
+                  Contas pagas: {monthSummary?.paid}
+                </Card>
+              </Row>
+            </div>
+          </Render>
         </Bar>
       </Row>
       <Render renderIf={screenStatus !== ScreenStatus.SEE_REGISTERS}>
@@ -546,6 +610,11 @@ const BillsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
                 responseType: 'text',
               },
             ]}
+            rowKey={(r) => r.id}
+            rowStyle={getRowStyle}
+            rowClassNames={(r) =>
+              r.status != 'opened' ? 'text-white' : undefined
+            }
           />
         </Row>
       </Render>
@@ -553,4 +622,24 @@ const BillsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
   )
 }
 
+function getRowStyle(row: RowType<Bill>): CSSProperties {
+  switch (row.status) {
+  case 'paid':
+    return {
+      backgroundColor: Colors.GREEN3,
+      color: `${Colors.WHITE}`,
+    }
+  case 'expired':
+    return {
+      backgroundColor: Colors.RED3,
+      color: 'white',
+    }
+  case 'opened':
+  default:
+    return {
+      backgroundColor: Colors.ORANGE3,
+      color: 'white',
+    }
+  }
+}
 export default BillsScreen

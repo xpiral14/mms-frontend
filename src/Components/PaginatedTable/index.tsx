@@ -188,6 +188,8 @@ const PaginatedTable = function <T = any>({
           onFilter={onFilter}
           filter={selectedFilters}
           loading={reloadGrid}
+          rowStyle={rest.rowStyle}
+          rowClassNames={rest.rowClassNames}
         />
       </Body>
       {Boolean(gridResponse?.meta) && (

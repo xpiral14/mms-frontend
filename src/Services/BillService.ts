@@ -57,5 +57,18 @@ export default {
 
   async getMonthSummary(date: string) {
     return api.get<Response<MonthSummary>>(`${DEFAULT_PATH}/summary`, { params: { date } })
+  },
+  async getTotalBillsBySuppliers(page: any, limit: number, filters?: Record<string, any>, reportType?: ReportRequestOption) {
+    return api.get(`${DEFAULT_PATH}/reports/totalBillsBySuppliers`, {
+      params: {
+        page,
+        limit,
+        ...filters,
+      },
+      responseType: reportType?.responseType ?? 'json',
+      headers: {
+        Accept: reportType?.mimeType || 'application/json',
+      }
+    })
   }
 }

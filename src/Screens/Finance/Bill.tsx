@@ -32,12 +32,15 @@ import BillService, { MonthSummary } from '../../Services/BillService'
 import SupplierService from '../../Services/SupplierService'
 import currencyFormat from '../../Util/currencyFormat'
 import useMessageError from '../../Hooks/useMessageError'
-import { endOfDay, startOfDay, startOfMonth } from 'date-fns'
+import { endOfDay, parse, startOfDay, startOfMonth } from 'date-fns'
 import { useScreen } from '../../Hooks/useScreen'
 import { BillPaymentProps } from './BillPayment'
 import useAsync from '../../Hooks/useAsync'
 import strToNumber from '../../Util/strToNumber'
 
+type BillPayloadCreate = Bill & {
+  installments?: number
+}
 const BillsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
   const {
     payload,
@@ -45,7 +48,7 @@ const BillsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
     screenStatus,
     setScreenStatus,
     changePayloadAttribute,
-  } = useWindow<Bill>()
+  } = useWindow<BillPayloadCreate>()
   const [monthSummary, setMonthSummary] = useState<{
     opened: string
     paid: string
@@ -295,7 +298,16 @@ const BillsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
               DateFormats.DATE_SHORT_TIME
             ),
           filters: [
-            { name: 'Data de vencimento', type: 'date', keyName: 'due_date' },
+            {
+              name: 'Data de vencimento (inicio)',
+              type: 'from_date',
+              keyName: 'due_date',
+            },
+            {
+              name: 'Data de vencimento (fim)',
+              type: 'to_date',
+              keyName: 'due_date',
+            },
           ],
           style: {
             minWidth: 200,
@@ -408,6 +420,32 @@ const BillsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
     buttonEditProps: {
       disabled: selectedBills.length != 1,
     },
+    reports: [
+      {
+        text: 'Total de contas a pagar por fornecedor',
+        columns: [
+          {
+            name: 'Nome do fornecedor',
+            keyName: 'supplier_name',
+            filters: [{ name: 'Nome do fornecedor', type: 'text' }],
+          },
+          {
+            name: 'CNPJ',
+            keyName: 'supplier_identification',
+            filters: [{ name: 'CNPJ', type: 'text' }],
+          },
+          {
+            name: 'total',
+            formatText: (r) => currencyFormat(+r.total ?? 0),
+          },
+        ],
+        request: BillService.getTotalBillsBySuppliers,
+        downloadable: true,
+        reportRequestOptions: [
+          { mimeType: 'text/csv', reportType: 'csv', responseType: 'text' },
+        ],
+      },
+    ],
   }
 
   const onRowSelect = useCallback((row: Bill) => {
@@ -561,32 +599,38 @@ const BillsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
             label='Abertura da cobrança:'
             disabled={isStatusVisualize}
             timePrecision='minute'
-            value={payload?.opening_date as Date}
+            value={(payload?.opening_date as Date)?.toISOString()}
             onChange={(d) => changePayloadAttribute('opening_date', d)}
             formatDate={(d) =>
               d.toLocaleString(undefined, DateFormats.DATE_SHORT_TIME)
             }
             fill
             closeOnSelection={false}
-            style={{
-              flex: 1,
-            }}
           />
           <InputDate
             fill
             id='billDescription'
             label='Vencimento da cobrança:'
             disabled={isStatusVisualize}
-            value={payload?.due_date as Date}
+            value={(payload?.due_date as Date)?.toISOString()}
             timePrecision='minute'
             closeOnSelection={false}
             formatDate={(d) =>
               d.toLocaleString(undefined, DateFormats.DATE_SHORT_TIME)
             }
-            style={{
-              flex: 1,
-            }}
             onChange={(d) => changePayloadAttribute('due_date', d)}
+          />
+          <InputNumber
+            label='Parcelas'
+            required
+            id='bill-value'
+            value={payload.installments}
+            min={0}
+            inputStyle={{ width: 'calc(100% - 34px)' }}
+            onValueChange={(value) =>
+              changePayloadAttribute('installments', value)
+            }
+            style={{ flex: 1 }}
           />
         </Row>
       </Render>
@@ -624,22 +668,22 @@ const BillsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
 
 function getRowStyle(row: RowType<Bill>): CSSProperties {
   switch (row.status) {
-  case 'paid':
-    return {
-      backgroundColor: Colors.GREEN3,
-      color: `${Colors.WHITE}`,
-    }
-  case 'expired':
-    return {
-      backgroundColor: Colors.RED3,
-      color: 'white',
-    }
-  case 'opened':
-  default:
-    return {
-      backgroundColor: Colors.ORANGE3,
-      color: 'white',
-    }
+    case 'paid':
+      return {
+        backgroundColor: Colors.GREEN3,
+        color: `${Colors.WHITE}`,
+      }
+    case 'expired':
+      return {
+        backgroundColor: Colors.RED3,
+        color: 'white',
+      }
+    case 'opened':
+    default:
+      return {
+        backgroundColor: Colors.ORANGE3,
+        color: 'white',
+      }
   }
 }
 export default BillsScreen

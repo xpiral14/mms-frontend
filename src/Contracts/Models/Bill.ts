@@ -14,7 +14,6 @@ export default interface Bill {
   due_date?: string|Date
   opening_date?: string | Date
   installment?: number
-  total_installments?: number
   annotations?: string
   status?: BillStatuses
   type: PaymentTypes

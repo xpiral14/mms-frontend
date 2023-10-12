@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react'
+import React, { useMemo, useRef } from 'react'
 import { Column, Row, TableProps } from '../../Contracts/Components/Table'
 import Render from '../Render'
 import Button from '../Button'
@@ -37,6 +37,7 @@ const Table = function <T = any>(props: TableProps<T>) {
     () => props.renderFooter?.(props.columns, props.rows),
     [props.columns, props.rows, props.renderFooter]
   )
+  const filterRef = useRef<HTMLElement>(null)
   return (
     <div>
       <StyledTable
@@ -66,6 +67,7 @@ const Table = function <T = any>(props: TableProps<T>) {
                     <span>{column.name}</span>
                     <Render renderIf={Boolean(column.filters?.length)}>
                       <Popover2
+                        boundary={document.body}
                         content={
                           <Filter<T>
                             column={column}

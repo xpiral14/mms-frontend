@@ -605,6 +605,7 @@ const BillsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
               d.toLocaleString(undefined, DateFormats.DATE_SHORT_TIME)
             }
             fill
+            style={{ flex: 1 }}
             closeOnSelection={false}
           />
           <InputDate
@@ -618,6 +619,7 @@ const BillsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
             formatDate={(d) =>
               d.toLocaleString(undefined, DateFormats.DATE_SHORT_TIME)
             }
+            style={{ flex: 1 }}
             onChange={(d) => changePayloadAttribute('due_date', d)}
           />
           <InputNumber

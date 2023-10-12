@@ -191,6 +191,7 @@ const PaginatedTable = function <T = any>({
           loading={reloadGrid}
           rowStyle={rest.rowStyle}
           rowClassNames={rest.rowClassNames}
+          {...rest}
         />
       </Body>
       {Boolean(gridResponse?.meta) && (

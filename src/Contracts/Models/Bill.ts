@@ -11,8 +11,8 @@ export default interface Bill {
   parent_id?: number,
   reference: number,
   value: number | string
-  due_date?: string|Date
-  opening_date?: string | Date
+  due_date?: string
+  opening_date?: string
   installment?: number
   annotations?: string
   status?: BillStatuses

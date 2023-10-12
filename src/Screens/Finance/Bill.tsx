@@ -32,15 +32,25 @@ import BillService, { MonthSummary } from '../../Services/BillService'
 import SupplierService from '../../Services/SupplierService'
 import currencyFormat from '../../Util/currencyFormat'
 import useMessageError from '../../Hooks/useMessageError'
-import { endOfDay, parse, startOfDay, startOfMonth } from 'date-fns'
+import {
+  addYears,
+  endOfDay,
+  format,
+  parse,
+  startOfDay,
+  startOfMonth,
+} from 'date-fns'
 import { useScreen } from '../../Hooks/useScreen'
 import { BillPaymentProps } from './BillPayment'
 import useAsync from '../../Hooks/useAsync'
 import strToNumber from '../../Util/strToNumber'
 
-type BillPayloadCreate = Bill & {
+type BillPayloadCreate = Omit<Bill, 'due_date' | 'opening_date'> & {
   installments?: number
+  due_date?: Date
+  opening_date?: Date
 }
+
 const BillsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
   const {
     payload,
@@ -82,7 +92,7 @@ const BillsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
   }, [])
 
   const { openSubScreen } = useScreen()
-  const [selectedBills, setSelectedBills] = useState<Bill[]>([])
+  const [selectedBills, setSelectedBills] = useState<BillPayloadCreate[]>([])
 
   const createValidation = (keyName: keyof Bill) => () =>
     Boolean((payload as any)[keyName])
@@ -137,6 +147,8 @@ const BillsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
       await BillService.create({
         ...payload,
         value: +(payload.value as string)?.replace(',', '.'),
+        due_date: payload.due_date?.toISOString(),
+        opening_date: payload.due_date?.toISOString(),
       })
       showSuccessToast({
         message: 'Conta cadastrada com sucesso',
@@ -390,8 +402,6 @@ const BillsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
       const bill = selectedBills[0]
       setPayload({
         ...bill,
-        due_date: new Date(bill.due_date!),
-        opening_date: new Date(bill.opening_date!),
       })
       setScreenStatus(ScreenStatus.EDIT)
       decreaseWindowSize?.()
@@ -453,7 +463,14 @@ const BillsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
       if (prev.some((bill) => bill.id === row.id)) {
         return prev.filter((bill) => bill.id !== row.id)
       }
-      return [...prev, row]
+      return [
+        ...prev,
+        {
+          ...row,
+          due_date: new Date(row.due_date as string),
+          opening_date: new Date(row.opening_date as string),
+        },
+      ]
     })
   }, [])
 
@@ -470,6 +487,12 @@ const BillsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
     },
     []
   )
+  const rowClassNames = (r: RowType<Bill>): 'text-white' | undefined =>
+    r.status != 'opened' ? 'text-white' : undefined
+  const rowKey = (r: Bill) => r.id
+  const isSelected = (
+    row: import('/home/samreis/Documents/work/mms/mms-frontend/src/Contracts/Components/PaginatadeTable').Row<Bill>
+  ): boolean => selectedBills.some((bill) => bill.id === row.id)
   return (
     <Container style={{ height: 'calc(100% - 40px)' }}>
       <Row>
@@ -493,7 +516,7 @@ const BillsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
                   },
                   screen.id,
                   {
-                    bills: selectedBills,
+                    bills: selectedBills as any,
                     onPay: () => {
                       setSelectedBills([])
                       reloadSummary()
@@ -597,23 +620,22 @@ const BillsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
           <InputDate
             id='billDescription'
             label='Abertura da cobrança:'
-            disabled={isStatusVisualize}
-            timePrecision='minute'
-            value={(payload?.opening_date as Date)?.toISOString()}
+            timePrecision='second'
+            value={payload?.opening_date}
             onChange={(d) => changePayloadAttribute('opening_date', d)}
             formatDate={(d) =>
-              d.toLocaleString(undefined, DateFormats.DATE_SHORT_TIME)
+              d.toLocaleString(undefined, DateFormats.DATE_LONG_TIME)
             }
             fill
             style={{ flex: 1 }}
             closeOnSelection={false}
+            maxDate={addYears(new Date(), 5)}
           />
           <InputDate
             fill
             id='billDescription'
             label='Vencimento da cobrança:'
-            disabled={isStatusVisualize}
-            value={(payload?.due_date as Date)?.toISOString()}
+            value={payload?.due_date}
             timePrecision='minute'
             closeOnSelection={false}
             formatDate={(d) =>
@@ -621,19 +643,23 @@ const BillsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
             }
             style={{ flex: 1 }}
             onChange={(d) => changePayloadAttribute('due_date', d)}
+            maxDate={addYears(new Date(), 5)}
           />
-          <InputNumber
-            label='Parcelas'
-            required
-            id='bill-value'
-            value={payload.installments}
-            min={0}
-            inputStyle={{ width: 'calc(100% - 34px)' }}
-            onValueChange={(value) =>
-              changePayloadAttribute('installments', value)
-            }
-            style={{ flex: 1 }}
-          />
+
+          <Render renderIf={!payload.id}>
+            <InputNumber
+              label='Parcelas'
+              required
+              id='bill-value'
+              value={payload.installments}
+              min={0}
+              inputStyle={{ width: 'calc(100% - 34px)' }}
+              onValueChange={(value) =>
+                changePayloadAttribute('installments', value)
+              }
+              style={{ flex: 1 }}
+            />
+          </Render>
         </Row>
       </Render>
       <Render renderIf={screenStatus === ScreenStatus.SEE_REGISTERS}>
@@ -644,9 +670,8 @@ const BillsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
             request={BillService.getAll}
             containerProps={containerProps}
             columns={columns}
-            isSelected={(row) =>
-              selectedBills.some((bill) => bill.id === row.id)
-            }
+            isSelected={isSelected}
+            stripped={false}
             downloadable
             reportRequestOptions={[
               {
@@ -656,11 +681,9 @@ const BillsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
                 responseType: 'text',
               },
             ]}
-            rowKey={(r) => r.id}
+            rowKey={rowKey}
             rowStyle={getRowStyle}
-            rowClassNames={(r) =>
-              r.status != 'opened' ? 'text-white' : undefined
-            }
+            rowClassNames={rowClassNames}
           />
         </Row>
       </Render>

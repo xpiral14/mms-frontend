@@ -286,7 +286,7 @@ const OrderServiceCustomer: React.FC<ScreenProps> = ({ screen }) => {
         productDiscount: payload.productDiscount,
         productDiscountType: payload.productDiscountType,
         employeeId: payload?.employeeId,
-        sendNotificationWhenConcluded: payload.sendNotificationWhenConcluded
+        sendNotificationWhenConcluded: payload.sendNotificationWhenConcluded,
       }
       const response = await OrderService.create(requestPayload)
       const orderId = response.data.data.id
@@ -375,7 +375,7 @@ const OrderServiceCustomer: React.FC<ScreenProps> = ({ screen }) => {
           : payload.productDiscount ?? null,
       productDiscountType: payload.productDiscountType,
       employeeId: payload.employeeId,
-      sendNotificationWhenConcluded: payload.sendNotificationWhenConcluded
+      sendNotificationWhenConcluded: payload.sendNotificationWhenConcluded,
     }
 
     try {
@@ -526,26 +526,21 @@ const OrderServiceCustomer: React.FC<ScreenProps> = ({ screen }) => {
     {
       name: 'Referência',
       keyName: 'reference',
+      sortable: true,
     },
     {
       name: 'Funcionário',
       keyName: 'employee_name',
+      sortable: true,
     },
     {
       name: 'Cliente',
       keyName: 'customer_name',
-    },
-    {
-      name: 'Status',
-      keyName: 'status',
-      formatText: (row) =>
-        orderStatuses.find((o) => o.id === row?.status)?.name,
-      style: {
-        width: '120px',
-      },
+      sortable: true,
     },
     {
       name: 'Criação',
+      sortable: true,
       keyName: 'date',
       formatText: (row) => {
         return row?.date
@@ -555,10 +550,19 @@ const OrderServiceCustomer: React.FC<ScreenProps> = ({ screen }) => {
     },
     {
       name: 'Validade',
+      keyName: 'validity',
+      sortable: true,
       formatText: (row) => {
-        return row?.validity
-          ? new Date(row.validity).toLocaleString()
-          : '-'
+        return row?.validity ? new Date(row.validity).toLocaleString() : '-'
+      },
+    },
+    {
+      name: 'Status',
+      keyName: 'status',
+      formatText: (row) =>
+        orderStatuses.find((o) => o.id === row?.status)?.name,
+      style: {
+        width: '120px',
       },
     },
   ]

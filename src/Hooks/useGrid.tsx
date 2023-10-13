@@ -6,6 +6,7 @@ import {
   useContext,
   useState,
 } from 'react'
+import { Sorts } from '../Contracts/Components/Table'
 import Paginated from '../Contracts/Models/Paginated'
 
 const gridContext = createContext<{
@@ -17,6 +18,8 @@ const gridContext = createContext<{
   setPage: Dispatch<SetStateAction<number>>
   limit: number
   setLimit: Dispatch<SetStateAction<number>>
+  sorts: Sorts
+  setSorts: Dispatch<SetStateAction<Sorts>>
 }>(null as any)
 
 export const useGrid = () => {
@@ -33,7 +36,7 @@ const GridProvider: FC = ({ children }) => {
   const [response, setResponse] = useState<Paginated<any> | null>(null)
   const [limit, setLimit] = useState<number>(10)
   const [page, setPage] = useState<number>(0)
-
+  const [sorts, setSorts] = useState<Sorts>({})
   return (
     <gridContext.Provider
       value={{
@@ -45,6 +48,8 @@ const GridProvider: FC = ({ children }) => {
         setPage,
         limit,
         setLimit,
+        sorts,
+        setSorts
       }}
     >
       {children}

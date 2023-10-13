@@ -274,9 +274,10 @@ const ProductsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
     () =>
       [
         {
-          name: 'Referencia',
+          name: 'Referência',
           keyName: 'reference',
           filters: [{ name: 'Referencia', type: 'text' }],
+          sortable: true
         },
         {
           name: 'Nome',

@@ -15,6 +15,7 @@ export type Column<T = Record<string, any>> = {
   style?: CSSProperties | ((row: Row<T>, col: Column<T>) => CSSProperties)
   headerColStyle?: CSSProperties | ((col: Column<T>) => CSSProperties)
   filters?: ColumnFilter<T>[]
+  sortable?: boolean
 }
 
 export type Row<T = any> = T & Record<any, any>

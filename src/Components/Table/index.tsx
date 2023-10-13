@@ -4,10 +4,11 @@ import Render from '../Render'
 import Button from '../Button'
 import { Popover2 } from '@blueprintjs/popover2'
 import Filter from './Filter'
-import { Colors, Icon } from '@blueprintjs/core'
+import { ButtonGroup, Colors, Icon } from '@blueprintjs/core'
 import { StyledTable } from './styles'
 import LoadingBackdrop from '../Layout/LoadingBackdrop'
 import joinClasses from '../../Util/joinClasses'
+import { MdOutlineKeyboardArrowDown } from 'react-icons/md'
 
 const Table = function <T = any>(props: TableProps<T>) {
   const getWithoutValueDefaultText = (column: Column<T>) => {
@@ -65,42 +66,52 @@ const Table = function <T = any>(props: TableProps<T>) {
                     style={{ height: 30 }}
                   >
                     <span>{column.name}</span>
-                    <Render renderIf={Boolean(column.filters?.length)}>
-                      <Popover2
-                        content={
-                          <Filter<T>
-                            column={column}
-                            onFilter={props.onFilter}
-                            filter={props.filter ?? {}}
-                          />
-                        }
-                      >
+                    <ButtonGroup>
+                      <Render renderIf={column.sortable}>
                         <Button
-                          help='Aplicar filtros'
-                          icon={
-                            <Icon
-                              icon='filter'
-                              color={
-                                Object.keys(props.filter ?? {}).some(
-                                  (k) =>
-                                    props.filter?.[k] &&
-                                    ((column.keyName &&
-                                      k.startsWith(column.keyName)) ||
-                                      column.filters?.some(
-                                        (filter) =>
-                                          filter.keyName &&
-                                          k.startsWith(filter.keyName)
-                                      ))
-                                )
-                                  ? Colors.BLUE3
-                                  : undefined
-                              }
+                          icon={<MdOutlineKeyboardArrowDown size={16} />}
+                          minimal
+                          small
+                        />
+                      </Render>
+                      <Render renderIf={Boolean(column.filters?.length)}>
+                        <Popover2
+                          content={
+                            <Filter<T>
+                              column={column}
+                              onFilter={props.onFilter}
+                              filter={props.filter ?? {}}
                             />
                           }
-                          minimal
-                        />
-                      </Popover2>
-                    </Render>
+                        >
+                          <Button
+                            help='Aplicar filtros'
+                            icon={
+                              <Icon
+                                icon='filter'
+                                color={
+                                  Object.keys(props.filter ?? {}).some(
+                                    (k) =>
+                                      props.filter?.[k] &&
+                                      ((column.keyName &&
+                                        k.startsWith(column.keyName)) ||
+                                        column.filters?.some(
+                                          (filter) =>
+                                            filter.keyName &&
+                                            k.startsWith(filter.keyName)
+                                        ))
+                                  )
+                                    ? Colors.BLUE3
+                                    : undefined
+                                }
+                              />
+                            }
+                            minimal
+                            small
+                          />
+                        </Popover2>
+                      </Render>
+                    </ButtonGroup>
                   </div>
                 </th>
               ))}

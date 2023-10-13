@@ -21,6 +21,8 @@ export type Column<T = Record<string, any>> = {
 export type Row<T = any> = T & Record<any, any>
 
 export type Filters = Record<string, string>
+export type Sort = 'asc' | 'desc' | 'none'
+export type Sorts<T = any> = Record<keyof T | string, Sort>
 
 export type TableProps<T = Record<string, any>> = {
   height?: string
@@ -38,4 +40,6 @@ export type TableProps<T = Record<string, any>> = {
   interactive?: boolean
   rowStyle?: (r: Row<T>) => CSSProperties
   rowClassNames?: ((r: Row<T>) => string | undefined) | string | undefined
+  sorts?: Sorts<T>
+  onSortChange?: (column: Column<T>, sort: Sort) => void
 }

@@ -296,7 +296,16 @@ const BillsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
               DateFormats.DATE_SHORT_TIME
             ),
           filters: [
-            { name: 'Data da abertura', type: 'date', keyName: 'opening_date' },
+            {
+              name: 'Data da abertura (inicio)',
+              type: 'from_date',
+              keyName: 'opening_date',
+            },
+            {
+              name: 'Data de vencimento (fim)',
+              type: 'to_date',
+              keyName: 'opening_date',
+            },
           ],
           style: {
             minWidth: 200,
@@ -571,7 +580,9 @@ const BillsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
         <Row>
           <AsyncSelect<Bill>
             name='supplier_id'
+            id='bill-supplier-id'
             label='Fornecedor'
+            required
             searchFunction={supplierFunction}
             buttonWidth='100%'
             fill
@@ -618,14 +629,11 @@ const BillsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
         </Row>
         <Row>
           <InputDate
-            id='billDescription'
+            id='bill-opening-date'
             label='Abertura da cobrança:'
-            timePrecision='second'
+            timePrecision='minute'
             value={payload?.opening_date}
             onChange={(d) => changePayloadAttribute('opening_date', d)}
-            formatDate={(d) =>
-              d.toLocaleString(undefined, DateFormats.DATE_LONG_TIME)
-            }
             fill
             style={{ flex: 1 }}
             closeOnSelection={false}
@@ -633,7 +641,7 @@ const BillsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
           />
           <InputDate
             fill
-            id='billDescription'
+            id='bill-due-date'
             label='Vencimento da cobrança:'
             value={payload?.due_date}
             timePrecision='minute'
@@ -650,7 +658,7 @@ const BillsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
             <InputNumber
               label='Parcelas'
               required
-              id='bill-value'
+              id='bill-installments'
               value={payload.installments}
               min={0}
               inputStyle={{ width: 'calc(100% - 34px)' }}

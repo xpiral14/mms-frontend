@@ -67,7 +67,6 @@ const Table = function <T = any>(props: TableProps<T>) {
                     <span>{column.name}</span>
                     <Render renderIf={Boolean(column.filters?.length)}>
                       <Popover2
-                        boundary={document.body}
                         content={
                           <Filter<T>
                             column={column}

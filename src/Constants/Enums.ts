@@ -216,7 +216,7 @@ export const DateFormats = {
   DATE_ONLY: {
     day: '2-digit',
     month: '2-digit',
-    year: '2-digit'
+    year: 'numeric'
   } as Intl.DateTimeFormatOptions,
   DATE_SHORT_TIME: {
     day: '2-digit',

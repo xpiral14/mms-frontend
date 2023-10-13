@@ -1,7 +1,9 @@
 import React, { CSSProperties, FunctionComponent } from 'react'
 import { DateInput3, DateInput3Props } from '@blueprintjs/datetime2'
 import { FormGroup, Intent } from '@blueprintjs/core'
-import { format, parse } from 'date-fns'
+import { isValid, parse } from 'date-fns'
+import { USER_TIMEZONE_NAME } from '../../Constants'
+import { DateFormats } from '../../Constants/Enums'
 
 type Props = {
   id: string
@@ -21,19 +23,30 @@ const InputDate: FunctionComponent<Props> = (props) => {
     if (!v) return
     return props.onChange?.(new Date(v), i)
   }
-  const formatDate = (date: Date): string =>
-    props?.formatDate?.(date) ?? date.toLocaleDateString()
-  const parseDate = (str: string): Date => {
+  const formatDate = (date: Date): string => {
+    let dateFormat = DateFormats.DATE_ONLY
+    if (props.timePrecision === 'minute') {
+      dateFormat = DateFormats.DATE_SHORT_TIME
+    }
+    return (
+      props?.formatDate?.(date) ??
+      date.toLocaleDateString(undefined, dateFormat)
+    )
+  }
+  const parseDate = (str: string): Date | false => {
     let formatString = 'dd/MM/yyyy'
 
     if (props.timePrecision === 'minute') {
       formatString = 'dd/MM/yyyy, HH:mm'
     }
+
     if (props.timePrecision === 'second') {
       formatString = 'dd/MM/yyyy, HH:mm:ss'
     }
 
-    return parse(str, formatString, new Date())
+    const value = parse(str, formatString, new Date())
+    if (!isValid(value)) return false
+    return value
   }
   return (
     <FormGroup
@@ -68,6 +81,7 @@ const InputDate: FunctionComponent<Props> = (props) => {
         onChange={onChange}
         formatDate={formatDate}
         showTimezoneSelect={false}
+        timezone={USER_TIMEZONE_NAME}
         outOfRangeMessage='Data inválida'
       />
     </FormGroup>

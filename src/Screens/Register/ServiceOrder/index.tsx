@@ -587,7 +587,7 @@ const OrderServiceCustomer: React.FC<ScreenProps> = ({ screen }) => {
     [orderStatuses]
   )
   return (
-    <Container style={{ height: 'calc(100% - 85px)' }}>
+    <Container style={{ height: 'calc(100% - 87px)' }}>
       <Header>
         <RegistrationButtonBar {...registrationButtonBarProps} />
       </Header>
@@ -765,7 +765,7 @@ const OrderServiceCustomer: React.FC<ScreenProps> = ({ screen }) => {
                 />
               </Render>
             </Box>
-            <Box>
+            <Box className='w-full'>
               <Collapse
                 title={<h6> Informações básicas </h6>}
                 isCollapsed={isDetailsCollapsed}
@@ -910,7 +910,7 @@ const OrderServiceCustomer: React.FC<ScreenProps> = ({ screen }) => {
                 </Box>
               </Collapse>
             </Box>
-            <Box>
+            <Box className='w-full'>
               <Collapse title='Configurações'>
                 <Row>
                   <Switch<OrderPayload>

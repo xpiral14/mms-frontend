@@ -14,10 +14,7 @@ import Container from '../../Components/Layout/Container'
 import Row from '../../Components/Layout/Row'
 import Render from '../../Components/Render'
 import Table from '../../Components/Table'
-import {
-  DiscountType,
-  DiscountTypeSymbol,
-} from '../../Constants/Enums'
+import { DiscountType, DiscountTypeSymbol } from '../../Constants/Enums'
 import { Column, Row as TableRow } from '../../Contracts/Components/Table'
 import User from '../../Contracts/Models/User'
 import OrderResumeScreenProps from '../../Contracts/Screen/OrderResume'
@@ -29,6 +26,7 @@ import OrderService, {
   OrderServicePaginatedResponse,
 } from '../../Services/OrderService'
 import OrderStatus from '../../Contracts/Models/OrderStatus'
+import currencyFormat from '../../Util/currencyFormat'
 
 const OrderResume: FunctionComponent<OrderResumeScreenProps> = (props) => {
   const { openAlert } = useAlert()
@@ -41,11 +39,11 @@ const OrderResume: FunctionComponent<OrderResumeScreenProps> = (props) => {
       })
       props.screen.close()
     }
-  },[])
+  }, [])
   const [order, setOrder] = useState(() => ({
     ...props.order,
-    product_discount: (props?.order.product_discount ?? 0) ,
-    service_discount: (props?.order.service_discount ?? 0),
+    product_discount: props?.order.product_discount ?? 0,
+    service_discount: props?.order.service_discount ?? 0,
   }))
   const [loadingOrder, loadOrder] = useAsync(async () => {
     try {
@@ -85,7 +83,8 @@ const OrderResume: FunctionComponent<OrderResumeScreenProps> = (props) => {
   }, [])
   const [isOrderServicesCollapsed, setIsOrderServicesCollapsed] =
     useState(false)
-  const [isOrderProductsCollapsed, setIsOrderProductsCollapsed] = useState(false)
+  const [isOrderProductsCollapsed, setIsOrderProductsCollapsed] =
+    useState(false)
   const [orderServices, setOrderServices] = useState<
     OrderServicePaginatedResponse[]
   >([])
@@ -124,12 +123,12 @@ const OrderResume: FunctionComponent<OrderResumeScreenProps> = (props) => {
   const calcValueWithDiscount = (value: any, discount: any, type: any) => {
     let finalValue = value
     switch (type) {
-    case DiscountType.PERCENT:
-      finalValue = value - value * (discount / 100)
-      break
-    case DiscountType.VALUE:
-      finalValue = value - discount
-      break
+      case DiscountType.PERCENT:
+        finalValue = value - value * (discount / 100)
+        break
+      case DiscountType.VALUE:
+        finalValue = value - discount
+        break
     }
 
     if (finalValue < 0) {
@@ -187,12 +186,13 @@ const OrderResume: FunctionComponent<OrderResumeScreenProps> = (props) => {
             }}
           >
             <strong>
-              {'R$ ' +
+              {currencyFormat(
                 calcValueWithDiscount(
                   totalValue,
                   order?.service_discount,
                   order?.service_discount_type
-                )}
+                )
+              )}
             </strong>
           </td>
         </tr>
@@ -250,12 +250,13 @@ const OrderResume: FunctionComponent<OrderResumeScreenProps> = (props) => {
               }}
             >
               <strong>
-                {'R$ ' +
+                {currencyFormat(
                   calcValueWithDiscount(
                     totalValue,
                     order?.product_discount,
                     order?.product_discount_type
-                  )}
+                  )
+                )}
               </strong>
             </td>
           </tr>
@@ -298,7 +299,9 @@ const OrderResume: FunctionComponent<OrderResumeScreenProps> = (props) => {
             icon='refresh'
             onClick={reloadAll}
             loading={
-              loadingOrderProducts && loadingOrderServices && loadingOrderStatuses
+              loadingOrderProducts &&
+              loadingOrderServices &&
+              loadingOrderStatuses
             }
           >
             Recarregar dados da tela
@@ -388,10 +391,10 @@ const OrderResume: FunctionComponent<OrderResumeScreenProps> = (props) => {
                 label='Desconto em produtos'
                 readOnly
                 value={
-                  order.product_discount ?
-                    (DiscountTypeSymbol[order.service_discount_type!] ?? '') +
-                  ' ' +
-                  order.product_discount?.toFixed(2) 
+                  order.product_discount
+                    ? (DiscountTypeSymbol[order.service_discount_type!] ?? '') +
+                      ' ' +
+                      order.product_discount?.toFixed(2)
                     : 'Sem desconto'
                 }
                 id=''
@@ -400,10 +403,10 @@ const OrderResume: FunctionComponent<OrderResumeScreenProps> = (props) => {
                 label='Desconto em serviços'
                 readOnly
                 value={
-                  order.service_discount ?
-                    (DiscountTypeSymbol[order.product_discount_type!]) +
-                  ' ' +
-                  order.service_discount?.toFixed(2)
+                  order.service_discount
+                    ? DiscountTypeSymbol[order.product_discount_type!] +
+                      ' ' +
+                      order.service_discount?.toFixed(2)
                     : 'Sem desconto'
                 }
                 id=''
@@ -449,8 +452,7 @@ const OrderResume: FunctionComponent<OrderResumeScreenProps> = (props) => {
                 {
                   name: 'Valor total',
                   formatText: (row) => {
-                    return (
-                      'R$ ' +
+                    return currencyFormat(
                       +(row?.replaced_price ?? row?.price ?? 0) *
                         +(row?.quantity ?? 1)
                     )
@@ -495,8 +497,7 @@ const OrderResume: FunctionComponent<OrderResumeScreenProps> = (props) => {
                 {
                   name: 'Valor total',
                   formatText: (row) => {
-                    return (
-                      'R$ ' +
+                    return currencyFormat(
                       +(row?.replaced_price ?? row?.price ?? 0) *
                         +(row?.quantity ?? 0)
                     )

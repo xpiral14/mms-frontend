@@ -1,7 +1,7 @@
 import { MenuType } from '../Contracts/Containers/NavBar'
 import screens from './screens'
 import { GiExpense } from 'react-icons/gi'
-import { MdOutlineAddBusiness } from 'react-icons/md'
+import { MdOutlineAddBusiness, MdOutlinePayments } from 'react-icons/md'
 import { Permissions } from '../Constants/Enums'
 
 import {BiPackage} from 'react-icons/bi'
@@ -141,7 +141,7 @@ const menus = {
       },
       billRegister: {
         name: 'Contas a pagar',
-        icon: <GiExpense size={16} />,
+        icon: <MdOutlinePayments size={16} />,
         screen: {
           minHeight: 350,
           maxHeight: 500,

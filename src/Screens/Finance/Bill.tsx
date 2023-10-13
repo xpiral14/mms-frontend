@@ -617,10 +617,7 @@ const BillsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
             required
             id='bill-value'
             value={payload.value}
-            intlConfig={{
-              locale: 'pt-BR',
-              currency: 'BRL',
-            }}
+            format='currency'
             min={0}
             inputStyle={{ width: 'calc(100% - 34px)' }}
             onValueChange={(value) => changePayloadAttribute('value', value)}

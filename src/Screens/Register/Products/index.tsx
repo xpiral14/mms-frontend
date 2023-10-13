@@ -27,6 +27,9 @@ import Container from '../../../Components/Layout/Container'
 import Row from '../../../Components/Layout/Row'
 import { Column } from '../../../Contracts/Components/Table'
 import currencyFormat from '../../../Util/currencyFormat'
+import InputNumber from '../../../Components/InputNumber'
+import strToNumber from '../../../Util/strToNumber'
+import useMessageError from '../../../Hooks/useMessageError'
 const reports = [
   {
     columns: [
@@ -78,9 +81,18 @@ const reports = [
     text: 'Rank de venda de produtos',
   },
 ] as ReportProps[]
+
+type ProductPayload = Omit<Product, 'price'> & {
+  price: string
+}
 const ProductsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
-  const { payload, setPayload, screenStatus, setScreenStatus } =
-    useWindow<Product>()
+  const {
+    payload,
+    setPayload,
+    changePayloadAttribute,
+    screenStatus,
+    setScreenStatus,
+  } = useWindow<ProductPayload>()
 
   const [units, setUnits] = useState<Unit[]>([])
 
@@ -156,35 +168,22 @@ const ProductsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
     try {
       const createPayload = {
         ...payload,
+        price: strToNumber(payload.price ?? 0),
       }
 
-      const response = await ProductsService.create(createPayload as any)
+      await ProductsService.create(createPayload as any)
 
-      if (response.status) {
-        showSuccessToast({
-          message: 'Produto cadastrada com sucesso',
-          intent: Intent.SUCCESS,
-        })
-
-        setReloadGrid(true)
-      }
-
-      if (!response) {
-        openAlert({
-          text: 'Não foi possível cadastrar o produto',
-          intent: Intent.DANGER,
-        })
-      }
-    } catch (error: any) {
-      const errorMessages = getErrorMessages(
-        error.response?.data?.errors,
-        'Não foi possível cadastrar o produto'
-      )
-
-      openAlert({
-        text: errorMessages,
-        intent: Intent.DANGER,
+      showSuccessToast({
+        message: 'Produto cadastrada com sucesso',
+        intent: Intent.SUCCESS,
       })
+
+      setPayload({})
+      setScreenStatus(ScreenStatus.SEE_REGISTERS)
+      screen.increaseScreenSize?.()
+      setReloadGrid(true)
+    } catch (error: any) {
+      showErrorMessage(error, 'Não foi possível cadastrar o produto')
     } finally {
       stopLoad()
     }
@@ -200,7 +199,10 @@ const ProductsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
     try {
       const response = await ProductsService.update(
         requestPayload.id as number,
-        requestPayload as Product
+        {
+          ...requestPayload,
+          price: strToNumber(requestPayload.price ?? 0),
+        }
       )
 
       if (response.status) {
@@ -267,7 +269,7 @@ const ProductsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
       })
     }
   }
-
+  const { showErrorMessage } = useMessageError()
   const columns = useMemo(
     () =>
       [
@@ -294,7 +296,6 @@ const ProductsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
         },
         {
           name: 'Preço',
-          keyName: 'price',
           filters: [{ name: 'Descrição', type: 'text' }],
           formatText: (row) => currencyFormat(row?.price),
         },
@@ -317,7 +318,7 @@ const ProductsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
   }
 
   const handleButtonNewOnClick = () => {
-    setPayload({})
+    setPayload({ price: '0' })
     setScreenStatus(ScreenStatus.NEW)
 
     focusReferenceInput()
@@ -379,7 +380,7 @@ const ProductsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
     (row: { [key: string]: any }) => setPayload(row),
     []
   )
-
+  console.log(typeof payload?.price)
   return (
     <Container style={{ height: 'calc(100% - 40px)' }}>
       <Row>
@@ -452,17 +453,17 @@ const ProductsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
             onChange={createOnChange('description')}
           />
 
-          <InputText
-            id='productPrice'
+          <InputNumber
             label='Preço:'
             disabled={isStatusVizualize()}
-            placeholder='R$'
+            format='currency'
+            min={0}
             style={{ flex: 2 }}
-            inputStyle={{ width: '100%' }}
-            value={payload?.price || ''}
-            maxLength={50}
-            type='number'
-            onChange={createOnChange('price')}
+            inputStyle={{ width: 'calc(100% - 35px)' }}
+            value={payload?.price ?? '0'}
+            onValueChange={(v) => {
+              changePayloadAttribute('price', v)
+            }}
           />
         </Row>
       </Render>

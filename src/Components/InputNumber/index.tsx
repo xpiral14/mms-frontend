@@ -7,7 +7,7 @@ import CurrencyInput, { CurrencyInputProps } from 'react-currency-input-field'
 import Button from '../Button'
 
 export interface InputNumberProps
-  extends Omit<InputProps, 'ref' | 'defaultValue' | 'ref' | 'step'>,
+  extends Omit<InputProps, 'ref' | 'defaultValue' | 'ref' | 'step' | 'type'>,
     CurrencyInputProps {
   integerOnly?: boolean
   format?: 'currency'

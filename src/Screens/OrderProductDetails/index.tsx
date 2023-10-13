@@ -37,6 +37,7 @@ import {
 } from '../../Contracts/Components/Table'
 import InputNumber from '../../Components/InputNumber'
 import strToNumber from '../../Util/strToNumber'
+import currencyFormat from '../../Util/currencyFormat'
 
 const OrderProductDetails: FunctionComponent<OrderProductDetailsScreenProps> = (
   props
@@ -298,7 +299,10 @@ const OrderProductDetails: FunctionComponent<OrderProductDetailsScreenProps> = (
     }
     const orderProduct = toOrderProductModel(orderProductItem)
     if (orderId && !orderProductItem.id) {
-      OrderService.addProduct(orderId, orderProductItem)
+      OrderService.addProduct(orderId, {
+        ...orderProductItem,
+        replaced_price: strToNumber(orderProductItem.replaced_price),
+      })
         .then((response) => {
           changeOrderProductItem(orderProductKey, {
             id: response.data.data.id,
@@ -519,10 +523,10 @@ const OrderProductDetails: FunctionComponent<OrderProductDetailsScreenProps> = (
                     id={props.screen.id + 'total'}
                     readOnly
                     label='Valor total (R$)'
-                    value={(
+                    value={currencyFormat(
                       (orderProducts?.[orderProductKey]?.quantity ?? 0) *
                       (price ?? 0)
-                    ).toFixed(2)}
+                    )}
                   />
                 </section>
               </Row>

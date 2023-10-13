@@ -144,7 +144,7 @@ function Filter<T = Record<string, any>>({
                   placeholder={filter.name}
                   value={(filters[filterName + '_like'] as string) ?? ''}
                   style={{ width: '100%' }}
-                  prefix='R$ '
+                  format='currency'
                   inputStyle={{ width: 'calc(100% - 35px)' }}
                   onValueChange={(v) => changeFilter('like', v, filterName)}
                 />

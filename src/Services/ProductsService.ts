@@ -43,7 +43,7 @@ class ProductsService {
     return api.post(DEFAULT_PATH, pieceData)
   }
 
-  static async update(pieceId: number, pieceData: Product) {
+  static async update(pieceId: number, pieceData: Partial<Product>) {
     return api.put(`${DEFAULT_PATH}/${pieceId}`, pieceData)
   }
 

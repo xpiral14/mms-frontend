@@ -10,6 +10,7 @@ export interface InputNumberProps
   extends Omit<InputProps, 'ref' | 'defaultValue' | 'ref' | 'step'>,
     CurrencyInputProps {
   integerOnly?: boolean
+  format?: 'currency'
 }
 const InputNumber = (props: InputNumberProps) => {
   const holdingMouseRef = useRef(null as NodeJS.Timeout | null)
@@ -91,6 +92,7 @@ const InputNumber = (props: InputNumberProps) => {
         value={props.value || ''}
         disabled={props.disabled}
         placeholder={props.placeholder}
+        prefix={props.format === 'currency' ? 'R$ ' : undefined}
         {...(props as any)}
         onValueChange={onInputValueChange}
         className={className}

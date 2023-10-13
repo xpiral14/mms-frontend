@@ -35,6 +35,8 @@ import {
   Filters,
   Row as TableRowContract,
 } from '../../Contracts/Components/Table'
+import InputNumber from '../../Components/InputNumber'
+import strToNumber from '../../Util/strToNumber'
 
 const OrderProductDetails: FunctionComponent<OrderProductDetailsScreenProps> = (
   props
@@ -326,9 +328,9 @@ const OrderProductDetails: FunctionComponent<OrderProductDetailsScreenProps> = (
       isEditMode: true,
     })
   }
-  const handleQuantityChange = (productStockId: number) => (value: number) => {
+  const handleQuantityChange = (productStockId: number) => (value?: string) => {
     changeOrderProductItem(+productStockId, {
-      replaced_price: value,
+      replaced_price: value as any,
     })
   }
 
@@ -381,9 +383,12 @@ const OrderProductDetails: FunctionComponent<OrderProductDetailsScreenProps> = (
       ] as Column<ProductStock>[],
     []
   )
-  const isSelected = useCallback((r: TableRowContract<ProductStock>): boolean => {
-    return orderProducts.some((o) => o.product_stock_id === r.id)
-  }, [orderProducts])
+  const isSelected = useCallback(
+    (r: TableRowContract<ProductStock>): boolean => {
+      return orderProducts.some((o) => o.product_stock_id === r.id)
+    },
+    [orderProducts]
+  )
   return (
     <Container>
       <Row className='w-full mb-2'>
@@ -411,7 +416,7 @@ const OrderProductDetails: FunctionComponent<OrderProductDetailsScreenProps> = (
             fill: true,
             alignText: 'left',
             rightIcon: 'circle-arrow-down',
-            text: 'Selecione os produtos'
+            text: 'Selecione os produtos',
           }}
           popoverProps={{ fill: true, className: 'w-full' }}
           columns={columns}
@@ -427,7 +432,9 @@ const OrderProductDetails: FunctionComponent<OrderProductDetailsScreenProps> = (
         <Empty />
       </Render>
       {orderProducts.map((orderProduct, orderProductKey) => {
-        const price = orderProduct.replaced_price ?? orderProduct.product_price
+        const price = strToNumber(
+          orderProduct.replaced_price ?? orderProduct.product_price ?? 0
+        )
         const onCollapseChange = () =>
           setOrderProducts((prev) => {
             const copy = [...prev]
@@ -486,17 +493,15 @@ const OrderProductDetails: FunctionComponent<OrderProductDetailsScreenProps> = (
                     min={1}
                     onValueChange={onQuantityValueChange}
                   />
-                  <NumericInput
-                    leftIcon='bank-account'
+                  <InputNumber
                     disabled={!orderProduct.isEditMode}
                     label='Novo valor'
                     id={props.screen.id + 'quantity'}
                     placeholder='0.00'
                     min={0.0}
-                    stepSize={0.1}
+                    step={0.1}
                     value={price}
-                    allowNumericCharactersOnly
-                    clampValueOnBlur
+                    format='currency'
                     onValueChange={handleQuantityChange(orderProductKey)}
                   />
                 </section>
@@ -514,10 +519,10 @@ const OrderProductDetails: FunctionComponent<OrderProductDetailsScreenProps> = (
                     id={props.screen.id + 'total'}
                     readOnly
                     label='Valor total (R$)'
-                    value={
-                      ((orderProducts?.[orderProductKey]?.quantity ?? 0) *
-                      (price ?? 0)).toFixed(2)
-                    }
+                    value={(
+                      (orderProducts?.[orderProductKey]?.quantity ?? 0) *
+                      (price ?? 0)
+                    ).toFixed(2)}
                   />
                 </section>
               </Row>

@@ -1,16 +1,22 @@
 import api from '../Config/api'
 import Service from '../Contracts/Models/Service'
 import Paginated from '../Contracts/Models/Paginated'
+import { ReportRequestOption } from '../Contracts/Types/Api'
 
 const DEFAULT_PATH = '/services'
 
 class ServicesService {
-  static async getAll(page = 10, perPage = 20) {
+  static async getAll(page = 10, perPage = 20, filters?: Record<any, any>, reportType?: ReportRequestOption) {
     return api.get<Paginated<Service>>(`${DEFAULT_PATH}/paginated`, {
       params: {
         page,
         perPage,
+        ...filters,
       },
+      responseType: reportType?.responseType,
+      headers: {
+        Accept: reportType?.mimeType ?? 'application/json'
+      }
     })
   }
 

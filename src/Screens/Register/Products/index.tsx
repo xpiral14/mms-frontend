@@ -274,13 +274,15 @@ const ProductsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
     () =>
       [
         {
-          name: 'Referencia',
+          name: 'Referência',
           keyName: 'reference',
           filters: [{ name: 'Referencia', type: 'text' }],
+          sortable: true,
         },
         {
           name: 'Nome',
           keyName: 'name',
+          sortable: true,
           filters: [{ name: 'Referencia', type: 'text' }],
           style: {
             width: '40%',
@@ -296,6 +298,8 @@ const ProductsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
         },
         {
           name: 'Preço',
+          keyName: 'price',
+          sortable: true,
           filters: [{ name: 'Descrição', type: 'text' }],
           formatText: (row) => currencyFormat(row?.price),
         },
@@ -380,7 +384,6 @@ const ProductsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
     (row: { [key: string]: any }) => setPayload(row),
     []
   )
-  console.log(typeof payload?.price)
   return (
     <Container style={{ height: 'calc(100% - 40px)' }}>
       <Row>

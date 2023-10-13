@@ -25,6 +25,9 @@ import Select from '../../../Components/Select'
 import Render from '../../../Components/Render'
 import Container from '../../../Components/Layout/Container'
 import NumericInput from '../../../Components/NumericInput'
+import { Column } from '../../../Contracts/Components/Table'
+import InputNumber from '../../../Components/InputNumber'
+import strToNumber from '../../../Util/strToNumber'
 
 const ServiceScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
   const { payload, setPayload, screenStatus, setScreenStatus } =
@@ -93,7 +96,7 @@ const ServiceScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
       const createPayload = {
         description: payload.description,
         name: payload.name,
-        price: payload.price,
+        price: strToNumber(payload.price ?? 0),
         reference: payload.reference,
         unit_id: payload.unit_id,
       }
@@ -193,34 +196,28 @@ const ServiceScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
   }
 
   const columns = useMemo(
-    () => [
-      {
-        id: 5,
-        name: 'Código',
-        keyName: 'id',
-      },
-      {
-        id: 1,
-        name: 'Referencia',
-        keyName: 'reference',
-      },
-      {
-        id: 2,
-        name: 'Nome',
-        keyName: 'name',
-        style: {
-          width: '50%'
-        }
-      },
-      {
-        id: 3,
-        name: 'Descrição',
-        keyName: 'description',
-        style: {
-          width: '100%'
-        }
-      },
-    ],
+    () =>
+      [
+        {
+          name: 'Referencia',
+          keyName: 'reference',
+          sortable: true,
+        },
+        {
+          name: 'Nome',
+          keyName: 'name',
+          sortable: true,
+          style: {
+            width: '100%',
+            minWidth: '100%',
+          },
+        },
+        {
+          id: 3,
+          name: 'Descrição',
+          keyName: 'description',
+        },
+      ] as Column[],
     []
   )
 
@@ -383,15 +380,14 @@ const ServiceScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
                   />
                 </div>
 
-                <div style={{ flex: 0.15 }}>
-                  <NumericInput
-                    id='servicePrice'
+                <div style={{ flex: 0.25 }}>
+                  <InputNumber
                     label='Preço:'
-                    fill
                     disabled={isStatusVizualize()}
                     value={payload?.price || ''}
                     placeholder='R$'
                     min={0}
+                    format='currency'
                     max={1000000}
                     maxLength={8}
                     defaultValue={0.0}

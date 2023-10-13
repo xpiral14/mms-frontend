@@ -244,6 +244,7 @@ const SupplierRegister: React.FC<SupplierRegisterScreenProps> = ({
       [
         {
           name: 'Nome',
+          sortable: true,
           keyName: 'name',
           style: {
             width: '33%',
@@ -256,6 +257,7 @@ const SupplierRegister: React.FC<SupplierRegisterScreenProps> = ({
           ],
         },
         {
+          sortable: true,
           name: 'CPF ou CNPJ',
           keyName: 'identification',
           formatText: (row) =>
@@ -273,6 +275,7 @@ const SupplierRegister: React.FC<SupplierRegisterScreenProps> = ({
         {
           name: 'Telefone',
           keyName: 'phone',
+          sortable: true,
           formatText: (row) => formatPhone(row?.phone as string),
           style: {
             width: '33%',
@@ -286,6 +289,7 @@ const SupplierRegister: React.FC<SupplierRegisterScreenProps> = ({
         },
         {
           name: 'Email',
+          sortable: true,
           keyName: 'mail',
           filters: [
             {

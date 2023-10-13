@@ -250,6 +250,7 @@ const BillsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
       [
         {
           name: 'Referência',
+          sortable: true,
           keyName: 'reference',
           filters: [{ name: 'Referência', type: 'text' }],
           style: {
@@ -260,6 +261,7 @@ const BillsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
         {
           name: 'Nome',
           keyName: 'name',
+          sortable: true,
           filters: [{ name: 'Nome da conta', type: 'text' }],
           style: {
             minWidth: '100%',
@@ -268,6 +270,7 @@ const BillsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
         },
         {
           name: 'Fornecedora',
+          sortable: true,
           formatText: (r) => r?.supplier?.name,
           filters: [
             { name: 'Fornecedor', type: 'text', keyName: 'supplier_name' },
@@ -279,6 +282,7 @@ const BillsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
         },
         {
           name: 'Valor',
+          sortable: true,
           filters: [
             { name: 'Valor da conta', type: 'currency', keyName: 'value' },
           ],
@@ -290,6 +294,7 @@ const BillsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
         },
         {
           name: 'Data de abertura',
+          sortable: true,
           formatText: (r) =>
             new Date(r!.opening_date as string).toLocaleString(
               undefined,
@@ -313,6 +318,7 @@ const BillsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
         },
         {
           name: 'Data de vencimento',
+          sortable: true,
           formatText: (r) =>
             new Date(r!.due_date as string).toLocaleString(
               undefined,

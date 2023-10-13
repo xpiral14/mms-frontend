@@ -1,5 +1,5 @@
-import React, { useMemo, useRef } from 'react'
-import { Column, Row, TableProps } from '../../Contracts/Components/Table'
+import React, { useCallback, useMemo, useRef } from 'react'
+import { Column, Row, Sort, TableProps } from '../../Contracts/Components/Table'
 import Render from '../Render'
 import Button from '../Button'
 import { Popover2 } from '@blueprintjs/popover2'
@@ -8,22 +8,43 @@ import { ButtonGroup, Colors, Icon } from '@blueprintjs/core'
 import { StyledTable } from './styles'
 import LoadingBackdrop from '../Layout/LoadingBackdrop'
 import joinClasses from '../../Util/joinClasses'
-import { MdOutlineKeyboardArrowDown } from 'react-icons/md'
+import {
+  MdOutlineKeyboardArrowDown,
+  MdOutlineKeyboardArrowUp,
+} from 'react-icons/md'
+import { AiOutlineMinus } from 'react-icons/ai'
+
+const sortMachineState = {
+  asc: 'desc',
+  desc: 'none',
+  none: 'asc',
+} as Record<Sort, Sort>
 
 const Table = function <T = any>(props: TableProps<T>) {
   const getWithoutValueDefaultText = (column: Column<T>) => {
     return column.withoutValueText || '-'
   }
 
+  const onSortClick = useCallback(
+    (column: Column<T>) => {
+      let currentColumnSort = props.sorts?.[column.keyName as any]
+      if (!currentColumnSort) {
+        currentColumnSort = 'none'
+      }
+
+      props.onSortChange?.(column, sortMachineState[currentColumnSort])
+    },
+    [props.onSortChange, props.sorts]
+  )
+
   const getColumnText = (
     column: Column<T>,
     row?: Row<T>,
     rowIndex?: number
   ) => {
-    const text = row?.[column.keyName!]
     return (
-      text ??
       column?.formatText?.(row, rowIndex) ??
+      row?.[column.keyName!] ??
       getWithoutValueDefaultText(column)
     )
   }
@@ -68,11 +89,45 @@ const Table = function <T = any>(props: TableProps<T>) {
                     <span>{column.name}</span>
                     <ButtonGroup>
                       <Render renderIf={column.sortable}>
-                        <Button
-                          icon={<MdOutlineKeyboardArrowDown size={16} />}
-                          minimal
-                          small
-                        />
+                        <Render
+                          renderIf={
+                            props.sorts?.[column.keyName as string] === 'asc'
+                          }
+                        >
+                          <Button
+                            icon={<MdOutlineKeyboardArrowDown size={16} />}
+                            minimal
+                            small
+                            help='Ordem crescente (A - Z)'
+                            onClick={() => onSortClick(column)}
+                          />
+                        </Render>
+                        <Render
+                          renderIf={
+                            props.sorts?.[column.keyName as string] === 'desc'
+                          }
+                        >
+                          <Button
+                            icon={<MdOutlineKeyboardArrowUp size={16} />}
+                            minimal
+                            small
+                            help='Ordem decrescente (Z - A)'
+                            onClick={() => onSortClick(column)}
+                          />
+                        </Render>
+                        <Render
+                          renderIf={[undefined, 'none'].includes(
+                            props.sorts?.[column.keyName as string]
+                          )}
+                        >
+                          <Button
+                            icon={<AiOutlineMinus size={16} />}
+                            minimal
+                            small
+                            help='Sem ordenamento'
+                            onClick={() => onSortClick(column)}
+                          />
+                        </Render>
                       </Render>
                       <Render renderIf={Boolean(column.filters?.length)}>
                         <Popover2

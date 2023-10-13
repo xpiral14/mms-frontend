@@ -17,6 +17,7 @@ import { uniqueId } from '@blueprintjs/core/lib/esm/common/utils'
 import { Popover2, Popover2InteractionKind } from '@blueprintjs/popover2'
 import { ReportRequestOption } from '../../Contracts/Types/Api'
 import Button from '../Button'
+import { Column, Sort } from '../../Contracts/Components/Table'
 const pageOptions: Option[] = [
   {
     label: '5',
@@ -66,11 +67,28 @@ const PaginatedTable = function <T = any>({
     setLimit,
     setGridResponse,
     gridResponse,
+    sorts,
+    setSorts,
   } = useGrid()
   const [selectedRegions] = useState<{ cols: number[]; rows: number[] }[]>([])
   const [selectedFilters, setSelectedFilters] = useState(
     filter ?? ({} as Record<string, string>)
   )
+
+  const requestParams = useMemo(() => {
+    const formattedSortedParams = Object.entries(sorts).reduce(
+      (sortRequest, [columnKey, sortType]) => {
+        if (sortType === 'none') return sortRequest
+        sortRequest[columnKey + '_orderby'] = sortType
+        return sortRequest
+      },
+      {} as Record<string, string>
+    )
+    return {
+      ...selectedFilters,
+      ...formattedSortedParams,
+    }
+  }, [selectedFilters, sorts])
   const [loadingReport, setLoadingReport] = useState(false)
   const { showErrorToast } = useToast()
   const apiRequest = customRequest ? customRequest : request
@@ -80,7 +98,7 @@ const PaginatedTable = function <T = any>({
         const response = await apiRequest?.(
           page + 1,
           limit,
-          selectedFilters ?? {}
+          requestParams ?? {}
         )
         if (response?.data) setGridResponse(response?.data)
       } catch (error) {
@@ -94,7 +112,7 @@ const PaginatedTable = function <T = any>({
     if (reloadGrid && limit) {
       loadRequestData()
     }
-  }, [reloadGrid, limit, page, rest?.filters, selectedFilters])
+  }, [reloadGrid, limit, page, rest?.filters, requestParams])
 
   const paginateOptions = useMemo(
     () =>
@@ -157,7 +175,7 @@ const PaginatedTable = function <T = any>({
       const response = await apiRequest?.(
         page,
         limit,
-        selectedFilters,
+        requestParams,
         reportType
       )
       DownloadService.download(
@@ -177,6 +195,10 @@ const PaginatedTable = function <T = any>({
     setSelectedFilters(filter)
     setReloadGrid(true)
   }, [])
+  const onSortChange = useCallback((c: Column<T>, sort: Sort): void => {
+    setSorts((prev) => ({ ...prev, [c.keyName as string]: sort }))
+    setReloadGrid(true)
+  }, [])
   return (
     <Container style={{ width: '100%' }} {...rest?.containerProps}>
       <Body height={rest?.height}>
@@ -191,6 +213,8 @@ const PaginatedTable = function <T = any>({
           loading={reloadGrid}
           rowStyle={rest.rowStyle}
           rowClassNames={rest.rowClassNames}
+          sorts={sorts}
+          onSortChange={onSortChange}
           {...rest}
         />
       </Body>
@@ -203,13 +227,19 @@ const PaginatedTable = function <T = any>({
             </div>
 
             <PaginateContainer>
-              <Render renderIf={Boolean(Object.keys(selectedFilters).length)}>
+              <Render
+                renderIf={
+                  Boolean(Object.keys(selectedFilters).length) ||
+                  Object.keys(sorts).length > 0
+                }
+              >
                 <Button
-                  help='Limpar filtros'
+                  help='Limpar filtros e ordenamentos'
                   icon='clean'
                   loading={reloadGrid}
                   onClick={() => {
                     setSelectedFilters({})
+                    setSorts({})
                     setReloadGrid(true)
                   }}
                 />

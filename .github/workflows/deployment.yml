@@ -31,5 +31,5 @@ jobs:
           ssh-add ~/.ssh/github_actions
           git pull origin main
           git status
-          npm install --only=prod
+          npm install --only=prod -f
           npm run build

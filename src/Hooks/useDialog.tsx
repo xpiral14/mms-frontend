@@ -110,9 +110,10 @@ export default function DialogProvider({ children }: any) {
 
       const Component = lazy(() => {
         return new Promise((resolve) => {
-          return import(`../Dialogs/${dialogData.path}`)
+          return import(`../Dialogs/${dialogData.path}.jsx`)
             .then(resolve)
-            .catch(() => {
+            .catch((e) => {
+              debugger
               setDialogError({
                 dialogId: dialogOptions.id,
               })

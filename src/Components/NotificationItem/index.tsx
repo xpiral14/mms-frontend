@@ -30,7 +30,7 @@ const NotificationItem = ({
     <Body
       readed={Boolean(notification.read_at)}
       onClick={onClick}
-      className='d-flex px-2 pb-3'
+      className='flex px-2 pb-3'
     >
       <span>{notification.message}</span>
       <Button

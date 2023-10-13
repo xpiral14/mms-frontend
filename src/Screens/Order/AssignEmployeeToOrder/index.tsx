@@ -94,7 +94,7 @@ const AssignEmployeeToOrder = ({ screen }: ScreenProps) => {
           handleButtonReloadClick={loadOrder}
           buttonProps={
             {
-              className: 'w-100',
+              className: 'w-full',
               style: {
                 display: 'flex',
                 justifyContent: 'space-between',

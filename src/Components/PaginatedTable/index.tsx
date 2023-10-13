@@ -54,6 +54,7 @@ const PaginatedTable = function <T = any>({
   customRequest,
   downloadable,
   reportRequestOptions = defaultRequestOptions,
+  filter,
   ...rest
 }: PaginatedTableProps<T>) {
   const {
@@ -68,7 +69,7 @@ const PaginatedTable = function <T = any>({
   } = useGrid()
   const [selectedRegions] = useState<{ cols: number[]; rows: number[] }[]>([])
   const [selectedFilters, setSelectedFilters] = useState(
-    {} as Record<string, string>
+    filter ?? ({} as Record<string, string>)
   )
   const [loadingReport, setLoadingReport] = useState(false)
   const { showErrorToast } = useToast()
@@ -188,6 +189,9 @@ const PaginatedTable = function <T = any>({
           onFilter={onFilter}
           filter={selectedFilters}
           loading={reloadGrid}
+          rowStyle={rest.rowStyle}
+          rowClassNames={rest.rowClassNames}
+          {...rest}
         />
       </Body>
       {Boolean(gridResponse?.meta) && (

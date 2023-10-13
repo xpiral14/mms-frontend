@@ -308,7 +308,7 @@ const UnitsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
         </Render>
       </Row>
       <Render renderIf={screenStatus === ScreenStatus.SEE_REGISTERS}>
-        <Row className='h-100'>
+        <Row className='h-full'>
           <PaginatedTable<Unit>
             height='100%'
             onRowSelect={onRowSelect}

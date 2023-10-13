@@ -10,8 +10,8 @@ export default function useSocket() {
   const socket = useMemo(() => {
     let options: any = {
       broadcaster: 'pusher',
-      key: process.env.REACT_APP_API_PUSHER_APP_KEY!,
-      cluster: process.env.REACT_APP_PUSHER_APP_CLUSTER,
+      key: import.meta.env.VITE_API_PUSHER_APP_KEY!,
+      cluster: import.meta.env.VITE_PUSHER_APP_CLUSTER,
       forceTLS: true,
     }
     if (auth?.token) {

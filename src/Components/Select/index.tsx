@@ -198,16 +198,14 @@ export default function Select<T = any>({
           : undefined
       }
     >
-      <Wrapper className='d-flex gap-2'>
+      <Wrapper className='flex gap-1'>
         <OptionSelect
           ref={selectRef}
           resetOnSelect
           filterable
           popoverProps={{
-            fill: true,
-            boundary: 'window',
+            boundary: document.body,
             enforceFocus: true,
-            target: selectRef.current,
           }}
           itemPredicate={filterOption}
           items={props.items || []}
@@ -233,7 +231,7 @@ export default function Select<T = any>({
             intent={props.intent ?? activeOption?.intent}
             disabled={props.disabled}
             {...props?.buttonProps}
-            className='flex-1 w-100'
+            className='flex-1 w-full'
           >
             {activeOption?.label ||
               props.defaultButtonText ||

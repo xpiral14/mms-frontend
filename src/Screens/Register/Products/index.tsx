@@ -418,7 +418,7 @@ const ProductsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
             id='productReference'
             label='Referência:'
             disabled={isStatusVizualize()}
-            itent='primary'
+            intent='primary'
             style={{ width: '20%' }}
             inputStyle={{ width: '100%' }}
             value={payload?.reference || ''}
@@ -468,7 +468,7 @@ const ProductsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
       </Render>
 
       <Render renderIf={screenStatus === ScreenStatus.SEE_REGISTERS}>
-        <Row className='h-100'>
+        <Row className='h-full'>
           <PaginatedTable<Product>
             height='100%'
             onRowSelect={onRowSelect}

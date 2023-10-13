@@ -94,13 +94,13 @@ export default function ScreenProvider({ children }: any) {
         offsetX: panelContainment.right
           ? document.body.offsetWidth - clientRect.width
           : panelContainment.left
-            ? 0
-            : clientRect.left,
+          ? 0
+          : clientRect.left,
         offsetY: panelContainment.top
           ? 0
           : panelContainment.bottom
-            ? document.body.offsetHeight - clientRect.height - offsetMenuHeight
-            : clientRect.top - offsetMenuHeight,
+          ? document.body.offsetHeight - clientRect.height - offsetMenuHeight
+          : clientRect.top - offsetMenuHeight,
         my: 'left-top',
         at: 'left-bottom',
         of: '.main-menu',
@@ -188,11 +188,17 @@ export default function ScreenProvider({ children }: any) {
         return screen.id + '-' + id
       }
       screen.id = screenOptions.id
-
       const Component = lazy(() => {
-        return new Promise((resolve) => {
-          return import(`../Screens/${screenData.path}`)
-            .then(resolve)
+        return new Promise((resolve, reject) => {
+          const comps = import.meta.glob('../Screens/**/*.tsx')
+          let match = comps[`../Screens/${screenData.path}/index.tsx`]
+          if(!match) {
+            match = comps[`../Screens/${screenData.path}.tsx`]
+          }
+          match()
+            .then((c: any) => {
+              return resolve(c)
+            })
             .catch(() => {
               setScreenError({
                 screenId: screenOptions.id,
@@ -210,7 +216,7 @@ export default function ScreenProvider({ children }: any) {
           screenOptions: {
             ...screenOptions,
             path: screenData.path,
-            windowProps: screenData.windowProps
+            windowProps: screenData.windowProps,
           },
           parentScreen: (screenOptions?.parentScreenId &&
             prev?.[screenOptions.parentScreenId as string]?.screen) as
@@ -234,7 +240,9 @@ export default function ScreenProvider({ children }: any) {
 
       return (
         <CreatePortal rootNode={node} key={screen.id as string}>
-          <WindowContextProvider {...screens[panelId].screenOptions.windowProps}>
+          <WindowContextProvider
+            {...screens[panelId].screenOptions.windowProps}
+          >
             <GridProvider>
               {Array.isArray(Comp) ? (
                 Comp.map((C) => (
@@ -252,8 +260,8 @@ export default function ScreenProvider({ children }: any) {
                         ...componentProps,
                         ...(parentScreen
                           ? {
-                            parentScreen,
-                          }
+                              parentScreen,
+                            }
                           : {}),
                       }}
                     />
@@ -269,8 +277,8 @@ export default function ScreenProvider({ children }: any) {
                       ...componentProps,
                       ...(parentScreen
                         ? {
-                          parentScreen,
-                        }
+                            parentScreen,
+                          }
                         : {}),
                     }}
                   />

@@ -7,7 +7,7 @@ import { FC } from 'react'
 import { Container } from './style'
 
 interface NumericInputProps extends BluePrintNumericInputProps {
-  id: string
+  id?: string
   label?: string
   width?: string
   labelPosition?: 'vertical' | 'horizontal'

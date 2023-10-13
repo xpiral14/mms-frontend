@@ -5,7 +5,7 @@ export const Footer = styled.tr`
   td {
     padding: 0!important;
   }
-  .bp4-form-group {
+  .bp5-form-group {
     margin: 0;
   }
 `

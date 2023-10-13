@@ -16,25 +16,56 @@
     "ecmaVersion": 12,
     "sourceType": "module"
   },
-  "plugins": ["react", "@typescript-eslint"],
+  "plugins": [
+    "react",
+    "@typescript-eslint"
+  ],
   "rules": {
-    "indent": ["error", 2],
-    "linebreak-style": ["error", "unix"],
-    "quotes": ["error", "single"],
-    "semi": ["error", "never"],
-    "no-debugger": "off"
+    "indent": [
+      "error",
+      2
+    ],
+    "linebreak-style": [
+      "error",
+      "unix"
+    ],
+    "quotes": [
+      "error",
+      "single"
+    ],
+    "semi": [
+      "error",
+      "never"
+    ],
+    "no-debugger": "warn",
+    "react/no-deprecated": "off"
   },
   "overrides": [
     {
-      "files": ["*.ts", "*.tsx"],
+      "files": [
+        "*.ts",
+        "*.tsx"
+      ],
       "rules": {
         "linebreak-style": 0,
-        "@typescript-eslint/explicit-module-boundary-types": ["off"],
-        "@typescript-eslint/no-unused-vars": ["error"],
-        "@typescript-eslint/no-explicit-any": ["off"],
-        "react/prop-types": ["off"],
-        "react/react-in-jsx-scope": ["off"],
-        "@typescript-eslint/no-non-null-assertion": ["off"],
+        "@typescript-eslint/explicit-module-boundary-types": [
+          "off"
+        ],
+        "@typescript-eslint/no-unused-vars": [
+          "error"
+        ],
+        "@typescript-eslint/no-explicit-any": [
+          "off"
+        ],
+        "react/prop-types": [
+          "off"
+        ],
+        "react/react-in-jsx-scope": [
+          "off"
+        ],
+        "@typescript-eslint/no-non-null-assertion": [
+          "off"
+        ],
         "@typescript-eslint/ban-types": "off",
         "react/display-name": "off",
         "no-debugger": "off"

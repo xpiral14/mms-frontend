@@ -43,10 +43,10 @@ const menus = {
         icon: 'numerical',
         screen: {
           minHeight: 150,
-          maxHeight: 500,
+          maxHeight: 450,
           ...screens['unit-register'],
           headerTitle: 'Unidades',
-          contentSize: '710px 150px',
+          contentSize: '710px 450',
         },
       },
       Fornecedores: {
@@ -136,6 +136,17 @@ const menus = {
           maxHeight: 500,
           ...screens['cost-posting'],
           contentSize: '1065px 400px',
+          headerTitle: 'Lançamento de custos',
+        },
+      },
+      billRegister: {
+        name: 'Contas a pagar',
+        icon: <GiExpense size={16} />,
+        screen: {
+          minHeight: 350,
+          maxHeight: 500,
+          ...screens['bill-register'],
+          contentSize: '1315 500',
           headerTitle: 'Lançamento de custos',
         },
       },

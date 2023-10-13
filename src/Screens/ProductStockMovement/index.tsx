@@ -70,9 +70,9 @@ const ProductStockMovement = (props: ProductStockMovementScreenProps) => {
     []
   )
   return (
-    <Row className='h-100'>
-      <Row className='w-100'>
-        <Card className='w-100 p-2'>
+    <Row className='h-full'>
+      <Row className='w-full'>
+        <Card className='w-full p-2'>
           <ul className='list-none p-0' style={{fontSize: '1rem'}}>
             <li>
               <b>Produto:</b> {props.productStock.product?.name}

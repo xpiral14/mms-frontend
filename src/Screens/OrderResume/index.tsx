@@ -306,8 +306,8 @@ const OrderResume: FunctionComponent<OrderResumeScreenProps> = (props) => {
         </Bar>
       </Row>
 
-      <Row className='w-100 mb-3'>
-        <Box className='w-100'>
+      <Row className='w-full mb-3'>
+        <Box className='w-full'>
           <Collapse
             title={
               <Row>
@@ -321,7 +321,7 @@ const OrderResume: FunctionComponent<OrderResumeScreenProps> = (props) => {
             onChange={() => setIsCustomerCollapsed((prev) => !prev)}
           >
             <Render renderIf={!loadingCustomers}>
-              <Row className='flex align-center w-100'>
+              <Row className='flex align-center w-full'>
                 <InputText
                   id=''
                   style={{
@@ -363,8 +363,8 @@ const OrderResume: FunctionComponent<OrderResumeScreenProps> = (props) => {
           </Collapse>
         </Box>
       </Row>
-      <Row className='w-100 mb-3'>
-        <Box className='w-100'>
+      <Row className='w-full mb-3'>
+        <Box className='w-full'>
           <Collapse
             isCollapsed={loadingOrder}
             title={
@@ -418,8 +418,8 @@ const OrderResume: FunctionComponent<OrderResumeScreenProps> = (props) => {
           </Collapse>
         </Box>
       </Row>
-      <Row className='w-100 mb-3'>
-        <Box className='w-100'>
+      <Row className='w-full mb-3'>
+        <Box className='w-full'>
           <Collapse
             title={
               <Row>
@@ -464,8 +464,8 @@ const OrderResume: FunctionComponent<OrderResumeScreenProps> = (props) => {
         </Box>
       </Row>
 
-      <Row className='w-100'>
-        <Box className='w-100'>
+      <Row className='w-full'>
+        <Box className='w-full'>
           <Collapse
             title={
               <Row>

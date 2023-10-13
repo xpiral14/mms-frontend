@@ -40,7 +40,7 @@ const RegistrationButtonBar: React.FC<RegistrationButtonBarProps> = (
   const { screen } = props
   const { openSubScreen } = useScreen()
   const handleNewButtonOnClick = () => {
-    if (props?.handleNewButtonOnClick?.()) {
+    if (props?.handleNewButtonOnClick) {
       props?.handleNewButtonOnClick()
       return
     }
@@ -129,6 +129,7 @@ const RegistrationButtonBar: React.FC<RegistrationButtonBarProps> = (
               screenStatus === ScreenStatus.NEW
             }
             onClick={handleNewButtonOnClick}
+            {...props.buttonNewProps}
           >
             Novo
           </Button>
@@ -143,6 +144,7 @@ const RegistrationButtonBar: React.FC<RegistrationButtonBarProps> = (
               screenStatus === ScreenStatus.VISUALIZE
             }
             onClick={handleSaveButtonOnClick}
+            {...props.buttonSaveProps}
           >
             Salvar
           </Button>
@@ -163,6 +165,7 @@ const RegistrationButtonBar: React.FC<RegistrationButtonBarProps> = (
               screenStatus === ScreenStatus.VISUALIZE
             }
             onClick={handleCancelButtonOnClick}
+            {...props.buttonCancelProps}
           >
             Cancelar
           </Button>
@@ -177,6 +180,7 @@ const RegistrationButtonBar: React.FC<RegistrationButtonBarProps> = (
               !hasPayload
             }
             onClick={handleEditButtonOnClick}
+            {...props.buttonEditProps}
           >
             Editar
           </Button>

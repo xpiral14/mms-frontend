@@ -1,6 +1,9 @@
 import React from 'react'
 
-export default class ErrorBoundary extends React.Component<{}, {hasError:boolean}> {
+export default class ErrorBoundary extends React.Component<
+  {},
+  { hasError: boolean }
+> {
   constructor(props: any) {
     super(props)
     this.state = { hasError: false }
@@ -12,7 +15,7 @@ export default class ErrorBoundary extends React.Component<{}, {hasError:boolean
   }
 
   componentDidCatch(error: any, errorInfo: any) {
-    console.log(error, errorInfo)
+    console.error(error, errorInfo)
   }
 
   render() {
@@ -21,6 +24,6 @@ export default class ErrorBoundary extends React.Component<{}, {hasError:boolean
       return <h1>Algo deu errado.</h1>
     }
 
-    return this.props.children 
+    return this.props.children
   }
 }

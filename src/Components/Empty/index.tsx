@@ -4,10 +4,10 @@ import Container from '../Layout/Container'
 
 const Empty = () => {
   return (
-    <Container className='w-100'>
-      <Box className='w-100 flex flex-center flex-column'>
+    <Container className='w-full'>
+      <Box className='w-full flex flex-center flex-column'>
         <Icon  icon='zoom-out' color={Colors.GRAY3} iconSize={30} />
-        <h2 style={{ color: Colors.GRAY3, alignSelf: 'center' }} className='bp4-heading'>
+        <h2 style={{ color: Colors.GRAY3, alignSelf: 'center' }} className='bp5-heading'>
           Nada por aqui ainda
         </h2>
       </Box>

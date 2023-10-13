@@ -140,7 +140,7 @@ const CompanyData: FC<ScreenProps> = ({ screen }) => {
             onChange={(e) => updateCompanyAttribute('name', e.target.value)}
             label='Nome'
             value={company?.name ?? ''}
-            className={loadingCompany ? 'bp4-skeleton' : ''}
+            className={loadingCompany ? 'bp5-skeleton' : ''}
           />
           <InputText
             id={screen.id + 'company_identification'}
@@ -151,7 +151,7 @@ const CompanyData: FC<ScreenProps> = ({ screen }) => {
             }
             label='CPF ou CNPJ'
             value={company?.identification ?? ''}
-            className={loadingCompany ? 'bp4-skeleton' : ''}
+            className={loadingCompany ? 'bp5-skeleton' : ''}
           />
           <InputText
             id={screen.id + 'company_mail'}
@@ -160,7 +160,7 @@ const CompanyData: FC<ScreenProps> = ({ screen }) => {
             label='email'
             type='mail'
             value={company?.mail ?? ''}
-            className={loadingCompany ? 'bp4-skeleton' : ''}
+            className={loadingCompany ? 'bp5-skeleton' : ''}
           />
           <InputText
             id={screen.id + 'company_phone'}
@@ -170,13 +170,13 @@ const CompanyData: FC<ScreenProps> = ({ screen }) => {
             type='phone'
             mask='(99) 99999-9999'
             value={company?.phone ?? ''}
-            className={loadingCompany ? 'bp4-skeleton' : ''}
+            className={loadingCompany ? 'bp5-skeleton' : ''}
           />
         </Row>
       </Box>
 
       <Box className='mt-2'>
-        <Row className='w-100'>
+        <Row className='w-full'>
           <Collapse
             title='Endereço'
             isCollapsed={addressCollapsed}
@@ -192,35 +192,35 @@ const CompanyData: FC<ScreenProps> = ({ screen }) => {
                 value={company.cep ?? ''}
               />
               <InputText
-                className={loadingAddress ? 'bp4-skeleton' : ''}
+                className={loadingAddress ? 'bp5-skeleton' : ''}
                 id={screen.id + 'company_cep'}
                 disabled
                 label='Logradouro'
                 value={address.logradouro ?? ''}
               />
               <InputText
-                className={loadingAddress ? 'bp4-skeleton' : ''}
+                className={loadingAddress ? 'bp5-skeleton' : ''}
                 id={screen.id + 'company_cep'}
                 disabled
                 label='Cidade'
                 value={address.localidade ?? ''}
               />
               <InputText
-                className={loadingAddress ? 'bp4-skeleton' : ''}
+                className={loadingAddress ? 'bp5-skeleton' : ''}
                 id={screen.id + 'company_cep'}
                 disabled
                 label='UF'
                 value={address.uf ?? ''}
               />
               <InputText
-                className={loadingAddress ? 'bp4-skeleton' : ''}
+                className={loadingAddress ? 'bp5-skeleton' : ''}
                 id={screen.id + 'company_cep'}
                 disabled
                 label='Bairro'
                 value={address.bairro ?? ''}
               />
             </Row>
-            <Row className='w-100'>
+            <Row className='w-full'>
               <InputText
                 id={screen.id + 'company_complement'}
                 disabled={isScreenStatusVizualize}

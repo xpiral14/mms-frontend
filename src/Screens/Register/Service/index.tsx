@@ -302,7 +302,7 @@ const ServiceScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
         <RegistrationButtonBar {...registrationButtonBarProps} />
       </Header>
 
-      <Body className='h-100'>
+      <Body className='h-full'>
         <Render renderIf={screenStatus !== ScreenStatus.SEE_REGISTERS}>
           <div>
             <form>

@@ -1,7 +1,7 @@
 import { useState } from 'react'
-import Container from '../../../Components/Layout/Container'
-import useAsync from '../../../Hooks/useAsync'
-import useMessageError from '../../../Hooks/useMessageError'
+import Container from '../../Components/Layout/Container'
+import useAsync from '../../Hooks/useAsync'
+import useMessageError from '../../Hooks/useMessageError'
 import {
   Bar,
   BarChart,
@@ -13,17 +13,17 @@ import {
   YAxis,
 } from 'recharts'
 import { Colors } from '@blueprintjs/core'
-import ChartService from '../../../Services/ChartService'
+import ChartService from '../../Services/ChartService'
 import { endOfMonth, format, startOfMonth, subDays, subMonths } from 'date-fns'
-import getDateWithTz from '../../../Util/getDateWithTz'
-import currencyFormat from '../../../Util/currencyFormat'
-import Row from '../../../Components/Layout/Row'
-import Box from '../../../Components/Layout/Box'
-import Select from '../../../Components/Select'
+import getDateWithTz from '../../Util/getDateWithTz'
+import currencyFormat from '../../Util/currencyFormat'
+import Row from '../../Components/Layout/Row'
+import Box from '../../Components/Layout/Box'
+import Select from '../../Components/Select'
 import ptBR from 'date-fns/locale/pt-BR'
-import capitalize from '../../../Util/capitalize'
-import { useWindow } from '../../../Hooks/useWindow'
-import joinClasses from '../../../Util/joinClasses'
+import capitalize from '../../Util/capitalize'
+import { useWindow } from '../../Hooks/useWindow'
+import joinClasses from '../../Util/joinClasses'
 
 enum GroupType  {
   CURRENT_MONTH = 1,
@@ -70,7 +70,7 @@ const ReceiptXCosts = () => {
   }, [payload.groupType])
 
   return (
-    <Container className='h-100 w-100 d-flex gap-2'>
+    <Container className='h-full w-full flex gap-2'>
       <Box className='flex-shrink-1'>
         <Row>
           <Select
@@ -100,7 +100,7 @@ const ReceiptXCosts = () => {
           />
         </Row>
       </Box>
-      <Box className={joinClasses({'flex-grow-1': true, 'bp4-skeleton': loadingChart}) }>
+      <Box className={joinClasses({'flex-grow-1': true, 'bp5-skeleton': loadingChart}) }>
         <ResponsiveContainer width='100%' height='100%'>
           <BarChart
             width={500}

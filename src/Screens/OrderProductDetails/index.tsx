@@ -386,7 +386,7 @@ const OrderProductDetails: FunctionComponent<OrderProductDetailsScreenProps> = (
   }, [orderProducts])
   return (
     <Container>
-      <Row className='w-100 mb-2'>
+      <Row className='w-full mb-2'>
         <Bar style={{ display: 'flex', justifyContent: 'space-between' }}>
           <Button
             intent={Intent.SUCCESS}
@@ -413,7 +413,7 @@ const OrderProductDetails: FunctionComponent<OrderProductDetailsScreenProps> = (
             rightIcon: 'circle-arrow-down',
             text: 'Selecione os produtos'
           }}
-          popoverProps={{ fill: true, className: 'w-100' }}
+          popoverProps={{ fill: true, className: 'w-full' }}
           columns={columns}
           onRowSelect={handleProductSelect}
           isSelected={isSelected}
@@ -449,7 +449,7 @@ const OrderProductDetails: FunctionComponent<OrderProductDetailsScreenProps> = (
               isCollapsed={orderProduct.isCollapsed}
               onChange={onCollapseChange}
               title={
-                <Row className='flex-between w-100'>
+                <Row className='flex-between w-full'>
                   <span>{orderProduct.product_name}</span>
                   <ButtonGroup>
                     <Render renderIf={!orderProduct.isEditMode}>
@@ -475,7 +475,7 @@ const OrderProductDetails: FunctionComponent<OrderProductDetailsScreenProps> = (
                 </Row>
               }
             >
-              <Row className='w-100 align-center flex-between'>
+              <Row className='w-full align-center flex-between'>
                 <section className='flex flex-wrap'>
                   <NumericInput
                     disabled={!orderProduct.isEditMode}
@@ -522,7 +522,7 @@ const OrderProductDetails: FunctionComponent<OrderProductDetailsScreenProps> = (
                 </section>
               </Row>
 
-              <Row className='w-100 flex-between'>
+              <Row className='w-full flex-between'>
                 <TextArea
                   value={orderProduct.description}
                   onChange={handleDescriptionChange(orderProductKey)}

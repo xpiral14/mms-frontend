@@ -347,7 +347,7 @@ const StocksScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
       </Render>
 
       <Render renderIf={screenStatus === ScreenStatus.SEE_REGISTERS}>
-        <Row className='h-100'>
+        <Row className='h-full'>
           <PaginatedTable<Stock>
             height='100%'
             onRowSelect={onRowSelect}

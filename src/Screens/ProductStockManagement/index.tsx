@@ -366,7 +366,7 @@ const ProductStockManagement: React.FC<ProductStockScreenProps> = ({
               ? 'Ativo'
               : 'Inativo'
             return (
-              <Row className='d-flex justify-content-center'>
+              <Row className='flex justify-center'>
                 <Tooltip2 content={tooltipMessage}>
                   <Tag
                     large
@@ -399,7 +399,7 @@ const ProductStockManagement: React.FC<ProductStockScreenProps> = ({
                 ? 'Igual o estoque mínimo'
                 : 'Acima do estoque mínimo'
             return (
-              <Row className='d-flex justify-content-center'>
+              <Row className='flex justify-center'>
                 <Tooltip2 content={tooltipMessage} fill>
                   <Tag
                     large
@@ -594,7 +594,7 @@ const ProductStockManagement: React.FC<ProductStockScreenProps> = ({
               required
               buttonProps={
                 {
-                  className: 'w-100',
+                  className: 'w-full',
                   style: {
                     display: 'flex',
                     justifyContent: 'space-between',
@@ -647,7 +647,7 @@ const ProductStockManagement: React.FC<ProductStockScreenProps> = ({
           </Row>
         </Box>
         <Box className='mt-2'>
-          <Row className='align-items-center'>
+          <Row className='items-center'>
             <Tooltip2 content='Ativando essa opção o sistema enviará um pedido automático sobre reposição de estoque para o fornecedor selecionado'>
               <Checkbox
                 label='Ativar reposição de estoque automática'
@@ -700,7 +700,7 @@ const ProductStockManagement: React.FC<ProductStockScreenProps> = ({
         </Box>
       </Render>
       <Render renderIf={screenStatus === ScreenStatus.SEE_REGISTERS}>
-        <Row className='h-100 mt-2'>
+        <Row className='h-full mt-2'>
           <PaginatedTable<ProductStock>
             height='100%'
             onRowSelect={onRowSelect}

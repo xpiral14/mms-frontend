@@ -152,9 +152,6 @@ export default function MultiSelect(props: MultiSelectProps) {
       <Container maxWidth={props.maxWidth}>
         <MultiSelectComponent
           {...props}
-          popoverProps={{
-            fill: true,
-          }}
           itemPredicate={filterOption}
           itemRenderer={renderOption}
           itemsEqual={areOptionsEqual}

@@ -32,6 +32,7 @@ export type ScreenIds =
   | 'product-stock-movement'
   | 'bill-register'
   | 'bill-payment'
+  | 'cost-center-register'
 export interface ScreenData {
   id: ScreenIds
   name: string

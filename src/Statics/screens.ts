@@ -186,6 +186,11 @@ const screens = {
     path: 'ProductStockMovement',
     subScreenOnly: true,
     contentSize: '800 500'
+  },
+  'cost-center-register': {
+    id: 'cost-center-register',
+    name: 'Cadastro de unidades',
+    path: 'Register/CostCenter',
   }
 } as Screens
 

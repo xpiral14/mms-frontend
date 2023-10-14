@@ -44,6 +44,7 @@ import { useScreen } from '../../Hooks/useScreen'
 import { BillPaymentProps } from './BillPayment'
 import useAsync from '../../Hooks/useAsync'
 import strToNumber from '../../Util/strToNumber'
+import CostCenterService from '../../Services/CostCenterService'
 
 type BillPayloadCreate = Omit<Bill, 'due_date' | 'opening_date'> & {
   installments?: number
@@ -502,6 +503,19 @@ const BillsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
     },
     []
   )
+  const costCenterFunction = useCallback(
+    async (q: string | null): Promise<Option[]> => {
+      const response = await CostCenterService.getAll(1, 20, {
+        name_like: q,
+      })
+      const options = response.data.data.map((supplier) => ({
+        label: supplier.name,
+        value: supplier.id,
+      }))
+      return options as Option[]
+    },
+    []
+  )
   const rowClassNames = (r: RowType<Bill>): 'text-white' | undefined =>
     r.status != 'opened' ? 'text-white' : undefined
   const rowKey = (r: Bill) => r.id
@@ -587,12 +601,18 @@ const BillsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
           <AsyncSelect<Bill>
             name='supplier_id'
             id='bill-supplier-id'
+            fill
             label='Fornecedor'
             required
             searchFunction={supplierFunction}
-            buttonWidth='100%'
+            buttonWidth='49%'
+          />
+          <AsyncSelect<Bill>
             fill
-            buttonProps={{ style: { width: '100%' } }}
+            label='Centro de custo'
+            name='cost_center_id'
+            buttonWidth='50%'
+            searchFunction={costCenterFunction}
           />
         </Row>
         <Row>

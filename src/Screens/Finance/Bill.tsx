@@ -295,6 +295,7 @@ const BillsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
         },
         {
           name: 'Data de abertura',
+          keyName: 'opening_date',
           sortable: true,
           formatText: (r) =>
             new Date(r!.opening_date as string).toLocaleString(

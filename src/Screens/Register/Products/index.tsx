@@ -30,6 +30,7 @@ import currencyFormat from '../../../Util/currencyFormat'
 import InputNumber from '../../../Components/InputNumber'
 import strToNumber from '../../../Util/strToNumber'
 import useMessageError from '../../../Hooks/useMessageError'
+import TextArea from '../../../Components/ScreenComponents/TextArea'
 const reports = [
   {
     columns: [
@@ -339,16 +340,6 @@ const ProductsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
     increaseWindowSize?.()
   }
 
-  const handleCancelButtonOnClick = () => {
-    if (screenStatus === ScreenStatus.EDIT) {
-      increaseWindowSize?.()
-      setScreenStatus(ScreenStatus.SEE_REGISTERS)
-      return
-    }
-
-    setScreenStatus(ScreenStatus.VISUALIZE)
-  }
-
   const registrationButtonBarProps: RegistrationButtonBarProps = {
     screen,
     handleNewButtonOnClick: handleButtonNewOnClick,
@@ -365,7 +356,6 @@ const ProductsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
       })
     },
     handleButtonVisualizeOnClick: handleVisualizeButtonOnClick,
-    handleCancelButtonOnClick: handleCancelButtonOnClick,
     handleEditButtonOnClick() {
       setScreenStatus(ScreenStatus.EDIT)
       screen.decreaseScreenSize?.()
@@ -389,6 +379,7 @@ const ProductsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
     <Container style={{ height: 'calc(100% - 40px)' }}>
       <Row>
         <RegistrationButtonBar {...registrationButtonBarProps} />
+        
       </Row>
 
       <Render renderIf={screenStatus !== ScreenStatus.SEE_REGISTERS}>
@@ -437,37 +428,35 @@ const ProductsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
             id='productName'
             label='Nome:'
             disabled={isStatusVizualize()}
-            inputStyle={{ minWidth: '260px' }}
+            style={{ flex: 1 }}
+            inputStyle={{ minWidth: '100%' }}
             value={payload.name || ''}
             placeholder='Digite o nome do produto'
             maxLength={90}
             onChange={createOnChange('name')}
           />
-        </Row>
-
-        <Row>
-          <InputText
-            id='productDescription'
-            label='Descrição:'
-            disabled={isStatusVizualize()}
-            style={{ flex: 8 }}
-            inputStyle={{ width: '100%', minWidth: '300ptx' }}
-            value={payload?.description || ''}
-            maxLength={255}
-            onChange={createOnChange('description')}
-          />
-
           <InputNumber
             label='Preço:'
             disabled={isStatusVizualize()}
             format='currency'
             min={0}
-            style={{ flex: 2 }}
+            style={{ flex: 1 }}
             inputStyle={{ width: 'calc(100% - 35px)' }}
             value={payload?.price ?? '0'}
             onValueChange={(v) => {
               changePayloadAttribute('price', v)
             }}
+          />
+        </Row>
+
+        <Row>
+          <TextArea<Product>
+            name='description'
+            id='productDescription'
+            label='Descrição:'
+            disabled={isStatusVizualize()}
+            style={{ flex: 8 }}
+            value={payload?.description || ''}
           />
         </Row>
       </Render>

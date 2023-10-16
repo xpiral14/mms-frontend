@@ -32,11 +32,11 @@ const menus = {
         name: 'Produtos',
         icon: 'wrench',
         screen: {
-          minHeight: 290,
+          minHeight: 298,
           maxHeight: 500,
           ...screens['product-register'],
           headerTitle: 'Produtos',
-          contentSize: '750px 500px',
+          contentSize: '1100x 500px',
         },
       },
       Unidades: {

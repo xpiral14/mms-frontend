@@ -178,9 +178,16 @@ const PaginatedTable = function <T = any>({
         requestParams,
         reportType
       )
+      const contentDisposition = response?.headers['Content-Disposition']
+      const match = contentDisposition?.match(/filename=([^;]+)/)
+
+      let fileName = 'Relatorio'
+      if (match) {
+        fileName = match[1]
+      }
       DownloadService.download(
         response,
-        uniqueId(reportType.name ?? 'Relatório') + `.${reportType.reportType}`,
+        uniqueId(reportType.name ?? fileName) + `.${reportType.reportType}`,
         {
           mimeType: reportType.mimeType,
         }

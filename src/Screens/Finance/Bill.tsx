@@ -472,6 +472,51 @@ const BillsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
           { mimeType: 'text/csv', reportType: 'csv', responseType: 'text' },
         ],
       },
+      {
+        text: 'Histórico de pagamentos',
+        columns: [
+          {
+            name: 'Referência',
+            keyName: 'reference',
+            sortable: true,
+          },
+          {
+            name: 'Nome da conta',
+            keyName: 'name',
+            sortable: true,
+          },
+          {
+            name: 'Data do pagamento',
+            keyName: 'transaction_created_at',
+            formatText: (c) =>
+              new Date(c.transaction_created_at).toLocaleDateString(
+                undefined,
+                DateFormats.DATE_LONG_TIME
+              ),
+            sortable: true,
+          },
+          {
+            name: 'Status da conta',
+            keyName: 'status_name',
+            sortable: true,
+          },
+          {
+            name: 'Valor da conta',
+            keyName: 'value',
+            sortable: true,
+            formatText: (c) => currencyFormat(c.value ?? 0),
+          },
+        ],
+        downloadable: true,
+        request: BillService.getBillsPaymentsHistory,
+        reportRequestOptions: [
+          {
+            mimeType: 'text/csv',
+            reportType: 'csv',
+            name: 'historico-de-pagamentos'
+          },
+        ],
+      },
     ],
   }
 

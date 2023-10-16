@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { USER_TIMEZONE_NAME } from '../Constants'
 import keysToCamel from '../Util/keysToKamel'
 
 const api = axios.create({
@@ -8,6 +9,7 @@ const api = axios.create({
 })
 
 api.interceptors.request.use((value => {
+  value.headers['X-USER-TIMEZONE'] = USER_TIMEZONE_NAME;
   const { notCamel, ...data } = value?.data ?? {}
   if (notCamel) {
     value.data = data

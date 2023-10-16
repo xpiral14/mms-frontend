@@ -70,5 +70,19 @@ export default {
         Accept: reportType?.mimeType || 'application/json',
       }
     })
+  },
+
+  async getBillsPaymentsHistory(page: any, limit: number, filters?: Record<string, any>, reportType?: ReportRequestOption) {
+    return api.get(`${DEFAULT_PATH}/reports/billPayments`, {
+      params: {
+        page,
+        limit,
+        ...filters,
+      },
+      responseType: reportType?.responseType ?? 'json',
+      headers: {
+        Accept: reportType?.mimeType || 'application/json',
+      }
+    })
   }
 }

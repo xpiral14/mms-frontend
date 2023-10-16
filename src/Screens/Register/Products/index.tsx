@@ -432,7 +432,7 @@ const ProductsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
             inputStyle={{ minWidth: '100%' }}
             value={payload.name || ''}
             placeholder='Digite o nome do produto'
-            maxLength={90}
+            maxLength={255}
             onChange={createOnChange('name')}
           />
           <InputNumber

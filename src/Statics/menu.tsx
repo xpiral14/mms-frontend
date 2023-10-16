@@ -36,7 +36,7 @@ const menus = {
           maxHeight: 500,
           ...screens['product-register'],
           headerTitle: 'Produtos',
-          contentSize: '1100x 500px',
+          contentSize: '1100px 500px',
         },
       },
       Unidades: {

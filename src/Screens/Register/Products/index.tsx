@@ -12,7 +12,7 @@ import {
 import { useGrid } from '../../../Hooks/useGrid'
 import { useWindow } from '../../../Hooks/useWindow'
 import { useAlert } from '../../../Hooks/useAlert'
-import { ScreenStatus } from '../../../Constants/Enums'
+import { DateFormats, ScreenStatus } from '../../../Constants/Enums'
 import { Intent } from '@blueprintjs/core'
 import { useToast } from '../../../Hooks/useToast'
 import Product from '../../../Contracts/Models/Product'
@@ -292,6 +292,10 @@ const ProductsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
           name: 'Descrição',
           keyName: 'description',
           filters: [{ name: 'Descrição', type: 'text' }],
+          formatText: (r) =>
+            (r?.description?.length ?? 0) > 80
+              ? r?.description?.slice(0, 77) + '...'
+              : r?.description,
           style: {
             width: '40%',
           },
@@ -302,6 +306,18 @@ const ProductsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
           sortable: true,
           filters: [{ name: 'Descrição', type: 'text' }],
           formatText: (row) => currencyFormat(row?.price),
+        },
+        {
+          name: 'Data de criação',
+          keyName: 'created_at',
+          sortable: true,
+          filters: [{ name: 'Descrição', type: 'text' }],
+          formatText: (row) =>
+            new Date(row!.created_at).toLocaleDateString(
+              undefined,
+              DateFormats.DATE_ONLY
+            ),
+          style: { minWidth: 190 },
         },
       ] as Column<Product>[],
     []

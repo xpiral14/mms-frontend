@@ -12,7 +12,7 @@ import Render from '../../../Components/Render'
 import { ScreenStatus } from '../../../Constants/Enums'
 import {
   RegistrationButtonBarProps,
-  StopLoadFunc
+  StopLoadFunc,
 } from '../../../Contracts/Components/RegistrationButtonBarProps'
 import ScreenProps from '../../../Contracts/Components/ScreenProps'
 import { Validation } from '../../../Contracts/Hooks/useValidation'
@@ -241,7 +241,10 @@ const StocksScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
   }
 
   const handleButtonNewOnClick = () => {
-    setPayload({})
+    setPayload({
+      description: '',
+      name: '',
+    })
     setScreenStatus(ScreenStatus.NEW)
     focusNameInput()
     decreaseWindowSize?.()
@@ -316,7 +319,7 @@ const StocksScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
             )
           }}
         >
-              Gerenciar produtos
+          Gerenciar produtos
         </Button>
       </Bar>
       <Render renderIf={screenStatus !== ScreenStatus.SEE_REGISTERS}>
@@ -328,7 +331,7 @@ const StocksScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
               value={payload?.name || ''}
               disabled={isStatusVizualize()}
               onChange={createOnChange('name')}
-              maxLength={15}
+              maxLength={255}
               required
             />
 
@@ -361,7 +364,7 @@ const StocksScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
                 mimeType: 'text/csv',
                 reportType: 'csv',
                 responseType: 'text',
-                name: 'Estoques cadastrados'
+                name: 'Estoques cadastrados',
               },
             ]}
           />

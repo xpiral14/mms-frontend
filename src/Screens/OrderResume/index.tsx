@@ -27,6 +27,7 @@ import OrderService, {
 } from '../../Services/OrderService'
 import OrderStatus from '../../Contracts/Models/OrderStatus'
 import currencyFormat from '../../Util/currencyFormat'
+import Order from '../../Contracts/Models/Order'
 
 const OrderResume: FunctionComponent<OrderResumeScreenProps> = (props) => {
   const { openAlert } = useAlert()
@@ -40,18 +41,31 @@ const OrderResume: FunctionComponent<OrderResumeScreenProps> = (props) => {
       props.screen.close()
     }
   }, [])
-  const [order, setOrder] = useState(() => ({
+  const [order, setOrder] = useState<Partial<Order>>(() => ({
     ...props.order,
-    product_discount: props?.order.product_discount ?? 0,
-    service_discount: props?.order.service_discount ?? 0,
+    product_discount:
+      (props.order?.product_discount ?? 0) *
+      (props.order.product_discount_type === DiscountType.PERCENT ? 100 : 1),
+    service_discount:
+      (props.order?.service_discount ?? 0) *
+      (props.order.service_discount_type === DiscountType.PERCENT ? 100 : 1),
   }))
   const [loadingOrder, loadOrder] = useAsync(async () => {
     try {
       const response = await OrderService.getOne(order.id!)
+      const orderResponse = response.data.data
       setOrder({
-        ...response.data.data,
-        product_discount: (response.data.data?.product_discount ?? 0) * 100,
-        service_discount: (response.data.data?.service_discount ?? 0) * 100,
+        ...orderResponse,
+        product_discount:
+          (orderResponse?.product_discount ?? 0) *
+          (orderResponse.product_discount_type === DiscountType.PERCENT
+            ? 100
+            : 1),
+        service_discount:
+          (orderResponse?.service_discount ?? 0) *
+          (orderResponse.service_discount_type === DiscountType.PERCENT
+            ? 100
+            : 1),
       })
     } catch (error) {
       showErrorToast({
@@ -114,10 +128,18 @@ const OrderResume: FunctionComponent<OrderResumeScreenProps> = (props) => {
       } as Record<string, any>)
   )
 
-  const formatValue = (value: any, type?: DiscountType) => {
+  const formatValue = (value?: number, type?: DiscountType) => {
+    console.log(value, type)
+    if (!type) {
+      return 'Sem desconto'
+    }
     const prefix = DiscountTypeSymbol[type!]
-
-    return prefix + (value?.toFixed(2) ?? 0)
+    let formattedValue = value?.toFixed(2)
+    if (type === DiscountType.VALUE) {
+      formattedValue = currencyFormat(value)
+    }
+    console.log(prefix, formattedValue)
+    return `${prefix}  ${formattedValue}`
   }
 
   const calcValueWithDiscount = (value: any, discount: any, type: any) => {
@@ -283,7 +305,6 @@ const OrderResume: FunctionComponent<OrderResumeScreenProps> = (props) => {
       )
     }
   }
-
   return (
     <Container
       style={{
@@ -390,25 +411,19 @@ const OrderResume: FunctionComponent<OrderResumeScreenProps> = (props) => {
               <InputText
                 label='Desconto em produtos'
                 readOnly
-                value={
-                  order.product_discount
-                    ? (DiscountTypeSymbol[order.service_discount_type!] ?? '') +
-                      ' ' +
-                      order.product_discount?.toFixed(2)
-                    : 'Sem desconto'
-                }
+                value={formatValue(
+                  order.product_discount,
+                  order.product_discount_type
+                )}
                 id=''
               />
               <InputText
                 label='Desconto em serviços'
                 readOnly
-                value={
-                  order.service_discount
-                    ? DiscountTypeSymbol[order.product_discount_type!] +
-                      ' ' +
-                      order.service_discount?.toFixed(2)
-                    : 'Sem desconto'
-                }
+                value={formatValue(
+                  order.service_discount,
+                  order.service_discount_type
+                )}
                 id=''
               />
               <InputText

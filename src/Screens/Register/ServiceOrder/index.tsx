@@ -57,6 +57,7 @@ import { useAuth } from '../../../Hooks/useAuth'
 import useMessageError from '../../../Hooks/useMessageError'
 import Bar from '../../../Components/Layout/Bar'
 import Switch from '../../../Components/ScreenComponents/Switch'
+import strToNumber from '../../../Util/strToNumber'
 
 const discountTypeOptions: Option[] = [
   {
@@ -440,9 +441,13 @@ const OrderServiceCustomer: React.FC<ScreenProps> = ({ screen }) => {
       validity: data.validity,
       reference: data.reference,
       description: data.description,
-      product_discount: data.productDiscount,
+      product_discount:
+        +(data.productDiscount ?? 0) /
+        (data.productDiscountType === DiscountType.PERCENT ? 100 : 1),
       product_discount_type: data.productDiscountType,
-      service_discount: data.serviceDiscount,
+      service_discount:
+        +(data.serviceDiscount ?? 0) /
+        (data.serviceDiscountType === DiscountType.PERCENT ? 100 : 1),
       service_discount_type: data.serviceDiscountType,
     } as Order
   }

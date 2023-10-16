@@ -39,7 +39,7 @@ export const DiscountTypeTranslated = {
 
 export const DiscountTypeSymbol: Record<string, string> = {
   percent: '%',
-  value: 'R$',
+  value: '',
 }
 
 export const getEnumValues = (enumType: any): string[] => {

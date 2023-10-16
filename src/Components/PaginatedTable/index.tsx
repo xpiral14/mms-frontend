@@ -18,6 +18,7 @@ import { Popover2, Popover2InteractionKind } from '@blueprintjs/popover2'
 import { ReportRequestOption } from '../../Contracts/Types/Api'
 import Button from '../Button'
 import { Column, Sort } from '../../Contracts/Components/Table'
+import joinClasses from '../../Util/joinClasses'
 const pageOptions: Option[] = [
   {
     label: '5',
@@ -117,36 +118,42 @@ const PaginatedTable = function <T = any>({
   const paginateOptions = useMemo(
     () =>
       ({
-        breakLinkClassName: `${Classes.BUTTON} ${
-          reloadGrid ? Classes.DISABLED : ''
-        }`,
         disabledClassName: Classes.DISABLED,
         marginPagesDisplayed: 1,
         containerClassName: 'flex',
-        nextLinkClassName: `${Classes.BUTTON} ${
-          reloadGrid ? Classes.DISABLED : ''
-        }`,
-        previousLinkClassName: `${Classes.BUTTON} ${
-          reloadGrid ? Classes.DISABLED : ''
-        }`,
-        activeLinkClassName: `${
-          reloadGrid ? Classes.DISABLED : Classes.INTENT_PRIMARY
-        }`,
-
+        breakLinkClassName: joinClasses({
+          [Classes.BUTTON]: true,
+          [Classes.DISABLED]: reloadGrid,
+        }),
+        nextLinkClassName: joinClasses({
+          [Classes.BUTTON]: true,
+          [Classes.DISABLED]: reloadGrid,
+        }),
+        previousLinkClassName: joinClasses({
+          [Classes.BUTTON]: true,
+          [Classes.DISABLED]: reloadGrid,
+        }),
+        activeLinkClassName: joinClasses({
+          [Classes.DISABLED]: reloadGrid,
+          [Classes.INTENT_PRIMARY]: !reloadGrid,
+        }),
+        pageLinkClassName: joinClasses({
+          [Classes.BUTTON]: true,
+          [Classes.DISABLED]: reloadGrid,
+        }),
         previousLabel: <Icon icon='arrow-left' />,
         nextLabel: <Icon icon='arrow-right' />,
-        pageLinkClassName: `${Classes.BUTTON} ${
-          reloadGrid ? `${Classes.BUTTON} ${Classes.DISABLED}` : ''
-        }`,
-        initialPage: page,
+        initialPage: 0,
+        forcePage: page,
         onPageChange: ({ selected }) => {
           if (reloadGrid) return
           setPage(selected)
           setReloadGrid(true)
         },
         pageCount: gridResponse?.meta.lastPage || 0,
+        activeClassName: Classes.INTENT_PRIMARY,
       } as ReactPaginateProps),
-    [gridResponse, reloadGrid]
+    [gridResponse, reloadGrid, page]
   )
 
   useEffect(() => {
@@ -166,6 +173,7 @@ const PaginatedTable = function <T = any>({
   const handleButtonReloadGridClick = () => setReloadGrid(true)
 
   const handlePageSelectChange = (option: Option) => {
+    setPage(0)
     setReloadGrid(true)
     setLimit(option.value as number)
   }

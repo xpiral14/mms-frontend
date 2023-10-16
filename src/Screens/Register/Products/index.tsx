@@ -236,37 +236,22 @@ const ProductsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
     }
   }
 
-  const handleButtonDeleteProductOnClick = async () => {
+  const handleButtonDeleteProductOnClick = async (stopLoad: StopLoadFunc) => {
     try {
-      const response = await ProductsService.delete(payload.id as number)
+      await ProductsService.delete(payload.id as number)
 
-      if (response.status) {
-        showSuccessToast({
-          message: 'Item deletado com sucesso',
-          intent: Intent.SUCCESS,
-        })
-
-        setPayload({})
-
-        setReloadGrid(true)
-      }
-
-      if (!response) {
-        showErrorToast({
-          message: 'Não foi possível deletar o item selecionado',
-          intent: Intent.DANGER,
-        })
-      }
-    } catch (error: any) {
-      const ErrorMessages = getErrorMessages(
-        error.response?.data?.errors,
-        'Não foi possível deletar o produto'
-      )
-
-      openAlert({
-        text: ErrorMessages,
-        intent: Intent.DANGER,
+      showSuccessToast({
+        message: 'Produto deletado com sucesso',
+        intent: Intent.SUCCESS,
       })
+
+      setPayload({})
+
+      setReloadGrid(true)
+    } catch (error: any) {
+      showErrorMessage(error, 'Não foi possível deletar o produto')
+    } finally {
+      stopLoad()
     }
   }
   const { showErrorMessage } = useMessageError()
@@ -371,11 +356,11 @@ const ProductsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
       screenStatus === ScreenStatus.NEW
         ? handleButtonCreateProductOnClick
         : handleButtonUpdateProductOnClick,
-    handleDeleteButtonOnClick: () => {
+    handleDeleteButtonOnClick: (stopLoad) => {
       openAlert({
         text: 'Deletar o item selecionado?',
         intent: Intent.DANGER,
-        onConfirm: handleButtonDeleteProductOnClick,
+        onConfirm: () => handleButtonDeleteProductOnClick(stopLoad),
         cancelButtonText: 'Cancelar',
       })
     },

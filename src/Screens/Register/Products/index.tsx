@@ -439,7 +439,7 @@ const ProductsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
             disabled={isStatusVizualize()}
             inputStyle={{ minWidth: '260px' }}
             value={payload.name || ''}
-            placeholder='Chave de seta'
+            placeholder='Digite o nome do produto'
             maxLength={90}
             onChange={createOnChange('name')}
           />

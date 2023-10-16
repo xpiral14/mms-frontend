@@ -498,7 +498,6 @@ const BillsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
           {
             name: 'Status da conta',
             keyName: 'status_name',
-            sortable: true,
           },
           {
             name: 'Valor da conta',
@@ -513,7 +512,7 @@ const BillsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
           {
             mimeType: 'text/csv',
             reportType: 'csv',
-            name: 'historico-de-pagamentos'
+            name: 'historico-de-pagamentos',
           },
         ],
       },

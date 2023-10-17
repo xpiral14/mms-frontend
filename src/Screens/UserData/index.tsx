@@ -50,12 +50,12 @@ const UnitsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
 
   const createOnChange =
     (attributeName: keyof typeof payload) =>
-      (evt: React.ChangeEvent<HTMLInputElement>) => {
-        setPayload((prev: any) => ({
-          ...prev,
-          [attributeName]: evt.target.value,
-        }))
-      }
+    (evt: React.ChangeEvent<HTMLInputElement>) => {
+      setPayload((prev: any) => ({
+        ...prev,
+        [attributeName]: evt.target.value,
+      }))
+    }
 
   const onSave = async () => {
     if (!validate()) return
@@ -67,15 +67,10 @@ const UnitsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
         identification: cleanNumericInput(payload.identification),
       })
       showSuccessToast('Dados atualizados com sucesso.')
-      setAuth((prev: any) => ({
-        ...prev,
-        user: {
-          ...prev.user,
-          ...payload,
-        },
-      }))
-
-      setScreenStatus(ScreenStatus.VISUALIZE)
+      setAuth((prev: any) => {
+        prev.user = { ...prev.user, ...payload }
+        return prev
+      })
     } catch (error) {
       showErrormessage(
         error,
@@ -160,11 +155,7 @@ const UnitsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
             id={screen.id + 'user_identification'}
             label={isPersonLegal ? 'CNPJ' : 'CPF'}
             disabled={isScreenStatusVizualize}
-            mask={
-              isPersonLegal
-                ? '99.999.999/9999-99'
-                : '999.999.999-99'
-            }
+            mask={isPersonLegal ? '99.999.999/9999-99' : '999.999.999-99'}
             style={{ flex: 1 }}
             inputStyle={{ width: '100%' }}
             value={payload?.identification ?? ''}

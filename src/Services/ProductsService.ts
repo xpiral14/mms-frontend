@@ -2,9 +2,13 @@ import api from '../Config/api'
 import Product from '../Contracts/Models/Product'
 import Paginated from '../Contracts/Models/Paginated'
 import { ReportRequestOption } from '../Contracts/Types/Api'
+import Response from '../Contracts/Types/Response'
 
 const DEFAULT_PATH = '/products'
 class ProductsService {
+  static async getNextReference() {
+    return (await api.get<Response<{ reference: string }>>(`${DEFAULT_PATH}/next-reference`)).data.data.reference
+  }
   static async rankOfProductsBySale(page: any, limit: number, filters?: Record<string, any>, reportType?: ReportRequestOption) {
     return await api.get<Paginated<{
       'id': number,

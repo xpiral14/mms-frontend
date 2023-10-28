@@ -117,6 +117,12 @@ const ProductsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
     }
   }, [])
 
+  const loadNextProductReference = useCallback(() => {
+    ProductsService.getNextReference().then((reference) =>
+      changePayloadAttribute('reference', reference)
+    )
+  }, [])
+
   const createValidation = (keyName: any) => () =>
     Boolean((payload as any)[keyName])
 
@@ -325,6 +331,7 @@ const ProductsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
 
   const handleButtonNewOnClick = () => {
     setPayload({ price: '0' })
+    loadNextProductReference()
     setScreenStatus(ScreenStatus.NEW)
 
     focusReferenceInput()
@@ -379,7 +386,6 @@ const ProductsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
     <Container style={{ height: 'calc(100% - 40px)' }}>
       <Row>
         <RegistrationButtonBar {...registrationButtonBarProps} />
-        
       </Row>
 
       <Render renderIf={screenStatus !== ScreenStatus.SEE_REGISTERS}>

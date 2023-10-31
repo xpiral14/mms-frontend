@@ -14,7 +14,9 @@ import { AUTH_LOCAL_STORAGE_KEY } from '../Constants'
 import { Permissions } from '../Constants/Enums'
 import Auth from '../Contracts/Models/Auth'
 import Company from '../Contracts/Models/Company'
+import CompanySetting from '../Contracts/Models/CompanySettings'
 import CompanyService from '../Services/CompanyService'
+import CompanySettingsService from '../Services/CompanySettingsService'
 import useMessageError from './useMessageError'
 import { useToast } from './useToast'
 
@@ -26,7 +28,9 @@ const authContext = createContext<{
   hasSomeOfPermissions: (permissions: Permissions[]) => boolean
   hasAllPermissions: (permissions: Permissions[]) => boolean
   hasPermission: (permission: Permissions) => boolean
-    }>(null as any)
+  companySetting: Partial<CompanySetting>
+  reloadCompanySettings: () => void
+}>(null as any)
 
 export const useAuth = () => {
   const context = useContext(authContext)
@@ -44,6 +48,9 @@ const AuthProvider: FC = ({ children }) => {
   })
 
   const [company, setCompany] = useState<Company | null>(null)
+  const [companySetting, setCompanySetting] = useState<Partial<CompanySetting>>(
+    {}
+  )
   const { showErrorToast } = useToast()
   const logout = useCallback(() => {
     localStorage.removeItem(AUTH_LOCAL_STORAGE_KEY)
@@ -91,6 +98,17 @@ const AuthProvider: FC = ({ children }) => {
     getCompany()
   }, [auth?.user.id])
 
+  const reloadCompanySettings = useCallback(() => {
+    CompanySettingsService.getCompanySetting().then((response) =>
+      setCompanySetting(response.data.data)
+    )
+  }, [])
+
+  useEffect(() => {
+    if (!company) return
+    reloadCompanySettings()
+  }, [company, reloadCompanySettings])
+
   const hasAllPermissions = useCallback(
     (permissions: Permissions[]) =>
       permissions.every((permission) =>
@@ -128,8 +146,10 @@ const AuthProvider: FC = ({ children }) => {
       hasAllPermissions,
       hasSomeOfPermissions,
       hasPermission,
+      companySetting,
+      reloadCompanySettings,
     }),
-    [auth, setAuth, logout, company, hasPermission]
+    [auth, setAuth, logout, company, hasPermission, companySetting, reloadCompanySettings]
   )
 
   return <authContext.Provider value={value}>{children}</authContext.Provider>

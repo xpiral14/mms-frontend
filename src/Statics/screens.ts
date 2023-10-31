@@ -191,6 +191,11 @@ const screens = {
     id: 'cost-center-register',
     name: 'Cadastro de unidades',
     path: 'Register/CostCenter',
+  },
+  'settings': {
+    id: 'settings',
+    name: 'Configurações',
+    path: 'Settings',
   }
 } as Screens
 

@@ -75,7 +75,7 @@ const NavBar: React.FC<NavBarProps> = ({ menuItems }) => {
         ) {
           return
         }
-        
+
         if (menu.isMain && menu.screen) {
           return menuArray.push(
             <Button
@@ -154,6 +154,16 @@ const NavBar: React.FC<NavBarProps> = ({ menuItems }) => {
           <Popover2 content={<Notification />} placement='bottom-start'>
             <Button icon='notifications' help='Notificações' />
           </Popover2>
+          <NavbarDivider />
+          <Button
+            icon='cog'
+            help='Configurações'
+            onClick={() =>
+              openScreen({
+                id: 'settings',
+              })
+            }
+          />
           <NavbarDivider />
           <Button
             text='Logout'

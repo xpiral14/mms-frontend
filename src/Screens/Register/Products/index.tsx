@@ -31,6 +31,7 @@ import InputNumber from '../../../Components/InputNumber'
 import strToNumber from '../../../Util/strToNumber'
 import useMessageError from '../../../Hooks/useMessageError'
 import TextArea from '../../../Components/ScreenComponents/TextArea'
+import { useAuth } from '../../../Hooks/useAuth'
 const reports = [
   {
     columns: [
@@ -94,9 +95,9 @@ const ProductsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
     screenStatus,
     setScreenStatus,
   } = useWindow<ProductPayload>()
-
+  const {companySetting} = useAuth()
   const [units, setUnits] = useState<Unit[]>([])
-
+  
   const unitsOptions = useMemo(
     () =>
       units.map((unit) => ({
@@ -419,7 +420,7 @@ const ProductsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
           <InputText
             id='productReference'
             label='Referência:'
-            disabled={isStatusVizualize()}
+            disabled={isStatusVizualize() || companySetting.disable_product_reference_edit}
             intent='primary'
             style={{ width: '20%' }}
             inputStyle={{ width: '100%' }}

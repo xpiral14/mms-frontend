@@ -4,6 +4,8 @@ import Collapse from '../../Components/Collapse'
 import Box from '../../Components/Layout/Box'
 import Row from '../../Components/Layout/Row'
 import InputText from '../../Components/ScreenComponents/InputText'
+import Switch from '../../Components/ScreenComponents/Switch'
+import CompanySetting from '../../Contracts/Models/CompanySettings'
 import { useWindow } from '../../Hooks/useWindow'
 
 const ProductSettings = () => {
@@ -12,7 +14,7 @@ const ProductSettings = () => {
     <Box>
       <Row>
         <Row>
-          <h3 className='text-lg'>Padrão de referência</h3>
+          <h4 className='bp5-heading'>Padrão de referência</h4>
         </Row>
         <Row className='text-gray-500'>
           <p>Esse é o código que será usado para identificar os produtos</p>
@@ -34,6 +36,11 @@ const ProductSettings = () => {
             value={`${payload.product_reference_prefix ?? ''}1234${
               payload.product_reference_suffix ?? ''
             }`}
+          />
+          <Switch
+            className='self-center'
+            name='disable_product_reference_edit'
+            label='Bloquear edição de referência do produto'
           />
         </Row>
       </Row>

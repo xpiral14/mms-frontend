@@ -31,14 +31,16 @@ const Settings = () => {
   }
   return (
     <>
-      <Button
-        text='Salvar'
-        className='absolute right-[5px] z-10'
-        intent={Intent.SUCCESS}
-        icon='floppy-disk'
-        onClick={onSave}
-        loading={loading}
-      />
+      <div className='absolute right-[5px] z-10'>
+        <Button
+          text='Salvar'
+          intent={Intent.SUCCESS}
+          icon='floppy-disk'
+          onClick={onSave}
+          loading={loading}
+        />
+      </div>
+
       <Tabs id='settings-tab' defaultSelectedTabId='product-settings'>
         <Tab
           id='product-settings'

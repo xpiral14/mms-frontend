@@ -73,7 +73,7 @@ const CostCentersScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
       await CostCenterService.create(payload as CostCenter)
 
       showSuccessToast({
-        message: 'Unidade cadastrada com sucesso',
+        message: 'Centro de custo cadastrado com sucesso',
         intent: Intent.SUCCESS,
       })
 
@@ -124,31 +124,24 @@ const CostCentersScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
     }
   }
 
-  const handleButtonDeleteCostCenterOnClick = async () => {
+  const handleButtonDeleteCostCenterOnClick = async (
+    stopLoad: StopLoadFunc
+  ) => {
     try {
-      const response = await CostCenterService.delete(payload.id as number)
+      await CostCenterService.delete(payload.id as number)
 
-      if (response.status) {
-        showSuccessToast({
-          message: 'Item deletado com sucesso',
-          intent: Intent.SUCCESS,
-        })
+      showSuccessToast({
+        message: 'Item deletado com sucesso',
+        intent: Intent.SUCCESS,
+      })
 
-        setPayload({})
-
-        setReloadGrid(true)
-      }
-
-      if (!response) {
-        showErrorToast({
-          message: 'Não foi possível deletar o item selecionado',
-          intent: Intent.DANGER,
-        })
-      }
+      setPayload({})
+      setReloadGrid(true)
+      setScreenStatus(ScreenStatus.SEE_REGISTERS)
     } catch (error: any) {
       const ErrorMessages = getErrorMessages(
         error.response?.data?.errors,
-        'Não foi possível deletar a unidade'
+        'Não foi possível deletar o centro de custo'
       )
 
       openAlert({
@@ -156,7 +149,7 @@ const CostCentersScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
         intent: Intent.DANGER,
       })
     } finally {
-      setScreenStatus(ScreenStatus.SEE_REGISTERS)
+      stopLoad()
     }
   }
 
@@ -228,11 +221,23 @@ const CostCentersScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
       decreaseWindowSize?.()
       focusNameInput()
     },
-    handleDeleteButtonOnClick: () => {
+    handleDeleteButtonOnClick: (stopLoad) => {
       openAlert({
-        text: 'Deletar o item selecionado?',
+        text: (
+          <>
+            <p>Tem certeza que deseja deletar esse centro de custo?</p>
+            <p>
+              <strong>
+                Essa ação irá remover este centro de custo e todos os que estão
+                ligados a ele
+              </strong>
+            </p>
+          </>
+        ),
+        icon: 'trash',
         intent: Intent.DANGER,
-        onConfirm: handleButtonDeleteCostCenterOnClick,
+        onConfirm: () => handleButtonDeleteCostCenterOnClick(stopLoad),
+        onCancel: stopLoad,
         cancelButtonText: 'Cancelar',
       })
     },
@@ -328,7 +333,7 @@ const CostCentersScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
               {
                 mimeType: 'text/csv',
                 reportType: 'csv',
-                name: 'unidades',
+                name: 'centro de custos',
                 responseType: 'text',
               },
             ]}

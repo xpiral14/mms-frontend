@@ -212,6 +212,14 @@ export enum BillStatuses {
   EXPIRED = 'expired',
 }
 
+export enum BillReceiptStatuses {
+  OPENED = 'opened',
+  PARTIALLY_RECEIVED = 'partially_received',
+  PARTIALLY_RECEIVED_EXPIRED = 'partially_received_expired',
+  RECEIVED = 'received',
+  EXPIRED = 'expired',
+}
+
 export const DateFormats = {
   DATE_ONLY: {
     day: '2-digit',

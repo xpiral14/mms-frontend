@@ -148,7 +148,18 @@ const menus = {
           maxHeight: 500,
           ...screens['bill-register'],
           contentSize: '1315 500',
-          headerTitle: 'Lançamento de custos',
+          headerTitle: 'Contas a pagar',
+        },
+      },
+      billReceipt: {
+        name: 'Contas a receber',
+        icon: <MdOutlinePayments size={16} />,
+        screen: {
+          minHeight: 350,
+          maxHeight: 500,
+          ...screens['bill-receipt-register'],
+          contentSize: '1315 500',
+          headerTitle: 'Contas a receber',
         },
       },
       ReceiptsXCosts: {

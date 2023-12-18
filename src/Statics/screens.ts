@@ -97,6 +97,11 @@ const screens = {
     name: 'Contas a pagar',
     path: 'Finance/Bill',
   },
+  'bill-receipt-register': {
+    id: 'bill-receipt-register',
+    name: 'Contas a receber',
+    path: 'Finance/BillReceipt',
+  },
   'bill-payment': {
     id: 'bill-payment',
     name: 'Pagar conta(s)',

@@ -5,7 +5,7 @@ import { isValid, parse } from 'date-fns'
 import { USER_TIMEZONE_NAME } from '../../Constants'
 import { DateFormats } from '../../Constants/Enums'
 
-type Props = {
+export type Props = {
   id: string
   label?: string
   required?: boolean

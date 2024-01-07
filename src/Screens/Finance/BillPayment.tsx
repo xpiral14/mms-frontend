@@ -36,7 +36,7 @@ const BillPayment = (props: BillPaymentScreenProps) => {
   useEffect(() => {
     changePayloadAttribute(
       'bill_transactions',
-      props.bills.map(
+      (props.bills ?? []).map(
         (b) =>
           ({
             bill_id: b.id,

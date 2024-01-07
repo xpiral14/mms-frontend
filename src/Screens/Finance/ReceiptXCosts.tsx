@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Container from '../../Components/Layout/Container'
 import useAsync from '../../Hooks/useAsync'
 import useMessageError from '../../Hooks/useMessageError'
@@ -12,7 +12,7 @@ import {
   XAxis,
   YAxis,
 } from 'recharts'
-import { Colors } from '@blueprintjs/core'
+import { Colors, Intent } from '@blueprintjs/core'
 import ChartService from '../../Services/ChartService'
 import { endOfMonth, format, startOfMonth, subDays, subMonths } from 'date-fns'
 import getDateWithTz from '../../Util/getDateWithTz'
@@ -24,16 +24,13 @@ import ptBR from 'date-fns/locale/pt-BR'
 import capitalize from '../../Util/capitalize'
 import { useWindow } from '../../Hooks/useWindow'
 import joinClasses from '../../Util/joinClasses'
+import InputDate from '../../Components/ScreenComponents/InputDate'
+import Button from '../../Components/Button'
 
-enum GroupType  {
-  CURRENT_MONTH = 1,
-  PREVIOUS_MONTH = 2
-
-}
 
 type Payload = {
-  fromDate: string
-  toDate: string
+  fromDate: Date
+  toDate: Date
   groupType: number
 }
 const ReceiptXCosts = () => {
@@ -46,14 +43,22 @@ const ReceiptXCosts = () => {
   >([])
   const { showErrorMessage: showErrormessage } = useMessageError()
 
-  const { payload, changePayloadAttribute } = useWindow<Payload>()
-  const currentMonth = startOfMonth(new Date())
-  const [loadingChart] = useAsync(async () => {
+  const { payload,  setPayload } = useWindow<Payload>()
+
+  useEffect(() => {
+    setPayload(({
+      fromDate: startOfMonth(new Date()),
+      toDate: endOfMonth(new Date()),
+      groupType: 3
+    }))
+  }, [])
+  const [loadingChart, reloadChart ] = useAsync(async () => {
+    if(!payload.toDate) return
     try {
       const requestPayload = {
         groupType: payload.groupType && payload.groupType < 3 ? 3 : 1,
-        fromDate: (payload.groupType === GroupType.PREVIOUS_MONTH ? subMonths(currentMonth, 1) : currentMonth).toJSON().slice(0, 10),
-        toDate: (payload.groupType === GroupType.PREVIOUS_MONTH ? subDays(currentMonth, 1) : endOfMonth(currentMonth)).toJSON().slice(0, 10),
+        fromDate: (payload.fromDate ?? startOfMonth(new Date())).toISOString().slice(0, 10),
+        toDate: (payload.toDate ?? endOfMonth(new Date())).toISOString().slice(0, 10)
       }
       const response = await ChartService.getReceiptsXCosts(
         requestPayload.fromDate,
@@ -67,40 +72,17 @@ const ReceiptXCosts = () => {
         'não foi possível obter as receitas. Por favor, tente novamente.'
       )
     }
-  }, [payload.groupType])
+  }, [payload])
 
   return (
-    <Container className='h-full w-full flex gap-2'>
-      <Box className='flex-shrink-1'>
+    <Container className="h-full w-full flex flex-column gap-2">
+      <Box>
         <Row>
-          <Select
-            loading={loadingChart}
-            label='Selecione o período'
-            required
-            items={[
-              {
-                label:
-                  'Mês atual ' +
-                  `(${capitalize(
-                    format(new Date(), 'LLLL', { locale: ptBR })
-                  )})`,
-                value: GroupType.CURRENT_MONTH,
-              },
-              {
-                label:
-                  'Mês passado ' +
-                  ` (${capitalize(
-                    format(subMonths(new Date(), 1), 'LLLL', { locale: ptBR })
-                  )})`,
-                value: GroupType.PREVIOUS_MONTH,
-              },
-            ]}
-            onChange={(item) => changePayloadAttribute('groupType', item.value)}
-            activeItem={payload.groupType}
-          />
+          <InputDate name="fromDate" id="fromDate" label="Início" />
+          <InputDate name="toDate" id="toDate" label="Fim" />
         </Row>
       </Box>
-      <Box className={joinClasses({'flex-grow-1': true, 'bp5-skeleton': loadingChart}) }>
+      <Box className='flex-1'>
         <ResponsiveContainer width='100%' height='100%'>
           <BarChart
             width={500}

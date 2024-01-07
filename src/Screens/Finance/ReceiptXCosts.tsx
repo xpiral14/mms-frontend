@@ -57,8 +57,8 @@ const ReceiptXCosts = () => {
     try {
       const requestPayload = {
         groupType: payload.groupType && payload.groupType < 3 ? 3 : 1,
-        fromDate: (payload.fromDate ?? startOfMonth(new Date())).toISOString().slice(0, 10),
-        toDate: (payload.toDate ?? endOfMonth(new Date())).toISOString().slice(0, 10)
+        fromDate: (payload.fromDate ?? startOfMonth(new Date())).toISOString(),
+        toDate: (payload.toDate ?? endOfMonth(new Date())).toISOString()
       }
       const response = await ChartService.getReceiptsXCosts(
         requestPayload.fromDate,

@@ -41,7 +41,7 @@ import {
   startOfMonth,
 } from 'date-fns'
 import { useScreen } from '../../Hooks/useScreen'
-import { BillReceiptPaymentProps } from './BillReceiptToReceive'
+import { billReceiptReception } from './BillReceiptReception'
 import useAsync from '../../Hooks/useAsync'
 import strToNumber from '../../Util/strToNumber'
 import CostCenterService from '../../Services/CostCenterService'
@@ -567,6 +567,22 @@ const BillReceiptsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
   const isSelected = (
     row: import('/home/samreis/Documents/work/mms/mms-frontend/src/Contracts/Components/PaginatadeTable').Row<BillReceipt>
   ): boolean => selectedBillReceipts.some((bill) => bill.id === row.id)
+  let onClickReceiveBill = () => {
+    openSubScreen<billReceiptReception>(
+      {
+        id: 'bill-receipt-reception',
+      },
+      screen.id,
+      {
+        billReceipts: selectedBillReceipts as any,
+        onPay: () => {
+          setSelectedBillReceipts([])
+          reloadSummary()
+          setReloadGrid(true)
+        },
+      }
+    )
+  }
   return (
     <Container style={{ height: 'calc(100% - 40px)' }}>
       <Row>
@@ -583,24 +599,9 @@ const BillReceiptsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
                 selectedBillReceipts.some((b) => b.status === BillReceiptStatuses.RECEIVED)
               }
               className='font-bold'
-              onClick={() => {
-                openSubScreen<BillReceiptPaymentProps>(
-                  {
-                    id: 'bill-payment',
-                  },
-                  screen.id,
-                  {
-                    billReceipts: selectedBillReceipts as any,
-                    onPay: () => {
-                      setSelectedBillReceipts([])
-                      reloadSummary()
-                      setReloadGrid(true)
-                    },
-                  }
-                )
-              }}
+              onClick={onClickReceiveBill}
             >
-              Pagar conta{selectedBillReceipts.length > 1 && 's'}
+              Receber conta{selectedBillReceipts.length > 1 && 's'}
             </Button>
             <Render renderIf={screenStatus === ScreenStatus.SEE_REGISTERS}>
               <Button

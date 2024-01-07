@@ -208,10 +208,17 @@ const Table = function <T = any>(props: TableProps<T>) {
                     props.onRowsSelect?.([row])
                     return
                   }
-
-                  if (!e.shiftKey) return
-
                   const isRowSelected = props.isSelected?.(row)
+
+                  if (!e.shiftKey) {
+                    if(!isRowSelected){
+                      props.onRowsSelect?.([row])
+                    } else {
+                      props.unselectRows?.([row])
+                    }
+                    return
+                  }
+
                   if (isRowSelected) {
                     const index = getNearestSelectedRowIndex(rowIndex)
                     props.unselectRows?.(rows.slice(index, rowIndex + 1))

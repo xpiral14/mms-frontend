@@ -24,10 +24,10 @@ import UnitService from '../../../Services/UnitService'
 import Select from '../../../Components/Select'
 import Render from '../../../Components/Render'
 import Container from '../../../Components/Layout/Container'
-import NumericInput from '../../../Components/NumericInput'
 import { Column } from '../../../Contracts/Components/Table'
 import InputNumber from '../../../Components/InputNumber'
 import strToNumber from '../../../Util/strToNumber'
+import currencyFormat from '../../../Util/currencyFormat'
 
 const ServiceScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
   const { payload, setPayload, screenStatus, setScreenStatus } =
@@ -207,17 +207,19 @@ const ServiceScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
           name: 'Nome',
           keyName: 'name',
           sortable: true,
-          style: {
-            width: '100%',
-            minWidth: '100%',
-          },
+        },
+        {
+          name: 'Valor',
+          keyName: 'price',
+          formatText: r => currencyFormat(r?.price),
+          sortable: true,
         },
         {
           id: 3,
           name: 'Descrição',
           keyName: 'description',
         },
-      ] as Column[],
+      ] as Column<Service>[],
     []
   )
 

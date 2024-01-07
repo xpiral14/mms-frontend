@@ -36,6 +36,8 @@ import getDateWithTz from '../../Util/getDateWithTz'
 import keysToCamel from '../../Util/keysToKamel'
 import useMessageError from '../../Hooks/useMessageError'
 import InputText from '../../Components/InputText'
+import InputNumber from '../../Components/ScreenComponents/InputNumber'
+import strToNumber from '../../Util/strToNumber'
 
 interface Payload extends Omit<Cost, 'date'> {
   date: Date
@@ -152,6 +154,7 @@ const CostPosting: FC<CostPostScreenProps> = ({ screen, ...props }) => {
     try {
       await CostService.save({
         ...payload,
+        value: payload.value ? strToNumber(payload.value) : 0,
         date: format(payload.date ?? new Date(), 'yyyy-MM-dd'),
       })
       cleanPayload()
@@ -173,6 +176,7 @@ const CostPosting: FC<CostPostScreenProps> = ({ screen, ...props }) => {
     try {
       await CostService.update({
         ...payload,
+        value: payload.value ? strToNumber(payload.value) : 0,
         date: format(payload.date ?? new Date(), 'yyyy-MM-dd'),
       })
       showSuccessToast('Receita atualizada com sucesso!')
@@ -283,16 +287,14 @@ const CostPosting: FC<CostPostScreenProps> = ({ screen, ...props }) => {
               }
               activeItem={payload?.type}
             />
-            <NumericInput
+            <InputNumber
               required
-              disabled={isScreenStatusVizualize}
+              format='currency'
+              disabled={isScreenStatusVizualize || isScreenStatusEdit}
               id={screen.id + 'cost_value'}
               label='Valor'
               value={payload.value ?? 0}
-              selectAllOnFocus
-              onValueChange={(v, vS) =>
-                setPayload((p) => ({ ...p, value: vS as any }))
-              }
+              name='value'
             />
             <InputDate
               id={screen.id + 'cost_date'}

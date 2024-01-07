@@ -5,31 +5,17 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="79e2c5f6-2a38-41a8-86d5-8d43eb801e3b" name="Changes" comment="feat: added screen to added products to good">
-      <change afterPath="$PROJECT_DIR$/src/Components/Select/styles.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/Contracts/Models/DistributedGoodProduct.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/Contracts/Screen/DistributeGoods/index.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/Screens/DistributeGoods/DistributeGoodProduct.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/Screens/DistributeGoods/index.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/Util/addEllipsis.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/Components/ScreenComponents/InputDate.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/App.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/App.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Components/Collapse/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/Components/Collapse/index.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Components/Select/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/Components/Select/index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Components/InputDate/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/Components/InputDate/index.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Contracts/Hooks/useScreen.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/Contracts/Hooks/useScreen.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Contracts/Models/Product.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/Contracts/Models/Product.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Contracts/Models/ProductStock.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/Contracts/Models/ProductStock.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Contracts/Models/Stock.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/Contracts/Models/Stock.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Hooks/useAuth.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/Hooks/useAuth.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Hooks/useMessageError.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/Hooks/useMessageError.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Pages/Index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/Pages/Index.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Routes/Route.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/Routes/Route.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Screens/Register/Goods/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/Screens/Register/Goods/index.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Services/AuthService.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/Services/AuthService.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Services/GoodService.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/Services/GoodService.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Services/StockService.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/Services/StockService.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Screens/Finance/BillPayment.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/Screens/Finance/BillPayment.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Screens/Finance/BillReceipt.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/Screens/Finance/BillReceipt.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Screens/Finance/BillReceiptToReceive.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/Screens/Finance/BillReceiptReception.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Screens/Finance/ReceiptXCosts.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/Screens/Finance/ReceiptXCosts.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Screens/Register/Service/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/Screens/Register/Service/index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Statics/menu.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/Statics/menu.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Statics/screens.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/Statics/screens.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Util/getCookie.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/Util/getCookie.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -57,10 +43,42 @@
         <option value="Samuel Araujo Reis &lt;sa.reis1999@gmail.com&gt;" />
       </list>
     </option>
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="main" />
+      </map>
+    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="GitToolBoxStore">
     <option name="projectConfigVersion" value="5" />
+    <option name="recentBranches">
+      <RecentBranches>
+        <option name="branchesForRepo">
+          <list>
+            <RecentBranchesForRepo>
+              <option name="branches">
+                <list>
+                  <RecentBranch>
+                    <option name="branchName" value="feature/billsToReceive" />
+                    <option name="lastUsedInstant" value="1704636376" />
+                  </RecentBranch>
+                  <RecentBranch>
+                    <option name="branchName" value="main" />
+                    <option name="lastUsedInstant" value="1704636188" />
+                  </RecentBranch>
+                  <RecentBranch>
+                    <option name="branchName" value="feature/trial" />
+                    <option name="lastUsedInstant" value="1704636120" />
+                  </RecentBranch>
+                </list>
+              </option>
+              <option name="repositoryRootUrl" value="file://$PROJECT_DIR$" />
+            </RecentBranchesForRepo>
+          </list>
+        </option>
+      </RecentBranches>
+    </option>
   </component>
   <component name="MacroExpansionManager">
     <option name="directoryName" value="447aumdo" />
@@ -77,23 +95,23 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;feature/suppliers&quot;,
-    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/sarei/Documents/work/mms/mms-frontend&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;yarn&quot;,
-    &quot;ts.external.directory.path&quot;: &quot;C:\\Users\\sarei\\Documents\\work\\mms\\mms-frontend\\node_modules\\typescript\\lib&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "git-widget-placeholder": "feature/billsToReceive",
+    "ignore.virus.scanning.warn.message": "true",
+    "last_opened_file_path": "C:/Users/sarei/Documents/work/mms/mms-frontend",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "yarn",
+    "ts.external.directory.path": "C:\\Users\\sarei\\Documents\\work\\mms\\mms-frontend\\node_modules\\typescript\\lib",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">

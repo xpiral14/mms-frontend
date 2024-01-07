@@ -97,6 +97,11 @@ const screens = {
     name: 'Contas a pagar',
     path: 'Finance/Bill',
   },
+  'bill-receipt-register': {
+    id: 'bill-receipt-register',
+    name: 'Contas a receber',
+    path: 'Finance/BillReceipt',
+  },
   'bill-payment': {
     id: 'bill-payment',
     name: 'Pagar conta(s)',
@@ -196,6 +201,11 @@ const screens = {
     id: 'settings',
     name: 'Configurações',
     path: 'Settings',
+  },
+  'bill-receipt-reception': {
+    id: 'bill-receipt-reception',
+    name: 'Receber conta',
+    path: 'Finance/BillReceiptReception',
   }
 } as Screens
 

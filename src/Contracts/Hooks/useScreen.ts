@@ -34,6 +34,8 @@ export type ScreenIds =
   | 'bill-payment'
   | 'cost-center-register'
   | 'settings'
+  | 'bill-receipt-register'
+  | 'bill-receipt-reception'
 export interface ScreenData {
   id: ScreenIds
   name: string

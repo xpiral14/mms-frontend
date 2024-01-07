@@ -7,7 +7,7 @@ interface InputNumberProps<T = any> extends Omit<Default, 'name' | 'onChange'> {
 }
 function InputDate<T = any>({ name, ...props }: InputNumberProps<T>) {
   const { changePayloadAttribute, payload } = useWindow()
-  let onChange = useCallback((v) => {
+  const onChange = useCallback((v) => {
     changePayloadAttribute(name, v)
   }, [changePayloadAttribute])
   return (

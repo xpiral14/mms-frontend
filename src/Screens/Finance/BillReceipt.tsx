@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { ButtonGroup, Card, Colors, Intent } from '@blueprintjs/core'
 import { CSSProperties, useCallback, useMemo, useState } from 'react'
 import { MdOutlinePayments } from 'react-icons/md'
@@ -518,7 +517,7 @@ const BillReceiptsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
     ],
   }
 
-  const onRowSelect = useCallback((row: BillReceipt) => {
+  const onRowSelect = useCallback((row: TableRowProps<BillReceipt>) => {
     setSelectedBillReceipts((prev) => {
       if (prev.some((bill) => bill.id === row.id)) {
         return prev.filter((bill) => bill.id !== row.id)
@@ -566,7 +565,7 @@ const BillReceiptsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
   const isSelected = (
     row: TableRowProps<BillReceipt>
   ): boolean => selectedBillReceipts.some((bill) => bill.id === row.id)
-  let onClickReceiveBill = () => {
+  const onClickReceiveBill = () => {
     openSubScreen<billReceiptReception>(
       {
         id: 'bill-receipt-reception',
@@ -619,19 +618,19 @@ const BillReceiptsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
             <div>
               <Row>
                 <Card
-                  className='py-2 px-3 text-white font-bold text-xs'
+                  className='px-3 py-2 text-xs font-bold text-white'
                   style={{ backgroundColor: Colors.RED3 }}
                 >
                   Contas vencidas: {monthSummary?.expired}
                 </Card>
                 <Card
-                  className='py-2 px-3 text-white font-bold text-xs'
+                  className='px-3 py-2 text-xs font-bold text-white'
                   style={{ backgroundColor: Colors.ORANGE3 }}
                 >
                   Contas pendentes: {monthSummary?.opened}
                 </Card>
                 <Card
-                  className='py-2 px-3 text-white font-bold text-xs'
+                  className='px-3 py-2 text-xs font-bold text-white'
                   style={{ backgroundColor: Colors.GREEN3 }}
                 >
                   Contas recebidas: {monthSummary?.received}
@@ -769,22 +768,22 @@ const BillReceiptsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
 
 function getRowStyle(row: RowType<BillReceipt>): CSSProperties {
   switch (row.status) {
-    case BillReceiptStatuses.RECEIVED:
-      return {
-        backgroundColor: Colors.GREEN3,
-        color: `${Colors.WHITE}`,
-      }
-    case BillReceiptStatuses.EXPIRED:
-      return {
-        backgroundColor: Colors.RED3,
-        color: 'white',
-      }
-    case BillReceiptStatuses.OPENED:
-    default:
-      return {
-        backgroundColor: Colors.ORANGE3,
-        color: 'white',
-      }
+  case BillReceiptStatuses.RECEIVED:
+    return {
+      backgroundColor: Colors.GREEN3,
+      color: `${Colors.WHITE}`,
+    }
+  case BillReceiptStatuses.EXPIRED:
+    return {
+      backgroundColor: Colors.RED3,
+      color: 'white',
+    }
+  case BillReceiptStatuses.OPENED:
+  default:
+    return {
+      backgroundColor: Colors.ORANGE3,
+      color: 'white',
+    }
   }
 }
 export default BillReceiptsScreen

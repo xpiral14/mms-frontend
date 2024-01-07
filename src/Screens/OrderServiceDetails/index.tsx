@@ -368,7 +368,7 @@ const OrderServiceDetails: FunctionComponent<OrderServiceDetailScreenProps> = (
 
   return (
     <Container>
-      <Row className='w-full mb-2'>
+      <Row className='mb-2 w-full'>
         <Bar style={{ display: 'flex', justifyContent: 'space-between' }}>
           <Button
             intent={Intent.SUCCESS}
@@ -429,7 +429,7 @@ const OrderServiceDetails: FunctionComponent<OrderServiceDetailScreenProps> = (
                 })
               }
               title={
-                <Row className='flex-between w-full'>
+                <Row className='w-full flex-between'>
                   <span>{orderService.service_name}</span>
                   <ButtonGroup>
                     <Render renderIf={!orderService.isEditMode}>
@@ -485,7 +485,7 @@ const OrderServiceDetails: FunctionComponent<OrderServiceDetailScreenProps> = (
                   />
                 </section>
 
-                <section className='flex-between flex'>
+                <section className='flex flex-between'>
                   <Render renderIf={Boolean(orderService.service_unit_id)}>
                     <InputText
                       readOnly

@@ -30,7 +30,7 @@ const authContext = createContext<{
   hasPermission: (permission: Permissions) => boolean
   companySetting: Partial<CompanySetting>
   reloadCompanySettings: () => void
-}>(null as any)
+    }>(null as any)
 
 export const useAuth = () => {
   const context = useContext(authContext)

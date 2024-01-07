@@ -21,7 +21,7 @@ export default function keysToCamel(o: any): any {
     return n
   }
   if (Array.isArray(o)) {
-    return o.map(i => keysToCamel(i))
+    return o!.map(i => keysToCamel(i))
   }
 
   return o

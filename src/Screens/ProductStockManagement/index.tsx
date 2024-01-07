@@ -700,7 +700,7 @@ const ProductStockManagement: React.FC<ProductStockScreenProps> = ({
         </Box>
       </Render>
       <Render renderIf={screenStatus === ScreenStatus.SEE_REGISTERS}>
-        <Row className='h-full mt-2'>
+        <Row className='mt-2 h-full'>
           <PaginatedTable<ProductStock>
             height='100%'
             onRowSelect={onRowSelect}

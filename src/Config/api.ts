@@ -9,7 +9,7 @@ const api = axios.create({
 })
 
 api.interceptors.request.use((value => {
-  value.headers['X-USER-TIMEZONE'] = USER_TIMEZONE_NAME;
+  value.headers['X-USER-TIMEZONE'] = USER_TIMEZONE_NAME
   const { notCamel, ...data } = value?.data ?? {}
   if (notCamel) {
     value.data = data

@@ -43,7 +43,7 @@ const CostCentersScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
   const { validate } = useValidation(validations)
 
   const { setReloadGrid } = useGrid()
-  const { showErrorToast, showSuccessToast } = useToast()
+  const { showSuccessToast } = useToast()
   const { openAlert } = useAlert()
 
   const isStatusVizualize = () =>

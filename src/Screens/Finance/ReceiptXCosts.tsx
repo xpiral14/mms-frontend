@@ -12,20 +12,15 @@ import {
   XAxis,
   YAxis,
 } from 'recharts'
-import { Colors, Intent } from '@blueprintjs/core'
+import { Colors } from '@blueprintjs/core'
 import ChartService from '../../Services/ChartService'
-import { endOfMonth, format, startOfMonth, subDays, subMonths } from 'date-fns'
+import { endOfMonth, startOfMonth } from 'date-fns'
 import getDateWithTz from '../../Util/getDateWithTz'
 import currencyFormat from '../../Util/currencyFormat'
 import Row from '../../Components/Layout/Row'
 import Box from '../../Components/Layout/Box'
-import Select from '../../Components/Select'
-import ptBR from 'date-fns/locale/pt-BR'
-import capitalize from '../../Util/capitalize'
 import { useWindow } from '../../Hooks/useWindow'
-import joinClasses from '../../Util/joinClasses'
 import InputDate from '../../Components/ScreenComponents/InputDate'
-import Button from '../../Components/Button'
 
 
 type Payload = {
@@ -52,7 +47,8 @@ const ReceiptXCosts = () => {
       groupType: 3
     }))
   }, [])
-  const [loadingChart, reloadChart ] = useAsync(async () => {
+
+  useAsync(async () => {
     if(!payload.toDate) return
     try {
       const requestPayload = {
@@ -75,7 +71,7 @@ const ReceiptXCosts = () => {
   }, [payload])
 
   return (
-    <Container className="h-full w-full flex flex-column gap-2">
+    <Container className="flex h-full w-full gap-2 flex-column">
       <Box>
         <Row>
           <InputDate  timePrecision='minute' name="fromDate" id="fromDate" label="Início" />
@@ -113,7 +109,7 @@ const ReceiptXCosts = () => {
                 const data = payload?.[0]?.payload
                 return (
                   <div
-                    className='p-2 shadow-sm rounded'
+                    className='rounded p-2 shadow-sm'
                     style={{ backgroundColor: 'white' }}
                   >
                     <p style={{ borderBottom: '1px solid #0011' }}>

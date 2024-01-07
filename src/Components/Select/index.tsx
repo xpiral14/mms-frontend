@@ -231,7 +231,7 @@ export default function Select<T = any>({
             intent={props.intent ?? activeOption?.intent}
             disabled={props.disabled}
             {...props?.buttonProps}
-            className='flex-1 w-full'
+            className='w-full flex-1'
           >
             {activeOption?.label ||
               props.defaultButtonText ||

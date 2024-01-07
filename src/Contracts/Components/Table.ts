@@ -25,21 +25,25 @@ export type Sort = 'asc' | 'desc' | 'none'
 export type Sorts<T = any> = Record<keyof T | string, Sort>
 
 export type TableProps<T = Record<string, any>> = {
-  height?: string
-  isSelected?: (row: Row<T>) => boolean
-  onRowSelect?: (row: Row<T>) => void
-  rowKey?: (row: Row<T>) => string | number
-  renderFooter?: (columns: Column<T>[], rows: Row<T>[]) => React.ReactElement
+  allowMultiSelect?: boolean
   columns: Column<T>[]
-  rows: Row<T>[]
-  onFilter?: ((filters: Filters) => void) | ((filters: Filters) => Promise<void>)
   filter?: Filters
+  height?: string
+  interactive?: boolean
+  isSelected?: (row: Row<T>) => boolean
   loading?: boolean
   noHeader?: boolean
-  stripped?: boolean
-  interactive?: boolean
-  rowStyle?: (r: Row<T>) => CSSProperties
-  rowClassNames?: ((r: Row<T>) => string | undefined) | string | undefined
-  sorts?: Sorts<T>
+  onFilter?: ((filters: Filters) => void) | ((filters: Filters) => Promise<void>)
+  onRowSelect?: (row: Row<T>) => void
+  onRowsSelect?: (rows: Row<T>[]) => void
   onSortChange?: (column: Column<T>, sort: Sort) => void
+  renderFooter?: (columns: Column<T>[], rows: Row<T>[]) => React.ReactElement
+  rowClassNames?: ((r: Row<T>) => string | undefined) | string | undefined
+  rowKey?: (row: Row<T>) => string | number
+  rowStyle?: (r: Row<T>) => CSSProperties
+  rows: Row<T>[]
+  selectable?: boolean
+  sorts?: Sorts<T>
+  stripped?: boolean
+  unselectRows?: (row: Row<T>[]) => void
 }

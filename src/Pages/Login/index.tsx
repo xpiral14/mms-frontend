@@ -7,7 +7,7 @@ import AuthService from '../../Services/AuthService'
 import { useAuth } from '../../Hooks/useAuth'
 import { useHistory } from 'react-router-dom'
 import { useToast } from '../../Hooks/useToast'
-
+import myImage from '/public/Images/logo-sam-reis.svg'
 enum PageMode {
   LOGIN = 'login',
   RESET_PASSWORD = 'reset_password',
@@ -54,8 +54,8 @@ const LoginPage = () => {
 
   return (
     <Container>
-      <div className='px-4' style={{ flex: 1, maxWidth: 700 }}>
-        <h1>Sam Reis ERP</h1>
+      <div className='flex items-center px-4 flex-column' style={{ flex: 1, maxWidth: 700 }}>
+        <img src={myImage} alt='Logo da Sam reis Tecnologia' />
         <p>
           Bem vindos ao sistema completo para o gerenciamento de sua empresa. 
         </p>
@@ -136,6 +136,7 @@ const LoginPage = () => {
           <Button
             className='mt-3'
             small
+            minimal
             onClick={() => setPageMode(PageMode.RESET_PASSWORD)}
           >
             {' '}

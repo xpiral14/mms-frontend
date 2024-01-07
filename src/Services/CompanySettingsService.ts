@@ -1,6 +1,6 @@
-import api from "../Config/api"
-import CompanySetting from "../Contracts/Models/CompanySettings"
-import Response from "../Contracts/Types/Response"
+import api from '../Config/api'
+import CompanySetting from '../Contracts/Models/CompanySettings'
+import Response from '../Contracts/Types/Response'
 
 export default {
   saveCompanySetting: (companySetting: any) => {

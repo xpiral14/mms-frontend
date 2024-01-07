@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { ButtonGroup, Card, Colors, Intent } from '@blueprintjs/core'
 import { CSSProperties, useCallback, useMemo, useState } from 'react'
 import { MdOutlinePayments } from 'react-icons/md'
@@ -8,6 +7,7 @@ import InputNumber from '../../Components/InputNumber'
 import Bar from '../../Components/Layout/Bar'
 import Container from '../../Components/Layout/Container'
 import Row from '../../Components/Layout/Row'
+import { Row as RowTableProps } from '../../Contracts/Components/PaginatadeTable'
 import PaginatedTable from '../../Components/PaginatedTable'
 import RegistrationButtonBar from '../../Components/RegistrationButtonBar'
 import Render from '../../Components/Render'
@@ -28,15 +28,13 @@ import { useGrid } from '../../Hooks/useGrid'
 import { useToast } from '../../Hooks/useToast'
 import useValidation from '../../Hooks/useValidation'
 import { useWindow } from '../../Hooks/useWindow'
-import BillService, { MonthSummary } from '../../Services/BillService'
+import BillService from '../../Services/BillService'
 import SupplierService from '../../Services/SupplierService'
 import currencyFormat from '../../Util/currencyFormat'
 import useMessageError from '../../Hooks/useMessageError'
 import {
   addYears,
   endOfDay,
-  format,
-  parse,
   startOfDay,
   startOfMonth,
 } from 'date-fns'
@@ -119,7 +117,7 @@ const BillsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
   const { validate } = useValidation(validations)
 
   const { setReloadGrid } = useGrid()
-  const { showErrorToast, showSuccessToast } = useToast()
+  const { showSuccessToast } = useToast()
   const { openAlert } = useAlert()
 
   const isStatusVisualize = Boolean(screenStatus === ScreenStatus.VISUALIZE)
@@ -519,11 +517,21 @@ const BillsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
     ],
   }
 
-  const onRowSelect = useCallback((row: Bill) => {
+  const onRowsSelect = useCallback((rows: RowTableProps<Bill>[]) => {
+    if (!rows.length) return
     setSelectedBills((prev) => {
+      if (rows.length > 1) {
+        setSelectedBills((rows as RowTableProps<Bill>[]).map(r => ({
+          ...r,
+          due_date: new Date(r.due_date as string),
+          opening_date: new Date(r.opening_date as string),
+        })))
+      }
+      const row = (rows as RowTableProps<Bill>[])[0]
       if (prev.some((bill) => bill.id === row.id)) {
         return prev.filter((bill) => bill.id !== row.id)
       }
+
       return [
         ...prev,
         {
@@ -565,7 +573,7 @@ const BillsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
     r.status != 'opened' ? 'text-white' : undefined
   const rowKey = (r: Bill) => r.id
   const isSelected = (
-    row: import('/home/samreis/Documents/work/mms/mms-frontend/src/Contracts/Components/PaginatadeTable').Row<Bill>
+    row: RowTableProps<Bill>,
   ): boolean => selectedBills.some((bill) => bill.id === row.id)
   return (
     <Container style={{ height: 'calc(100% - 40px)' }}>
@@ -619,19 +627,19 @@ const BillsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
             <div>
               <Row>
                 <Card
-                  className='py-2 px-3 text-white font-bold text-xs'
+                  className='px-3 py-2 text-xs font-bold text-white'
                   style={{ backgroundColor: Colors.RED3 }}
                 >
                   Contas vencidas: {monthSummary?.expired}
                 </Card>
                 <Card
-                  className='py-2 px-3 text-white font-bold text-xs'
+                  className='px-3 py-2 text-xs font-bold text-white'
                   style={{ backgroundColor: Colors.ORANGE3 }}
                 >
                   Contas pendentes: {monthSummary?.opened}
                 </Card>
                 <Card
-                  className='py-2 px-3 text-white font-bold text-xs'
+                  className='px-3 py-2 text-xs font-bold text-white'
                   style={{ backgroundColor: Colors.GREEN3 }}
                 >
                   Contas pagas: {monthSummary?.paid}
@@ -741,8 +749,12 @@ const BillsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
       <Render renderIf={screenStatus === ScreenStatus.SEE_REGISTERS}>
         <Row style={{ height: 'calc(100% - 45px)' }}>
           <PaginatedTable<Bill>
+            allowMultiSelect
             height='100%'
-            onRowSelect={onRowSelect}
+            onRowsSelect={onRowsSelect}
+            unselectRows={(r) => {
+              setSelectedBills(prev => prev.filter(sr => !r.some(rns => rns.id == sr.id)))
+            }}
             request={BillService.getAll}
             containerProps={containerProps}
             columns={columns}
@@ -769,22 +781,22 @@ const BillsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
 
 function getRowStyle(row: RowType<Bill>): CSSProperties {
   switch (row.status) {
-    case 'paid':
-      return {
-        backgroundColor: Colors.GREEN3,
-        color: `${Colors.WHITE}`,
-      }
-    case 'expired':
-      return {
-        backgroundColor: Colors.RED3,
-        color: 'white',
-      }
-    case 'opened':
-    default:
-      return {
-        backgroundColor: Colors.ORANGE3,
-        color: 'white',
-      }
+  case 'paid':
+    return {
+      backgroundColor: Colors.GREEN3,
+      color: `${Colors.WHITE}`,
+    }
+  case 'expired':
+    return {
+      backgroundColor: Colors.RED3,
+      color: 'white',
+    }
+  case 'opened':
+  default:
+    return {
+      backgroundColor: Colors.ORANGE3,
+      color: 'white',
+    }
   }
 }
 export default BillsScreen

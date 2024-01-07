@@ -50,12 +50,12 @@ const UnitsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
 
   const createOnChange =
     (attributeName: keyof typeof payload) =>
-    (evt: React.ChangeEvent<HTMLInputElement>) => {
-      setPayload((prev: any) => ({
-        ...prev,
-        [attributeName]: evt.target.value,
-      }))
-    }
+      (evt: React.ChangeEvent<HTMLInputElement>) => {
+        setPayload((prev: any) => ({
+          ...prev,
+          [attributeName]: evt.target.value,
+        }))
+      }
 
   const onSave = async () => {
     if (!validate()) return

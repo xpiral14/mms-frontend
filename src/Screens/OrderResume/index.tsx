@@ -145,12 +145,12 @@ const OrderResume: FunctionComponent<OrderResumeScreenProps> = (props) => {
   const calcValueWithDiscount = (value: any, discount: any, type: any) => {
     let finalValue = value
     switch (type) {
-      case DiscountType.PERCENT:
-        finalValue = value - value * (discount / 100)
-        break
-      case DiscountType.VALUE:
-        finalValue = value - discount
-        break
+    case DiscountType.PERCENT:
+      finalValue = value - value * (discount / 100)
+      break
+    case DiscountType.VALUE:
+      finalValue = value - discount
+      break
     }
 
     if (finalValue < 0) {
@@ -330,7 +330,7 @@ const OrderResume: FunctionComponent<OrderResumeScreenProps> = (props) => {
         </Bar>
       </Row>
 
-      <Row className='w-full mb-3'>
+      <Row className='mb-3 w-full'>
         <Box className='w-full'>
           <Collapse
             title={
@@ -345,7 +345,7 @@ const OrderResume: FunctionComponent<OrderResumeScreenProps> = (props) => {
             onChange={() => setIsCustomerCollapsed((prev) => !prev)}
           >
             <Render renderIf={!loadingCustomers}>
-              <Row className='flex align-center w-full'>
+              <Row className='flex w-full align-center'>
                 <InputText
                   id=''
                   style={{
@@ -387,7 +387,7 @@ const OrderResume: FunctionComponent<OrderResumeScreenProps> = (props) => {
           </Collapse>
         </Box>
       </Row>
-      <Row className='w-full mb-3'>
+      <Row className='mb-3 w-full'>
         <Box className='w-full'>
           <Collapse
             isCollapsed={loadingOrder}
@@ -436,7 +436,7 @@ const OrderResume: FunctionComponent<OrderResumeScreenProps> = (props) => {
           </Collapse>
         </Box>
       </Row>
-      <Row className='w-full mb-3'>
+      <Row className='mb-3 w-full'>
         <Box className='w-full'>
           <Collapse
             title={

@@ -1,4 +1,4 @@
-export function isValidIsoDate(dateString: string): boolean {
+export function isValidIsoDate(dateString?: string): boolean {
   // Check if the argument is a string
   if (typeof dateString !== 'string') {
     return false

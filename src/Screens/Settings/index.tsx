@@ -31,7 +31,7 @@ const Settings = () => {
   }
   return (
     <>
-      <div className='absolute right-[5px] z-10'>
+      <div className='absolute z-10 right-[5px]'>
         <Button
           text='Salvar'
           intent={Intent.SUCCESS}

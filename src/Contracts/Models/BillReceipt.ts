@@ -1,4 +1,4 @@
-import { BillReceiptStatuses, BillStatuses, PaymentTypes } from '../../Constants/Enums'
+import { BillReceiptStatuses, PaymentTypes } from '../../Constants/Enums'
 import Supplier from './Supplier'
 import Transaction from './Transaction'
 

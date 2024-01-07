@@ -395,7 +395,7 @@ const OrderProductDetails: FunctionComponent<OrderProductDetailsScreenProps> = (
   )
   return (
     <Container>
-      <Row className='w-full mb-2'>
+      <Row className='mb-2 w-full'>
         <Bar style={{ display: 'flex', justifyContent: 'space-between' }}>
           <Button
             intent={Intent.SUCCESS}
@@ -460,7 +460,7 @@ const OrderProductDetails: FunctionComponent<OrderProductDetailsScreenProps> = (
               isCollapsed={orderProduct.isCollapsed}
               onChange={onCollapseChange}
               title={
-                <Row className='flex-between w-full'>
+                <Row className='w-full flex-between'>
                   <span>{orderProduct.product_name}</span>
                   <ButtonGroup>
                     <Render renderIf={!orderProduct.isEditMode}>
@@ -510,7 +510,7 @@ const OrderProductDetails: FunctionComponent<OrderProductDetailsScreenProps> = (
                   />
                 </section>
 
-                <section className='flex-between flex'>
+                <section className='flex flex-between'>
                   <InputText
                     readOnly
                     label='Valor por unidade'

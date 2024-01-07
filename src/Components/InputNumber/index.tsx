@@ -7,7 +7,7 @@ import CurrencyInput, { CurrencyInputProps } from 'react-currency-input-field'
 import Button from '../Button'
 
 export interface InputNumberProps
-  extends Omit<InputProps, 'ref' | 'defaultValue' | 'ref' | 'step' | 'type'>,
+  extends Omit<InputProps, 'ref' | 'defaultValue' | 'step' | 'type'>,
     CurrencyInputProps {
   integerOnly?: boolean
   format?: 'currency'
@@ -100,7 +100,7 @@ const InputNumber = (props: InputNumberProps) => {
       />
       <ButtonGroup
         vertical
-        className='bp5-fixed ml-2'
+        className='ml-2 bp5-fixed'
         style={{ marginLeft: 4 }}
       >
         <button

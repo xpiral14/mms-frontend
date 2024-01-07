@@ -1,11 +1,8 @@
-import { Colors, Tab, Tabs } from '@blueprintjs/core'
 import React from 'react'
-import Collapse from '../../Components/Collapse'
 import Box from '../../Components/Layout/Box'
 import Row from '../../Components/Layout/Row'
 import InputText from '../../Components/ScreenComponents/InputText'
 import Switch from '../../Components/ScreenComponents/Switch'
-import CompanySetting from '../../Contracts/Models/CompanySettings'
 import { useWindow } from '../../Hooks/useWindow'
 
 const ProductSettings = () => {

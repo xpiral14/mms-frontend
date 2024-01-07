@@ -92,7 +92,7 @@ export default function DistributeGoods({
         />
       </Bar>
       <Row className='mt-2'>
-        <Box className='flex gap-3 w-full'>
+        <Box className='flex w-full gap-3'>
           <span>
             <strong>Nota fiscal: </strong> {good.invoice_number}
           </span>

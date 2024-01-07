@@ -29,7 +29,6 @@ export interface PaginatedTableProps<T = any> extends Omit<TableProps<T>, 'rows'
   ) => Promise<AxiosResponse<Paginated<any>>>
   height?: string
   isSelected?: (row: Row<T>) => boolean
-  onRowSelect?: (row: Row<T>) => void
   rowKey?: (row: Row<T>) => string | number
   filters?: Record<string, string | number | undefined>
   downloadable?: boolean

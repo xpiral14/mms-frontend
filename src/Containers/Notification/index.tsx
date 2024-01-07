@@ -150,7 +150,7 @@ const Notification = () => {
           pagination.total && pagination.total > notifications.length
         )}
       >
-        <Row className='flex-center py-2'>
+        <Row className='py-2 flex-center'>
           <Button
             small
             outlined

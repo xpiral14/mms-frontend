@@ -57,7 +57,6 @@ import { useAuth } from '../../../Hooks/useAuth'
 import useMessageError from '../../../Hooks/useMessageError'
 import Bar from '../../../Components/Layout/Bar'
 import Switch from '../../../Components/ScreenComponents/Switch'
-import strToNumber from '../../../Util/strToNumber'
 
 const discountTypeOptions: Option[] = [
   {
@@ -635,7 +634,7 @@ const OrderServiceCustomer: React.FC<ScreenProps> = ({ screen }) => {
         </Bar>
         <Render renderIf={screenStatus !== ScreenStatus.SEE_REGISTERS}>
           <Row className='flex-column'>
-            <Box className='flex align-center flex-wrap'>
+            <Box className='flex flex-wrap align-center'>
               <Render renderIf={Boolean(payload.id)}>
                 <InputText
                   label='Número da ordem'

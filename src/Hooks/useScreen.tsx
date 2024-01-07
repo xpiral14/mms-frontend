@@ -94,13 +94,13 @@ export default function ScreenProvider({ children }: any) {
         offsetX: panelContainment.right
           ? document.body.offsetWidth - clientRect.width
           : panelContainment.left
-          ? 0
-          : clientRect.left,
+            ? 0
+            : clientRect.left,
         offsetY: panelContainment.top
           ? 0
           : panelContainment.bottom
-          ? document.body.offsetHeight - clientRect.height - offsetMenuHeight
-          : clientRect.top - offsetMenuHeight,
+            ? document.body.offsetHeight - clientRect.height - offsetMenuHeight
+            : clientRect.top - offsetMenuHeight,
         my: 'left-top',
         at: 'left-bottom',
         of: '.main-menu',
@@ -189,7 +189,7 @@ export default function ScreenProvider({ children }: any) {
       }
       screen.id = screenOptions.id
       const Component = lazy(() => {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => {
           const comps = import.meta.glob('../Screens/**/*.tsx')
           let match = comps[`../Screens/${screenData.path}/index.tsx`]
           if(!match) {
@@ -260,8 +260,8 @@ export default function ScreenProvider({ children }: any) {
                         ...componentProps,
                         ...(parentScreen
                           ? {
-                              parentScreen,
-                            }
+                            parentScreen,
+                          }
                           : {}),
                       }}
                     />
@@ -277,8 +277,8 @@ export default function ScreenProvider({ children }: any) {
                       ...componentProps,
                       ...(parentScreen
                         ? {
-                            parentScreen,
-                          }
+                          parentScreen,
+                        }
                         : {}),
                     }}
                   />

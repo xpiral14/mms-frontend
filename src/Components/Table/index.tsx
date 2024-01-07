@@ -21,6 +21,7 @@ const sortMachineState = {
 } as Record<Sort, Sort>
 
 const Table = function <T = any>(props: TableProps<T>) {
+
   const getWithoutValueDefaultText = (column: Column<T>) => {
     return column.withoutValueText || '-'
   }
@@ -59,7 +60,7 @@ const Table = function <T = any>(props: TableProps<T>) {
     () => props.renderFooter?.(props.columns, props.rows),
     [props.columns, props.rows, props.renderFooter]
   )
-  const filterRef = useRef<HTMLElement>(null)
+  useRef<HTMLElement>(null)
   return (
     <div>
       <StyledTable
@@ -68,6 +69,7 @@ const Table = function <T = any>(props: TableProps<T>) {
             true,
           'bp5-html-table-striped': props.stripped,
           'bp5-interactive': props.interactive,
+          'select-none': props.allowMultiSelect,
         })}
       >
         <Render renderIf={!props.noHeader}>
@@ -83,7 +85,7 @@ const Table = function <T = any>(props: TableProps<T>) {
                   }
                 >
                   <div
-                    className='flex justify-between items-center'
+                    className='flex items-center justify-between'
                     style={{ height: 30 }}
                   >
                     <span>{column.name}</span>
@@ -174,7 +176,7 @@ const Table = function <T = any>(props: TableProps<T>) {
           </thead>
         </Render>
         <tbody>
-          {props.rows?.map((row, rowIndex) => (
+          {props.rows?.map((row, rowIndex, rows) => (
             <tr
               key={props.rowKey?.(row) || (row?.id as any)}
               className={joinClasses({
@@ -185,29 +187,65 @@ const Table = function <T = any>(props: TableProps<T>) {
               })}
               style={props.rowStyle?.(row)}
             >
-              {props.columns?.map((column) => (
-                <td
-                  key={column.keyName}
-                  onClick={() => props.onRowSelect?.(row)}
-                  style={
-                    typeof column.style === 'function'
-                      ? column.style(row, column)
-                      : column.style
+              {props.columns?.map((column) => {
+                const onColumnClick = (e: React.MouseEvent<HTMLTableDataCellElement, MouseEvent>) => {
+                  function getNearestSelectedRowIndex(currentIndex: number) {
+                    let nearestIndex = currentIndex
+                    for (let i = currentIndex - 1; i >= 0; i--) {
+                      if (!props.isSelected?.(rows[i])) {
+                        break
+                      }
+                      nearestIndex = i
+                    }
+                    return nearestIndex
                   }
-                >
-                  {(column?.cellRenderer ?? defaultCellRenderer)(
-                    column,
-                    row,
-                    rowIndex
-                  )}
-                </td>
-              ))}
+
+                  if (!props.allowMultiSelect) {
+                    return props.onRowSelect?.(row)
+                  }
+
+                  if (rowIndex === 0) {
+                    props.onRowsSelect?.([row])
+                    return
+                  }
+
+                  if (!e.shiftKey) return
+
+                  const isRowSelected = props.isSelected?.(row)
+                  if (isRowSelected) {
+                    const index = getNearestSelectedRowIndex(rowIndex)
+                    props.unselectRows?.(rows.slice(index, rowIndex + 1))
+                    return
+                  }
+                  const firstSelectedRow = rows.findIndex(row => props.isSelected?.(row))
+                  const allSelectedRows = rows.slice(firstSelectedRow, rowIndex + 1)
+                  allSelectedRows.push(...rows.slice(rowIndex, rows.length).filter(props.isSelected!))
+                  props.onRowsSelect?.(allSelectedRows)
+                }
+                return (
+                  <td
+                    key={column.keyName}
+                    onClick={onColumnClick}
+                    style={
+                      typeof column.style === 'function'
+                        ? column.style(row, column)
+                        : column.style
+                    }
+                  >
+                    {(column?.cellRenderer ?? defaultCellRenderer)(
+                      column,
+                      row,
+                      rowIndex,
+                    )}
+                  </td>
+                )
+              })}
             </tr>
           ))}
           <Render renderIf={!props.loading && !props.rows?.length}>
             <tr>
               <td colSpan={props.columns.length}>
-                <div className='w-full flex justify-center items-center gap-3'>
+                <div className='flex w-full items-center justify-center gap-3'>
                   <Icon icon='zoom-out' size={32} color={Colors.GRAY3} />
                   <span style={{ fontSize: 30, color: Colors.GRAY3 }}>
                     Não há nada aqui

@@ -181,7 +181,7 @@ export default function DistributeGoodProduct({
     <Box className='mt-2'>
       <Collapse
         title={
-          <div className='flex justify-between w-full'>
+          <div className='flex w-full justify-between'>
             <span>{addEllipsis(goodProduct?.product.name ?? '', 45)}</span>
             <div className='flex gap-1'>
               <span

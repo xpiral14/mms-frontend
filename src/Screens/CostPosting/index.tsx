@@ -285,7 +285,7 @@ const CostPosting: FC<CostPostScreenProps> = ({ screen, ...props }) => {
             />
             <NumericInput
               required
-              disabled={isScreenStatusVizualize}
+              disabled={isScreenStatusVizualize || isScreenStatusEdit}
               id={screen.id + 'cost_value'}
               label='Valor'
               value={payload.value ?? 0}

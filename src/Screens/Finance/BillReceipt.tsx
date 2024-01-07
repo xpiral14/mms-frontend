@@ -8,6 +8,7 @@ import InputNumber from '../../Components/InputNumber'
 import Bar from '../../Components/Layout/Bar'
 import Container from '../../Components/Layout/Container'
 import Row from '../../Components/Layout/Row'
+import {Row as TableRowProps} from '../../Contracts/Components/PaginatadeTable'
 import PaginatedTable from '../../Components/PaginatedTable'
 import RegistrationButtonBar from '../../Components/RegistrationButtonBar'
 import Render from '../../Components/Render'
@@ -28,15 +29,13 @@ import { useGrid } from '../../Hooks/useGrid'
 import { useToast } from '../../Hooks/useToast'
 import useValidation from '../../Hooks/useValidation'
 import { useWindow } from '../../Hooks/useWindow'
-import BillReceiptService, { MonthSummary } from '../../Services/BillReceiptService'
+import BillReceiptService from '../../Services/BillReceiptService'
 import SupplierService from '../../Services/SupplierService'
 import currencyFormat from '../../Util/currencyFormat'
 import useMessageError from '../../Hooks/useMessageError'
 import {
   addYears,
   endOfDay,
-  format,
-  parse,
   startOfDay,
   startOfMonth,
 } from 'date-fns'
@@ -62,11 +61,11 @@ const BillReceiptsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
   } = useWindow<BillReceiptPayloadCreate>()
   const [monthSummary, setMonthSummary] = useState<{
     opened: string
-    paid: string
+    received: string
     expired: string
   }>({
     opened: currencyFormat(0),
-    paid: currencyFormat(0),
+    received: currencyFormat(0),
     expired: currencyFormat(0),
   })
   const { showErrorMessage } = useMessageError()
@@ -82,8 +81,8 @@ const BillReceiptsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
         expired: currencyFormat(
           (summary.expired ?? 0) + (summary?.partially_paid_expired ?? 0)
         ),
-        paid: currencyFormat(
-          (summary.paid ?? 0) + (summary?.partially_paid ?? 0)
+        received: currencyFormat(
+          (summary.received ?? 0) + (summary?.partially_paid ?? 0)
         ),
         opened: currencyFormat(summary.opened ?? 0),
       })
@@ -119,7 +118,7 @@ const BillReceiptsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
   const { validate } = useValidation(validations)
 
   const { setReloadGrid } = useGrid()
-  const { showErrorToast, showSuccessToast } = useToast()
+  const {  showSuccessToast } = useToast()
   const { openAlert } = useAlert()
 
   const isStatusVisualize = Boolean(screenStatus === ScreenStatus.VISUALIZE)
@@ -565,7 +564,7 @@ const BillReceiptsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
     r.status != 'opened' ? 'text-white' : undefined
   const rowKey = (r: BillReceipt) => r.id
   const isSelected = (
-    row: import('/home/samreis/Documents/work/mms/mms-frontend/src/Contracts/Components/PaginatadeTable').Row<BillReceipt>
+    row: TableRowProps<BillReceipt>
   ): boolean => selectedBillReceipts.some((bill) => bill.id === row.id)
   let onClickReceiveBill = () => {
     openSubScreen<billReceiptReception>(
@@ -635,7 +634,7 @@ const BillReceiptsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
                   className='py-2 px-3 text-white font-bold text-xs'
                   style={{ backgroundColor: Colors.GREEN3 }}
                 >
-                  Contas recebidas: {monthSummary?.paid}
+                  Contas recebidas: {monthSummary?.received}
                 </Card>
               </Row>
             </div>

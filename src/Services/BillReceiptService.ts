@@ -8,7 +8,7 @@ import { Enum } from '../Contracts/Models/Generics'
 
 export type MonthSummary = {
   opened?: number
-  paid?: number
+  received?: number
   expired?: number,
   partially_paid_expired?: number
   partially_paid?: number

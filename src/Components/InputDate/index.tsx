@@ -21,7 +21,7 @@ export type Props = {
 const InputDate: FunctionComponent<Props> = (props) => {
   const onChange = (v: string | null, i: boolean): void => {
     if (!v) return
-    return props.onChange?.(new Date(v), i)
+    return props.onChange?.(new Date(v + 'T00:00:00'), i)
   }
   const formatDate = (date: Date): string => {
     let dateFormat = DateFormats.DATE_ONLY

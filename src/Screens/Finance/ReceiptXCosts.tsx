@@ -78,8 +78,8 @@ const ReceiptXCosts = () => {
     <Container className="h-full w-full flex flex-column gap-2">
       <Box>
         <Row>
-          <InputDate name="fromDate" id="fromDate" label="Início" />
-          <InputDate name="toDate" id="toDate" label="Fim" />
+          <InputDate  timePrecision='minute' name="fromDate" id="fromDate" label="Início" />
+          <InputDate timePrecision='minute' name="toDate" id="toDate" label="Fim" />
         </Row>
       </Box>
       <Box className='flex-1'>

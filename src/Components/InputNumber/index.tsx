@@ -1,10 +1,8 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { ButtonGroup, Classes, FormGroup, Icon } from '@blueprintjs/core'
-import { useMemo, useRef, useState } from 'react'
+import { useMemo, useRef } from 'react'
 import { InputProps } from '../../Contracts/Components/InputProps'
 import joinClasses from '../../Util/joinClasses'
 import CurrencyInput, { CurrencyInputProps } from 'react-currency-input-field'
-import Button from '../Button'
 
 export interface InputNumberProps
   extends Omit<InputProps, 'ref' | 'defaultValue' | 'step' | 'type'>,

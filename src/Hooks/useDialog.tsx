@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import {
   createContext,
   lazy,
@@ -7,23 +6,20 @@ import {
   useEffect,
   useState,
 } from 'react'
-import { jsPanel, Panel, PanelOptions } from 'jspanel4/es6module/jspanel'
+import { jsPanel } from 'jspanel4/es6module/jspanel'
 import CreatePortal from '../Components/createPortal'
-import jsPanelDefaultOptions from '../Config/jsPanelDefaultOptions'
 import { useAlert } from './useAlert'
 import { useAuth } from './useAuth'
 import GridProvider from './useGrid'
 import WindowContextProvider from './useWindow'
 import {
-  ContextPanelOptions,
   DialogContext,
   DialogIds,
   DialogObject,
-  OpenDialogPropsParam,
 } from '../Contracts/Hooks/useDialog'
 import { Intent, ProgressBar } from '@blueprintjs/core'
 import allDialogs from '../Statics/dialogs'
-import DialogProps, { Dialog } from '../Contracts/Components/DialogProps'
+import DialogProps from '../Contracts/Components/DialogProps'
 import { useCallback } from 'react'
 import ErrorBoundary from '../Containers/ErrorBoundary'
 

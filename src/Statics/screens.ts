@@ -201,6 +201,11 @@ const screens = {
     id: 'settings',
     name: 'Configurações',
     path: 'Settings',
+  },
+  'bill-receipt-reception': {
+    id: 'bill-receipt-reception',
+    name: 'Receber conta',
+    path: 'Finance/BillReceiptReception',
   }
 } as Screens
 

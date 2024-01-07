@@ -166,7 +166,7 @@ const menus = {
         name: screens['receipts-x-costs'].name,
         icon: <GiExpense size={16} />,
         screen: {
-          minHeight: 290,
+          minHeight: 325,
           maxHeight: 500,
           ...screens['receipts-x-costs'],
           contentSize: '1065px 400px',

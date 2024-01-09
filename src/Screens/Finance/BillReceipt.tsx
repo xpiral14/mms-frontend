@@ -93,6 +93,18 @@ const BillReceiptsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
   const { openSubScreen } = useScreen()
   const [selectedBillReceipts, setSelectedBillReceipts] = useState<BillReceiptPayloadCreate[]>([])
 
+  const [loadingReference] = useAsync(async () => {
+    if (screenStatus !== ScreenStatus.NEW) return
+
+    try {
+      const reference = (await BillReceiptService.getNextReference()).data.data
+        .reference
+      changePayloadAttribute('reference', reference ?? '')
+    } catch (error) {
+      showErrorMessage(error, 'Ops! Não foi possível preencher a referência de forma automática')
+    }
+  }, [screenStatus])
+
   const createValidation = (keyName: keyof BillReceipt) => () =>
     Boolean((payload as any)[keyName])
 
@@ -667,6 +679,7 @@ const BillReceiptsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
             maxLength={15}
             required
             width='100%'
+            readOnly={loadingReference}
             style={{ flex: 1 }}
             inputStyle={{ width: '100%' }}
           />

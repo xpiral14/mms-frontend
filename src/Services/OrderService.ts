@@ -23,7 +23,7 @@ export type OrderProductResponse = {
 }
 export default class OrderService {
   static async getNextReference() {
-    return api.get<Response<{ reference: string }>>(`${DEFAULT_PATH}/next-reference`)
+    return api.get<Response<{ reference: string }>>(`${DEFAULT_PATH}/nextReference`)
   }
   static async getAll(page: number, limit: number, query?: object) {
     return api.get<Paginated<Order>>(`${DEFAULT_PATH}/paginated`, {

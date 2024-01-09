@@ -8,7 +8,7 @@ const DEFAULT_PATH = '/services'
 
 class ServicesService {
   static async getNextReference() {
-    return api.get<Response<{ reference: string }>>(`${DEFAULT_PATH}/next-reference`)
+    return api.get<Response<{ reference: string }>>(`${DEFAULT_PATH}/nextReference`)
   }
   static async getAll(page = 10, perPage = 20, filters?: Record<any, any>, reportType?: ReportRequestOption) {
     return api.get<Paginated<Service>>(`${DEFAULT_PATH}/paginated`, {

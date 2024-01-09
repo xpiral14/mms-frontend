@@ -28,6 +28,7 @@ import { Column } from '../../../Contracts/Components/Table'
 import InputNumber from '../../../Components/InputNumber'
 import strToNumber from '../../../Util/strToNumber'
 import currencyFormat from '../../../Util/currencyFormat'
+import useMessageError from '../../../Hooks/useMessageError'
 
 const ServiceScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
   const { payload, setPayload, screenStatus, setScreenStatus } =
@@ -82,6 +83,23 @@ const ServiceScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
       })
     }
   }, [])
+
+  const {showErrorMessage} = useMessageError()
+
+  const [loadingReference] = useAsync(async () => {
+    if (screenStatus !== ScreenStatus.NEW) return
+
+    try {
+      const reference = (await ServicesService.getNextReference()).data.data
+        .reference
+      changePayload('reference', reference ?? '')
+    } catch (error) {
+      showErrorMessage(
+        error,
+        'Ops! Não foi possível preencher a referência de forma automática'
+      )
+    }
+  }, [screenStatus])
 
   const isStatusVizualize = () =>
     Boolean(screenStatus === ScreenStatus.VISUALIZE)
@@ -211,7 +229,7 @@ const ServiceScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
         {
           name: 'Valor',
           keyName: 'price',
-          formatText: r => currencyFormat(r?.price),
+          formatText: (r) => currencyFormat(r?.price),
           sortable: true,
         },
         {
@@ -344,6 +362,7 @@ const ServiceScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
                     id='serviceReference'
                     label='Referência:'
                     required
+                    readOnly={loadingReference}
                     disabled={isStatusVizualize()}
                     style={{ width: '100%' }}
                     value={payload.reference || ''}

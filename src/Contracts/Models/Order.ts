@@ -2,6 +2,8 @@ import { DiscountType } from '../../Constants/Enums'
 import Customer from './Customer'
 import OrderProduct from './OrderProduct'
 import Service from './Service'
+import Product from './Product'
+import OrderService from './OrderService'
 
 export default interface Order {
   id: number
@@ -12,8 +14,10 @@ export default interface Order {
   created_at?: string
   updated_at?: string
   order_products?: OrderProduct[]
+  order_services?: OrderService[]
   customer?: Customer
   services?: Service[]
+  products?: Product[]
   validity?: string,
   date?: string
   reference?: string,

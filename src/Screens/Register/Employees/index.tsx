@@ -327,7 +327,7 @@ const EmployeeRegister: React.FC<EmployeeRegisterScreenProps> = ({
       name: 'Telefone',
       keyName: 'phone',
       formatText: (row) =>
-        (row?.phone as string).replace(/(\d{2})(\d{5})(\d{4})/g, '($1) $2-$3'),
+        (row?.phone as string)?.replace(/(\d{2})(\d{5})(\d{4})/g, '($1) $2-$3'),
     },
   ]
 

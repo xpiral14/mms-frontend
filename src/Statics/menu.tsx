@@ -2,7 +2,7 @@ import { MenuType } from '../Contracts/Containers/NavBar'
 import screens from './screens'
 import { GiExpense } from 'react-icons/gi'
 import { MdOutlineAddBusiness, MdOutlinePayments } from 'react-icons/md'
-import { TbBinaryTree2 } from 'react-icons/tb'
+import { TbBinaryTree2, TbMoneybag } from 'react-icons/tb'
 import { Permissions } from '../Constants/Enums'
 
 import { BiPackage } from 'react-icons/bi'
@@ -76,13 +76,13 @@ const menus = {
       Permissions.WRITE_SERVICE,
     ],
     items: {
-      OrdemServico: {
-        name: 'Ordem de serviços',
-        icon: 'clipboard',
+      Venda: {
+        name: 'Vendas',
+        icon: <TbMoneybag />,
         screen: {
           ...screens['order-register'],
           contentSize: '1100 500',
-          headerTitle: 'Registrar ordem de serviço',
+          headerTitle: 'Vendas',
         },
       },
       Servico: {

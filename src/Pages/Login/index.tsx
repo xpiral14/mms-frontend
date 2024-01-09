@@ -7,7 +7,7 @@ import AuthService from '../../Services/AuthService'
 import { useAuth } from '../../Hooks/useAuth'
 import { useHistory } from 'react-router-dom'
 import { useToast } from '../../Hooks/useToast'
-import myImage from '/public/Images/logo-sam-reis.svg'
+import myImage from '/Images/logo-sam-reis.svg'
 enum PageMode {
   LOGIN = 'login',
   RESET_PASSWORD = 'reset_password',

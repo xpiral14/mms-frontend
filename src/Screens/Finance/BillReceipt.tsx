@@ -593,8 +593,7 @@ const BillReceiptsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
               icon={<MdOutlinePayments size={14} />}
               intent={Intent.PRIMARY}
               disabled={
-                selectedBillReceipts.length === 0 ||
-                selectedBillReceipts.some((b) => b.status === BillReceiptStatuses.RECEIVED)
+                selectedBillReceipts.length === 0
               }
               className='font-bold'
               onClick={onClickReceiveBill}

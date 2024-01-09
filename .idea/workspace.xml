@@ -4,48 +4,16 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="79e2c5f6-2a38-41a8-86d5-8d43eb801e3b" name="Changes" comment="feat: adicionado logomarca">
-      <change afterPath="$PROJECT_DIR$/qodana.yaml" afterDir="false" />
+    <list default="true" id="79e2c5f6-2a38-41a8-86d5-8d43eb801e3b" name="Changes" comment="fix: mais ajustes">
+      <change afterPath="$PROJECT_DIR$/src/Components/ScreenComponents/Select.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Components/Empty/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/Components/Empty/index.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Components/InputNumber/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/Components/InputNumber/index.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Components/ScreenComponents/InputDate.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/Components/ScreenComponents/InputDate.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Components/Select/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/Components/Select/index.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Components/Table/Filter.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/Components/Table/Filter.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Components/Table/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/Components/Table/index.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Config/api.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/Config/api.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Containers/Notification/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/Containers/Notification/index.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Contracts/Components/PaginatadeTable.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/Contracts/Components/PaginatadeTable.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Contracts/Components/Table.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/Contracts/Components/Table.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Contracts/Models/BillReceipt.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/Contracts/Models/BillReceipt.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Hooks/useAuth.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/Hooks/useAuth.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Hooks/useDialog.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/Hooks/useDialog.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Hooks/useScreen.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/Hooks/useScreen.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Contracts/Models/Order.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/Contracts/Models/Order.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Pages/Login/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/Pages/Login/index.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Pages/Login/style.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/Pages/Login/style.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Screens/CostPosting/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/Screens/CostPosting/index.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Screens/DistributeGoods/DistributeGoodProduct.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/Screens/DistributeGoods/DistributeGoodProduct.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Screens/DistributeGoods/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/Screens/DistributeGoods/index.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Screens/Finance/Bill.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/Screens/Finance/Bill.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Screens/Finance/BillReceipt.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/Screens/Finance/BillReceipt.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Screens/Finance/ReceiptXCosts.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/Screens/Finance/ReceiptXCosts.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Screens/OrderProductDetails/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/Screens/OrderProductDetails/index.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Screens/OrderResume/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/Screens/OrderResume/index.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Screens/OrderServiceDetails/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/Screens/OrderServiceDetails/index.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Screens/ProductStockManagement/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/Screens/ProductStockManagement/index.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Screens/Register/CostCenter/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/Screens/Register/CostCenter/index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Screens/Register/Employees/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/Screens/Register/Employees/index.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Screens/Register/ServiceOrder/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/Screens/Register/ServiceOrder/index.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Screens/Settings/ProductSettings.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/Screens/Settings/ProductSettings.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Screens/Settings/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/Screens/Settings/index.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Screens/UserData/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/Screens/UserData/index.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Services/CompanySettingsService.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/Services/CompanySettingsService.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Util/isValidIsoDate.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/Util/isValidIsoDate.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Util/keysToKamel.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/Util/keysToKamel.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tailwind.config.js" beforeDir="false" afterPath="$PROJECT_DIR$/tailwind.config.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/vite.config.js" beforeDir="false" afterPath="$PROJECT_DIR$/vite.config.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Statics/menu.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/Statics/menu.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -67,6 +35,9 @@
       </list>
     </option>
   </component>
+  <component name="Git.Merge.Settings">
+    <option name="BRANCH" value="feature/improve-ux" />
+  </component>
   <component name="Git.Settings">
     <option name="PREVIOUS_COMMIT_AUTHORS">
       <list>
@@ -75,7 +46,7 @@
     </option>
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="main" />
+        <entry key="$PROJECT_DIR$" value="feature/improve-ux" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -125,8 +96,11 @@
   </component>
   <component name="PhpWorkspaceProjectConfiguration" interpreter_name="PHP 8.2" />
   <component name="ProblemsViewState">
-    <option name="selectedTabId" value="QODANA_PROBLEMS_VIEW_TAB" />
+    <option name="selectedTabId" value="CurrentFile" />
   </component>
+  <component name="ProjectColorInfo"><![CDATA[{
+  "associatedIndex": 0
+}]]></component>
   <component name="ProjectId" id="2AxSnQ0bHjF4VFAmaywLNeTV7nE" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
@@ -137,7 +111,7 @@
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "WebServerToolWindowFactoryState": "false",
-    "git-widget-placeholder": "feature/improve-ux",
+    "git-widget-placeholder": "main",
     "ignore.virus.scanning.warn.message": "true",
     "last_opened_file_path": "C:/Users/sarei/Documents/work/mms/mms-frontend",
     "node.js.detected.package.eslint": "true",
@@ -146,23 +120,13 @@
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.standard": "",
     "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "yarn",
+    "nodejs_interpreter_path": "/home/iev/.nvm/versions/node/v16.20.2/bin/node",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "settings.nodejs",
     "ts.external.directory.path": "/home/iev/Documentos/work/mms/mms-frontend/node_modules/typescript/lib",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
-  <component name="QodanaHighlightedReportService">
-    <option name="localRunNotPublishedPersistedInfo">
-      <LocalReportPersistedInfo>
-        <option name="path" value="/tmp/qodana_output7/qodana.sarif.json" />
-        <option name="reportGuid" value="246e9886-1d0f-475a-9f15-8fd504fce307" />
-        <option name="reportName" value="mms-frontend/qodana/2024-01-07" />
-      </LocalReportPersistedInfo>
-    </option>
-  </component>
-  <component name="QodanaIsSelectedPersistenceService">
-    <option name="selectedOrLoading" value="true" />
-  </component>
   <component name="QodanaReportsService">
     <option name="descriptions">
       <ReportDescription localRun="true" path="/tmp/qodana_output7/qodana.sarif.json" reportGuid="246e9886-1d0f-475a-9f15-8fd504fce307" reportId="mms-frontend/qodana/2024-01-07" />
@@ -171,6 +135,13 @@
       <ReportDescription localRun="true" path="/tmp/qodana_output1/qodana.sarif.json" reportGuid="edf2e1b9-41e6-417d-9516-7ad7c6ac3a0b" reportId="mms-frontend/qodana/2024-01-07" />
       <ReportDescription localRun="true" path="/tmp/qodana_output/qodana.sarif.json" reportGuid="5e414298-63fe-4752-8479-9989ffe5dc38" reportId="mms-frontend/qodana/2024-01-07" />
     </option>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-php-predefined-ba97393d7c68-b4dcf6bb9de9-com.jetbrains.php.sharedIndexes-PS-233.13135.108" />
+      </set>
+    </attachedChunks>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
@@ -191,6 +162,7 @@
       <workItem from="1681769984590" duration="2389000" />
       <workItem from="1681853643963" duration="3472000" />
       <workItem from="1685663226554" duration="1000" />
+      <workItem from="1704749441957" duration="4841000" />
     </task>
     <task id="LOCAL-00001" summary="feat: added screen to added products to good">
       <created>1681080713183</created>
@@ -207,7 +179,39 @@
       <option name="project" value="LOCAL" />
       <updated>1704666513539</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="feat: corrigido problemas de eslint">
+      <option name="closed" value="true" />
+      <created>1704669044458</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1704669044458</updated>
+    </task>
+    <task id="LOCAL-00004" summary="fix: ajustado arquivo de deploy">
+      <option name="closed" value="true" />
+      <created>1704669702044</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1704669702044</updated>
+    </task>
+    <task id="LOCAL-00005" summary="fix: ajustado usabilidade da selecao de linhas">
+      <option name="closed" value="true" />
+      <created>1704669717867</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1704669717867</updated>
+    </task>
+    <task id="LOCAL-00006" summary="fix: mais ajustes">
+      <option name="closed" value="true" />
+      <created>1704669988467</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1704669988467</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -229,7 +233,11 @@
     <MESSAGE value="Merge pull request #43 from xpiral14/feat/Add-real-time&#10;&#10;Feat/add real time" />
     <MESSAGE value="feat: added screen to added products to good" />
     <MESSAGE value="feat: adicionado logomarca" />
-    <option name="LAST_COMMIT_MESSAGE" value="feat: adicionado logomarca" />
+    <MESSAGE value="feat: corrigido problemas de eslint" />
+    <MESSAGE value="fix: ajustado arquivo de deploy" />
+    <MESSAGE value="fix: ajustado usabilidade da selecao de linhas" />
+    <MESSAGE value="fix: mais ajustes" />
+    <option name="LAST_COMMIT_MESSAGE" value="fix: mais ajustes" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -237,7 +245,6 @@
         <line-breakpoint enabled="true" type="javascript">
           <url>file://$PROJECT_DIR$/src/Hooks/useAuth.tsx</url>
           <line>32</line>
-          <properties lambdaOrdinal="-1" />
           <option name="timeStamp" value="1" />
         </line-breakpoint>
       </breakpoints>

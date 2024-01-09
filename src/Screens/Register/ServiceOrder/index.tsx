@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react'
 import { ButtonGroup, Intent } from '@blueprintjs/core'
 import PaginatedTable from '../../../Components/PaginatedTable'
 import RegistrationButtonBar from '../../../Components/RegistrationButtonBar'
-import Select from '../../../Components/Select'
+import Select from '../../../Components/ScreenComponents/Select'
 import {
   DiscountType,
   orderStatus,
@@ -34,9 +34,8 @@ import OrderService from '../../../Services/OrderService'
 import EmployeeService from '../../../Services/EmployeeService'
 import { Body, Container, Header } from './style'
 import Button from '../../../Components/Button'
-import InputText from '../../../Components/InputText'
+import InputText from '../../../Components/ScreenComponents/InputText'
 import Render from '../../../Components/Render'
-import InputDate from '../../../Components/InputDate'
 import Collapse from '../../../Components/Collapse'
 import Row from '../../../Components/Layout/Row'
 import { OrderServiceDetailsProps } from '../../../Contracts/Screen/OrderServiceDetails/OrderServiceDetailsProps'
@@ -45,7 +44,6 @@ import OrderProduct from '../../../Contracts/Models/OrderProduct'
 import Box from '../../../Components/Layout/Box'
 import { format, isBefore } from 'date-fns'
 import InputGroup from '../../../Components/InputGroup'
-import keysToCamel from '../../../Util/keysToKamel'
 import TextArea from '../../../Components/TextArea'
 import { Column, Row as TableRow } from '../../../Contracts/Components/Table'
 import { OrderResumeProps } from '../../../Contracts/Screen/OrderResume'
@@ -57,6 +55,7 @@ import { useAuth } from '../../../Hooks/useAuth'
 import useMessageError from '../../../Hooks/useMessageError'
 import Bar from '../../../Components/Layout/Bar'
 import Switch from '../../../Components/ScreenComponents/Switch'
+import InputDate from '../../../Components/ScreenComponents/InputDate'
 
 const discountTypeOptions: Option[] = [
   {
@@ -80,7 +79,7 @@ type OrderPayload = {
   id?: number
   serviceIds: number[]
   productIds: number[]
-  customerId?: number
+  customer_id?: number
   description?: string
   date: Date
   status: orderStatus
@@ -88,16 +87,16 @@ type OrderPayload = {
   services?: OrderServiceModel[]
   products?: OrderProduct[]
   validity?: Date
-  serviceDiscountType?: DiscountType
-  serviceDiscount?: number
-  productDiscountType?: DiscountType
-  productDiscount?: number
+  service_discout_type?: DiscountType
+  service_discount?: number
+  product_discountType?: DiscountType
+  product_discount?: number
   employeeId?: number
   totalPrice: number
   sendNotificationWhenConcluded?: boolean
 }
 
-const OrderServiceCustomer: React.FC<ScreenProps> = ({ screen }) => {
+const ServiceOrder: React.FC<ScreenProps> = ({ screen }) => {
   const { hasPermission, auth } = useAuth()
   const [customers, setCustomer] = useState<Customer[]>([])
   const [employees, setEmployees] = useState<Employee[]>([])
@@ -166,13 +165,14 @@ const OrderServiceCustomer: React.FC<ScreenProps> = ({ screen }) => {
     }
   }, [])
 
-  const { payload, setPayload, screenStatus, setScreenStatus } =
-    useWindow<OrderPayload>()
+  const { payload, setPayload, screenStatus, setScreenStatus } = useWindow<
+    Omit<Order, 'date' | 'validity'> & { date: Date; validity: Date }
+  >()
   const isStatusVisualize = Boolean(screenStatus === ScreenStatus.SEE_REGISTERS)
   useEffect(() => {
     setPayload({
       date: new Date(),
-      employeeId: hasPermission(Permissions.READ_EMPLOYEE)
+      employee_id: hasPermission(Permissions.READ_EMPLOYEE)
         ? undefined
         : auth?.user?.id,
     })
@@ -184,7 +184,7 @@ const OrderServiceCustomer: React.FC<ScreenProps> = ({ screen }) => {
     }))
   }
 
-  const createValidation = (keyName: keyof typeof payload) => () => {
+  const createValidation = (keyName: keyof Order) => () => {
     const value = (payload as any)[keyName]
 
     if (Array.isArray(value)) {
@@ -200,7 +200,7 @@ const OrderServiceCustomer: React.FC<ScreenProps> = ({ screen }) => {
 
   const validations: Validation[] = [
     {
-      check: createValidation('customerId'),
+      check: createValidation('customer_id'),
       errorMessage: 'Escolha o cliente',
       inputId: `${screen.id}-select-customer`,
     },
@@ -250,7 +250,7 @@ const OrderServiceCustomer: React.FC<ScreenProps> = ({ screen }) => {
             value: totalPrice - receiptsTotal,
             date: new Date(),
             orderId: payload.id,
-            customerId: payload.customerId,
+            customerId: payload.customer_id,
             description: payload?.reference
               ? 'Lançamento para a ordem ' + payload?.reference
               : undefined,
@@ -271,31 +271,23 @@ const OrderServiceCustomer: React.FC<ScreenProps> = ({ screen }) => {
     }
     try {
       const requestPayload = {
+        ...payload,
         date: payload?.date ? format(payload?.date, 'yyyy-MM-dd') : null,
-        reference: payload.reference,
-        customerId: payload.customerId!,
-        description: payload?.description,
         productIds: [] as number[],
         serviceIds: [] as number[],
         status: payload.status,
         validity: payload?.date
           ? format(payload?.date, 'yyyy-MM-dd HH:mm:ss')
           : null,
-        serviceDiscountType: payload.serviceDiscountType,
-        serviceDiscount: payload.serviceDiscount,
-        productDiscount: payload.productDiscount,
-        productDiscountType: payload.productDiscountType,
-        employeeId: payload?.employeeId,
-        sendNotificationWhenConcluded: payload.sendNotificationWhenConcluded,
       }
       const response = await OrderService.create(requestPayload)
       const orderId = response.data.data.id
       setReloadGrid(true)
       changePayload('id', orderId)
       try {
-        if (payload.services) {
+        if (payload.order_services?.length) {
           await Promise.all(
-            payload.services?.map((orderService) =>
+            (payload.order_services ?? [])?.map((orderService) =>
               OrderService.addService(orderId, orderService)
             )
           )
@@ -351,31 +343,23 @@ const OrderServiceCustomer: React.FC<ScreenProps> = ({ screen }) => {
       return
     }
     const order = {
-      id: payload.id,
+      ...payload,
       date: payload?.date ? format(payload?.date, 'yyyy-MM-dd') : null,
-      reference: payload.reference,
-      customerId: payload.customerId!,
-      description: payload?.description,
-      status: payload.status,
       validity: payload?.date
         ? format(payload?.date, 'yyyy-MM-dd HH:mm:ss')
         : null,
-      serviceDiscountType: payload.serviceDiscountType ?? null,
-      serviceDiscount:
-        payload.serviceDiscountType === DiscountType.PERCENT
-          ? payload.serviceDiscount
-            ? payload.serviceDiscount / 100
+      service_discount:
+        payload.service_discount_type === DiscountType.PERCENT
+          ? payload.service_discount
+            ? payload.service_discount / 100
             : null
-          : payload.serviceDiscount ?? null,
-      productDiscount:
-        payload.productDiscountType === DiscountType.PERCENT
-          ? payload.productDiscount
-            ? payload.productDiscount / 100
+          : payload.service_discount ?? null,
+      product_discount:
+        payload.product_discount_type === DiscountType.PERCENT
+          ? payload.product_discount
+            ? payload.product_discount / 100
             : null
-          : payload.productDiscount ?? null,
-      productDiscountType: payload.productDiscountType,
-      employeeId: payload.employeeId,
-      sendNotificationWhenConcluded: payload.sendNotificationWhenConcluded,
+          : payload.product_discount ?? null,
     }
 
     try {
@@ -430,41 +414,24 @@ const OrderServiceCustomer: React.FC<ScreenProps> = ({ screen }) => {
     handleReloadScreenOnClick: reloadAllScreenData,
   }
 
-  const toOrderModel = (data: Partial<OrderPayload>) => {
-    return {
-      id: data.id!,
-      customer_id: data.customerId,
-      employee_id: data.customerId,
-      status: '1',
-      date: data.date,
-      validity: data.validity,
-      reference: data.reference,
-      description: data.description,
-      product_discount:
-        +(data.productDiscount ?? 0) /
-        (data.productDiscountType === DiscountType.PERCENT ? 100 : 1),
-      product_discount_type: data.productDiscountType,
-      service_discount:
-        +(data.serviceDiscount ?? 0) /
-        (data.serviceDiscountType === DiscountType.PERCENT ? 100 : 1),
-      service_discount_type: data.serviceDiscountType,
-    } as Order
-  }
-
   const openOrderDetailsScreen = () => {
     const orderServiceDetailsProps: OrderServiceDetailsProps = {
       onSave(orderServices, screen) {
         screen.close()
-        changePayload('services', orderServices)
+        changePayload('order_services', orderServices)
       },
     }
 
     if (payload.id) {
-      orderServiceDetailsProps.order = toOrderModel(payload)
+      orderServiceDetailsProps.order = {
+        ...payload,
+        date: payload.date?.toISOString(),
+        validity: payload.date?.toISOString(),
+      }
     }
 
-    if (payload?.services?.length) {
-      orderServiceDetailsProps.selectedOrderServices = payload.services
+    if (payload?.order_services?.length) {
+      orderServiceDetailsProps.selectedOrderServices = payload.order_services
     }
 
     openSubScreen<OrderServiceDetailsProps>(
@@ -483,7 +450,11 @@ const OrderServiceCustomer: React.FC<ScreenProps> = ({ screen }) => {
       onClose(screen) {
         screen.close()
       },
-      order: toOrderModel(payload),
+      order: {
+        ...payload,
+        date: payload.date?.toISOString(),
+        validity: payload.date?.toISOString(),
+      },
     }
     openSubScreen<OrderServiceDetailsProps>(
       {
@@ -503,11 +474,15 @@ const OrderServiceCustomer: React.FC<ScreenProps> = ({ screen }) => {
     }
 
     if (payload.id) {
-      orderProductDetailsProps.order = toOrderModel(payload)
+      orderProductDetailsProps.order = {
+        ...payload,
+        date: payload.date?.toISOString(),
+        validity: payload.date?.toISOString(),
+      }
     }
 
     if (payload?.products?.length) {
-      orderProductDetailsProps.selectedOrderProducts = payload.products
+      orderProductDetailsProps.selectedOrderProducts = payload.order_products
     }
 
     openSubScreen<OrderProductDetailsProps>(
@@ -522,13 +497,21 @@ const OrderServiceCustomer: React.FC<ScreenProps> = ({ screen }) => {
   }
 
   const isProductDiscountTypePercent =
-    payload.productDiscountType === DiscountType.PERCENT
+    payload.product_discount_type === DiscountType.PERCENT
 
   const isServiceDiscountTypePercent =
-    payload.serviceDiscountType === DiscountType.PERCENT
-  const columns: Column[] = [
+    payload.service_discount_type === DiscountType.PERCENT
+  const columns: Column<
+    Order & { employee_name?: string; customer_name?: string }
+  >[] = [
     {
       name: 'Referência',
+      filters: [
+        {
+          name: 'Referência',
+          type: 'text',
+        },
+      ],
       keyName: 'reference',
       sortable: true,
     },
@@ -536,6 +519,12 @@ const OrderServiceCustomer: React.FC<ScreenProps> = ({ screen }) => {
       name: 'Funcionário',
       keyName: 'employee_name',
       sortable: true,
+      filters: [
+        {
+          name: 'Funcionário',
+          type: 'text',
+        },
+      ],
     },
     {
       name: 'Cliente',
@@ -570,23 +559,20 @@ const OrderServiceCustomer: React.FC<ScreenProps> = ({ screen }) => {
       },
     },
   ]
-  const onRowSelect = (row: TableRow): void => {
-    const cameledObject = keysToCamel({
-      ...row,
-    })
+  const onRowSelect = (row: TableRow<Order>): void => {
     setPayload({
-      ...cameledObject,
+      ...row,
       validity: row.validity ? new Date(row.validity) : undefined,
       date: row.date ? new Date(row.date) : undefined,
-      productDiscount:
+      product_discount:
         row.product_discount_type === DiscountType.PERCENT
           ? +(row.product_discount ?? 0) * 100
           : row.product_discount,
-      serviceDiscount:
+      service_discount:
         row.service_discount_type === DiscountType.PERCENT
           ? +(row.service_discount ?? 0) * 100
           : row.service_discount,
-      employeeId: row.executing_by,
+      employee_id: row.executing_by,
     })
   }
 
@@ -594,6 +580,38 @@ const OrderServiceCustomer: React.FC<ScreenProps> = ({ screen }) => {
     () => orderStatuses.map((o) => ({ value: o.id, label: o.name })),
     [orderStatuses]
   )
+  const onCreateCustomerClick = (query: string) => {
+    openSubScreen(
+      {
+        id: 'customer-register',
+        contentSize: '700px 350px',
+      },
+      screen.id,
+      {
+        defaultCustomer: {
+          name: query,
+          personType: PersonType.PHYSICAL,
+        },
+        defaultScreenStatus: ScreenStatus.NEW,
+      }
+    )
+  }
+  const onCreateCustomer = (query: string) => {
+    openSubScreen(
+      {
+        id: 'employees-register',
+        contentSize: '700px 350px',
+      },
+      screen.id,
+      {
+        defaultCustomer: {
+          name: query,
+          personType: PersonType.PHYSICAL,
+        },
+        defaultScreenStatus: ScreenStatus.NEW,
+      }
+    )
+  }
   return (
     <Container style={{ height: 'calc(100% - 87px)' }}>
       <Header>
@@ -636,32 +654,29 @@ const OrderServiceCustomer: React.FC<ScreenProps> = ({ screen }) => {
           <Row className='flex-column'>
             <Box className='flex flex-wrap align-center'>
               <Render renderIf={Boolean(payload.id)}>
-                <InputText
+                <InputText<Order>
                   label='Número da ordem'
                   id={`${screen.id}-order-id`}
-                  value={payload.id ?? ''}
+                  name='id'
                   disabled={isStatusVisualize}
                   readOnly
                 />
               </Render>
 
-              <InputText
+              <InputText<Order>
                 label='Referência'
                 id={`${screen.id}-reference`}
-                value={payload.reference ?? ''}
-                onChange={(event) =>
-                  changePayload('reference', event.target.value)
-                }
+                name='reference'
                 disabled={isStatusVisualize}
               />
-              <InputDate
+              <InputDate<Order>
                 label='Data'
                 id={`${screen.id}-order-date`}
-                value={payload.date}
-                onChange={(selectedDate) => changePayload('date', selectedDate)}
+                timePrecision='minute'
+                name='date'
                 disabled={isStatusVisualize}
               />
-              <InputDate
+              <InputDate<Order>
                 intent={
                   payload?.validity
                     ? isBefore(payload.validity, new Date())
@@ -669,49 +684,35 @@ const OrderServiceCustomer: React.FC<ScreenProps> = ({ screen }) => {
                       : Intent.NONE
                     : Intent.NONE
                 }
+                timePrecision='minute'
+                name='validity'
                 label='Validade da nota'
                 id={`${screen.id}-order-date`}
-                value={payload.validity}
-                onChange={(selectedDate) =>
-                  changePayload('validity', selectedDate)
-                }
                 disabled={isStatusVisualize}
               />
-              <Select
-                onChange={(item) => changePayload('status', item.value)}
+              <Select<Order>
+                name='status'
                 label='Status da ordem'
+                fill
+                buttonWidth={250}
                 activeItem={payload?.status}
                 items={orderStatusOptions}
                 disabled={isStatusVisualize}
                 loading={loadingOrderStatuses}
                 handleButtonReloadClick={loadOrderStatuses}
               />
-              <Select
+              <Select<Order>
+                name='customer_id'
+                fill
+                buttonWidth={250}
                 handleButtonReloadClick={loadCustomers}
                 loading={loadingCustomers}
                 required
                 allowCreate
-                activeItem={payload?.customerId}
-                onChange={(option) => changePayload('customerId', option.value)}
                 defaultButtonText='Escolha um profissional'
                 label='Cliente'
                 items={customerOptions.options}
-                handleCreateButtonClick={(query) => {
-                  openSubScreen(
-                    {
-                      id: 'customer-register',
-                      contentSize: '700px 350px',
-                    },
-                    screen.id,
-                    {
-                      defaultCustomer: {
-                        name: query,
-                        personType: PersonType.PHYSICAL,
-                      },
-                      defaultScreenStatus: ScreenStatus.NEW,
-                    }
-                  )
-                }}
+                handleCreateButtonClick={onCreateCustomerClick}
                 buttonProps={
                   {
                     id: `${screen.id}-select-customer`,
@@ -726,34 +727,18 @@ const OrderServiceCustomer: React.FC<ScreenProps> = ({ screen }) => {
                 disabled={screenStatus === ScreenStatus.VISUALIZE}
               />
               <Render renderIf={hasPermission(Permissions.READ_EMPLOYEE)}>
-                <Select
+                <Select<Order>
+                  fill
+                  buttonWidth={250}
+                  name='employee_id'
                   handleButtonReloadClick={loadEmployees}
                   loading={loadingEmployees}
                   required
                   allowCreate
-                  activeItem={payload?.employeeId}
-                  onChange={(option) =>
-                    changePayload('employeeId', option.value)
-                  }
                   defaultButtonText='Escolha um profissional'
-                  label='Funcionário'
+                  label='Funcionário responsável'
                   items={employeeOptions}
-                  handleCreateButtonClick={(query) => {
-                    openSubScreen(
-                      {
-                        id: 'employees-register',
-                        contentSize: '700px 350px',
-                      },
-                      screen.id,
-                      {
-                        defaultCustomer: {
-                          name: query,
-                          personType: PersonType.PHYSICAL,
-                        },
-                        defaultScreenStatus: ScreenStatus.NEW,
-                      }
-                    )
-                  }}
+                  handleCreateButtonClick={onCreateCustomer}
                   buttonProps={
                     {
                       id: `${screen.id}-select-customer`,
@@ -785,20 +770,20 @@ const OrderServiceCustomer: React.FC<ScreenProps> = ({ screen }) => {
                       type='number'
                       id={screen.id + 'product_discount_value'}
                       disabled={Boolean(
-                        isStatusVisualize || !payload.productDiscountType
+                        isStatusVisualize || !payload.product_discount_type
                       )}
                       label='Desconto nos produtos'
                       max={isProductDiscountTypePercent ? 100 : undefined}
                       leftIcon={
-                        payload.productDiscountType
+                        payload.product_discount_type
                           ? isProductDiscountTypePercent
                             ? 'percentage'
                             : 'dollar'
                           : undefined
                       }
                       value={
-                        payload?.productDiscount
-                          ? String(payload?.productDiscount)
+                        payload?.product_discount
+                          ? String(payload?.product_discount)
                           : ''
                       }
                       onChange={(e: any) => {
@@ -807,32 +792,33 @@ const OrderServiceCustomer: React.FC<ScreenProps> = ({ screen }) => {
                           value = 100
                         }
 
-                        changePayload('productDiscount', value)
+                        changePayload('product_discount', value)
                       }}
                       selectProps={{
                         id: screen.id + 'select_product_discount_value',
                         disabled: isStatusVisualize,
-                        activeItem: payload.productDiscountType,
+                        activeItem: payload.product_discount_type,
                         onChange: (item) => {
-                          const productDiscountType = item.value as DiscountType
+                          const product_discountType =
+                            item.value as DiscountType
 
                           setPayload((prev) => {
-                            let productDiscount = prev.productDiscount
+                            let product_discount = prev.product_discount
 
                             if (
                               isProductDiscountTypePercent &&
-                              prev.productDiscount! > 100
+                              prev.product_discount! > 100
                             ) {
-                              productDiscount = 100
+                              product_discount = 100
                             }
 
-                            if (!productDiscountType) {
-                              productDiscount = undefined
+                            if (!product_discountType) {
+                              product_discount = undefined
                             }
                             return {
                               ...prev,
-                              productDiscountType,
-                              productDiscount,
+                              product_discountType,
+                              product_discount,
                             }
                           })
                         },
@@ -843,12 +829,12 @@ const OrderServiceCustomer: React.FC<ScreenProps> = ({ screen }) => {
                     <InputGroup
                       id=''
                       disabled={Boolean(
-                        isStatusVisualize || !payload.serviceDiscountType
+                        isStatusVisualize || !payload.service_discount_type
                       )}
                       type='number'
                       max={isServiceDiscountTypePercent ? 100 : undefined}
                       leftIcon={
-                        payload.serviceDiscountType
+                        payload.service_discount_type
                           ? isServiceDiscountTypePercent
                             ? 'percentage'
                             : 'dollar'
@@ -856,8 +842,8 @@ const OrderServiceCustomer: React.FC<ScreenProps> = ({ screen }) => {
                       }
                       label='Desconto nos serviços'
                       value={
-                        payload?.serviceDiscount
-                          ? String(payload?.serviceDiscount)
+                        payload?.service_discount
+                          ? String(payload?.service_discount)
                           : ''
                       }
                       onChange={(e: any) => {
@@ -866,32 +852,33 @@ const OrderServiceCustomer: React.FC<ScreenProps> = ({ screen }) => {
                         if (isServiceDiscountTypePercent && value > 100) {
                           value = 100
                         }
-                        changePayload('serviceDiscount', value)
+                        changePayload('service_discount', value)
                       }}
                       selectProps={{
                         disabled: isStatusVisualize,
                         intent: Intent.PRIMARY,
-                        activeItem: payload.serviceDiscountType,
+                        activeItem: payload.service_discount_type,
                         onChange: (item) => {
-                          const serviceDiscountType = item.value as DiscountType
+                          const service_discout_type =
+                            item.value as DiscountType
 
                           setPayload((prev) => {
-                            let serviceDiscount = prev.serviceDiscount
+                            let service_discount = prev.service_discount
 
                             if (
                               isServiceDiscountTypePercent &&
-                              prev.serviceDiscount! > 100
+                              prev.service_discount! > 100
                             ) {
-                              serviceDiscount = 100
+                              service_discount = 100
                             }
 
-                            if (!serviceDiscountType) {
-                              serviceDiscount = undefined
+                            if (!service_discout_type) {
+                              service_discount = undefined
                             }
                             return {
                               ...prev,
-                              serviceDiscountType,
-                              serviceDiscount,
+                              service_discout_type,
+                              service_discount,
                             }
                           })
                         },
@@ -923,7 +910,7 @@ const OrderServiceCustomer: React.FC<ScreenProps> = ({ screen }) => {
                 <Row>
                   <Switch<OrderPayload>
                     name='sendNotificationWhenConcluded'
-                    label='Avisar cliente sobre a conclusão do serviço'
+                    label='Enviar comprovanete ao cliente'
                   />
                 </Row>
               </Collapse>
@@ -934,14 +921,14 @@ const OrderServiceCustomer: React.FC<ScreenProps> = ({ screen }) => {
           <Row style={{ flex: 1 }} className='h-full'>
             <Box style={{ flex: 1 }}>
               <Row className='h-full'>
-                <PaginatedTable
+                <PaginatedTable<Order>
                   containerProps={{
                     className: 'styled-scroll',
                     style: {
                       width: '100%',
                     },
                   }}
-                  rowKey={(row) => row.id + row.created_at}
+                  rowKey={(row) => row.id + (row?.created_at ?? '')}
                   columns={columns}
                   isSelected={(row) => row.id === payload?.id}
                   request={OrderService.getAll as any}
@@ -957,4 +944,4 @@ const OrderServiceCustomer: React.FC<ScreenProps> = ({ screen }) => {
   )
 }
 
-export default OrderServiceCustomer
+export default ServiceOrder

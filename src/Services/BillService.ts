@@ -84,5 +84,9 @@ export default {
         Accept: reportType?.mimeType || 'application/json',
       }
     })
+  },
+
+  async getNextReference() {
+    return api.get<Response<{ reference: string }>>(`${DEFAULT_PATH}/nextReference`)
   }
 }

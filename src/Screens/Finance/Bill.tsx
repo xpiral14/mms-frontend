@@ -1,5 +1,5 @@
 import { ButtonGroup, Card, Colors, Intent } from '@blueprintjs/core'
-import { CSSProperties, useCallback, useMemo, useState } from 'react'
+import { CSSProperties, useCallback, useEffect, useMemo, useState } from 'react'
 import { MdOutlinePayments } from 'react-icons/md'
 import Button from '../../Components/Button'
 import InputDate from '../../Components/InputDate'
@@ -32,12 +32,7 @@ import BillService from '../../Services/BillService'
 import SupplierService from '../../Services/SupplierService'
 import currencyFormat from '../../Util/currencyFormat'
 import useMessageError from '../../Hooks/useMessageError'
-import {
-  addYears,
-  endOfDay,
-  startOfDay,
-  startOfMonth,
-} from 'date-fns'
+import { addYears, endOfDay, startOfDay, startOfMonth } from 'date-fns'
 import { useScreen } from '../../Hooks/useScreen'
 import { BillPaymentProps } from './BillPayment'
 import useAsync from '../../Hooks/useAsync'
@@ -58,6 +53,15 @@ const BillsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
     setScreenStatus,
     changePayloadAttribute,
   } = useWindow<BillPayloadCreate>()
+
+  const { setSorts } = useGrid()
+
+  useEffect(() => {
+    setSorts({
+      due_date: 'asc',
+    })
+  }, [])
+  
   const [monthSummary, setMonthSummary] = useState<{
     opened: string
     paid: string
@@ -89,6 +93,21 @@ const BillsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
       showErrorMessage(error, 'Não foi possível obter o resumo do mês.')
     }
   }, [])
+
+  const [loadingReference] = useAsync(async () => {
+    if (screenStatus !== ScreenStatus.NEW) return
+
+    try {
+      const reference = (await BillService.getNextReference()).data.data
+        .reference
+      changePayloadAttribute('reference', reference ?? '')
+    } catch (error) {
+      showErrorMessage(
+        error,
+        'Ops! Não foi possível preencher a referência de forma automática'
+      )
+    }
+  }, [screenStatus])
 
   const { openSubScreen } = useScreen()
   const [selectedBills, setSelectedBills] = useState<BillPayloadCreate[]>([])
@@ -260,6 +279,7 @@ const BillsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
         {
           name: 'Nome',
           keyName: 'name',
+          formatText: r => `${r?.name} (Parcela ${r?.installment})`,
           sortable: true,
           filters: [{ name: 'Nome da conta', type: 'text' }],
           style: {
@@ -319,6 +339,7 @@ const BillsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
         {
           name: 'Data de vencimento',
           sortable: true,
+          keyName: 'due_date',
           formatText: (r) =>
             new Date(r!.due_date as string).toLocaleString(
               undefined,
@@ -521,11 +542,13 @@ const BillsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
     if (!rows.length) return
     setSelectedBills((prev) => {
       if (rows.length > 1) {
-        setSelectedBills((rows as RowTableProps<Bill>[]).map(r => ({
-          ...r,
-          due_date: new Date(r.due_date as string),
-          opening_date: new Date(r.opening_date as string),
-        })))
+        setSelectedBills(
+          (rows as RowTableProps<Bill>[]).map((r) => ({
+            ...r,
+            due_date: new Date(r.due_date as string),
+            opening_date: new Date(r.opening_date as string),
+          }))
+        )
       }
       const row = (rows as RowTableProps<Bill>[])[0]
       if (prev.some((bill) => bill.id === row.id)) {
@@ -572,9 +595,8 @@ const BillsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
   const rowClassNames = (r: RowType<Bill>): 'text-white' | undefined =>
     r.status != 'opened' ? 'text-white' : undefined
   const rowKey = (r: Bill) => r.id
-  const isSelected = (
-    row: RowTableProps<Bill>,
-  ): boolean => selectedBills.some((bill) => bill.id === row.id)
+  const isSelected = (row: RowTableProps<Bill>): boolean =>
+    selectedBills.some((bill) => bill.id === row.id)
   return (
     <Container style={{ height: 'calc(100% - 40px)' }}>
       <Row>
@@ -678,6 +700,7 @@ const BillsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
             required
             width='100%'
             style={{ flex: 1 }}
+            readOnly={loadingReference}
             inputStyle={{ width: '100%' }}
           />
           <InputText<Bill>
@@ -753,7 +776,9 @@ const BillsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
             height='100%'
             onRowsSelect={onRowsSelect}
             unselectRows={(r) => {
-              setSelectedBills(prev => prev.filter(sr => !r.some(rns => rns.id == sr.id)))
+              setSelectedBills((prev) =>
+                prev.filter((sr) => !r.some((rns) => rns.id == sr.id))
+              )
             }}
             request={BillService.getAll}
             containerProps={containerProps}

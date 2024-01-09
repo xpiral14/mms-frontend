@@ -127,7 +127,13 @@ const ServiceOrder: React.FC<ScreenProps> = ({ screen }) => {
       })),
     [employees]
   )
-  const { payload, setPayload, screenStatus, setScreenStatus } = useWindow<
+  const {
+    payload,
+    setPayload,
+    screenStatus,
+    setScreenStatus,
+    changePayloadAttribute,
+  } = useWindow<
     Omit<Order, 'date' | 'validity'> & { date: Date; validity: Date }
   >()
 
@@ -174,9 +180,12 @@ const ServiceOrder: React.FC<ScreenProps> = ({ screen }) => {
     try {
       const reference = (await OrderService.getNextReference()).data.data
         .reference
-      changePayload('reference', reference ?? '')
+      changePayloadAttribute('reference', reference ?? '')
     } catch (error) {
-      showErrorMessage(error, 'Ops! Não foi possível preencher a referência de forma automática')
+      showErrorMessage(
+        error,
+        'Ops! Não foi possível preencher a referência de forma automática'
+      )
     }
   }, [screenStatus])
 
@@ -189,12 +198,6 @@ const ServiceOrder: React.FC<ScreenProps> = ({ screen }) => {
         : auth?.user?.id,
     })
   }, [])
-  const changePayload = (key: keyof typeof payload, value: any) => {
-    setPayload((prev) => ({
-      ...prev,
-      [key]: value,
-    }))
-  }
 
   const createValidation = (keyName: keyof Order) => () => {
     const value = (payload as any)[keyName]
@@ -295,7 +298,7 @@ const ServiceOrder: React.FC<ScreenProps> = ({ screen }) => {
       const response = await OrderService.create(requestPayload)
       const orderId = response.data.data.id
       setReloadGrid(true)
-      changePayload('id', orderId)
+      changePayloadAttribute('id', orderId)
       try {
         if (payload.order_services?.length) {
           await Promise.all(
@@ -430,7 +433,7 @@ const ServiceOrder: React.FC<ScreenProps> = ({ screen }) => {
     const orderServiceDetailsProps: OrderServiceDetailsProps = {
       onSave(orderServices, screen) {
         screen.close()
-        changePayload('order_services', orderServices)
+        changePayloadAttribute('order_services', orderServices)
       },
     }
 
@@ -480,7 +483,7 @@ const ServiceOrder: React.FC<ScreenProps> = ({ screen }) => {
   const openOrderProductScreen = () => {
     const orderProductDetailsProps: OrderProductDetailsProps = {
       onSave(orderProducts, screen) {
-        changePayload('products', orderProducts)
+        changePayloadAttribute('products', orderProducts)
         screen.close()
       },
     }
@@ -680,7 +683,7 @@ const ServiceOrder: React.FC<ScreenProps> = ({ screen }) => {
                 id={`${screen.id}-reference`}
                 name='reference'
                 readOnly={loadingReference}
-                disabled={isStatusVisualize}
+                disabled={isStatusVisualize || loadingReference}
               />
               <InputDate<Order>
                 label='Data'
@@ -805,7 +808,7 @@ const ServiceOrder: React.FC<ScreenProps> = ({ screen }) => {
                           value = 100
                         }
 
-                        changePayload('product_discount', value)
+                        changePayloadAttribute('product_discount', value)
                       }}
                       selectProps={{
                         id: screen.id + 'select_product_discount_value',
@@ -865,7 +868,7 @@ const ServiceOrder: React.FC<ScreenProps> = ({ screen }) => {
                         if (isServiceDiscountTypePercent && value > 100) {
                           value = 100
                         }
-                        changePayload('service_discount', value)
+                        changePayloadAttribute('service_discount', value)
                       }}
                       selectProps={{
                         disabled: isStatusVisualize,
@@ -906,7 +909,10 @@ const ServiceOrder: React.FC<ScreenProps> = ({ screen }) => {
                       label='Descrição'
                       value={payload?.description || ''}
                       onChange={(e) => {
-                        changePayload('description', e.currentTarget.value)
+                        changePayloadAttribute(
+                          'description',
+                          e.currentTarget.value
+                        )
                       }}
                       maxLength={150}
                       placeholder='Digite a observação'

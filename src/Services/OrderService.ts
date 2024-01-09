@@ -22,6 +22,9 @@ export type OrderProductResponse = {
   order_product: OrderProduct
 }
 export default class OrderService {
+  static async getNextReference() {
+    return api.get<Response<{ reference: string }>>(`${DEFAULT_PATH}/next-reference`)
+  }
   static async getAll(page: number, limit: number, query?: object) {
     return api.get<Paginated<Order>>(`${DEFAULT_PATH}/paginated`, {
       params: {
@@ -122,20 +125,20 @@ export default class OrderService {
 
   static async downloadOrderResumeReport(order: Partial<Order>) {
     await api.get(`${DEFAULT_PATH}/${order.id}/reports/resume`)
-   
+
   }
 
-  static  async  getOrderStatuses(){
+  static async getOrderStatuses() {
     return api.get<Response<OrderStatus[]>>(DEFAULT_PATH + '/statuses')
   }
 
-  static async getTotalPriceOfOrder(orderId: number){
+  static async getTotalPriceOfOrder(orderId: number) {
     const response = await api.get<Response<number>>(makeURL(DEFAULT_PATH, orderId, 'totalPrice'))
 
     return response.data.data
   }
 
-  static async getOrderReceipts(orderId: number){
+  static async getOrderReceipts(orderId: number) {
     return api.get<Response<Receipt[]>>(makeURL(DEFAULT_PATH, orderId, 'receipts'))
   }
 }

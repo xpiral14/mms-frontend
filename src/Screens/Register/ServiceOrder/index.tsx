@@ -127,6 +127,9 @@ const ServiceOrder: React.FC<ScreenProps> = ({ screen }) => {
       })),
     [employees]
   )
+  const { payload, setPayload, screenStatus, setScreenStatus } = useWindow<
+    Omit<Order, 'date' | 'validity'> & { date: Date; validity: Date }
+  >()
 
   const [loadingCustomers, loadCustomers] = useAsync(async () => {
     try {
@@ -165,9 +168,18 @@ const ServiceOrder: React.FC<ScreenProps> = ({ screen }) => {
     }
   }, [])
 
-  const { payload, setPayload, screenStatus, setScreenStatus } = useWindow<
-    Omit<Order, 'date' | 'validity'> & { date: Date; validity: Date }
-  >()
+  const [loadingReference] = useAsync(async () => {
+    if (screenStatus !== ScreenStatus.NEW) return
+
+    try {
+      const reference = (await OrderService.getNextReference()).data.data
+        .reference
+      changePayload('reference', reference ?? '')
+    } catch (error) {
+      showErrorMessage(error, 'Ops! Não foi possível preencher a referência de forma automática')
+    }
+  }, [screenStatus])
+
   const isStatusVisualize = Boolean(screenStatus === ScreenStatus.SEE_REGISTERS)
   useEffect(() => {
     setPayload({
@@ -667,6 +679,7 @@ const ServiceOrder: React.FC<ScreenProps> = ({ screen }) => {
                 label='Referência'
                 id={`${screen.id}-reference`}
                 name='reference'
+                readOnly={loadingReference}
                 disabled={isStatusVisualize}
               />
               <InputDate<Order>

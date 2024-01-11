@@ -1,54 +1,54 @@
-import { ButtonGroup, Card, Colors, Intent } from '@blueprintjs/core';
-import { useCallback, useMemo, useState } from 'react';
-import { MdOutlinePayments } from 'react-icons/md';
-import Button from '../../Components/Button';
-import InputDate from '../../Components/InputDate';
-import InputNumber from '../../Components/InputNumber';
-import Bar from '../../Components/Layout/Bar';
-import Container from '../../Components/Layout/Container';
-import Row from '../../Components/Layout/Row';
-import { Row as TableRowProps } from '../../Contracts/Components/PaginatadeTable';
-import PaginatedTable from '../../Components/PaginatedTable';
-import RegistrationButtonBar from '../../Components/RegistrationButtonBar';
-import Render from '../../Components/Render';
-import AsyncSelect from '../../Components/ScreenComponents/AsyncSelect';
-import InputText from '../../Components/ScreenComponents/InputText';
-import { BillReceiptStatuses, DateFormats, ScreenStatus } from '../../Constants/Enums';
+import { ButtonGroup, Card, Colors, Intent } from '@blueprintjs/core'
+import { useCallback, useMemo, useState } from 'react'
+import { MdOutlinePayments } from 'react-icons/md'
+import Button from '../../Components/Button'
+import InputDate from '../../Components/InputDate'
+import InputNumber from '../../Components/InputNumber'
+import Bar from '../../Components/Layout/Bar'
+import Container from '../../Components/Layout/Container'
+import Row from '../../Components/Layout/Row'
+import { Row as TableRowProps } from '../../Contracts/Components/PaginatadeTable'
+import PaginatedTable from '../../Components/PaginatedTable'
+import RegistrationButtonBar from '../../Components/RegistrationButtonBar'
+import Render from '../../Components/Render'
+import AsyncSelect from '../../Components/ScreenComponents/AsyncSelect'
+import InputText from '../../Components/ScreenComponents/InputText'
+import { BillReceiptStatuses, DateFormats, ScreenStatus } from '../../Constants/Enums'
 import {
   RegistrationButtonBarProps,
   StopLoadFunc
-} from '../../Contracts/Components/RegistrationButtonBarProps';
-import ScreenProps from '../../Contracts/Components/ScreenProps';
-import { Option } from '../../Contracts/Components/Suggest';
-import { Column, Row as RowType } from '../../Contracts/Components/Table';
-import { Validation } from '../../Contracts/Hooks/useValidation';
-import BillReceipt from '../../Contracts/Models/BillReceipt';
-import { useAlert } from '../../Hooks/useAlert';
-import { useGrid } from '../../Hooks/useGrid';
-import { useToast } from '../../Hooks/useToast';
-import useValidation from '../../Hooks/useValidation';
-import { useWindow } from '../../Hooks/useWindow';
-import BillReceiptService from '../../Services/BillReceiptService';
-import SupplierService from '../../Services/SupplierService';
-import currencyFormat from '../../Util/currencyFormat';
-import useMessageError from '../../Hooks/useMessageError';
+} from '../../Contracts/Components/RegistrationButtonBarProps'
+import ScreenProps from '../../Contracts/Components/ScreenProps'
+import { Option } from '../../Contracts/Components/Suggest'
+import { Column, Row as RowType } from '../../Contracts/Components/Table'
+import { Validation } from '../../Contracts/Hooks/useValidation'
+import BillReceipt from '../../Contracts/Models/BillReceipt'
+import { useAlert } from '../../Hooks/useAlert'
+import { useGrid } from '../../Hooks/useGrid'
+import { useToast } from '../../Hooks/useToast'
+import useValidation from '../../Hooks/useValidation'
+import { useWindow } from '../../Hooks/useWindow'
+import BillReceiptService from '../../Services/BillReceiptService'
+import SupplierService from '../../Services/SupplierService'
+import currencyFormat from '../../Util/currencyFormat'
+import useMessageError from '../../Hooks/useMessageError'
 import {
   addYears,
   endOfDay,
   startOfDay,
   startOfMonth
-} from 'date-fns';
-import { useScreen } from '../../Hooks/useScreen';
-import { billReceiptReception } from './BillReceiptReception';
-import useAsync from '../../Hooks/useAsync';
-import strToNumber from '../../Util/strToNumber';
-import CostCenterService from '../../Services/CostCenterService';
-import { BillReceiptPayloadCreate, getRowStyle } from './BillReceipt';
+} from 'date-fns'
+import { useScreen } from '../../Hooks/useScreen'
+import { billReceiptReception } from './BillReceiptReception'
+import useAsync from '../../Hooks/useAsync'
+import strToNumber from '../../Util/strToNumber'
+import CostCenterService from '../../Services/CostCenterService'
+import { BillReceiptPayloadCreate, getRowStyle } from './BillReceipt'
 
 export const BillReceiptsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
   const {
     payload, setPayload, screenStatus, setScreenStatus, changePayloadAttribute,
-  } = useWindow<BillReceiptPayloadCreate>();
+  } = useWindow<BillReceiptPayloadCreate>()
   const [monthSummary, setMonthSummary] = useState<{
     opened: string;
     received: string;
@@ -57,8 +57,8 @@ export const BillReceiptsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Eleme
     opened: currencyFormat(0),
     received: currencyFormat(0),
     expired: currencyFormat(0),
-  });
-  const { showErrorMessage } = useMessageError();
+  })
+  const { showErrorMessage } = useMessageError()
 
   const [, reloadSummary] = useAsync(async () => {
     try {
@@ -66,7 +66,7 @@ export const BillReceiptsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Eleme
         await BillReceiptService.getMonthSummary(
           startOfMonth(new Date()).toISOString().slice(0, 10)
         )
-      ).data.data;
+      ).data.data
       setMonthSummary({
         expired: currencyFormat(
           (summary.expired ?? 0) + (summary?.partially_paid_expired ?? 0)
@@ -75,28 +75,28 @@ export const BillReceiptsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Eleme
           (summary.received ?? 0) + (summary?.partially_paid ?? 0)
         ),
         opened: currencyFormat(summary.opened ?? 0),
-      });
+      })
     } catch (error) {
-      showErrorMessage(error, 'Não foi possível obter o resumo do mês.');
+      showErrorMessage(error, 'Não foi possível obter o resumo do mês.')
     }
-  }, []);
+  }, [])
 
-  const { openSubScreen } = useScreen();
-  const [selectedBillReceipts, setSelectedBillReceipts] = useState<BillReceiptPayloadCreate[]>([]);
+  const { openSubScreen } = useScreen()
+  const [selectedBillReceipts, setSelectedBillReceipts] = useState<BillReceiptPayloadCreate[]>([])
 
   const [loadingReference] = useAsync(async () => {
-    if (screenStatus !== ScreenStatus.NEW) return;
+    if (screenStatus !== ScreenStatus.NEW) return
 
     try {
       const reference = (await BillReceiptService.getNextReference()).data.data
-        .reference;
-      changePayload('reference', reference ?? '');
+        .reference
+      changePayloadAttribute('reference', reference ?? '')
     } catch (error) {
-      showErrorMessage(error, 'Ops! Não foi possível preencher a referência de forma automática');
+      showErrorMessage(error, 'Ops! Não foi possível preencher a referência de forma automática')
     }
-  }, [screenStatus]);
+  }, [screenStatus])
 
-  const createValidation = (keyName: keyof BillReceipt) => () => Boolean((payload as any)[keyName]);
+  const createValidation = (keyName: keyof BillReceipt) => () => Boolean((payload as any)[keyName])
 
   const validations: Validation[] = [
     {
@@ -114,20 +114,20 @@ export const BillReceiptsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Eleme
       errorMessage: 'O valor da conta é obrigatório',
       inputId: 'bill-value',
     },
-  ];
+  ]
 
-  const { validate } = useValidation(validations);
+  const { validate } = useValidation(validations)
 
-  const { setReloadGrid } = useGrid();
-  const { showSuccessToast } = useToast();
-  const { openAlert } = useAlert();
+  const { setReloadGrid } = useGrid()
+  const { showSuccessToast } = useToast()
+  const { openAlert } = useAlert()
 
-  const isStatusVisualize = Boolean(screenStatus === ScreenStatus.VISUALIZE);
+  const isStatusVisualize = Boolean(screenStatus === ScreenStatus.VISUALIZE)
 
   const getErrorMessages = (errors?: any[], defaultMessage?: string) => {
     const errorMessages = errors?.map((error) => ({
       message: error.message,
-    })) || [{ message: defaultMessage }];
+    })) || [{ message: defaultMessage }]
 
     return (
       <ul>
@@ -135,13 +135,13 @@ export const BillReceiptsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Eleme
           <li key={message}>{message}</li>
         ))}
       </ul>
-    );
-  };
+    )
+  }
 
   const handleButtonCreateBillReceiptOnClick = async (stopLoad: Function) => {
     if (!validate()) {
-      stopLoad();
-      return;
+      stopLoad()
+      return
     }
 
     try {
@@ -150,101 +150,101 @@ export const BillReceiptsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Eleme
         value: +(payload.value as string)?.replace(',', '.'),
         due_date: payload.due_date?.toISOString(),
         opening_date: payload.due_date?.toISOString(),
-      });
+      })
       showSuccessToast({
         message: 'Conta cadastrada com sucesso',
         intent: Intent.SUCCESS,
-      });
+      })
 
-      setPayload({});
-      setScreenStatus(ScreenStatus.SEE_REGISTERS);
-      increaseWindowSize?.();
-      reloadSummary();
+      setPayload({})
+      setScreenStatus(ScreenStatus.SEE_REGISTERS)
+      increaseWindowSize?.()
+      reloadSummary()
     } catch (error: any) {
       showErrorMessage(
         error,
         'Não foi possível criar a conta. Por favor, tente novamente'
-      );
+      )
     } finally {
-      stopLoad();
+      stopLoad()
     }
-  };
+  }
 
   const handleButtonUpdateBillReceiptOnClick = async (stopLoad: StopLoadFunc) => {
-    decreaseWindowSize?.();
+    decreaseWindowSize?.()
 
     if (!validate()) {
-      return;
+      return
     }
 
     try {
       const response = await BillReceiptService.update({
         ...payload,
         value: strToNumber(payload.value),
-      } as BillReceipt);
+      } as BillReceipt)
 
       if (response.status) {
         showSuccessToast({
           message: 'Produto atualizada com sucesso',
           intent: Intent.SUCCESS,
-        });
+        })
 
-        setReloadGrid(true);
+        setReloadGrid(true)
       }
 
       if (!response) {
         openAlert({
           text: 'Não foi possível atualizar o produto',
           intent: Intent.DANGER,
-        });
-        return;
+        })
+        return
       }
 
-      setPayload({});
-      setScreenStatus(ScreenStatus.SEE_REGISTERS);
-      reloadSummary();
+      setPayload({})
+      setScreenStatus(ScreenStatus.SEE_REGISTERS)
+      reloadSummary()
     } catch (error: any) {
       const ErrorMessages = getErrorMessages(
         error.response?.data?.errors,
         'Não foi possível atualizar o produto'
-      );
+      )
 
       openAlert({
         text: ErrorMessages,
         intent: Intent.DANGER,
-      });
+      })
     } finally {
-      stopLoad();
-      increaseWindowSize?.();
+      stopLoad()
+      increaseWindowSize?.()
     }
-  };
+  }
 
   const handleButtonDeleteBillReceiptOnClick = async (stopLoad: StopLoadFunc) => {
     try {
-      await Promise.all(selectedBillReceipts.map((b) => BillReceiptService.delete(b.id)));
+      await Promise.all(selectedBillReceipts.map((b) => BillReceiptService.delete(b.id)))
       showSuccessToast({
         message: 'Contas deletadas com sucesso',
         intent: Intent.SUCCESS,
-      });
-      setPayload({});
-      setSelectedBillReceipts([]);
-      reloadSummary();
-      setReloadGrid(true);
+      })
+      setPayload({})
+      setSelectedBillReceipts([])
+      reloadSummary()
+      setReloadGrid(true)
     } catch (error: any) {
       const ErrorMessages = getErrorMessages(
         error.response?.data?.errors,
         'Não foi possível deletar a conta'
-      );
+      )
 
       openAlert({
         text: ErrorMessages,
         intent: Intent.DANGER,
-      });
+      })
     } finally {
-      stopLoad();
-      setScreenStatus(ScreenStatus.SEE_REGISTERS);
+      stopLoad()
+      setScreenStatus(ScreenStatus.SEE_REGISTERS)
     }
-  };
+  }
 
   const columns = useMemo(
     () => [
@@ -369,7 +369,7 @@ export const BillReceiptsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Eleme
       },
     ] as Column<BillReceipt>[],
     []
-  );
+  )
 
   const containerProps = useMemo(
     () => ({
@@ -378,31 +378,31 @@ export const BillReceiptsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Eleme
       },
     }),
     []
-  );
+  )
 
-  const increaseWindowSize = screen.increaseScreenSize;
+  const increaseWindowSize = screen.increaseScreenSize
 
-  const decreaseWindowSize = screen.decreaseScreenSize;
+  const decreaseWindowSize = screen.decreaseScreenSize
 
   const focusNameInput = () => {
-    const referenceInput = document.getElementById('billName');
-    referenceInput?.focus();
-  };
+    const referenceInput = document.getElementById('billName')
+    referenceInput?.focus()
+  }
 
   const handleVisualizeButtonOnClick = () => {
-    setScreenStatus(ScreenStatus.SEE_REGISTERS);
+    setScreenStatus(ScreenStatus.SEE_REGISTERS)
 
-    increaseWindowSize?.();
-  };
+    increaseWindowSize?.()
+  }
 
   const handleButtonNewOnClick = () => {
     setPayload({
       opening_date: startOfDay(new Date()),
       due_date: endOfDay(new Date()),
-    });
-    setScreenStatus(ScreenStatus.NEW);
-    decreaseWindowSize?.();
-  };
+    })
+    setScreenStatus(ScreenStatus.NEW)
+    decreaseWindowSize?.()
+  }
 
   const registrationButtonBarProps: RegistrationButtonBarProps = {
     screen,
@@ -412,13 +412,13 @@ export const BillReceiptsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Eleme
       : handleButtonUpdateBillReceiptOnClick,
 
     handleEditButtonOnClick: () => {
-      const bill = selectedBillReceipts[0];
+      const bill = selectedBillReceipts[0]
       setPayload({
         ...bill,
-      });
-      setScreenStatus(ScreenStatus.EDIT);
-      decreaseWindowSize?.();
-      focusNameInput();
+      })
+      setScreenStatus(ScreenStatus.EDIT)
+      decreaseWindowSize?.()
+      focusNameInput()
     },
     handleDeleteButtonOnClick: (stopLoad: StopLoadFunc) => {
       openAlert({
@@ -427,12 +427,12 @@ export const BillReceiptsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Eleme
         onConfirm: () => handleButtonDeleteBillReceiptOnClick(stopLoad),
         onCancel: stopLoad,
         cancelButtonText: 'Cancelar',
-      });
+      })
     },
     handleButtonVisualizeOnClick: handleVisualizeButtonOnClick,
     handleCancelButtonOnClick: () => {
-      increaseWindowSize?.();
-      setScreenStatus(ScreenStatus.SEE_REGISTERS);
+      increaseWindowSize?.()
+      setScreenStatus(ScreenStatus.SEE_REGISTERS)
     },
     buttonNewProps: {
       disabled: selectedBillReceipts.length > 0,
@@ -512,12 +512,12 @@ export const BillReceiptsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Eleme
         ],
       },
     ],
-  };
+  }
 
   const onRowSelect = useCallback((row: TableRowProps<BillReceipt>) => {
     setSelectedBillReceipts((prev) => {
       if (prev.some((bill) => bill.id === row.id)) {
-        return prev.filter((bill) => bill.id !== row.id);
+        return prev.filter((bill) => bill.id !== row.id)
       }
       return [
         ...prev,
@@ -526,41 +526,41 @@ export const BillReceiptsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Eleme
           due_date: new Date(row.due_date as string),
           opening_date: new Date(row.opening_date as string),
         },
-      ];
-    });
-  }, []);
+      ]
+    })
+  }, [])
 
   const supplierFunction = useCallback(
     async (q: string | null): Promise<Option<any>[]> => {
       const response = await SupplierService.getAll(1, 20, {
         name_like: q,
-      });
+      })
       const options = response.data.data.map((supplier) => ({
         label: supplier.name,
         value: supplier.id,
-      }));
-      return options as Option[];
+      }))
+      return options as Option[]
     },
     []
-  );
+  )
   const costCenterFunction = useCallback(
     async (q: string | null): Promise<Option[]> => {
       const response = await CostCenterService.getAll(1, 20, {
         name_like: q,
-      });
+      })
       const options = response.data.data.map((supplier) => ({
         label: supplier.name,
         value: supplier.id,
-      }));
-      return options as Option[];
+      }))
+      return options as Option[]
     },
     []
-  );
-  const rowClassNames = (r: RowType<BillReceipt>): 'text-white' | undefined => r.status != 'opened' ? 'text-white' : undefined;
-  const rowKey = (r: BillReceipt) => r.id;
+  )
+  const rowClassNames = (r: RowType<BillReceipt>): 'text-white' | undefined => r.status != 'opened' ? 'text-white' : undefined
+  const rowKey = (r: BillReceipt) => r.id
   const isSelected = (
     row: TableRowProps<BillReceipt>
-  ): boolean => selectedBillReceipts.some((bill) => bill.id === row.id);
+  ): boolean => selectedBillReceipts.some((bill) => bill.id === row.id)
   const onClickReceiveBill = () => {
     openSubScreen<billReceiptReception>(
       {
@@ -570,13 +570,13 @@ export const BillReceiptsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Eleme
       {
         billReceipts: selectedBillReceipts as any,
         onPay: () => {
-          setSelectedBillReceipts([]);
-          reloadSummary();
-          setReloadGrid(true);
+          setSelectedBillReceipts([])
+          reloadSummary()
+          setReloadGrid(true)
         },
       }
-    );
-  };
+    )
+  }
   return (
     <Container style={{ height: 'calc(100% - 40px)' }}>
       <Row>
@@ -600,7 +600,7 @@ export const BillReceiptsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Eleme
                 intent={Intent.DANGER}
                 disabled={selectedBillReceipts.length === 0}
                 onClick={() => {
-                  setSelectedBillReceipts([]);
+                  setSelectedBillReceipts([])
                 }}
               >
                 Limpar seleção
@@ -656,6 +656,7 @@ export const BillReceiptsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Eleme
             id='bill-reference'
             label='Referência:'
             disabled={isStatusVisualize}
+            readOnly={loadingReference}
             maxLength={15}
             required
             width='100%'
@@ -743,5 +744,5 @@ export const BillReceiptsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Eleme
         </Row>
       </Render>
     </Container>
-  );
-};
+  )
+}

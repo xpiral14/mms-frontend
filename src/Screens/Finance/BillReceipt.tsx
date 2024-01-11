@@ -44,7 +44,7 @@ import useAsync from '../../Hooks/useAsync'
 import strToNumber from '../../Util/strToNumber'
 import CostCenterService from '../../Services/CostCenterService'
 
-type BillReceiptPayloadCreate = Omit<BillReceipt, 'due_date' | 'opening_date'> & {
+export type BillReceiptPayloadCreate = Omit<BillReceipt, 'due_date' | 'opening_date'> & {
   installments?: number
   due_date?: Date
   opening_date?: Date
@@ -778,7 +778,7 @@ const BillReceiptsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
   )
 }
 
-function getRowStyle(row: RowType<BillReceipt>): CSSProperties {
+export function getRowStyle(row: RowType<BillReceipt>): CSSProperties {
   switch (row.status) {
   case BillReceiptStatuses.RECEIVED:
     return {

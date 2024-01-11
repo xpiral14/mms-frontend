@@ -168,12 +168,12 @@ const GoodsScreen: React.FC<GoodRegisterScreenProps> = ({
           formatText: (row) => row?.quantity ?? '0',
         },
         {
-          name: 'Valor unitário',
+          name: 'Custo unitário',
           formatText: (row) =>
             currencyFormat((row!.value ?? 0) / (row!.quantity ?? 1)),
         },
         {
-          name: 'Valor total',
+          name: 'Custo total',
           formatText: (row) => currencyFormat(row?.value ?? 0),
         },
       ] as Column<GoodProduct>[],

@@ -43,12 +43,8 @@ const OrderResume: FunctionComponent<OrderResumeScreenProps> = (props) => {
   }, [])
   const [order, setOrder] = useState<Partial<Order>>(() => ({
     ...props.order,
-    product_discount:
-      (props.order?.product_discount ?? 0) *
-      (props.order.product_discount_type === DiscountType.PERCENT ? 100 : 1),
-    service_discount:
-      (props.order?.service_discount ?? 0) *
-      (props.order.service_discount_type === DiscountType.PERCENT ? 100 : 1),
+    product_discount: props.order?.product_discount ?? 0,
+    service_discount: props.order?.service_discount ?? 0,
   }))
   const [loadingOrder, loadOrder] = useAsync(async () => {
     try {
@@ -129,7 +125,6 @@ const OrderResume: FunctionComponent<OrderResumeScreenProps> = (props) => {
   )
 
   const formatValue = (value?: number, type?: DiscountType) => {
-    console.log(value, type)
     if (!type) {
       return 'Sem desconto'
     }
@@ -138,19 +133,18 @@ const OrderResume: FunctionComponent<OrderResumeScreenProps> = (props) => {
     if (type === DiscountType.VALUE) {
       formattedValue = currencyFormat(value)
     }
-    console.log(prefix, formattedValue)
     return `${prefix}  ${formattedValue}`
   }
 
   const calcValueWithDiscount = (value: any, discount: any, type: any) => {
     let finalValue = value
     switch (type) {
-    case DiscountType.PERCENT:
-      finalValue = value - value * (discount / 100)
-      break
-    case DiscountType.VALUE:
-      finalValue = value - discount
-      break
+      case DiscountType.PERCENT:
+        finalValue = value - value * (discount / 100)
+        break
+      case DiscountType.VALUE:
+        finalValue = value - discount
+        break
     }
 
     if (finalValue < 0) {

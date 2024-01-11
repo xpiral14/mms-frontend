@@ -1,4 +1,4 @@
-import React, { FC, useState, useMemo, useEffect } from 'react'
+import { FC, useState, useMemo, useEffect } from 'react'
 import { AddProductToGoodScreenProps } from '../../Contracts/Screen/AddProductToGood'
 import useAsync from '../../Hooks/useAsync'
 import ProductsService from '../../Services/ProductsService'
@@ -9,7 +9,6 @@ import Select from '../../Components/Select'
 import { useWindow } from '../../Hooks/useWindow'
 import Container from '../../Components/Layout/Container'
 import Row from '../../Components/Layout/Row'
-import NumericInput from '../../Components/NumericInput'
 import Bar from '../../Components/Layout/Bar'
 import Button from '../../Components/Button'
 import { Intent } from '@blueprintjs/core'
@@ -17,6 +16,8 @@ import GoodProduct from '../../Contracts/Models/GoodProduct'
 import useValidation from '../../Hooks/useValidation'
 import { Validation } from '../../Contracts/Hooks/useValidation'
 import Box from '../../Components/Layout/Box'
+import InputNumber from '../../Components/ScreenComponents/InputNumber'
+import strToNumber from '../../Util/strToNumber'
 
 const AddProductToGood: FC<AddProductToGoodScreenProps> = ({
   editMode,
@@ -44,8 +45,7 @@ const AddProductToGood: FC<AddProductToGoodScreenProps> = ({
     },
   ] as Validation[]
   const { validate } = useValidation(validations)
-  const { changePayloadAttribute, payload, setPayload } =
-    useWindow<GoodProduct>()
+  const { payload, setPayload } = useWindow<GoodProduct>()
   useEffect(() => {
     if (goodProduct) {
       setPayload(goodProduct)
@@ -93,7 +93,15 @@ const AddProductToGood: FC<AddProductToGoodScreenProps> = ({
               if (!validate()) {
                 return
               }
-              onAddProduct(payload, screen.close)
+              onAddProduct(
+                {
+                  ...payload,
+                  quantity: strToNumber(payload.quantity),
+                  value:
+                    strToNumber(payload.quantity) * strToNumber(payload.value),
+                },
+                screen.close
+              )
               setPayload({})
             }}
           >
@@ -119,23 +127,18 @@ const AddProductToGood: FC<AddProductToGoodScreenProps> = ({
       </Box>
       <Box className='mt-2'>
         <Row>
-          <NumericInput
+          <InputNumber<GoodProduct>
+            name='quantity'
             label='Quantidade'
             value={payload.quantity ?? 0}
             id={screen.id + 'product-quantity'}
-            stepSize={0.1}
-            onValueChange={(v) => {
-              changePayloadAttribute('quantity', v)
-            }}
           />
-          <NumericInput
-            label='Valor total'
-            allowNumericCharactersOnly={false}
+          <InputNumber<GoodProduct>
+            name='value'
+            format='currency'
+            label='Custo unitário'
             value={payload.value ?? 0}
             id={screen.id + '-product-quantity-value'}
-            onValueChange={(v) => {
-              changePayloadAttribute('value', v)
-            }}
           />
         </Row>
       </Box>

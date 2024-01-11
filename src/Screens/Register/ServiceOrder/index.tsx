@@ -56,6 +56,7 @@ import useMessageError from '../../../Hooks/useMessageError'
 import Bar from '../../../Components/Layout/Bar'
 import Switch from '../../../Components/ScreenComponents/Switch'
 import InputDate from '../../../Components/ScreenComponents/InputDate'
+import currencyFormat from '../../../Util/currencyFormat'
 
 const discountTypeOptions: Option[] = [
   {
@@ -287,13 +288,11 @@ const ServiceOrder: React.FC<ScreenProps> = ({ screen }) => {
     try {
       const requestPayload = {
         ...payload,
-        date: payload?.date ? format(payload?.date, 'yyyy-MM-dd') : null,
+        date: payload?.date ? payload.date.toISOString() : null,
         productIds: [] as number[],
         serviceIds: [] as number[],
         status: payload.status,
-        validity: payload?.date
-          ? format(payload?.date, 'yyyy-MM-dd HH:mm:ss')
-          : null,
+        validity: payload?.date ? payload.date.toISOString() : null,
       }
       const response = await OrderService.create(requestPayload)
       const orderId = response.data.data.id
@@ -315,9 +314,9 @@ const ServiceOrder: React.FC<ScreenProps> = ({ screen }) => {
       }
 
       try {
-        if (payload.products) {
+        if (payload.order_products?.length) {
           await Promise.all(
-            payload.products?.map((orderProduct) =>
+            payload.order_products?.map((orderProduct) =>
               OrderService.addProduct(orderId, orderProduct)
             )
           )
@@ -427,6 +426,13 @@ const ServiceOrder: React.FC<ScreenProps> = ({ screen }) => {
       })
     },
     handleReloadScreenOnClick: reloadAllScreenData,
+    handleNewButtonOnClick: () => {
+      setScreenStatus(ScreenStatus.NEW)
+      setPayload({
+        date: new Date(),
+        status: orderStatus.DONE,
+      })
+    },
   }
 
   const openOrderDetailsScreen = () => {
@@ -483,7 +489,7 @@ const ServiceOrder: React.FC<ScreenProps> = ({ screen }) => {
   const openOrderProductScreen = () => {
     const orderProductDetailsProps: OrderProductDetailsProps = {
       onSave(orderProducts, screen) {
-        changePayloadAttribute('products', orderProducts)
+        changePayloadAttribute('order_products', orderProducts)
         screen.close()
       },
     }
@@ -496,7 +502,7 @@ const ServiceOrder: React.FC<ScreenProps> = ({ screen }) => {
       }
     }
 
-    if (payload?.products?.length) {
+    if (payload?.order_products?.length) {
       orderProductDetailsProps.selectedOrderProducts = payload.order_products
     }
 
@@ -517,7 +523,11 @@ const ServiceOrder: React.FC<ScreenProps> = ({ screen }) => {
   const isServiceDiscountTypePercent =
     payload.service_discount_type === DiscountType.PERCENT
   const columns: Column<
-    Order & { employee_name?: string; customer_name?: string }
+    Order & {
+      employee_name?: string
+      customer_name?: string
+      invoicing?: string
+    }
   >[] = [
     {
       name: 'Referência',
@@ -529,6 +539,11 @@ const ServiceOrder: React.FC<ScreenProps> = ({ screen }) => {
       ],
       keyName: 'reference',
       sortable: true,
+    },
+    {
+      name: 'Faturamento',
+      keyName: 'invoicing',
+      formatText: (r) => currencyFormat(r?.invoicing),
     },
     {
       name: 'Funcionário',
@@ -571,6 +586,7 @@ const ServiceOrder: React.FC<ScreenProps> = ({ screen }) => {
         orderStatuses.find((o) => o.id === row?.status)?.name,
       style: {
         width: '120px',
+        whiteSpace: 'nowrap',
       },
     },
   ]
@@ -833,7 +849,7 @@ const ServiceOrder: React.FC<ScreenProps> = ({ screen }) => {
                             }
                             return {
                               ...prev,
-                              product_discountType,
+                              product_discount_type: product_discountType,
                               product_discount,
                             }
                           })
@@ -875,7 +891,7 @@ const ServiceOrder: React.FC<ScreenProps> = ({ screen }) => {
                         intent: Intent.PRIMARY,
                         activeItem: payload.service_discount_type,
                         onChange: (item) => {
-                          const service_discout_type =
+                          const serviceDiscountTYpe =
                             item.value as DiscountType
 
                           setPayload((prev) => {
@@ -888,12 +904,12 @@ const ServiceOrder: React.FC<ScreenProps> = ({ screen }) => {
                               service_discount = 100
                             }
 
-                            if (!service_discout_type) {
+                            if (!serviceDiscountTYpe) {
                               service_discount = undefined
                             }
                             return {
                               ...prev,
-                              service_discout_type,
+                              service_discount_type: serviceDiscountTYpe,
                               service_discount,
                             }
                           })
@@ -937,7 +953,7 @@ const ServiceOrder: React.FC<ScreenProps> = ({ screen }) => {
           </Row>
         </Render>
         <Render renderIf={screenStatus === ScreenStatus.SEE_REGISTERS}>
-          <Row style={{ flex: 1 }} className='h-full'>
+          <Row style={{ flex: 1 }} className='h-full' column>
             <Box style={{ flex: 1 }}>
               <Row className='h-full'>
                 <PaginatedTable<Order>

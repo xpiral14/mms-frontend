@@ -139,12 +139,12 @@ const OrderResume: FunctionComponent<OrderResumeScreenProps> = (props) => {
   const calcValueWithDiscount = (value: any, discount: any, type: any) => {
     let finalValue = value
     switch (type) {
-      case DiscountType.PERCENT:
-        finalValue = value - value * (discount / 100)
-        break
-      case DiscountType.VALUE:
-        finalValue = value - discount
-        break
+    case DiscountType.PERCENT:
+      finalValue = value - value * (discount / 100)
+      break
+    case DiscountType.VALUE:
+      finalValue = value - discount
+      break
     }
 
     if (finalValue < 0) {

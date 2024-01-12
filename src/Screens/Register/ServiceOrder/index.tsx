@@ -365,13 +365,13 @@ const ServiceOrder: React.FC<ScreenProps> = ({ screen }) => {
       service_discount:
         payload.service_discount_type === DiscountType.PERCENT
           ? payload.service_discount
-            ? payload.service_discount / 100
+            ? payload.service_discount
             : null
           : payload.service_discount ?? null,
       product_discount:
         payload.product_discount_type === DiscountType.PERCENT
           ? payload.product_discount
-            ? payload.product_discount / 100
+            ? payload.product_discount
             : null
           : payload.product_discount ?? null,
     }
@@ -891,8 +891,7 @@ const ServiceOrder: React.FC<ScreenProps> = ({ screen }) => {
                         intent: Intent.PRIMARY,
                         activeItem: payload.service_discount_type,
                         onChange: (item) => {
-                          const serviceDiscountTYpe =
-                            item.value as DiscountType
+                          const serviceDiscountTYpe = item.value as DiscountType
 
                           setPayload((prev) => {
                             let service_discount = prev.service_discount

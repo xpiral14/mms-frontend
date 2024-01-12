@@ -220,6 +220,18 @@ const ServiceOrder: React.FC<ScreenProps> = ({ screen }) => {
       errorMessage: 'Escolha o cliente',
       inputId: `${screen.id}-select-customer`,
     },
+    {
+      check: () =>
+        !payload.product_discount ||
+        Boolean(payload.order_products?.length),
+      errorMessage: 'Não há produtos para que se possa haver desconto',
+    },
+    {
+      check: () =>
+        !payload.service_discount ||
+        Boolean(payload.order_services?.length),
+      errorMessage: 'Não há serviços para que se possa haver desconto',
+    },
   ]
   const { validate } = useValidation(validations)
 

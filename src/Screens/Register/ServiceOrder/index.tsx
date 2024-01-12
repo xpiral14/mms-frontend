@@ -597,11 +597,11 @@ const ServiceOrder: React.FC<ScreenProps> = ({ screen }) => {
       date: row.date ? new Date(row.date) : undefined,
       product_discount:
         row.product_discount_type === DiscountType.PERCENT
-          ? +(row.product_discount ?? 0) * 100
+          ? +(row.product_discount ?? 0)
           : row.product_discount,
       service_discount:
         row.service_discount_type === DiscountType.PERCENT
-          ? +(row.service_discount ?? 0) * 100
+          ? +(row.service_discount ?? 0)
           : row.service_discount,
       employee_id: row.executing_by,
     })

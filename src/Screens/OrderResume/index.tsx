@@ -24,14 +24,23 @@ import { useToast } from '../../Hooks/useToast'
 import OrderService, {
   OrderProductResponse,
   OrderServicePaginatedResponse,
+  ProfitResumeResponse,
 } from '../../Services/OrderService'
 import OrderStatus from '../../Contracts/Models/OrderStatus'
 import currencyFormat from '../../Util/currencyFormat'
 import Order from '../../Contracts/Models/Order'
+import useMessageError from '../../Hooks/useMessageError'
 
 const OrderResume: FunctionComponent<OrderResumeScreenProps> = (props) => {
   const { openAlert } = useAlert()
   const [orderStatuses, setOrderStatuses] = useState<OrderStatus[]>([])
+
+  const [profitResume, setProfitResume] = useState<ProfitResumeResponse>({
+    total_profit: 0,
+    total_sale: 0,
+    total_profit_percent: 0,
+    order_products: {},
+  })
   useEffect(() => {
     if (!props.order.id) {
       openAlert({
@@ -90,6 +99,8 @@ const OrderResume: FunctionComponent<OrderResumeScreenProps> = (props) => {
   const [orderServices, setOrderServices] = useState<
     OrderServicePaginatedResponse[]
   >([])
+
+  const { showErrorMessage } = useMessageError()
   const [orderProducts, setOrderProducts] = useState<OrderProductResponse[]>([])
   const [loadingOrderServices, loadOrderServices] = useAsync(async () => {
     if (!props?.order?.id) return
@@ -100,9 +111,25 @@ const OrderResume: FunctionComponent<OrderResumeScreenProps> = (props) => {
   const [loadingOrderProducts, loadOrderProducts] = useAsync(async () => {
     if (!props?.order?.id) return
     const orderProductsResponse = await OrderService.getOrderProducts(order.id!)
-
     setOrderProducts(orderProductsResponse.data.data)
   }, [])
+
+  const [, loadResumeProfit] = useAsync(async () => {
+    if (!props.order?.id) return
+
+    try {
+      const orderResumeProfit = await OrderService.getOrderProfitResume(
+        props.order.id
+      )
+      setProfitResume(orderResumeProfit.data.data)
+    } catch (error) {
+      showErrorMessage(
+        error,
+        'Não foi possível obter os dados de lucro da venda. Tente novamente mais tarde'
+      )
+    }
+  }, [])
+
   const orderServiceTableRows = orderServices.map((orderService) => ({
     ...orderService.order_service,
     ...orderService.service,
@@ -131,12 +158,12 @@ const OrderResume: FunctionComponent<OrderResumeScreenProps> = (props) => {
   const calcValueWithDiscount = (value: any, discount: any, type: any) => {
     let finalValue = value
     switch (type) {
-      case DiscountType.PERCENT:
-        finalValue = value - value * (discount / 100)
-        break
-      case DiscountType.VALUE:
-        finalValue = value - discount
-        break
+    case DiscountType.PERCENT:
+      finalValue = value - value * (discount / 100)
+      break
+    case DiscountType.VALUE:
+      finalValue = value - discount
+      break
     }
 
     if (finalValue < 0) {
@@ -280,6 +307,7 @@ const OrderResume: FunctionComponent<OrderResumeScreenProps> = (props) => {
     loadCustomer()
     loadOrder()
     loadOrderStatuses()
+    loadResumeProfit()
   }
 
   const generateOrderResumeReport = async () => {
@@ -416,6 +444,24 @@ const OrderResume: FunctionComponent<OrderResumeScreenProps> = (props) => {
                 label='Status'
                 readOnly
                 value={orderStatuses.find((o) => o.id === order.status)?.name}
+                id=''
+              />
+              <InputText
+                label='Lucro total'
+                readOnly
+                value={currencyFormat(profitResume.total_profit)}
+                id=''
+              />
+              <InputText
+                label='Total de vendas'
+                readOnly
+                value={currencyFormat(profitResume.total_sale)}
+                id=''
+              />
+              <InputText
+                label='Porcentagem de lucro'
+                readOnly
+                value={`${profitResume.total_profit_percent}%`}
                 id=''
               />
             </Row>

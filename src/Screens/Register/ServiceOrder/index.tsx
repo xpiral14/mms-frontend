@@ -223,12 +223,14 @@ const ServiceOrder: React.FC<ScreenProps> = ({ screen }) => {
     {
       check: () =>
         !payload.product_discount ||
+        Boolean(payload.id) ||
         Boolean(payload.order_products?.length),
       errorMessage: 'Não há produtos para que se possa haver desconto',
     },
     {
       check: () =>
         !payload.service_discount ||
+        Boolean(payload.id) ||
         Boolean(payload.order_services?.length),
       errorMessage: 'Não há serviços para que se possa haver desconto',
     },
@@ -543,6 +545,9 @@ const ServiceOrder: React.FC<ScreenProps> = ({ screen }) => {
   >[] = [
     {
       name: 'Referência',
+      style: {
+        maxWidth: 50
+      },
       filters: [
         {
           name: 'Referência',
@@ -561,6 +566,7 @@ const ServiceOrder: React.FC<ScreenProps> = ({ screen }) => {
       name: 'Funcionário',
       keyName: 'employee_name',
       sortable: true,
+      style: { whiteSpace: 'nowrap' },
       filters: [
         {
           name: 'Funcionário',
@@ -570,6 +576,7 @@ const ServiceOrder: React.FC<ScreenProps> = ({ screen }) => {
     },
     {
       name: 'Cliente',
+      style: { whiteSpace: 'nowrap' },
       keyName: 'customer_name',
       sortable: true,
     },
@@ -586,6 +593,7 @@ const ServiceOrder: React.FC<ScreenProps> = ({ screen }) => {
     {
       name: 'Validade',
       keyName: 'validity',
+      style: { whiteSpace: 'nowrap' },
       sortable: true,
       formatText: (row) => {
         return row?.validity ? new Date(row.validity).toLocaleString() : '-'

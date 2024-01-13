@@ -30,6 +30,7 @@ import useMessageError from '../../../Hooks/useMessageError'
 import Box from '../../../Components/Layout/Box'
 import { DistributeGoodsProps } from '../../../Contracts/Screen/DistributeGoods'
 import { FilterType, ReportRequestOption } from '../../../Contracts/Types/Api'
+import { isFuture } from 'date-fns'
 
 const GoodsScreen: React.FC<GoodRegisterScreenProps> = ({
   screen,
@@ -51,11 +52,6 @@ const GoodsScreen: React.FC<GoodRegisterScreenProps> = ({
       errorMessage: 'O número da nota fiscal é obrigatória',
       inputId: screen.createElementId('invoice-number'),
       check: () => Boolean(payload.invoice_number),
-    },
-    {
-      check: () => Boolean(payload.received_at),
-      errorMessage: 'A data de recebimento é obrigatória',
-      inputId: screen.id + 'received_at',
     },
   ] as Validation[]
   const { validate } = useValidation(validations)
@@ -374,6 +370,12 @@ const GoodsScreen: React.FC<GoodRegisterScreenProps> = ({
       )
       return
     }
+
+    if (payload.received_at && isFuture(payload.received_at as Date)) {
+      showWarningToast('A data de recebimento está no futuro.')
+      return
+    }
+
     openSubScreen<DistributeGoodsProps>(
       {
         id: 'distribute-goods',

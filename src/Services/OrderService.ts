@@ -17,6 +17,26 @@ export type OrderServicePaginatedResponse = {
   service: Service
 }
 
+export interface OrderProductProfit {
+  reference: string;
+  id: number;
+  product_name: string;
+  unit_price: number;
+  total_value_sale: number;
+  total_quantity_sale: string;
+  avg_value: number;
+  profit: number;
+  profit_percent: number;
+}
+
+
+export type ProfitResumeResponse = {
+  total_profit: 0,
+  total_sale: 0,
+  total_profit_percent: 0,
+  order_products: Record<string, OrderProductProfit>
+}
+
 export type OrderProductResponse = {
   product: Product
   order_product: OrderProduct
@@ -140,5 +160,9 @@ export default class OrderService {
 
   static async getOrderReceipts(orderId: number) {
     return api.get<Response<Receipt[]>>(makeURL(DEFAULT_PATH, orderId, 'receipts'))
+  }
+
+  static async getOrderProfitResume(orderId: number) {
+    return api.get<Response<ProfitResumeResponse>>(makeURL(DEFAULT_PATH, orderId, 'reports', 'profitResume'))
   }
 }

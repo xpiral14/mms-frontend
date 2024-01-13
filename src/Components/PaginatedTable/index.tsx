@@ -57,6 +57,7 @@ const PaginatedTable = function <T = any>({
   downloadable,
   reportRequestOptions = defaultRequestOptions,
   filter,
+  sorts: defaultSorts,
   ...rest
 }: PaginatedTableProps<T>) {
   const {
@@ -75,6 +76,11 @@ const PaginatedTable = function <T = any>({
   const [selectedFilters, setSelectedFilters] = useState(
     filter ?? ({} as Record<string, string>)
   )
+  useEffect(() => {
+    if (defaultSorts) {
+      setSorts(defaultSorts)
+    }
+  }, [defaultSorts])
 
   const requestParams = useMemo(() => {
     const formattedSortedParams = Object.entries(sorts).reduce(

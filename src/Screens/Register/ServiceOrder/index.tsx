@@ -147,6 +147,55 @@ const reports = [
     request: OrderService.rankOfProductsBySale,
     text: 'Rank de venda de produtos',
   },
+  {
+    columns: [
+      {
+        name: '',
+        formatText: (_, index) => (index ?? 0) + 1 + '°',
+      },
+      {
+        name: 'Cliente',
+        keyName: 'customer_name',
+        filters: [
+          {
+            name: 'Nome do cliente',
+            type: 'text',
+          },
+        ],
+      },
+      {
+        keyName: 'total_sold',
+        name: 'Total de vendas',
+        sortable: true,
+      },
+      {
+        keyName: 'first_sale',
+        name: 'Data primeira venda',
+        sortable: true,
+        formatText: (r) => new Date(r.first_sale).toLocaleDateString(),
+      },
+      {
+        keyName: 'last_sale',
+        name: 'Data última venda',
+        sortable: true,
+        formatText: (r) => new Date(r.first_sale).toLocaleDateString(),
+      },
+    ],
+    downloadable: true,
+    reportRequestOptions: [
+      {
+        mimeType: 'application/csv',
+        reportType: 'csv',
+        name: 'Vendas por cliente',
+        responseType: 'text',
+      },
+    ],
+    request: OrderService.salesByCustomer,
+    text: 'Vendas por cliente',
+    sorts: {
+      total_sold: 'desc',
+    },
+  },
 ] as ReportProps[]
 const ServiceOrder: React.FC<ScreenProps> = ({ screen }) => {
   const { hasPermission, auth } = useAuth()

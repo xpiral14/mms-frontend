@@ -186,4 +186,23 @@ export default class OrderService {
       }
     })
   }
+  static async salesByCustomer(page: any, limit: number, filters?: Record<string, any>, reportType?: ReportRequestOption) {
+    return await api.get<Paginated<{
+      customer_name: string;
+      total_sold: number;
+      first_sale: string;
+      last_sale: string;
+    }
+    >>(`${DEFAULT_PATH}/reports/salesByCustomer`, {
+      params: {
+        page,
+        limit,
+        ...filters,
+      },
+      responseType: reportType?.responseType ?? 'json',
+      headers: {
+        Accept: reportType?.mimeType || 'application/json',
+      }
+    })
+  }
 }

@@ -27,6 +27,9 @@ export type Sorts<T = any> = Record<keyof T | string, Sort>
 export type TableProps<T = Record<string, any>> = {
   allowMultiSelect?: boolean
   columns: Column<T>[]
+  /**
+   * representa os filtros padrões para a request da tabela
+   */
   filter?: Filters
   height?: string
   interactive?: boolean

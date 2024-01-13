@@ -4,27 +4,23 @@ import NavBar from '../../../Containers/NavBar'
 import Notification from '../../../Contracts/Models/Notification'
 import { useAuth } from '../../../Hooks/useAuth'
 import { useDialog } from '../../../Hooks/useDialog'
-import useSocket from '../../../Hooks/useSocket'
 import { useToast } from '../../../Hooks/useToast'
 import NotificationService from '../../../Services/NotificationService'
 import menu from '../../../Statics/menu'
 
 const PrivateLayout: React.FC = ({ children }) => {
   const { showPrimaryToast, showErrorToast } = useToast()
-  const { auth } = useAuth()
-  const socket = useSocket()
+  const { auth, socket } = useAuth()
 
   const { openDialog } = useDialog()
 
   useEffect(() => {
-    if (!auth) {
+    if (!auth || !socket) {
       return
     }
-
     const channel = socket?.private('User.' + auth.user.id)
-
     channel
-      .notification((notification: Notification) => {
+      ?.notification((notification: Notification) => {
         showPrimaryToast({
           message: notification.message,
           action: {
@@ -38,7 +34,7 @@ const PrivateLayout: React.FC = ({ children }) => {
       .error((error: any) => {
         if (error.type === 'AuthError') {
           showErrorToast(
-            'Houve um problema ao tentar conectá-lo ao servidor em tempo real para receber notificções. Recarregue a página para tentar novamente se o problema persistir entre em contato com o suporte'
+            'Houve um problema ao tentar conectá-lo ao servidor em tempo real para receber notificações. Recarregue a página para tentar novamente se o problema persistir entre em contato com o suporte'
           )
         }
       })
@@ -61,8 +57,7 @@ const PrivateLayout: React.FC = ({ children }) => {
         productStockWarning: data.product_stock_warning,
         productStock: data.product_stock,
       })
-    }
-    )
+    })
 
     return () => {
       socket.leave('User.' + auth?.user.id)

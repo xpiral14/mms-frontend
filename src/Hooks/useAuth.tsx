@@ -19,6 +19,7 @@ import CompanyService from '../Services/CompanyService'
 import CompanySettingsService from '../Services/CompanySettingsService'
 import useMessageError from './useMessageError'
 import { useToast } from './useToast'
+import Echo from 'laravel-echo'
 
 const authContext = createContext<{
   auth: Auth | null
@@ -30,6 +31,7 @@ const authContext = createContext<{
   hasPermission: (permission: Permissions) => boolean
   companySetting: Partial<CompanySetting>
   reloadCompanySettings: () => void
+  socket: Echo | null
     }>(null as any)
 
 export const useAuth = () => {
@@ -51,6 +53,7 @@ const AuthProvider: FC = ({ children }) => {
   const [companySetting, setCompanySetting] = useState<Partial<CompanySetting>>(
     {}
   )
+  const [socket, setSocket] = useState<Echo | null>(null)
   const { showErrorToast } = useToast()
   const logout = useCallback(() => {
     localStorage.removeItem(AUTH_LOCAL_STORAGE_KEY)
@@ -80,6 +83,40 @@ const AuthProvider: FC = ({ children }) => {
 
     localStorage.setItem('@auth', JSON.stringify(auth))
   }, [auth])
+
+  useEffect(() => {
+    if (!auth?.token) return
+
+    let options: any = {
+      broadcaster: 'pusher',
+      key: import.meta.env.VITE_API_PUSHER_APP_KEY!,
+      cluster: import.meta.env.VITE_PUSHER_APP_CLUSTER,
+      forceTLS: true,
+    }
+    options = {
+      ...options,
+      authorizer: (channel: any) => {
+        return {
+          authorize: (socketId: string, callback: any) => {
+            api
+              .post('/broadcasting/auth', {
+                socket_id: socketId,
+                channel_name: channel.name,
+                notCamel: true,
+              })
+              .then((response) => {
+                callback(false, response.data)
+              })
+              .catch((error) => {
+                callback(true, error)
+              })
+          },
+        }
+      },
+    }
+    setSocket(new Echo(options))
+  }, [])
+
   const { showErrorMessage: showErrormessage } = useMessageError()
   useEffect(() => {
     if (!auth?.user?.id) return
@@ -148,8 +185,18 @@ const AuthProvider: FC = ({ children }) => {
       hasPermission,
       companySetting,
       reloadCompanySettings,
+      socket,
     }),
-    [auth, setAuth, logout, company, hasPermission, companySetting, reloadCompanySettings]
+    [
+      auth,
+      setAuth,
+      logout,
+      company,
+      hasPermission,
+      companySetting,
+      reloadCompanySettings,
+      socket,
+    ]
   )
 
   return <authContext.Provider value={value}>{children}</authContext.Provider>

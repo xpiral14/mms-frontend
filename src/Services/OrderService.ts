@@ -10,6 +10,7 @@ import User from '../Contracts/Models/User'
 import OrderStatus from '../Contracts/Models/OrderStatus'
 import makeURL from '../Util/makeURL'
 import Receipt from '../Contracts/Models/Receipt'
+import { ReportRequestOption } from '../Contracts/Types/Api'
 
 const DEFAULT_PATH = '/orders'
 export type OrderServicePaginatedResponse = {
@@ -164,5 +165,25 @@ export default class OrderService {
 
   static async getOrderProfitResume(orderId: number) {
     return api.get<Response<ProfitResumeResponse>>(makeURL(DEFAULT_PATH, orderId, 'reports', 'profitResume'))
+  }
+  static async rankOfProductsBySale(page: any, limit: number, filters?: Record<string, any>, reportType?: ReportRequestOption) {
+    return await api.get<Paginated<{
+      'id': number,
+      'reference': string,
+      'name': string,
+      'unit_name': string,
+      'total_quantity_sold': string,
+      'total_value_sold': string,
+    }>>(`${DEFAULT_PATH}/reports/rankBySales`, {
+      params: {
+        page,
+        limit,
+        ...filters,
+      },
+      responseType: reportType?.responseType ?? 'json',
+      headers: {
+        Accept: reportType?.mimeType || 'application/json',
+      }
+    })
   }
 }

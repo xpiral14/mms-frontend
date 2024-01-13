@@ -8,7 +8,6 @@ import NotificationModel from '../../Contracts/Models/Notification'
 import useAsync from '../../Hooks/useAsync'
 import { useAuth } from '../../Hooks/useAuth'
 import useMessageError from '../../Hooks/useMessageError'
-import useSocket from '../../Hooks/useSocket'
 import NotificationService from '../../Services/NotificationService'
 import { RiEyeCloseLine } from 'react-icons/ri'
 import { Meta } from '../../Contracts/Models/Paginated'
@@ -28,7 +27,7 @@ const Notification = () => {
     perPage: 15,
     total: 1,
   })
-  const { auth } = useAuth()
+  const { auth, socket } = useAuth()
   const { showErrorMessage: showErrormessage } = useMessageError()
   const [loadingNotifications, loadNotifications] = useAsync(async () => {
     try {
@@ -43,7 +42,6 @@ const Notification = () => {
       )
     }
   }, [filterBy, pagination.perPage])
-  const socket = useSocket()
 
   const filteredNotifications = useMemo(() => {
     switch (filterBy) {
@@ -58,12 +56,12 @@ const Notification = () => {
 
   useEffect(() => {
     const channel = socket?.private('User.' + auth?.user.id)
-    channel.notification((notification: NotificationModel) => {
+    channel?.notification((notification: NotificationModel) => {
       setNotifications((prev) => [notification, ...prev])
     })
 
     return () => {
-      socket.leave('User.' + auth?.user.id)
+      socket?.leave('User.' + auth?.user.id)
     }
   }, [])
 

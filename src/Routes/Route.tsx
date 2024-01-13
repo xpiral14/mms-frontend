@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState } from 'react'
+import React, { FC, useEffect, useMemo, useState } from 'react'
 import {
   Route as ReactDomRoute,
   RouteProps as ReactDomRouteProps,
@@ -37,37 +37,40 @@ const Route: FC<RouteProps> = ({
     setLoading(false)
   }, [auth?.user])
 
-  const ComponentWithLayout = ({ props }: any) => {
-    if (loading) {
-      return <LoadingPage />
-    }
-    let Layout: React.FunctionComponent
+  const ComponentWithLayout = (props: any) => {
+    const Layout = useMemo(() => {
+      if (loading) {
+        return () => <LoadingPage />
+      }
 
-    if (auth?.user) {
-      Layout = () => (
-        <PrivateLayout>
-          <Component {...props} />
-        </PrivateLayout>
-      )
-    } else {
-      Layout = () => (
+      if (auth?.user && props.isPrivate) {
+        return () => (
+          <PrivateLayout>
+            <Component {...props} />
+          </PrivateLayout>
+        )
+      }
+
+      return () => (
         <PublicLayout>
           <Component {...props} />
         </PublicLayout>
       )
-    }
+    }, [loading, auth?.user])
 
     return (
       <>
         {IS_DEVELOPMENT_MODE && <Strip variation='warning' />}
-        <Layout />
+        <Layout {...props} />
       </>
     )
   }
 
   return (
     <ReactDomRoute
-      render={(props) => <ComponentWithLayout {...props} />}
+      render={(props) => (
+        <ComponentWithLayout {...props} isPrivate={isPrivate} />
+      )}
       {...rest}
     />
   )

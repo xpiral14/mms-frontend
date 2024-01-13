@@ -6,7 +6,6 @@ import ProductsService from '../../../Services/ProductsService'
 import ScreenProps from '../../../Contracts/Components/ScreenProps'
 import {
   RegistrationButtonBarProps,
-  ReportProps,
   StopLoadFunc,
 } from '../../../Contracts/Components/RegistrationButtonBarProps'
 import { useGrid } from '../../../Hooks/useGrid'
@@ -32,57 +31,6 @@ import strToNumber from '../../../Util/strToNumber'
 import useMessageError from '../../../Hooks/useMessageError'
 import TextArea from '../../../Components/ScreenComponents/TextArea'
 import { useAuth } from '../../../Hooks/useAuth'
-const reports = [
-  {
-    columns: [
-      {
-        name: '',
-        formatText: (_, index) => (index ?? 0) + 1 + '°',
-      },
-      {
-        name: 'Referencia',
-        keyName: 'product_reference',
-        filters: [
-          {
-            keyName: 'product_reference',
-            name: 'Referência',
-            type: 'text',
-          },
-        ],
-      },
-      {
-        keyName: 'product_name',
-        name: 'Produto',
-        filters: [
-          {
-            keyName: 'product_name',
-            name: 'Produto',
-            type: 'text',
-          },
-        ],
-      },
-      {
-        name: 'Quantidade total vendida',
-        formatText: (r) => `${r.total_quantity_sold} ${r.unit_name}`,
-      },
-      {
-        name: 'Valor total vendida',
-        formatText: (r) => `R$ ${r.total_value_sold}`,
-      },
-    ],
-    downloadable: true,
-    reportRequestOptions: [
-      {
-        mimeType: 'application/csv',
-        reportType: 'csv',
-        name: 'Rank de venda de produtos',
-        responseType: 'text',
-      },
-    ],
-    request: ProductsService.rankOfProductsBySale,
-    text: 'Rank de venda de produtos',
-  },
-] as ReportProps[]
 
 type ProductPayload = Omit<Product, 'price'> & {
   price: string
@@ -95,9 +43,9 @@ const ProductsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
     screenStatus,
     setScreenStatus,
   } = useWindow<ProductPayload>()
-  const {companySetting} = useAuth()
+  const { companySetting } = useAuth()
   const [units, setUnits] = useState<Unit[]>([])
-  
+
   const unitsOptions = useMemo(
     () =>
       units.map((unit) => ({
@@ -368,7 +316,6 @@ const ProductsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
       setScreenStatus(ScreenStatus.EDIT)
       screen.decreaseScreenSize?.()
     },
-    reports,
   }
 
   const createOnChange =
@@ -420,7 +367,10 @@ const ProductsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
           <InputText
             id='productReference'
             label='Referência:'
-            disabled={isStatusVizualize() || companySetting.disable_product_reference_edit}
+            disabled={
+              isStatusVizualize() ||
+              companySetting.disable_product_reference_edit
+            }
             intent='primary'
             style={{ width: '20%' }}
             inputStyle={{ width: '100%' }}

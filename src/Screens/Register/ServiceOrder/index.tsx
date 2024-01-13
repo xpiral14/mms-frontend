@@ -12,6 +12,7 @@ import {
 } from '../../../Constants/Enums'
 import {
   RegistrationButtonBarProps,
+  ReportProps,
   StopLoadFunc,
 } from '../../../Contracts/Components/RegistrationButtonBarProps'
 import ScreenProps from '../../../Contracts/Components/ScreenProps'
@@ -96,7 +97,57 @@ type OrderPayload = {
   totalPrice: number
   sendNotificationWhenConcluded?: boolean
 }
-
+const reports = [
+  {
+    columns: [
+      {
+        name: '',
+        formatText: (_, index) => (index ?? 0) + 1 + '°',
+      },
+      {
+        name: 'Referencia',
+        keyName: 'product_reference',
+        filters: [
+          {
+            keyName: 'product_reference',
+            name: 'Referência',
+            type: 'text',
+          },
+        ],
+      },
+      {
+        keyName: 'product_name',
+        name: 'Produto',
+        filters: [
+          {
+            keyName: 'product_name',
+            name: 'Produto',
+            type: 'text',
+          },
+        ],
+      },
+      {
+        name: 'Quantidade total vendida',
+        formatText: (r) => `${r.total_quantity_sold} ${r.unit_name}`,
+      },
+      {
+        name: 'Valor total vendida',
+        formatText: (r) => `R$ ${r.total_value_sold}`,
+      },
+    ],
+    downloadable: true,
+    reportRequestOptions: [
+      {
+        mimeType: 'application/csv',
+        reportType: 'csv',
+        name: 'Rank de venda de produtos',
+        responseType: 'text',
+      },
+    ],
+    request: OrderService.rankOfProductsBySale,
+    text: 'Rank de venda de produtos',
+  },
+] as ReportProps[]
 const ServiceOrder: React.FC<ScreenProps> = ({ screen }) => {
   const { hasPermission, auth } = useAuth()
   const [customers, setCustomer] = useState<Customer[]>([])
@@ -447,6 +498,7 @@ const ServiceOrder: React.FC<ScreenProps> = ({ screen }) => {
         status: orderStatus.DONE,
       })
     },
+    reports,
   }
 
   const openOrderDetailsScreen = () => {
@@ -546,7 +598,7 @@ const ServiceOrder: React.FC<ScreenProps> = ({ screen }) => {
     {
       name: 'Referência',
       style: {
-        maxWidth: 50
+        maxWidth: 50,
       },
       filters: [
         {

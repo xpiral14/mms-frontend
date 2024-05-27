@@ -165,7 +165,7 @@ const reports = [
       },
       {
         keyName: 'total_sold',
-        name: 'Total de vendas',
+        name: 'Total de compras',
         sortable: true,
       },
       {
@@ -195,6 +195,14 @@ const reports = [
     sorts: {
       total_sold: 'desc',
     },
+    charts: [
+      {
+        type: 'Bar',
+        dataKey: 'total_sold',
+        nameDataKey: 'customer_name',
+        yUnit: 'Compra(s)',
+      },
+    ],
   },
 ] as ReportProps[]
 const ServiceOrder: React.FC<ScreenProps> = ({ screen }) => {

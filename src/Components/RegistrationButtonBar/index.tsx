@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react'
+import React, { useCallback, useMemo, useRef, useState } from 'react'
 import {
   Button,
   ButtonGroup,
@@ -27,7 +27,7 @@ const RegistrationButtonBar: React.FC<RegistrationButtonBarProps> = (
     isSaveLoading?: boolean
     isDeleteLoading?: boolean
   }>({})
-
+  const importInputRef = useRef<HTMLInputElement>(null)
   const { screenStatus, setScreenStatus, payload, setPayload } = useWindow()
 
   const stopLoad = (key: keyof typeof loadings) => () => {
@@ -242,6 +242,34 @@ const RegistrationButtonBar: React.FC<RegistrationButtonBarProps> = (
             </Popover2>
           </Render>
         </Render>
+        <Render renderIf={hasToShowButton(RegistrationButtons.IMPORT)}>
+          <Button
+            icon='import'
+            intent={Intent.NONE}
+            onClick={
+              props.handleButtonImportOnClick
+                ? () => {
+                  importInputRef.current?.click()
+                }
+                : undefined
+            }
+            disabled={
+              ![ScreenStatus.SEE_REGISTERS, ScreenStatus.NEW].includes(
+                screenStatus
+              )
+            }
+            {...(props?.buttonVisualizeProps || {})}
+          >
+            Importar
+          </Button>
+          <input
+            type='file'
+            hidden
+            ref={importInputRef}
+            accept={props.importFileTypes?.join(',')}
+            onChange={props.handleButtonImportOnClick}
+          />
+        </Render>
       </ButtonGroup>
       <ButtonGroup>
         <Render renderIf={hasToShowButton(RegistrationButtons.RELOAD_ALL)}>
@@ -264,7 +292,8 @@ const RegistrationButtonBar: React.FC<RegistrationButtonBarProps> = (
 }
 
 RegistrationButtonBar.defaultProps = {
-  buttonsToShow: [ RegistrationButtons.NEW,
+  buttonsToShow: [
+    RegistrationButtons.NEW,
     RegistrationButtons.SAVE,
     RegistrationButtons.CANCEL,
     RegistrationButtons.DETAIL,
@@ -272,6 +301,6 @@ RegistrationButtonBar.defaultProps = {
     RegistrationButtons.DELETE,
     RegistrationButtons.VIZUALIZE,
     RegistrationButtons.CLOSE,
-  ]
+  ],
 }
 export default RegistrationButtonBar

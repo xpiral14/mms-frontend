@@ -90,11 +90,13 @@ const InputNumber = (props: InputNumberProps) => {
         value={props.value || ''}
         disabled={props.disabled}
         placeholder={props.placeholder}
-        prefix={props.format === 'currency' ? 'R$ ' : undefined}
+        prefix={props.format === 'currency' ? 'R$ ' : props.prefix}
+        
         {...(props as any)}
         onValueChange={onInputValueChange}
         className={className}
         style={props.inputStyle}
+        decimalsLimit={props.format === 'currency' ? 2 : 1000}
       />
       <ButtonGroup
         vertical

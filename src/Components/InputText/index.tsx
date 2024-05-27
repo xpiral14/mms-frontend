@@ -1,21 +1,35 @@
-import { Classes, FormGroup } from '@blueprintjs/core'
+import { Classes, Colors, FormGroup, Icon } from '@blueprintjs/core'
 import InputMask from 'react-input-mask'
 import React, { useMemo } from 'react'
 import { InputProps } from '../../Contracts/Components/InputProps'
 import joinClasses from '../../Util/joinClasses'
+import { Tooltip2 } from '@blueprintjs/popover2'
 
 const InputText: React.FC<InputProps> = (props) => {
-
-  const className = useMemo(() => joinClasses(
-    Classes.INPUT,
-    props.intent
-      ? (Classes as any)[('INTENT_' + props.intent.toUpperCase()) as any]
-      : '',
-    props.className ?? ''
-  ), [props.intent, props.className])
+  const className = useMemo(
+    () =>
+      joinClasses(
+        Classes.INPUT,
+        props.intent
+          ? (Classes as any)[('INTENT_' + props.intent.toUpperCase()) as any]
+          : '',
+        props.className ?? ''
+      ),
+    [props.intent, props.className]
+  )
   return (
     <FormGroup
-      label={props.label}
+      label={
+        <>
+          {props.label}{' '}
+          {Boolean(props.help) && (
+            <Tooltip2 content={props.help}>
+              <Icon icon='help' color={Colors.BLUE1} size={12} />
+            </Tooltip2>
+          )}
+          {}
+        </>
+      }
       labelInfo={props.required && '*'}
       disabled={props.disabled}
       intent={props.intent}

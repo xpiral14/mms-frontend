@@ -1,6 +1,6 @@
 import Unit from './Unit'
 
-export default  interface Product {
+export default interface Product {
   id?: number;
   companyId?: number;
   unit_id: number;
@@ -12,6 +12,12 @@ export default  interface Product {
   created_at: string;
   updated_at: string;
   unit?: Unit
+  ncm?: string
+  cest?: string
+  weight?: number
+  purchase_cost?: number
+  minimum_stock?: number
+
 }
 
 

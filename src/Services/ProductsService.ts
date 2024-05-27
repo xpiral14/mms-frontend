@@ -6,6 +6,17 @@ import Response from '../Contracts/Types/Response'
 
 const DEFAULT_PATH = '/products'
 class ProductsService {
+
+  static async uploadImage(productId: number, productImage: File) {
+    const formData = new FormData()
+    formData.append('image', productImage)
+    const config = {
+      headers: {
+        'content-type': 'multipart/form-data'
+      }
+    }
+    return api.post(`${DEFAULT_PATH}/${productId}/image`, formData, config)
+  }
   static async getNextReference() {
     return (await api.get<Response<{ reference: string }>>(`${DEFAULT_PATH}/nextReference`)).data.data.reference
   }
@@ -25,7 +36,7 @@ class ProductsService {
   }
 
   static async create(pieceData: Partial<Product>) {
-    return api.post(DEFAULT_PATH, pieceData)
+    return api.post<Response<Product>>(DEFAULT_PATH, pieceData)
   }
 
   static async update(pieceId: number, pieceData: Partial<Product>) {
@@ -34,6 +45,13 @@ class ProductsService {
 
   static async delete(pieceId: number) {
     return api.delete(`${DEFAULT_PATH}/${pieceId}`)
+  }
+  static uploadProducts(formData: FormData) {
+    return api.post(`${DEFAULT_PATH}/upload`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    })
   }
 }
 

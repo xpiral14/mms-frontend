@@ -1,6 +1,7 @@
 import { ButtonProps, IconName } from '@blueprintjs/core'
 import { Screen, } from './ScreenProps'
 import { DynamicReportScreenProps } from '../Screen/DynamicReportScreen'
+import { ChangeEventHandler } from 'react'
 export enum RegistrationButtons {
   NEW,
   SAVE,
@@ -10,7 +11,8 @@ export enum RegistrationButtons {
   DELETE,
   VIZUALIZE,
   CLOSE,
-  RELOAD_ALL
+  RELOAD_ALL,
+  IMPORT
 }
 export type ReportButtonProps = {
   text: string,
@@ -38,6 +40,8 @@ export interface RegistrationButtonBarProps {
   handleReloadScreenOnClick?: () => void
   handleButtonInfoOnClick?: () => void
   handleButtonVisualizeOnClick?: () => void
+  handleButtonImportOnClick?: ChangeEventHandler<HTMLInputElement>
+  importFileTypes?: string[],
   buttonsToShow?: RegistrationButtons[]
   screen?: Screen,
   reports?: ReportProps[]

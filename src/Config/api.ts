@@ -10,8 +10,12 @@ const api = axios.create({
 
 api.interceptors.request.use((value => {
   value.headers['X-USER-TIMEZONE'] = USER_TIMEZONE_NAME
+  const contentType = value.headers?.['content-type'] ?? value.headers?.['Content-Type']
+  if (contentType === 'multipart/form-data') {
+    return value
+  }
   const { notCamel, ...data } = value?.data ?? {}
-  if (notCamel) {
+  if (notCamel || value.data instanceof FormData) {
     value.data = data
     return value
   }

@@ -773,7 +773,7 @@ const ServiceOrder: React.FC<ScreenProps> = ({ screen }) => {
     )
   }
   return (
-    <Container style={{ height: 'calc(100% - 87px)' }}>
+    <Container style={{ height: 'calc(100% - 90px)' }}>
       <Header>
         <RegistrationButtonBar {...registrationButtonBarProps} />
       </Header>
@@ -1081,8 +1081,8 @@ const ServiceOrder: React.FC<ScreenProps> = ({ screen }) => {
           </Row>
         </Render>
         <Render renderIf={screenStatus === ScreenStatus.SEE_REGISTERS}>
-          <Row style={{ flex: 1 }} className='h-full' column>
-            <Box style={{ flex: 1 }}>
+          <Row className='h-full' column>
+            <Box className='h-full'>
               <Row className='h-full'>
                 <PaginatedTable<Order>
                   containerProps={{

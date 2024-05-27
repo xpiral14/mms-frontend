@@ -295,7 +295,7 @@ const StocksScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
   )
 
   return (
-    <Container style={{ height: 'calc(100% - 85px)' }}>
+    <Container style={{ height: 'calc(100% - 90px)' }}>
       <Row>
         <RegistrationButtonBar {...registrationButtonBarProps} />
       </Row>

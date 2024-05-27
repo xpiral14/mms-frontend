@@ -114,7 +114,7 @@ const EmployeeRegister: React.FC<EmployeeRegisterScreenProps> = ({
   const { showSuccessToast } = useToast()
   const { openAlert } = useAlert()
 
-  const isStatusVizualize =  screenStatus === ScreenStatus.VISUALIZE
+  const isStatusVizualize = screenStatus === ScreenStatus.VISUALIZE
 
   const getErrorMessages = (errors?: any[], defaultMessage?: string) => {
     const errorMessages = errors?.map((error) => ({
@@ -344,7 +344,7 @@ const EmployeeRegister: React.FC<EmployeeRegisterScreenProps> = ({
   )
 
   return (
-    <Container>
+    <Container style={{ height: 'calc(100% - 40px)' }}>
       <Header>
         <RegistrationButtonBar {...registrationButtonBarProps} />
       </Header>
@@ -430,9 +430,8 @@ const EmployeeRegister: React.FC<EmployeeRegisterScreenProps> = ({
             </Box>
           </FormContainer>
         </Render>
-
         <Render renderIf={screenStatus === ScreenStatus.SEE_REGISTERS}>
-          <TableContainer style={{ height: '100%' }}>
+          <Row className='h-full'>
             <PaginatedTable
               height='100%'
               isSelected={(row) => row.id === payload.id}
@@ -440,7 +439,7 @@ const EmployeeRegister: React.FC<EmployeeRegisterScreenProps> = ({
               request={EmployeeService.getAll}
               onRowSelect={onRowSelect}
             />
-          </TableContainer>
+          </Row>
         </Render>
       </Body>
     </Container>

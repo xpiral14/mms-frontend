@@ -110,11 +110,11 @@ const RegistrationButtonBar: React.FC<RegistrationButtonBarProps> = (
   const openReportScreen = (report: ReportProps) => () => {
     openSubScreen<DynamicReportScreenProps>(
       {
-        id: 'dynamic-report',
-        headerTitle: report.text,
+        id: report.screen || 'dynamic-report',
+        headerTitle: !report.screen ? report.text : undefined,
       },
       screen?.id,
-      report
+      report.screenProps ?? {}
     )
   }
   return (

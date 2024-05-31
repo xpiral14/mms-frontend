@@ -2,7 +2,8 @@ import styled from 'styled-components'
 
 export const Container = styled.div<{ loading?: boolean }>`
   display: ${p => p.loading ? 'flex' : 'none'};
-  position: fixed;
+  position: absolute;
+  z-index: 100;
   top:0;
   left:0;
   color: #ffffff20;

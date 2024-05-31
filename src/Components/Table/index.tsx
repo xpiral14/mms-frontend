@@ -62,7 +62,7 @@ const Table = function <T = any>(props: TableProps<T>) {
   )
   useRef<HTMLElement>(null)
   return (
-    <div>
+    <div className='relative'>
       <StyledTable
         className={joinClasses({
           'w-full bp5-html-table bp5-html-table-bordered position-relative':

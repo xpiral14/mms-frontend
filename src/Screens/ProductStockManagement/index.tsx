@@ -335,8 +335,8 @@ const ProductStockManagement: React.FC<ProductStockScreenProps> = ({
           keyName: 'product_name',
           filters: [{ name: 'Nome', type: 'text' }],
           style: {
-            minWidth: 400
-          }
+            minWidth: 400,
+          },
         },
         {
           id: 2,
@@ -508,6 +508,15 @@ const ProductStockManagement: React.FC<ProductStockScreenProps> = ({
 
       setScreenStatus(ScreenStatus.VISUALIZE)
     },
+    reports: [
+      {
+        text: 'Giro de estoque',
+        screen: 'stock-turnover',
+        screenProps: {
+          stock,
+        },
+      },
+    ],
   }
 
   const onRowSelect = useCallback(
@@ -539,7 +548,7 @@ const ProductStockManagement: React.FC<ProductStockScreenProps> = ({
     [stock.id]
   )
   return (
-    <Container style={{ height: 'calc(100% - 90px)' }}>
+    <Container style={{ height: 'calc(100% - 95px)' }}>
       <Row>
         <RegistrationButtonBar {...registrationButtonBarProps} />
       </Row>

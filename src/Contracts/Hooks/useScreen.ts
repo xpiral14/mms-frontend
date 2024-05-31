@@ -36,6 +36,7 @@ export type ScreenIds =
   | 'settings'
   | 'bill-receipt-register'
   | 'bill-receipt-reception'
+  | 'stock-turnover'
 export interface ScreenData {
   id: ScreenIds
   name: string

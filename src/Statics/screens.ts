@@ -206,6 +206,11 @@ const screens = {
     id: 'bill-receipt-reception',
     name: 'Receber conta',
     path: 'Finance/BillReceiptReception',
+  },
+  'stock-turnover': {
+    id: 'bill-receipt-reception',
+    name: 'Relatório de giro de estoque',
+    path: 'Reports/StockTurnOverReport',
   }
 } as Screens
 

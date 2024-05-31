@@ -7,13 +7,25 @@ import Response from '../Contracts/Types/Response'
 
 export const DEFAULT_PATH = '/stocks'
 export default class StockService {
+  static async getStockTurnOverReport(stockId: number, filters?: FilterType, reportOptions?: ReportRequestOption) {
+    return api.get<Paginated<any>>(`${DEFAULT_PATH}/reports/stockTurnOver`, {
+      params: {
+        stockId,
+        ...(filters ?? {}),
+      },
+      responseType: reportOptions?.responseType ?? 'json',
+      headers: {
+        Accept: reportOptions?.mimeType || 'application/json'
+      }
+    })
+  }
   static async getAll(page: number, limit: number, filters?: FilterType, reportOptions?: ReportRequestOption) {
 
     return api.get<Paginated<Stock>>(`${DEFAULT_PATH}/paginated`, {
       params: {
         page,
         limit,
-        ...(filters ?? {}), 
+        ...(filters ?? {}),
       },
       responseType: reportOptions?.responseType ?? 'json',
       headers: {

@@ -301,17 +301,19 @@ const PaginatedTable = function <T = any>({
                 loading={reloadGrid}
                 onClick={handleButtonReloadGridClick}
               />
-              <div>
-                <Select
-                  activeItem={limit}
-                  items={pageOptions}
-                  onChange={handlePageSelectChange}
-                  filterable={false}
-                />
-              </div>
-              <div>
-                <Paginate {...paginateOptions} />
-              </div>
+              <Render renderIf={!rest.hidePaginationAttributes}>
+                <div>
+                  <Select
+                    activeItem={limit}
+                    items={pageOptions}
+                    onChange={handlePageSelectChange}
+                    filterable={false}
+                  />
+                </div>
+                <div>
+                  <Paginate {...paginateOptions} />
+                </div>
+              </Render>
             </PaginateContainer>
           </Card>
         </Footer>

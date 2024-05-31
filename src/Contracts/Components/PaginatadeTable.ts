@@ -18,7 +18,7 @@ export interface PaginatedTableProps<T = any> extends Omit<TableProps<T>, 'rows'
   request?: (
     page: number | any,
     limit: number,
-    filters?: Record<string, string | number | undefined>,
+    filters?: FilterType,
     options?: ReportRequestOption
   ) => Promise<AxiosResponse<Paginated<any>>>
   customRequest?: (
@@ -26,11 +26,12 @@ export interface PaginatedTableProps<T = any> extends Omit<TableProps<T>, 'rows'
     limit: number,
     filters: FilterType,
     options?: ReportRequestOption
-  ) => Promise<AxiosResponse<Paginated<any>>>
+  ) => Promise<AxiosResponse<Paginated<any>>> | null
   height?: string
   isSelected?: (row: Row<T>) => boolean
   rowKey?: (row: Row<T>) => string | number
   filters?: Record<string, string | number | undefined>
   downloadable?: boolean
   reportRequestOptions?: ReportRequestOption[]
+  hidePaginationAttributes?: boolean
 }

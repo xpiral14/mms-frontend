@@ -40,7 +40,10 @@ class ProductsService {
   }
 
   static async update(pieceId: number, pieceData: Partial<Product>) {
-    return api.put(`${DEFAULT_PATH}/${pieceId}`, pieceData)
+    return api.put(`${DEFAULT_PATH}/${pieceId}`, {
+      ...pieceData,
+      notCamel: true
+    })
   }
 
   static async delete(pieceId: number) {

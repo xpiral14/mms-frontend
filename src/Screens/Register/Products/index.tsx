@@ -108,20 +108,6 @@ const ProductsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
 
   const isStatusVisualize = Boolean(screenStatus === ScreenStatus.VISUALIZE)
 
-  const getErrorMessages = (errors?: any[], defaultMessage?: string) => {
-    const errorMessages = errors?.map((error) => ({
-      message: error.message,
-    })) || [{ message: defaultMessage }]
-
-    return (
-      <ul>
-        {errorMessages?.map(({ message }) => (
-          <li key={message}>{message}</li>
-        ))}
-      </ul>
-    )
-  }
-
   const handleButtonCreateProductOnClick = async (stopLoad: Function) => {
     if (!validate()) {
       stopLoad()
@@ -164,6 +150,8 @@ const ProductsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
     }
     const requestPayload = {
       ...payload,
+      purchase_cost: strToNumber(payload.purchase_cost),
+      weight: strToNumber(payload.weight),
     }
     try {
       const response = await ProductsService.update(
@@ -183,22 +171,9 @@ const ProductsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
         setReloadGrid(true)
         screen.increaseScreenSize?.()
       }
-
-      if (!response) {
-        openAlert({
-          text: 'Não foi possível atualizar o produto',
-          intent: Intent.DANGER,
-        })
-      }
     } catch (error: any) {
-      const ErrorMessages = getErrorMessages(
-        error.response?.data?.errors,
-        'Não foi possível atualizar o produto'
-      )
-
-      openAlert({
-        text: ErrorMessages,
-        intent: Intent.DANGER,
+      showErrorMessage(error, 'Não foi possível atualizar o produto', {
+        showOn: 'alert',
       })
     } finally {
       stopLoad()
@@ -329,6 +304,7 @@ const ProductsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
         text: 'Deletar o item selecionado?',
         intent: Intent.DANGER,
         onConfirm: () => handleButtonDeleteProductOnClick(stopLoad),
+        onCancel: stopLoad,
         cancelButtonText: 'Cancelar',
       })
     },
@@ -530,7 +506,6 @@ const ProductsScreen: React.FC<ScreenProps> = ({ screen }): JSX.Element => {
                 <InputNumber<Product>
                   name='weight'
                   inputStyle={{ width: 'calc(100% - 36px)' }}
-                  format='currency'
                   prefix={
                     selectedUnit?.name ? selectedUnit.name + ' ' : undefined
                   }
